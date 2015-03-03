@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Noderedigering</title>
+    <script src="../../js/jquery-1.9.1.js"></script>
+    <script src="../../js/jquery-ui-1.10.1.custom.js"></script>
+    <!--<script type="text/javascript" src="jqsvg/jquery.svg.js"></script>-->
+
+
+    <!--<script type="text/javascript" src="azoff-Overscroll-1579345/src/jquery.overscroll.js"></script>-->
+
+
+    <script charset="utf-8" src="../../jMusicScore.js"></script>
+    <script charset="utf-8" src="../../jMusicScore.Spacing.js"></script>
+    <script charset="utf-8" src="../../jMusicScore.Views.js"></script>
+    <script charset="utf-8" src="../../jMusicScore.MusicXml.js"></script>
+    <script charset="utf-8" src="../../jMusicScore.Lilypond.js"></script>
+
+    <script charset="utf-8" src="../../FinaleEmulator.js"></script>
+
+    <script charset="utf-8" src="../../application.js"></script>
+    <!--    <script charset="utf-8" src="lilyviews.js"></script>
+        <script charset="utf-8" src="musicxml.js"></script>-->
+    <script charset="utf-8" src="../../validators.js"></script>
+    <script charset="utf-8" src="../../commands.js"></script>
+    <script charset="utf-8" src="../../readers/jsonReader.js"></script>
+
+    <script charset="utf-8" src="../../views/emmentaler.js"></script>
+    <!--<script charset="utf-8" src="views/svg.js"></script>-->
+    <script charset="utf-8" src="../../views/dialogs.js"></script>
+    <script charset="utf-8" src="../../ghostElements.js"></script>
+    <script charset="utf-8" src="../../plugins/menu.js"></script>
+    <script charset="utf-8" src="../../plugins/scrollbar.js"></script>
+    <script charset="utf-8" src="../../plugins/toolbarPlugin.js"></script>
+    <script charset="utf-8" src="../../editors/midiEditor.js"></script>
+    <script charset="utf-8" src="../../jazzsoft/jquery.midi.js"></script>
+    <script charset="utf-8" src="../../input/midiIn.js"></script>
+    <script charset="utf-8" src="../../input/keyboard.js"></script>
+    <script charset="utf-8" src="../../views/jtools.js"></script>
+
+    <script charset="utf-8" src="initApp.js"></script>
+    <!-- script src="js/jquery.hammer.js"></script-->
+    <!--    <script src="jsmidi-master/midi.js"></script>
+        <script src="midi.js"></script>-->
+    <script>
+        /*function setTextareaText(text) {
+            var textArea = document.getElementById("theText");
+            textArea.value = text;
+        }*/
+    </script>
+    <link href="css/custom-theme/jquery-ui-1.10.2.custom.css" rel="stylesheet">
+    <link href="css/notetools.css" rel="stylesheet">
+    <link href="css/jMusicScore.css" rel="stylesheet">
+    <script src="js/multidropdown.js"></script>
+    <script>
+        $(function () {
+            var toolbox = $('<div>').addClass('toolbox').appendTo('#footer');
+            for (var i = 0; i < 44; i++) {
+                toolbox.append('<div class="toolitem" id="toolitem'+i+'" style="background-image: url(images/symbol1/sprite1.png); background-position: ' + (1 - 30 * (i % 21)) + 'px ' + (-20 - 50 * Math.floor(i / 21)) + 'px; background-repeat:no-repeat;' + '">' + i + '</div>')
+            }
+        });
+    </script>
+    <style>  </style>
+</head>
+
+
+<body>
+    <div id="clientArea">
+        <div id="appContainer" class="appContainer">
+            <div class="toolbarArea">
+                <div id="notetools" class="ui-widget-header ui-corner-all"></div>
+                <div id="notetools1"></div>
+            </div>
+            <div class="clientArea">
+                <div id="svgArea" class="svgArea"></div>
+                <div class="overlay">
+                    <ol id="events" style="width:50px; height:50px"></ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--
+    <div id="text">
+        <textarea id="theText" cols="5"></textarea>
+    </div>
+
+    <embed id="midiPlayer" />
+-->
+    <div id="MidiInStuff">
+        <!--<div id="tast">
+        </div>
+        <div id="msg">
+        </div>
+        <div id="Chord"></div>
+        <div id="Chord1"></div>-->
+    </div>
+    <div id="footer">
+        
+    </div>
+</body>
+</html>

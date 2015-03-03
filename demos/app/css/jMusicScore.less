@@ -1,0 +1,184 @@
+﻿@overlayTitleWidth: 50px;
+@overlayHintWidth: 100px;
+@overlayWidth: @overlayTitleWidth + @overlayHintWidth;
+@toolbarHeight: 80px;
+@pianoBarHeight: 87px;
+@toolboxHeight: 80px;
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+#MeterDialog, #KeyDialog {
+	display:none;
+}
+
+#musicXMLText {
+	white-space:pre;
+}
+
+#toolbar, #notetools {
+padding: 4px;
+display: inline-block;
+}
+/* support: IE7 */
+*+html #toolbar, #notetools {
+display: inline;
+}
+
+
+.mouseOver { fill: #707070; }
+.hidden{ visibility: hidden; }
+.toolbarArea {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: @toolbarHeight;
+    background-color: aliceblue;
+    opacity: 1.0;
+    z-index: 5;
+    div {
+        position: relative;
+    }    
+}
+
+.overlay {
+    position: fixed;
+    z-index: 0;
+    top: @toolbarHeight;
+    left: 0px;
+    width: @overlayWidth;
+    height: 100%;
+    background-color: aliceblue;
+    opacity: 0.95;
+    .staffTitleArea {
+        position: absolute;
+        width: @overlayWidth;
+    }
+    .helperArea {
+        float: right;
+        width: @overlayHintWidth; 
+        height: 80px;
+    }
+
+}
+#appContainer {
+    /*border: solid red 1px;*/
+    margin-top: 0px;
+}
+.svgArea {
+    height: 500px;
+}
+.clientArea {
+    margin-top: @toolbarHeight;
+    background-color: #efd;
+    /*width: 100%;*/
+}
+
+.ui-menu {
+    z-index: 999;
+}
+li.selected {
+    background-color: #218;
+    color: #eef;
+    a {
+        color: #eef;
+    }
+}
+
+#openFileList, #saveFileList {
+    border: solid black 1px;
+    height: 200px;
+    overflow-y: scroll;        
+    ul {
+        list-style: none;
+    }
+}
+
+
+
+
+body {
+    height: 100%;
+}
+#MusicLayer_ { 
+    position:relative;
+}
+#clientArea {
+    position:absolute;
+    width: 99%;
+    top:0px;
+    bottom: @pianoBarHeight + @toolboxHeight;
+    overflow: scroll;
+}
+#appContainer {
+}
+#footer {
+    width: 100%;
+    height: @pianoBarHeight + @toolboxHeight;
+    position:absolute;
+    bottom: 1px;
+    left: 0;
+    background: #ee5;
+    overflow: hidden;
+}
+.up {
+    position: absolute;
+    top: 0px;
+    border: solid black 1px;
+}
+@whiteKeyWidth: 40px;
+@whiteKeyShadow: 4px;
+@blackKeyWidth: 25px;
+@blackKeyShadow: 3px;
+.bw1, .bw3, .bw5, .bw0, .bw2, .bw4, .bw6 { 
+    height: @pianoBarHeight - 1;
+    background-color: ivory;
+    width: @whiteKeyWidth;
+    z-index: 20;
+    &:hover, &.hover {
+        background-color: #ddd;
+    }
+    &.down {
+        border-right: solid #888 @whiteKeyShadow;
+        width: @whiteKeyWidth - @whiteKeyShadow;
+        background-color: #bbb;
+    }
+}
+.bw8, .bw10, .bw7, .bw9, .bw11 { 
+    height: 50px;
+    background-color: black;
+    width: @blackKeyWidth;
+    z-index: 30;
+    &:hover, &.hover {
+        background-color: #222;
+    }
+
+    &.down {
+        background-color: #444;
+        width: @blackKeyWidth - @blackKeyShadow;
+        border-right: solid black @blackKeyShadow;
+    }
+}  
+#tast53 { background-image: url(../images/symbol1/e_clefs.F_change.png); background-position: -7px 32px; background-repeat:no-repeat; }
+#tast60 { background-image: url(../images/symbol1/e_clefs.C_change.png); background-position: -7px 32px; background-repeat:no-repeat; }
+#tast67 { background-image: url(../images/symbol1/e_clefs.G_change.png); background-position: -7px 32px; background-repeat:no-repeat; }
+.piano {
+    position: relative; 
+    left: -450px;
+    top: @toolboxHeight;
+}
+
+.toolbox {
+    width: 100%;
+    background-color: #ee5;
+    position:absolute;
+    top: 0px;
+    height: @toolboxHeight;
+}
+.toolitem {
+    width: 40px; height: 39px;
+    border: solid black thin;
+    float: left;
+}
