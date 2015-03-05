@@ -8,3 +8,8 @@ demos/app/css/ui-lightness
 demos/app/css/jMusicScore.css
 readers/*.xml
 test/jasmine-2.0.0
+*.dll
+obj/Debug
+*.suo
+jMusicScore.csproj.user
+*.pdb
