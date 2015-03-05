@@ -96,7 +96,7 @@
             }
         }
 
-        class LilypondReader implements Application.IReaderPlugIn<Model.ScoreElement, JQuery> {
+        class LilypondReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             private app: ScoreApplication.ScoreApplication;
 
             Init(app: ScoreApplication.ScoreApplication) {
@@ -128,7 +128,7 @@
 
 
 
-        export class LilypondWriter implements Application.IWriterPlugIn<Model.ScoreElement, JQuery> {
+        export class LilypondWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor(public score: Model.IScore) {
             }
 
@@ -258,7 +258,7 @@
 
             public Init(app: ScoreApplication.ScoreApplication) {
                 app.AddReader(new LilypondReader());
-                app.AddWriter(new LilypondWriter(app.score));
+                app.AddWriter(new LilypondWriter(app.document));
             }
 
             GetId() {

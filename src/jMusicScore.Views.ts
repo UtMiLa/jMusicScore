@@ -311,7 +311,7 @@ module jMusicScore {
             }
 
             public Validate(app: ScoreApplication.ScoreApplication) {
-                app.score.VisitAll(new ExpressionFactory()); // add renderer objects to all note/staff expressions
+                app.document.VisitAll(new ExpressionFactory()); // add renderer objects to all note/staff expressions
             }
         }
 
@@ -1044,7 +1044,7 @@ module jMusicScore {
 
         class SVGFeedbackClient implements Application.IFeedbackClient {
             constructor(private sensorEngine: Views.ISensorGraphicsEngine) { }
-            changed(status: Application.IStatusManager, key: string, val: any) {
+            changed(status: ScoreApplication.ScoreStatusManager, key: string, val: any) {
                 if (key === "currentNote" || key === "currentPitch") {
                     if (status.currentNote) {
                         var note = status.currentNote;
@@ -1784,7 +1784,7 @@ module jMusicScore {
             }
 
             public Validate(app: ScoreApplication.ScoreApplication) {
-                var score = app.score;
+                var score = app.document;
                 while (this.staffButtons.length > score.staffElements.length) {
                     var removeBtn = this.staffButtons.pop();
                     removeBtn.release();
@@ -1814,7 +1814,7 @@ module jMusicScore {
             }
 
             public Validate(app: ScoreApplication.ScoreApplication) {
-                var score = app.score;
+                var score = app.document;
                 var svgHelper = this.svgHelper;//<SVGHelper>app.GetState("svgHelper:" + this.context); // todo: Svghelper yt
 
                 var visitor = new Views.PrefixVisitor(new Views.RedrawVisitor(svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
@@ -1824,7 +1824,7 @@ module jMusicScore {
                 svgHelper.MusicGraphicsHelper.EndDraw();
 
                 if (!this.checkSensors) {
-                    this.checkSensors = new Views.DOMCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.score, app);
+                    this.checkSensors = new Views.DOMCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.document, app);
                     //app.FeedbackManager.registerClient(this.checkSensors);
                 }
 
@@ -1908,7 +1908,7 @@ module jMusicScore {
         dialogs (note, head, voice, staff)       
         */
 
-        class SVGWriter implements Application.IWriterPlugIn<Model.ScoreElement, JQuery> {
+        class SVGWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor(private svgHelper: SVGHelper) { }
 
             Init(app: ScoreApplication.ScoreApplication) {
@@ -2695,7 +2695,7 @@ module jMusicScore {
             constructor(public context: string) { }
 
             public Init(app: ScoreApplication.ScoreApplication) {
-                SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.score, this.context, false);
+                SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.document, this.context, false);
             }
 
             public Exit(app: ScoreApplication.ScoreApplication) {
@@ -2754,7 +2754,7 @@ module jMusicScore {
             constructor(public context: string) { }
 
             public Init(app: ScoreApplication.ScoreApplication) {
-                SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.score, this.context, false);
+                SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.document, this.context, false);
             }
 
             public Exit(app: ScoreApplication.ScoreApplication) {
@@ -2813,7 +2813,7 @@ module jMusicScore {
             constructor(public context: string) { }
 
             public Init(app: ScoreApplication.ScoreApplication) {
-                SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.score, this.context, true);
+                SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.document, this.context, true);
                 // Activate BeforeNote, AfterNote, clef
             }
 
@@ -3197,7 +3197,7 @@ module jMusicScore {
             }
 
             public Validate(app: ScoreApplication.ScoreApplication) {
-                var score = app.score;
+                var score = app.document;
                 var svgHelper = this.svgHelper;//<SVGHelper>app.GetState("svgHelper:" + this.context); // todo: Svghelper yt
 
                 var visitor = new Views.PrefixVisitor(new Views.RedrawVisitor(svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
@@ -3207,7 +3207,7 @@ module jMusicScore {
                 svgHelper.MusicGraphicsHelper.EndDraw();
 
                 if (!this.checkSensors) {
-                    this.checkSensors = new Views.DOMCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.score, app);
+                    this.checkSensors = new Views.DOMCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.document, app);
                     //app.FeedbackManager.registerClient(this.checkSensors);
                 }
 

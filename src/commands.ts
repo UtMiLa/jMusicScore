@@ -1,7 +1,7 @@
 ﻿module jMusicScore {
     export module Model {
 
-        export type ScoreCommand = Application.ICommand<IScore, JQuery>;
+        export type ScoreCommand = Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery>;
 
         export class ClearScoreCommand implements ScoreCommand {
             constructor(private args: any) { }
@@ -10,7 +10,7 @@
             */
 
             Execute(app: ScoreApplication.ScoreApplication) {
-                app.score.clear();
+                app.document.clear();
             }
         }
 
@@ -238,7 +238,7 @@
                     staff.title = this.args.title;
                 }
                 // staff order
-                ScoreElement.PlaceInOrder(app.score, staff, this.args.index);
+                ScoreElement.PlaceInOrder(app.document, staff, this.args.index);
             }
         }
 
@@ -254,10 +254,10 @@
 
             public Execute(app: ScoreApplication.ScoreApplication) {
                 var initClef = <Model.ClefDefinition>this.args.initClef;
-                var staff = app.score.addStaff(initClef);
+                var staff = app.document.addStaff(initClef);
                 staff.title = this.args.title;
                 staff.addVoice();
-                ScoreElement.PlaceInOrder(app.score, staff, this.args.index);
+                ScoreElement.PlaceInOrder(app.document, staff, this.args.index);
             }
         }
 
@@ -345,7 +345,7 @@
                 }
                 else {
                     // score meter
-                    app.score.setMeter(meter, absTime);
+                    app.document.setMeter(meter, absTime);
                 }
             }
         }
@@ -369,7 +369,7 @@
                 }
                 else {
                     // score key
-                    app.score.setKey(key, absTime);
+                    app.document.setKey(key, absTime);
                 }
             }
         }

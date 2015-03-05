@@ -121,7 +121,7 @@
             partStaves: Model.IStaff[];
         }
 
-        class MusicXmlReader implements Application.IReaderPlugIn<Model.ScoreElement, JQuery> {
+        class MusicXmlReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             private app: ScoreApplication.ScoreApplication;
 
             Init(app: ScoreApplication.ScoreApplication) {
@@ -453,7 +453,7 @@
                     var part = <Element>parts[i];
                     var partId = MusicXmlReader.getAttributeValue(part, 'id');
 
-                    var staff = this.app.score.addStaff(Model.ClefDefinition.clefG);
+                    var staff = this.app.document.addStaff(Model.ClefDefinition.clefG);
                     context.partStaves = [staff];
                     context.goToStart();
                     var absTimeLastBar = Model.AbsoluteTime.startTime;
@@ -474,7 +474,7 @@
                                 if (j === 1) {
                                     // Create offset meter in last bar
                                     var defi = <Model.RegularMeterDefinition>staffContext.meter.definition;
-                                    this.app.score.setMeter(new Model.OffsetMeterDefinition(defi.numerator, defi.denominator, context.absTime.Diff(absTimeLastBar)), absTimeLastBar);
+                                    this.app.document.setMeter(new Model.OffsetMeterDefinition(defi.numerator, defi.denominator, context.absTime.Diff(absTimeLastBar)), absTimeLastBar);
                                     staffContext = staff.getStaffContext(absTimeLastBar);
                                     nextBar = staffContext.meter.nextBar(absTimeLastBar);
                                 }
@@ -520,7 +520,7 @@
                                         if (context.clef[iClef + 1].line) clefLine = 6 - context.clef[iClef + 1].line;
                                         var clefDef = new Model.ClefDefinition(Model.ClefDefinition.ClefNameToType(clef), clefLine, clefTransposition);
                                         if (iClef >= context.partStaves.length) {
-                                            context.partStaves.push(this.app.score.addStaff(clefDef));
+                                            context.partStaves.push(this.app.document.addStaff(clefDef));
                                         }
                                         else {
                                             var oldClef = context.partStaves[iClef].getStaffContext(context.absTime).clef;
@@ -558,7 +558,7 @@
                                             beats: parseInt(MusicXmlReader.getChildValue(<Element>timeElms[0], "beats", "4")),
                                             beatType: parseInt(MusicXmlReader.getChildValue(<Element>timeElms[0], "beat-type", "4"))
                                         };
-                                        this.app.score.setMeter(new Model.RegularMeterDefinition(context.meter.beats, context.meter.beatType), context.absTime);
+                                        this.app.document.setMeter(new Model.RegularMeterDefinition(context.meter.beats, context.meter.beatType), context.absTime);
                                     }
                                     break;
                                 case "sound": break;
@@ -630,7 +630,7 @@
 
 
 
-        export class MusicXmlWriter implements Application.IWriterPlugIn<Model.ScoreElement, JQuery> {
+        export class MusicXmlWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor() {
             }
 
@@ -678,7 +678,7 @@
             private smallestDivision = 1;
 
             private findDivision() {
-                var events: Model.ITimedEvent[] = this.app.score.getEvents();
+                var events: Model.ITimedEvent[] = this.app.document.getEvents();
                 var commonDenominator: number = 1;
                 for (var i = 0; i < events.length; i++) {
                     commonDenominator *= events[i].absTime.denominator / Model.Rational.gcd(commonDenominator, events[i].absTime.denominator);
@@ -701,7 +701,7 @@
             private addPartList(scorePartwise: Element) {
                 var partList = this.addChildElement(scorePartwise, 'part-list');
                 
-                for (var i = 0; i < this.app.score.staffElements.length; i++) {
+                for (var i = 0; i < this.app.document.staffElements.length; i++) {
                     var part = this.addChildElement(partList, 'score-part');
                     part.setAttribute('id', 'P' + i);
                     
@@ -710,23 +710,23 @@
             }
 
             private addParts(scorePartwise: Element) {
-                for (var i = 0; i < this.app.score.staffElements.length; i++) {
+                for (var i = 0; i < this.app.document.staffElements.length; i++) {
                     var part = this.addChildElement(scorePartwise, 'part');
                     part.setAttribute('id', 'P' + i);
                     var name = this.addChildElement(part, 'part-name', 'Staff ' + i);
-                    this.addMeasures(part, this.app.score.staffElements[i]);
+                    this.addMeasures(part, this.app.document.staffElements[i]);
                 }
             }
 
             private addMeasures(part: Element, staffElement: Model.IStaff) {
                 var absTime = Model.AbsoluteTime.startTime;
-                for (var i = 0; i < this.app.score.bars.length; i++) {
-                    var bar = this.app.score.bars[i];
+                for (var i = 0; i < this.app.document.bars.length; i++) {
+                    var bar = this.app.document.bars[i];
                     var measure = this.addChildElement(part, 'measure');
                     measure.setAttribute('number', "" + (i + 1));
 
-                    var startTime = !i ? Model.AbsoluteTime.startTime : this.app.score.bars[i - 1].absTime;
-                    var endTime = i === this.app.score.bars.length - 1 ? Model.AbsoluteTime.Infinity : this.app.score.bars[i].absTime;
+                    var startTime = !i ? Model.AbsoluteTime.startTime : this.app.document.bars[i - 1].absTime;
+                    var endTime = i === this.app.document.bars.length - 1 ? Model.AbsoluteTime.Infinity : this.app.document.bars[i].absTime;
                     var events = staffElement.getEvents(startTime, endTime);
                     events.sort(Model.MeasureMap.compareEventsByVoice);
 

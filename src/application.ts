@@ -3,13 +3,13 @@ module jMusicScore {
     export module Application {
 
         /** Every external plugin to application must implement this interface */
-        export interface IPlugIn<DocumentType extends IAppDoc, ContainerType> {
-            Init(app: Application<DocumentType, ContainerType>): void;
+        export interface IPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
+            Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
             GetId(): string;
         }
 
         /** Interface for file readers (in varying formats) */
-        export interface IReaderPlugIn<DocumentType extends IAppDoc, ContainerType> extends IPlugIn<DocumentType, ContainerType> {
+        export interface IReaderPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> extends IPlugIn<DocumentType, StatusManager, ContainerType> {
             //Init(app: Application): void;
             Supports(type: string): boolean;
             GetExtension(type: string): string;
@@ -19,7 +19,7 @@ module jMusicScore {
         }
 
         /** Interface for file writers */
-        export interface IWriterPlugIn<DocumentType extends IAppDoc, ContainerType> extends IPlugIn<DocumentType, ContainerType> {
+        export interface IWriterPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> extends IPlugIn<DocumentType, StatusManager, ContainerType> {
             //Init(app: Application): void;
             Supports(type: string): boolean;
             GetExtension(type: string): string;
@@ -29,24 +29,24 @@ module jMusicScore {
         }
 
         /** Interface for commands. Every user action that changes data in the model must use Command objects. */
-        export interface ICommand<DocumentType extends IAppDoc, ContainerType> {
-            Execute(app: Application<DocumentType, ContainerType>): void;
+        export interface ICommand<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
+            Execute(app: Application<DocumentType, StatusManager, ContainerType>): void;
         }
 
         /** Interface for objects that check and refines the model after every change (like beam calculation) */
-        export interface IValidator<DocumentType extends IAppDoc, ContainerType> {
-            Validate(app: Application<DocumentType, ContainerType>): void;
+        export interface IValidator<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
+            Validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
         }
 
         /** Interface for objects that check and refines the user interface after every model change (like spacing and drawing) */
-        export interface IDesigner<DocumentType extends IAppDoc, ContainerType> {
-            Validate(app: Application<DocumentType, ContainerType>): void;
+        export interface IDesigner<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
+            Validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
         }
 
         /** Interface for pluggable event processors that can handle events */
-        export interface IEventProcessor<DocumentType extends IAppDoc, ContainerType> {
-            Init(app: Application<DocumentType, ContainerType>): void;
-            Exit(app: Application<DocumentType, ContainerType>): void;
+        export interface IEventProcessor<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
+            Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void;
 
             /*midinoteoff? (app: Application, event: Event): boolean;
             keypressed? (app: Application, event: Event): boolean;
@@ -55,9 +55,9 @@ module jMusicScore {
         }
 
         /** Interface for file managers that can load and save files in various file systems (remote or local) */
-        export interface IFileManager<DocumentType extends IAppDoc, ContainerType> {
-            Init(app: Application<DocumentType, ContainerType>): void;
-            Exit(app: Application<DocumentType, ContainerType>): void;
+        export interface IFileManager<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
+            Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void;
 
             getFileList(handler: (data: string[]) => void): void;
             loadFile(name: string, handler: (data: string, name: string) => void): void;
@@ -97,20 +97,7 @@ module jMusicScore {
 
         /** Status manager registers input status (pressed keys, selected buttons etc) and informs Feedback manager about changes. An Application has one Status manager. */
         export interface IStatusManager {
-            currentNote: Model.INote;
-            currentNotehead: Model.INotehead;
-            currentVoice: Model.IVoice;
-            currentStaff: Model.IStaff;
-            currentPitch: Model.Pitch;
-            currentTuplet: Model.TupletDef;
-            insertPoint: Model.HorizPosition;
-            mouseOverElement: Model.IMusicElement;
-            rest: boolean;
-            dots: number;
-            grace: boolean;
-            pressNoteKey(pitch: Model.Pitch): void;
-            releaseNoteKey(pitch: Model.Pitch): void;
-            notesPressed: Model.Pitch[];
+            setFeedbackManager(f: IFeedbackManager): void;
         }
 
         class FeedbackManager implements IFeedbackManager {
@@ -133,209 +120,60 @@ module jMusicScore {
             }
         }
 
-        class StatusManager implements IStatusManager {
-            constructor(private feedbackManager: IFeedbackManager) { }
-
-            private _currentPitch: Model.Pitch;
-            private _currentNote: Model.INote;
-            private _currentNotehead: Model.INotehead;
-            private _currentVoice: Model.IVoice;
-            private _currentStaff: Model.IStaff;
-            private _insertPoint: Model.HorizPosition;
-            private _selectionStart: Model.AbsoluteTime; // todo: property
-            private _selectionEnd: Model.AbsoluteTime; // todo: property
-            private _selectionStartStaff: Model.IStaff; // todo: property
-            private _selectionEndStaff: Model.IStaff; // todo: property
-            private _rest: boolean = false;
-            private _dots: number = 0;
-            private _grace: boolean = false;
-            private _currentTuplet: Model.TupletDef;
-            private _mouseOverElement: Model.IMusicElement;
-
-            private changed(key: string, val: any) {
-                if (this.feedbackManager) {
-                    this.feedbackManager.changed(this, key, val);
-                }
-            }
-
-            public get currentPitch(): Model.Pitch { return this._currentPitch; }
-            public set currentPitch(v: Model.Pitch) {
-                if (this._currentPitch !== v) {
-                    this._currentPitch = v;
-                    this.changed("currentPitch", v);
-                    if (v && this.currentNote && this.currentNote.matchesPitch(v, true)) {
-                        this.currentNote.withHeads((head: Model.INotehead) => {
-                            if (head.pitch.pitch === v.pitch) {
-                                this.currentNotehead = head;
-                                return;
-                            }
-                        });                        
-                    }
-                    else this.currentNotehead = undefined;
-                }
-            }
-            public get currentNote(): Model.INote { return this._currentNote; }
-            public set currentNote(v: Model.INote) {
-                if (this._currentNote !== v) {
-                    this._currentNote = v;
-                    if (v) {
-                        this.currentVoice = v.parent;
-                    }
-                    this.changed("currentNote", v);
-                    if (v && this.currentPitch && v.matchesPitch(this.currentPitch, true)) {
-                        v.withHeads((head: Model.INotehead) => {
-                            if (head.pitch.pitch === this.currentPitch.pitch) {
-                                this.currentNotehead = head;
-                                return;
-                            }
-                        });
-                    }
-                    else this.currentNotehead = undefined;
-                }
-            }
-            public get currentNotehead(): Model.INotehead { return this._currentNotehead; }
-            public set currentNotehead(v: Model.INotehead) {
-                if (this._currentNotehead !== v) {
-                    this._currentNotehead = v;
-                    this.changed("currentNotehead", v);
-                }
-            }
-            public get currentVoice(): Model.IVoice { return this._currentVoice; }
-            public set currentVoice(v: Model.IVoice) {
-                if (this._currentVoice !== v) {
-                    this._currentVoice = v;
-                    this.changed("currentVoice", v);
-                }
-            }
-            public get currentStaff(): Model.IStaff { return this._currentStaff; }
-            public set currentStaff(v: Model.IStaff) {
-                if (this._currentStaff !== v) {
-                    this._currentStaff = v;
-                    this.changed("currentStaff", v);
-                }
-            }
-            public get currentTuplet(): Model.TupletDef { return this._currentTuplet; }
-            public set currentTuplet(v: Model.TupletDef) { 
-                if (!this._currentTuplet || !v || !this._currentTuplet.Eq(v)) {
-                    this._currentTuplet = v;
-                    this.changed("currentTuplet", v);
-                }
-            }
-            public get insertPoint(): Model.HorizPosition { return this._insertPoint; }
-            public set insertPoint(v: Model.HorizPosition) {
-                if (this._insertPoint !== v) {
-                    this._insertPoint = v;
-                    this.changed("insertPoint", v);
-                }
-            }
-
-            public get mouseOverElement(): Model.IMusicElement {
-                return this._mouseOverElement;
-            }
-            public set mouseOverElement(v: Model.IMusicElement) {
-                if (this._mouseOverElement !== v) {
-                    if (this._mouseOverElement) this.changed("mouseOutElement", this._mouseOverElement);
-                    this._mouseOverElement = v;
-                    if (v) this.changed("mouseOverElement", v);
-                }
-            }
-
-            public get rest(): boolean { return this._rest; }
-            public set rest(v: boolean) {
-                if (this._rest!== v) {
-                    this._rest = v;
-                    this.changed("rest", v);
-                }
-            }
-            public get dots(): number { return this._dots; }
-            public set dots(v: number) {
-                if (this._dots !== v) {
-                    this._dots = v;
-                    this.changed("dots", v);
-                }
-            }
-            public get grace(): boolean { return this._grace; }
-            public set grace(v: boolean) {
-                if (this._grace !== v) {
-                    this._grace = v;
-                    this.changed("grace", v);
-                }
-            }
-            private _notesPressed: Model.Pitch[] = [];
-            private _noteValSelected: Model.TimeSpan;
-
-            public get notesPressed(): Model.Pitch[] { return this._notesPressed; }
-            public pressNoteKey(pitch: Model.Pitch) {
-                this._notesPressed.push(pitch);
-                this.changed("pressKey", pitch);
-            }
-            public releaseNoteKey(pitch: Model.Pitch) {
-                for (var i = 0; i < this._notesPressed.length; i++) {
-                    if (this._notesPressed[i].equals(pitch)) {
-                        this._notesPressed.splice(i, 1);
-                        this.changed("releaseKey", pitch);
-                    }
-                }
-            }
-        }
-
         export interface IAppDoc {
             clear(): void;
         }
 
-        // todo: score -> document
-        // todo: map -> ?
-        // todo: Status -> abstract
         /** Application object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
-        export class Application<DocumentType extends IAppDoc, ContainerType> {
-            constructor(public container: ContainerType, score: DocumentType) {
-                this.score = score;
-                //this.map = new Model.MeasureMap(this.score);
+        export class Application<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
+            constructor(public container: ContainerType, score: DocumentType, status: StatusManager) {
+                this.document = score;
+                this.status = status;
+                this.status.setFeedbackManager(this.feedbackManager);
             }
 
-            public score: DocumentType;
-            //public map: Model.MeasureMap;
-            private plugins: IPlugIn<DocumentType, ContainerType>[] = [];
-            private readers: IReaderPlugIn<DocumentType, ContainerType>[] = [];
-            private writers: IWriterPlugIn<DocumentType, ContainerType>[] = [];
-            private fileManagers: IFileManager<DocumentType, ContainerType>[] = [];
-            private validators: IValidator<DocumentType, ContainerType>[] = [];
-            private designers: IDesigner<DocumentType, ContainerType>[] = [];
-            private editors: IDesigner<DocumentType, ContainerType>[] = [];
+            public document: DocumentType;
+            private plugins: IPlugIn<DocumentType, StatusManager, ContainerType>[] = [];
+            private readers: IReaderPlugIn<DocumentType, StatusManager, ContainerType>[] = [];
+            private writers: IWriterPlugIn<DocumentType, StatusManager, ContainerType>[] = [];
+            private fileManagers: IFileManager<DocumentType, StatusManager, ContainerType>[] = [];
+            private validators: IValidator<DocumentType, StatusManager, ContainerType>[] = [];
+            private designers: IDesigner<DocumentType, StatusManager, ContainerType>[] = [];
+            private editors: IDesigner<DocumentType, StatusManager, ContainerType>[] = [];
             private feedbackManager: IFeedbackManager = new FeedbackManager();
-            private status: IStatusManager = new StatusManager(this.feedbackManager);
+            private status: StatusManager;
 
-            public get Status(): IStatusManager {
+            public get Status(): StatusManager {
                 return this.status;
             }
             public get FeedbackManager(): IFeedbackManager { return this.feedbackManager; }
 
-            public AddPlugin(plugin: IPlugIn<DocumentType, ContainerType>) {
+            public AddPlugin(plugin: IPlugIn<DocumentType, StatusManager, ContainerType>) {
                 this.plugins.push(plugin);
                 plugin.Init(this);
             }
 
-            public AddReader(reader: IReaderPlugIn<DocumentType, ContainerType>) {
+            public AddReader(reader: IReaderPlugIn<DocumentType, StatusManager, ContainerType>) {
                 this.readers.push(reader);
                 reader.Init(this);
             }
 
-            public AddWriter(writer: IWriterPlugIn<DocumentType, ContainerType>) {
+            public AddWriter(writer: IWriterPlugIn<DocumentType, StatusManager, ContainerType>) {
                 this.writers.push(writer);
                 writer.Init(this);
             }
 
-            public AddFileManager(fileManager: IFileManager<DocumentType, ContainerType>) {
+            public AddFileManager(fileManager: IFileManager<DocumentType, StatusManager, ContainerType>) {
                 this.fileManagers.push(fileManager);
                 fileManager.Init(this);
             }
 
-            public AddValidator(validator: IValidator<DocumentType, ContainerType>) {
+            public AddValidator(validator: IValidator<DocumentType, StatusManager, ContainerType>) {
                 this.validators.push(validator);
                 validator.Validate(this);
             }
 
-            public AddDesigner(designer: IDesigner<DocumentType, ContainerType>) {
+            public AddDesigner(designer: IDesigner<DocumentType, StatusManager, ContainerType>) {
                 this.designers.push(designer);
                 designer.Validate(this);
             }
@@ -396,7 +234,7 @@ module jMusicScore {
                 throw "File manager not found: " + fileManager;
             }
 
-            public Save(name: string, fileManager: IFileManager<DocumentType, ContainerType>, type: string) {
+            public Save(name: string, fileManager: IFileManager<DocumentType, StatusManager, ContainerType>, type: string) {
                 /*for (var i = 0; i < this.writers.length; i++) {
                     if (this.writers[i].Supports(type)) {
                         var writer = this.writers[i];
@@ -432,14 +270,14 @@ module jMusicScore {
                 throw "File manager not found: " + fileManager;
             }
 
-            public Load(name: string, fileManager: IFileManager<DocumentType, ContainerType>, type: string) {
+            public Load(name: string, fileManager: IFileManager<DocumentType, StatusManager, ContainerType>, type: string) {
                 var app = this;
                 this.ProcessEvent("clickvoice", <any>{ 'data': { voice: null } });
                 for (var i = 0; i < this.readers.length; i++) {
                     if (this.readers[i].Supports(type) || (type === '*' && name.match(this.readers[i].GetExtension(type) + "$"))) {
                         var reader = this.readers[i];
                         var data = fileManager.loadFile(name, function (data: string, name: string) {
-                            var score = app.score;
+                            var score = app.document;
                             score.clear();
 
                             var a = reader.Load(data);
@@ -458,7 +296,7 @@ module jMusicScore {
                 this.ProcessEvent("clickvoice", <any>{ 'data': { voice: null } });
                 for (var i = 0; i < this.readers.length; i++) {
                     if (this.readers[i].Supports(type)) {
-                        var score = this.score;
+                        var score = this.document;
                         score.clear();
 
                         var a = this.readers[i].Load(data);
@@ -471,14 +309,14 @@ module jMusicScore {
                 throw "Input format not supported: " + type;
             }
 
-            public GetPlugin(id: string): IPlugIn<DocumentType, ContainerType> {
+            public GetPlugin(id: string): IPlugIn<DocumentType, StatusManager, ContainerType> {
                 for (var i = 0; i < this.plugins.length; i++) {
                     if (this.plugins[i].GetId() === id) return this.plugins[i];
                 }
                 return null;
             }
 
-            public ExecuteCommand(command: ICommand<DocumentType, ContainerType>) {
+            public ExecuteCommand(command: ICommand<DocumentType, StatusManager, ContainerType>) {
                 command.Execute(this);
                 //this.ExecuteEventQueue();
                 this.FixModel();
@@ -510,14 +348,14 @@ module jMusicScore {
                 }
             }
 
-            private eventProcessors: IEventProcessor<DocumentType, ContainerType>[] = [];
+            private eventProcessors: IEventProcessor<DocumentType, StatusManager, ContainerType>[] = [];
 
-            public RegisterEventProcessor(eventProc: IEventProcessor<DocumentType, ContainerType>) {
+            public RegisterEventProcessor(eventProc: IEventProcessor<DocumentType, StatusManager, ContainerType>) {
                 this.eventProcessors.push(eventProc);
                 eventProc.Init(this);
             }
 
-            public UnregisterEventProcessor(eventProc: IEventProcessor<DocumentType, ContainerType>) {
+            public UnregisterEventProcessor(eventProc: IEventProcessor<DocumentType, StatusManager, ContainerType>) {
                 var i = this.eventProcessors.indexOf(eventProc);
                 if (i >= 0) {
                     this.eventProcessors.splice(i, 1);
@@ -552,9 +390,161 @@ module jMusicScore {
         }*/
     }
     export module ScoreApplication {
-        export type ScoreApplication = Application.Application<Model.IScore, JQuery>;
-        export type ScorePlugin = Application.IPlugIn<Model.IScore, JQuery>;
-        export type ScoreEventProcessor = Application.IEventProcessor<Model.IScore, JQuery>;
-        export type ScoreDesigner = Application.IDesigner<Model.IScore, JQuery>;
+        export type ScoreApplication = Application.Application<Model.IScore, ScoreStatusManager, JQuery>;
+        export type ScorePlugin = Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery>;
+        export type ScoreEventProcessor = Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery>;
+        export type ScoreDesigner = Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery>;
+
+        export class ScoreStatusManager implements Application.IStatusManager {
+            constructor() { }
+
+            private feedbackManager: Application.IFeedbackManager;
+
+            public setFeedbackManager(f: Application.IFeedbackManager): void {
+                this.feedbackManager = f;
+            }
+
+            private _currentPitch: Model.Pitch;
+            private _currentNote: Model.INote;
+            private _currentNotehead: Model.INotehead;
+            private _currentVoice: Model.IVoice;
+            private _currentStaff: Model.IStaff;
+            private _insertPoint: Model.HorizPosition;
+            private _selectionStart: Model.AbsoluteTime; // todo: property
+            private _selectionEnd: Model.AbsoluteTime; // todo: property
+            private _selectionStartStaff: Model.IStaff; // todo: property
+            private _selectionEndStaff: Model.IStaff; // todo: property
+            private _rest: boolean = false;
+            private _dots: number = 0;
+            private _grace: boolean = false;
+            private _currentTuplet: Model.TupletDef;
+            private _mouseOverElement: Model.IMusicElement;
+
+            private changed(key: string, val: any) {
+                if (this.feedbackManager) {
+                    this.feedbackManager.changed(this, key, val);
+                }
+            }
+
+            public get currentPitch(): Model.Pitch { return this._currentPitch; }
+            public set currentPitch(v: Model.Pitch) {
+                if (this._currentPitch !== v) {
+                    this._currentPitch = v;
+                    this.changed("currentPitch", v);
+                    if (v && this.currentNote && this.currentNote.matchesPitch(v, true)) {
+                        this.currentNote.withHeads((head: Model.INotehead) => {
+                            if (head.pitch.pitch === v.pitch) {
+                                this.currentNotehead = head;
+                                return;
+                            }
+                        });
+                    }
+                    else this.currentNotehead = undefined;
+                }
+            }
+            public get currentNote(): Model.INote { return this._currentNote; }
+            public set currentNote(v: Model.INote) {
+                if (this._currentNote !== v) {
+                    this._currentNote = v;
+                    if (v) {
+                        this.currentVoice = v.parent;
+                    }
+                    this.changed("currentNote", v);
+                    if (v && this.currentPitch && v.matchesPitch(this.currentPitch, true)) {
+                        v.withHeads((head: Model.INotehead) => {
+                            if (head.pitch.pitch === this.currentPitch.pitch) {
+                                this.currentNotehead = head;
+                                return;
+                            }
+                        });
+                    }
+                    else this.currentNotehead = undefined;
+                }
+            }
+            public get currentNotehead(): Model.INotehead { return this._currentNotehead; }
+            public set currentNotehead(v: Model.INotehead) {
+                if (this._currentNotehead !== v) {
+                    this._currentNotehead = v;
+                    this.changed("currentNotehead", v);
+                }
+            }
+            public get currentVoice(): Model.IVoice { return this._currentVoice; }
+            public set currentVoice(v: Model.IVoice) {
+                if (this._currentVoice !== v) {
+                    this._currentVoice = v;
+                    this.changed("currentVoice", v);
+                }
+            }
+            public get currentStaff(): Model.IStaff { return this._currentStaff; }
+            public set currentStaff(v: Model.IStaff) {
+                if (this._currentStaff !== v) {
+                    this._currentStaff = v;
+                    this.changed("currentStaff", v);
+                }
+            }
+            public get currentTuplet(): Model.TupletDef { return this._currentTuplet; }
+            public set currentTuplet(v: Model.TupletDef) {
+                if (!this._currentTuplet || !v || !this._currentTuplet.Eq(v)) {
+                    this._currentTuplet = v;
+                    this.changed("currentTuplet", v);
+                }
+            }
+            public get insertPoint(): Model.HorizPosition { return this._insertPoint; }
+            public set insertPoint(v: Model.HorizPosition) {
+                if (this._insertPoint !== v) {
+                    this._insertPoint = v;
+                    this.changed("insertPoint", v);
+                }
+            }
+
+            public get mouseOverElement(): Model.IMusicElement {
+                return this._mouseOverElement;
+            }
+            public set mouseOverElement(v: Model.IMusicElement) {
+                if (this._mouseOverElement !== v) {
+                    if (this._mouseOverElement) this.changed("mouseOutElement", this._mouseOverElement);
+                    this._mouseOverElement = v;
+                    if (v) this.changed("mouseOverElement", v);
+                }
+            }
+
+            public get rest(): boolean { return this._rest; }
+            public set rest(v: boolean) {
+                if (this._rest !== v) {
+                    this._rest = v;
+                    this.changed("rest", v);
+                }
+            }
+            public get dots(): number { return this._dots; }
+            public set dots(v: number) {
+                if (this._dots !== v) {
+                    this._dots = v;
+                    this.changed("dots", v);
+                }
+            }
+            public get grace(): boolean { return this._grace; }
+            public set grace(v: boolean) {
+                if (this._grace !== v) {
+                    this._grace = v;
+                    this.changed("grace", v);
+                }
+            }
+            private _notesPressed: Model.Pitch[] = [];
+            private _noteValSelected: Model.TimeSpan;
+
+            public get notesPressed(): Model.Pitch[] { return this._notesPressed; }
+            public pressNoteKey(pitch: Model.Pitch) {
+                this._notesPressed.push(pitch);
+                this.changed("pressKey", pitch);
+            }
+            public releaseNoteKey(pitch: Model.Pitch) {
+                for (var i = 0; i < this._notesPressed.length; i++) {
+                    if (this._notesPressed[i].equals(pitch)) {
+                        this._notesPressed.splice(i, 1);
+                        this.changed("releaseKey", pitch);
+                    }
+                }
+            }
+        }
     }
 }

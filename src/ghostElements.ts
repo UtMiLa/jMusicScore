@@ -49,17 +49,17 @@
 
             public Validate(app: ScoreApplication.ScoreApplication) {
 
-                app.score.withStaves((staff: Model.IStaff, index: number): void => {
+                app.document.withStaves((staff: Model.IStaff, index: number): void => {
 
                     // First time:
                     if (!staff.meterElements.length) {
-                        app.score.withMeters((meter: Model.IMeter, index: number) => {
+                        app.document.withMeters((meter: Model.IMeter, index: number) => {
                             this.addGhostMeter(staff, meter);
                         });
                     }
 
                     // todo: Register changes:
-                    app.score.withMeters((scoreMeter: Model.IMeter, index: number) => {
+                    app.document.withMeters((scoreMeter: Model.IMeter, index: number) => {
                         // tjek om der er ghostMeter til denne kombination af meter og staff
                         var found = false;
                         staff.withMeters((staffMeter: Model.IMeter, index: number) => {
@@ -77,7 +77,7 @@
                         // tjek om meterElm er ghostMeter og mangler tilhørende score.meter
                         if ((<any>staffMeter).originElement) {
                             var origin = (<any>staffMeter).originElement;
-                            if (app.score.meterElements.indexOf(origin) === -1) {
+                            if (app.document.meterElements.indexOf(origin) === -1) {
                                 // remove ghost
                                 staff.removeChild(staffMeter, staff.meterElements);
                             }

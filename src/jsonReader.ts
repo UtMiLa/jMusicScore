@@ -1,7 +1,7 @@
 module jMusicScore {
     export module Model {
 
-        class JSONReader implements Application.IReaderPlugIn<Model.ScoreElement, JQuery> {
+        class JSONReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             Init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
             }
@@ -38,14 +38,14 @@ module jMusicScore {
                 if (typeof (data) === "string") {
                     data = JSON.parse(data);
                 }
-                var score = this.app.score;
+                var score = this.app.document;
                 while (score.staffElements.length)
                     score.removeChild(score.staffElements[0], score.staffElements);
                 /*if (data.staffElements) {
                     this.updateElement(this.app.score, data); // old json format - deprecated
                 }
                 else*/ {
-                    this.app.score = <Model.IScore>Model.MusicElementFactory.RecreateElement(null, data); // memento format
+                    this.app.document = <Model.IScore>Model.MusicElementFactory.RecreateElement(null, data); // memento format
                 }
             }
             /*
@@ -133,7 +133,7 @@ module jMusicScore {
             }
         }
 
-        class JSONWriter implements Application.IWriterPlugIn<Model.ScoreElement, JQuery> {
+        class JSONWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             private app: ScoreApplication.ScoreApplication;
 
             Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
@@ -159,7 +159,7 @@ module jMusicScore {
 
             public Save() {
                 var seen: any[] = [];
-                var text = JSON.stringify(this.app.score.getMemento());
+                var text = JSON.stringify(this.app.document.getMemento());
                 /*var text = JSON.stringify(this.app.score, function (key: string, val: any) {
                     if (typeof val == "object") {
                         if (key == "outputViews") return undefined;

@@ -4,14 +4,14 @@
         class FillEmptySpaceValidator implements Model.ScoreValidator {
             public Validate(app: ScoreApplication.ScoreApplication) {
                 var scoreDuration: Model.AbsoluteTime;
-                if (app.score.bars.length) {
-                    var lastBar = app.score.bars[app.score.bars.length - 1];
+                if (app.document.bars.length) {
+                    var lastBar = app.document.bars[app.document.bars.length - 1];
                     scoreDuration = lastBar.absTime;
                 }
                 else {
                     scoreDuration = Model.AbsoluteTime.startTime;
                 }
-                app.score.withVoices((voice: Model.IVoice) => {
+                app.document.withVoices((voice: Model.IVoice) => {
                     // Fill voice with placeholders until last bar
                     var voiceLength = voice.getEndTime();
                     while (scoreDuration.Gt(voiceLength)) {

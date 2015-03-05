@@ -1,5 +1,8 @@
 ﻿module jMusicScore {
-    var app = <ScoreApplication.ScoreApplication>new Application.Application<Model.ScoreElement, JQuery>($("#appContainer"), new Model.ScoreElement(null));
+    var app = <ScoreApplication.ScoreApplication>new Application.Application<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(
+        $("#appContainer"),
+        new Model.ScoreElement(null),
+        new ScoreApplication.ScoreStatusManager());
 
     /* JSONReader */
     app.AddPlugin(new MusicXml.MusicXmlPlugin());
@@ -132,26 +135,26 @@
         //app.AddPlugin(new Menus.QuickMenuPlugin("TestShowCanvasMenu", "Show on Canvas (gl)", "TestMenu", "Test", function () { CanvasView.ShowExperimentalCanvas(app.score); }));
         //    app.AddPlugin(new Menus.QuickMenuPlugin("TestShowCanvasMenu", "Show on Canvas", "TestMenu", "Test", function () { CanvasView.ShowExperimentalCanvas1(app.score); }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function () {
-            var note1 = app.score.staffElements[0].voiceElements[0].noteElements[1];
-            var note2 = app.score.staffElements[0].voiceElements[0].noteElements[4];
+            var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
+            var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
             note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.Diff(note1.absTime), Model.LongDecorationType.slur));
             app.ExecuteCommand({
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function () {
-            var note1 = app.score.staffElements[0].voiceElements[0].noteElements[1];
-            var note2 = app.score.staffElements[0].voiceElements[0].noteElements[4];
+            var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
+            var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
             note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.Diff(note1.absTime), Model.LongDecorationType.cresc));
-            var note3 = app.score.staffElements[0].voiceElements[0].noteElements[5];
-            var note4 = app.score.staffElements[0].voiceElements[0].noteElements[8];
+            var note3 = app.document.staffElements[0].voiceElements[0].noteElements[5];
+            var note4 = app.document.staffElements[0].voiceElements[0].noteElements[8];
             note3.addChild(note3.longDecorationElements, new Model.NoteLongDecorationElement(note3, note4.absTime.Diff(note3.absTime), Model.LongDecorationType.decresc));
             app.ExecuteCommand({
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function () {
-            var staff1 = app.score.staffElements[0];
+            var staff1 = app.document.staffElements[0];
             staff1.setStaffExpression("Allegro", Model.AbsoluteTime.startTime);
             app.ExecuteCommand({
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
@@ -166,7 +169,7 @@
                     dots: 0,
                     grace: false,
                     pitches: [new Model.Pitch(-10, '')],
-                    voice: app.score.staffElements[1].voiceElements[0],
+                    voice: app.document.staffElements[1].voiceElements[0],
                     beforeNote: null,
                     absTime: Model.AbsoluteTime.startTime,
                     tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
@@ -180,7 +183,7 @@
                     dots: 0,
                     grace: false,
                     pitches: [new Model.Pitch(-9, '')],
-                    voice: app.score.staffElements[1].voiceElements[0],
+                    voice: app.document.staffElements[1].voiceElements[0],
                     beforeNote: null,
                     absTime: Model.AbsoluteTime.startTime,
                     tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
@@ -194,7 +197,7 @@
                     dots: 0,
                     grace: false,
                     pitches: [new Model.Pitch(-8, '')],
-                    voice: app.score.staffElements[1].voiceElements[0],
+                    voice: app.document.staffElements[1].voiceElements[0],
                     beforeNote: null,
                     absTime: Model.AbsoluteTime.startTime,
                     tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
@@ -203,17 +206,17 @@
         }));
 
         app.AddPlugin(new Menus.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function () {
-            app.score.withBars((bar: Model.IBar, index: number) => { app.score.removeChild(bar); });
+            app.document.withBars((bar: Model.IBar, index: number) => { app.document.removeChild(bar); });
             app.ExecuteCommand({
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("MementoTextMenu", "Show memento", "TestMenu", "Test", function () {
-            var memento = app.score.getMemento(true);
+            var memento = app.document.getMemento(true);
             $('#events').empty().text(JSON.stringify(memento));
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function () {
-            app.score.withVoices(function (voice, index) {
+            app.document.withVoices(function (voice, index) {
                 voice.withNotes((note: Model.INote) => {
                     var staff = voice.parent;
                     var staffContext = staff.getStaffContext(note.absTime);
@@ -228,7 +231,7 @@
             });
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function () {
-            app.score = <Model.IScore>Model.MusicElementFactory.RecreateElement(null, app.score.getMemento());
+            app.document = <Model.IScore>Model.MusicElementFactory.RecreateElement(null, app.document.getMemento());
             app.ExecuteCommand({
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });

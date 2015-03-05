@@ -125,7 +125,7 @@
                         okFunction: function () { },
                         cancelFunction: function () { },
                         initFunction: function () {
-                            var score = app.score;
+                            var score = app.document;
 
                             $('#midiIn').empty().append('<option value = "" > Not connected </option >');
 

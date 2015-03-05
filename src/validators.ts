@@ -1,17 +1,17 @@
 ﻿module jMusicScore {
     export module Model {
-        export type ScoreValidator = Application.IValidator<Model.IScore, JQuery>;
+        export type ScoreValidator = Application.IValidator<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>;
 
         export class UpdateBarsValidator implements ScoreValidator {
             public Validate(app: ScoreApplication.ScoreApplication) {
-                var score = app.score;
+                var score = app.document;
                 var maxTime = AbsoluteTime.startTime;
 
-                app.score.withBars((bar: IBar) => {
+                app.document.withBars((bar: IBar) => {
                     bar.setProperty("updating", true);
                 });
 
-                app.score.withStaves((staff: IStaff): void => {
+                app.document.withStaves((staff: IStaff): void => {
                     staff.withVoices((voice: IVoice): void => {
                         voice.withNotes((note: INote): void => {
                             if (note.absTime.Add(note.timeVal).Gt(maxTime)) maxTime = note.absTime.Add(note.timeVal);
@@ -31,7 +31,7 @@
                     while (toTime.Gt(barTime)) {
                         barTime = score.meterElements[iMeter].nextBar(barTime);
 
-                        var bar = app.score.findBar(barTime);
+                        var bar = app.document.findBar(barTime);
 
                         if (bar) {
                             //score.bars[iBar].absTime = barTime;
@@ -44,7 +44,7 @@
                     }
                 });
 
-                app.score.removeBars((bar: IBar) => {
+                app.document.removeBars((bar: IBar) => {
                     return bar.getProperty("updating");
                 });
             }
@@ -52,7 +52,7 @@
 
         export class CreateTimelineValidator implements ScoreValidator {
             public Validate(app: ScoreApplication.ScoreApplication) {
-                var score = app.score;
+                var score = app.document;
                 //score.updateBars();
                 var events: ITimedEvent[] = [];
                 score.withStaves((staff: IStaff) => {
@@ -93,8 +93,8 @@
                 var pitchClassChanges: string[] = [];
 
                 // for each staff:
-                var scoreEvents: ITimedEvent[] = app.score.getEvents(true);
-                app.score.withStaves((staff: IStaff, index: number): void => {
+                var scoreEvents: ITimedEvent[] = app.document.getEvents(true);
+                app.document.withStaves((staff: IStaff, index: number): void => {
                     // get events (bar lines + notes + keys changes) sorted by absTime from all voices
                     var events = staff.getEvents();
                     events = events.concat(scoreEvents);
@@ -166,7 +166,7 @@
 
         export class JoinNotesValidator implements ScoreValidator {
             public Validate(app: ScoreApplication.ScoreApplication) {
-                app.score.withStaves((staff: IStaff, index: number): void => {
+                app.document.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices((voice: IVoice, index: number): void => {
                         voice.withNotes((note: INote, index: number): void => {
                             if (note.getProperty('autojoin')) {
@@ -236,7 +236,7 @@
             }
 
             public Validate(app: ScoreApplication.ScoreApplication) {
-                app.score.withStaves((staff: IStaff, index: number): void => {
+                app.document.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices((voice: IVoice, index: number): void => {
                         voice.withNotes((note: INote, index: number): void => {
                             var staffContext = staff.getStaffContext(note.absTime);
@@ -294,7 +294,7 @@
 
         export class BeamValidator implements ScoreValidator {
             public Validate(app: ScoreApplication.ScoreApplication) {
-                app.score.withStaves((staff: Model.IStaff) => {
+                app.document.withStaves((staff: Model.IStaff) => {
                     staff.withVoices((voice: Model.IVoice) => {
                         this.ValidateVoice(voice);
                     });
@@ -490,7 +490,7 @@
 
         export class TieValidator implements ScoreValidator {
             public Validate(app: ScoreApplication.ScoreApplication) {
-                app.score.withVoices((voice: IVoice, index: number) => {
+                app.document.withVoices((voice: IVoice, index: number) => {
                     this.ValidateVoice(voice);
                 });
             }

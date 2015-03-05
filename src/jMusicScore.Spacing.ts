@@ -983,7 +983,7 @@
             }
 
             public Validate(app: ScoreApplication.ScoreApplication) {
-                var score = app.score;
+                var score = app.document;
 
                 this.CheckSpacingInfo(score); // create displayData and spacingInfo for all elements
                 this.CalculateSizes(score); // calculate metrics

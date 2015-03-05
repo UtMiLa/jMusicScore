@@ -523,7 +523,7 @@ module jMusicScore {
                         okFunction: function () { },
                         cancelFunction: function () { },
                         initFunction: function () {
-                            var score = app.score;
+                            var score = app.document;
 
                             $('#Staves').empty();
                             score.withStaves((staff: Model.IStaff, index: number) => {
