@@ -1,13 +1,15 @@
 ﻿module jMusicScore {
     export module Model {
 
-        export class ClearScoreCommand implements Application.ICommand {
+        export type ScoreCommand = Application.ICommand<IScore, JQuery>;
+
+        export class ClearScoreCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
             */
 
-            Execute(app: Application.Application) {
+            Execute(app: ScoreApplication.ScoreApplication) {
                 app.score.clear();
             }
         }
@@ -24,12 +26,12 @@
             beforeNote?: INote;
             tuplet?: TupletDef;
         }
-        export class AddNoteCommand implements Application.ICommand {
+        export class AddNoteCommand implements ScoreCommand {
             constructor(private args: AddNoteArgs) { }
 
             // todo: fjern absTime eller beforeNote
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var note = Music.AddNote(this.args.voice, this.args.rest ? NoteType.rest : NoteType.note, this.args.absTime, 'n' + this.args.noteName, this.args.noteTime,
                     this.args.beforeNote, true, this.args.dots, this.args.tuplet);
                 if (this.args.grace) note.graceType = "normal";
@@ -43,30 +45,30 @@
         export interface IDeleteNoteArgs {
             note: INote;
         }
-        export class DeleteNoteCommand implements Application.ICommand {
+        export class DeleteNoteCommand implements ScoreCommand {
             constructor(private args: IDeleteNoteArgs) { }
             
-            Execute(app: Application.Application) {
+            Execute(app: ScoreApplication.ScoreApplication) {
                 var voice = this.args.note.parent;
                 voice.removeChild(this.args.note);
             }
         }
 
-        export class DeleteNoteheadCommand implements Application.ICommand {
+        export class DeleteNoteheadCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
             head
             */
 
-            Execute(app: Application.Application) {
+            Execute(app: ScoreApplication.ScoreApplication) {
                 var head = <Model.INotehead>this.args.head;
                 var note = head.parent;
                 note.removeChild(head);
             }
         }
 
-        export class SetVoiceStemDirectionCommand implements Application.ICommand {
+        export class SetVoiceStemDirectionCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -74,14 +76,14 @@
             direction
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var direction = this.args.direction;
                 var voice = <IVoice>this.args.voice;
                 voice.setStemDirection(<number>direction);                
             }
         }
 
-        export class SetNoteStemDirectionCommand implements Application.ICommand {
+        export class SetNoteStemDirectionCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -89,7 +91,7 @@
             direction ['UP','DOWN','FREE']
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var direction = this.args.direction;
                 var note = <INote>this.args.note;
                 if (typeof (direction) === "number") {
@@ -114,10 +116,10 @@
             dots: number;
             tuplet?: TupletDef;
         }
-        export class SetNoteDurationCommand implements Application.ICommand {
+        export class SetNoteDurationCommand implements ScoreCommand {
             constructor(private args: NoteDurationArgs) { }
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var note = this.args.note;
                 note.noteId = this.args.noteId;
                 note.timeVal = this.args.timeVal;
@@ -127,7 +129,7 @@
             }
         }
 
-        export class AddNoteheadCommand implements Application.ICommand {
+        export class AddNoteheadCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -135,7 +137,7 @@
             pitch (Value)
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var pitch = <Pitch>this.args.pitch;
                 var note = <INote>this.args.note;
                 note.setRest(false);
@@ -143,14 +145,14 @@
             }
         }
 
-        export class RemoveNoteheadCommand implements Application.ICommand {
+        export class RemoveNoteheadCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
             head (Element)
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var head = <INotehead>this.args.head;
                 var note = head.parent;
                 var voice = note.parent;
@@ -172,16 +174,16 @@
             head: INotehead;
             pitch: Pitch;
         }
-        export class SetPitchCommand implements Application.ICommand {
+        export class SetPitchCommand implements ScoreCommand {
             constructor(private args: ISetPitchCommand) { }
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 this.args.head.pitch.pitch = this.args.pitch.pitch;
                 this.args.head.pitch.alteration = this.args.pitch.alteration;
             }
         }
 
-        export class RaisePitchAlterationCommand implements Application.ICommand {
+        export class RaisePitchAlterationCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -190,7 +192,7 @@
             */
 
             // execute
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var head = <INotehead>this.args.head;
                 if (this.args.deltaAlteration) {
                     head.pitch.raiseAlteration(this.args.deltaAlteration);
@@ -201,7 +203,7 @@
             }
         }
 
-        export class AddNoteDecorationCommand implements Application.ICommand {
+        export class AddNoteDecorationCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -210,7 +212,7 @@
             placement
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var note = <INote>this.args.note;
                 var deco = new Model.NoteDecorationElement(note, this.args.expression);
                 deco.placement = this.args.placement;
@@ -219,7 +221,7 @@
         }
 
 
-        export class UpdateStaffCommand implements Application.ICommand {
+        export class UpdateStaffCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -230,7 +232,7 @@
             // StaffType (TAB/singleline etc)
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var staff = <IStaff>this.args.staff;
                 if (this.args.title) {
                     staff.title = this.args.title;
@@ -240,7 +242,7 @@
             }
         }
 
-        export class NewStaffCommand implements Application.ICommand {
+        export class NewStaffCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -250,7 +252,7 @@
             // StaffType (TAB/singleline etc)
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var initClef = <Model.ClefDefinition>this.args.initClef;
                 var staff = app.score.addStaff(initClef);
                 staff.title = this.args.title;
@@ -260,7 +262,7 @@
         }
 
 
-        export class TieNoteheadCommand implements Application.ICommand {
+        export class TieNoteheadCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -279,7 +281,7 @@
                 head.tie = false;
             }*/
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var head = <INotehead>this.args.head;
                 var forced = this.args.forced || false;
                 var remove = this.args.remove || (this.args.toggle && head.tie);
@@ -296,7 +298,7 @@
             }
         }
 
-        export class TieNoteCommand implements Application.ICommand {
+        export class TieNoteCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -306,7 +308,7 @@
             toggle
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var note = <INote>this.args.note;
                 var forced = this.args.forced || false;
                 note.withHeads((head: INotehead, index: number) => {
@@ -324,7 +326,7 @@
             }
         }
 
-        export class SetMeterCommand implements Application.ICommand {
+        export class SetMeterCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -333,7 +335,7 @@
             staff?
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var meter = <IMeterDefinition>this.args.meter;
                 var absTime = <AbsoluteTime>this.args.absTime;
                 var staff = <IStaff>this.args.staff;
@@ -348,7 +350,7 @@
             }
         }
 
-        export class SetKeyCommand implements Application.ICommand { // todo: KeyDefinition
+        export class SetKeyCommand implements ScoreCommand { // todo: KeyDefinition
             constructor(private args: any) { }
 
             /* args:
@@ -357,7 +359,7 @@
             staff?
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var key = <IKeyDefinition>this.args.key;
                 var absTime = <AbsoluteTime>this.args.absTime;
                 var staff = <IStaff>this.args.staff;
@@ -372,7 +374,7 @@
             }
         }
 
-        export class SetClefCommand implements Application.ICommand {
+        export class SetClefCommand implements ScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -381,7 +383,7 @@
             staff
             */
 
-            public Execute(app: Application.Application) {
+            public Execute(app: ScoreApplication.ScoreApplication) {
                 var clef = <ClefDefinition>this.args.clef;
                 var absTime = <AbsoluteTime>this.args.absTime;
                 var staff = <IStaff>this.args.staff;

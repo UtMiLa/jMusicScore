@@ -3,7 +3,7 @@ module jMusicScore {
 
 import UI = require('../views/jtools');
 */
-    export class ToolbarPlugin implements Application.IPlugIn {
+    export class ToolbarPlugin implements ScoreApplication.ScorePlugin {
         constructor() {
         }
 
@@ -13,7 +13,7 @@ import UI = require('../views/jtools');
             return this.toolbar;
         }
 
-        Init(app: Application.Application) {
+        Init(app: ScoreApplication.ScoreApplication) {
             //var outputPlugin = <any>app.GetPlugin("Output");
             this.toolbar = new UI.JToolbar(app);
             //app.AddDesigner(new Model.EditorDesigner(outputPlugin.context));

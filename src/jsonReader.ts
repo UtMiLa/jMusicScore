@@ -1,12 +1,12 @@
 module jMusicScore {
     export module Model {
 
-        class JSONReader implements Application.IReaderPlugIn {
-            Init(app: Application.Application) {
+        class JSONReader implements Application.IReaderPlugIn<Model.ScoreElement, JQuery> {
+            Init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
             }
 
-            private app: Application.Application;
+            private app: ScoreApplication.ScoreApplication;
             /*private typeMapObjects: { [Index: string]: any } = {
                 // Arrays af objekter:
                 "pitch": Model.Pitch,
@@ -119,11 +119,11 @@ module jMusicScore {
         }
 
 
-        export class JsonPlugin implements Application.IPlugIn {
+        export class JsonPlugin implements ScoreApplication.ScorePlugin {
             constructor() {
             }
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 app.AddReader(new JSONReader());
                 app.AddWriter(new JSONWriter())
             }
@@ -133,10 +133,10 @@ module jMusicScore {
             }
         }
 
-        class JSONWriter implements Application.IWriterPlugIn {
-            private app: Application.Application;
+        class JSONWriter implements Application.IWriterPlugIn<Model.ScoreElement, JQuery> {
+            private app: ScoreApplication.ScoreApplication;
 
-            Init(app: Application.Application) { this.app = app; }
+            Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
 
             GetId(): string {
                 return "JSONReader";

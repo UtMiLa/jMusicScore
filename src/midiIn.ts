@@ -1,7 +1,7 @@
 ﻿module jMusicScore {
     export module Editors {
         declare var $: any;
-        export class MidiInputPlugin implements Application.IPlugIn {
+        export class MidiInputPlugin implements ScoreApplication.ScorePlugin {
 
             private midiChannel: string;
 
@@ -11,7 +11,7 @@
                 this.midiChannel = val;
             }
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 var active_element: Element;
 
                 function connectMidiIn() {
@@ -81,7 +81,7 @@
 
         // ****************** STAFF ******************* //
         /*export*/ class MidiMenuPlugin extends Menus.MenuPlugin {
-            GetMenuObj(app: Application.Application): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** staves ******************* //
                 return {
                     Id: "MidiMenu",

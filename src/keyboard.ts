@@ -1,7 +1,7 @@
 module jMusicScore {
     export module Editors {
-        export class KeybordInputPlugin implements Application.IPlugIn {
-            public Init(app: Application.Application) {
+        export class KeybordInputPlugin implements ScoreApplication.ScorePlugin {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 document.addEventListener("keydown", function (e: JQueryEventObject) {
                     //if (document.activeElement && document.activeElement !== document.body && document.activeElement.tagName !== 'svg') return; // todo: svg element also gets focus
                     if (!app.ProcessEvent("keydown", e)) {

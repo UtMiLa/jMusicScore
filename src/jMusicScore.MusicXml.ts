@@ -121,10 +121,10 @@
             partStaves: Model.IStaff[];
         }
 
-        class MusicXmlReader implements Application.IReaderPlugIn {
-            private app: Application.Application;
+        class MusicXmlReader implements Application.IReaderPlugIn<Model.ScoreElement, JQuery> {
+            private app: ScoreApplication.ScoreApplication;
 
-            Init(app: Application.Application) {
+            Init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
             }
 
@@ -630,16 +630,16 @@
 
 
 
-        export class MusicXmlWriter implements Application.IWriterPlugIn {
+        export class MusicXmlWriter implements Application.IWriterPlugIn<Model.ScoreElement, JQuery> {
             constructor() {
             }
 
             // todo: problems with attributes in bar 1 of Beethoven
             
             private doc: XMLDocument;
-            private app: Application.Application;
+            private app: ScoreApplication.ScoreApplication;
 
-            Init(app: Application.Application) { this.app = app; }
+            Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
 
             GetId(): string {
                 return "XMLWriter";
@@ -1011,11 +1011,11 @@
 
 
 
-        export class MusicXmlPlugin implements Application.IPlugIn {
+        export class MusicXmlPlugin implements ScoreApplication.ScorePlugin {
             constructor() {
             }
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 app.AddReader(new MusicXmlReader());
                 app.AddWriter(new MusicXmlWriter());
             }

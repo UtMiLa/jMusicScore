@@ -3,14 +3,14 @@ module jMusicScore {
     export module Application {
 
         /** Every external plugin to application must implement this interface */
-        export interface IPlugIn {
-            Init(app: Application): void;
+        export interface IPlugIn<DocumentType extends IAppDoc, ContainerType> {
+            Init(app: Application<DocumentType, ContainerType>): void;
             GetId(): string;
         }
 
         /** Interface for file readers (in varying formats) */
-        export interface IReaderPlugIn extends IPlugIn {
-            Init(app: Application): void;
+        export interface IReaderPlugIn<DocumentType extends IAppDoc, ContainerType> extends IPlugIn<DocumentType, ContainerType> {
+            //Init(app: Application): void;
             Supports(type: string): boolean;
             GetExtension(type: string): string;
             Load(data: any): void;
@@ -19,8 +19,8 @@ module jMusicScore {
         }
 
         /** Interface for file writers */
-        export interface IWriterPlugIn extends IPlugIn {
-            Init(app: Application): void;
+        export interface IWriterPlugIn<DocumentType extends IAppDoc, ContainerType> extends IPlugIn<DocumentType, ContainerType> {
+            //Init(app: Application): void;
             Supports(type: string): boolean;
             GetExtension(type: string): string;
             Save(): string;
@@ -29,114 +29,40 @@ module jMusicScore {
         }
 
         /** Interface for commands. Every user action that changes data in the model must use Command objects. */
-        export interface ICommand {
-            Execute(app: Application): void;
+        export interface ICommand<DocumentType extends IAppDoc, ContainerType> {
+            Execute(app: Application<DocumentType, ContainerType>): void;
         }
 
         /** Interface for objects that check and refines the model after every change (like beam calculation) */
-        export interface IValidator {
-            Validate(app: Application): void;
+        export interface IValidator<DocumentType extends IAppDoc, ContainerType> {
+            Validate(app: Application<DocumentType, ContainerType>): void;
         }
 
         /** Interface for objects that check and refines the user interface after every model change (like spacing and drawing) */
-        export interface IDesigner {
-            Validate(app: Application): void;
+        export interface IDesigner<DocumentType extends IAppDoc, ContainerType> {
+            Validate(app: Application<DocumentType, ContainerType>): void;
         }
 
         /** Interface for pluggable event processors that can handle events */
-        export interface IEventProcessor {
-            Init(app: Application): void;
-            Exit(app: Application): void;
+        export interface IEventProcessor<DocumentType extends IAppDoc, ContainerType> {
+            Init(app: Application<DocumentType, ContainerType>): void;
+            Exit(app: Application<DocumentType, ContainerType>): void;
 
-            midinoteoff? (app: Application, event: Event): boolean;
+            /*midinoteoff? (app: Application, event: Event): boolean;
             keypressed? (app: Application, event: Event): boolean;
             keyup? (app: Application, event: Event): boolean;
-            keydown? (app: Application, event: Event): boolean;
+            keydown? (app: Application, event: Event): boolean;*/
         }
 
         /** Interface for file managers that can load and save files in various file systems (remote or local) */
-        export interface IFileManager {
-            Init(app: Application): void;
-            Exit(app: Application): void;
+        export interface IFileManager<DocumentType extends IAppDoc, ContainerType> {
+            Init(app: Application<DocumentType, ContainerType>): void;
+            Exit(app: Application<DocumentType, ContainerType>): void;
 
             getFileList(handler: (data: string[]) => void): void;
             loadFile(name: string, handler: (data: string, name: string) => void): void;
             saveFile(name: string, data: string, handler: (res: string) => void): void;
             GetId(): string;
-        }
-
-        /** REST remote file manager */
-        export class ServerFileManager implements IFileManager {
-            constructor(private ajaxUrl: string, private id:string) {
-                // new ServerFileManager ("Handler.ashx")
-            }
-
-            Init(app: Application): void { }
-
-            Exit(app: Application): void { }
-
-            GetId(): string { return this.id; }
-
-            public getFileList(handler: (data: string[]) => void) {
-                $.ajax(this.ajaxUrl, {
-                    success: function (data) {
-                        var files = data.split('\n');
-                        handler(files);
-                    },
-                    cache: false
-                });
-            }
-
-            public loadFile(name: string, handler: (data: string, name: string) => void) {
-                $.ajax(this.ajaxUrl, {
-                    success: function (data) {
-                        handler(data, name);
-                    },
-                    data: { 'Name': name },
-                    cache: false
-                });
-            }
-
-            public saveFile(name: string, data: string, handler: (res: string) => void) {
-                $.ajax(this.ajaxUrl, {
-                    success: function (res) {
-                        handler(res);
-                    },
-                    type: 'POST',
-                    data: { 'Name': name, 'Data': data }
-                });
-            }
-        }
-
-        /** Local storage file manager using the browser's local storage*/
-        export class LocalStorageFileManager implements IFileManager {
-            constructor(private id: string) {
-            }
-
-            Init(app: Application): void { }
-
-            Exit(app: Application): void { }
-
-            GetId(): string { return this.id; }
-
-            public getFileList(handler: (data: string[]) => void) {
-                var a: string = 'file:' + this.id + ':';
-                var res: string[] = [];
-                for (var key in localStorage) {
-                    if (key.substr(0, a.length) === a) {
-                        res.push(key.substr(a.length));
-                    }
-                }
-                handler(res);
-            }
-
-            public loadFile(name: string, handler: (data: string, name: string) => void) {
-                handler(localStorage['file:' + this.id + ':' + name], name);
-            }
-
-            public saveFile(name: string, data: string, handler: (res: string) => void) {
-                localStorage['file:' + this.id + ':' + name] = data;
-            }
         }
 
         export interface IDesktopArea { }
@@ -353,25 +279,29 @@ module jMusicScore {
             }
         }
 
+        export interface IAppDoc {
+            clear(): void;
+        }
+
         // todo: score -> document
         // todo: map -> ?
         // todo: Status -> abstract
         /** Application object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
-        export class Application {
-            constructor(public container: JQuery) {
-                this.score = new Model.ScoreElement(null);
-                this.map = new Model.MeasureMap(this.score);
+        export class Application<DocumentType extends IAppDoc, ContainerType> {
+            constructor(public container: ContainerType, score: DocumentType) {
+                this.score = score;
+                //this.map = new Model.MeasureMap(this.score);
             }
 
-            public score: Model.IScore;
-            public map: Model.MeasureMap;
-            private plugins: IPlugIn[] = [];
-            private readers: IReaderPlugIn[] = [];
-            private writers: IWriterPlugIn[] = [];
-            private fileManagers: IFileManager[] = [];
-            private validators: IValidator[] = [];
-            private designers: IDesigner[] = [];
-            private editors: IDesigner[] = [];
+            public score: DocumentType;
+            //public map: Model.MeasureMap;
+            private plugins: IPlugIn<DocumentType, ContainerType>[] = [];
+            private readers: IReaderPlugIn<DocumentType, ContainerType>[] = [];
+            private writers: IWriterPlugIn<DocumentType, ContainerType>[] = [];
+            private fileManagers: IFileManager<DocumentType, ContainerType>[] = [];
+            private validators: IValidator<DocumentType, ContainerType>[] = [];
+            private designers: IDesigner<DocumentType, ContainerType>[] = [];
+            private editors: IDesigner<DocumentType, ContainerType>[] = [];
             private feedbackManager: IFeedbackManager = new FeedbackManager();
             private status: IStatusManager = new StatusManager(this.feedbackManager);
 
@@ -380,32 +310,32 @@ module jMusicScore {
             }
             public get FeedbackManager(): IFeedbackManager { return this.feedbackManager; }
 
-            public AddPlugin(plugin: IPlugIn) {
+            public AddPlugin(plugin: IPlugIn<DocumentType, ContainerType>) {
                 this.plugins.push(plugin);
                 plugin.Init(this);
             }
 
-            public AddReader(reader: IReaderPlugIn) {
+            public AddReader(reader: IReaderPlugIn<DocumentType, ContainerType>) {
                 this.readers.push(reader);
                 reader.Init(this);
             }
 
-            public AddWriter(writer: IWriterPlugIn) {
+            public AddWriter(writer: IWriterPlugIn<DocumentType, ContainerType>) {
                 this.writers.push(writer);
                 writer.Init(this);
             }
 
-            public AddFileManager(fileManager: IFileManager) {
+            public AddFileManager(fileManager: IFileManager<DocumentType, ContainerType>) {
                 this.fileManagers.push(fileManager);
                 fileManager.Init(this);
             }
 
-            public AddValidator(validator: IValidator) {
+            public AddValidator(validator: IValidator<DocumentType, ContainerType>) {
                 this.validators.push(validator);
                 validator.Validate(this);
             }
 
-            public AddDesigner(designer: IDesigner) {
+            public AddDesigner(designer: IDesigner<DocumentType, ContainerType>) {
                 this.designers.push(designer);
                 designer.Validate(this);
             }
@@ -466,7 +396,7 @@ module jMusicScore {
                 throw "File manager not found: " + fileManager;
             }
 
-            public Save(name: string, fileManager: IFileManager, type: string) {
+            public Save(name: string, fileManager: IFileManager<DocumentType, ContainerType>, type: string) {
                 /*for (var i = 0; i < this.writers.length; i++) {
                     if (this.writers[i].Supports(type)) {
                         var writer = this.writers[i];
@@ -502,7 +432,7 @@ module jMusicScore {
                 throw "File manager not found: " + fileManager;
             }
 
-            public Load(name: string, fileManager: IFileManager, type: string) {
+            public Load(name: string, fileManager: IFileManager<DocumentType, ContainerType>, type: string) {
                 var app = this;
                 this.ProcessEvent("clickvoice", <any>{ 'data': { voice: null } });
                 for (var i = 0; i < this.readers.length; i++) {
@@ -541,14 +471,14 @@ module jMusicScore {
                 throw "Input format not supported: " + type;
             }
 
-            public GetPlugin(id: string): IPlugIn {
+            public GetPlugin(id: string): IPlugIn<DocumentType, ContainerType> {
                 for (var i = 0; i < this.plugins.length; i++) {
                     if (this.plugins[i].GetId() === id) return this.plugins[i];
                 }
                 return null;
             }
 
-            public ExecuteCommand(command: ICommand) {
+            public ExecuteCommand(command: ICommand<DocumentType, ContainerType>) {
                 command.Execute(this);
                 //this.ExecuteEventQueue();
                 this.FixModel();
@@ -580,14 +510,14 @@ module jMusicScore {
                 }
             }
 
-            private eventProcessors: IEventProcessor[] = [];
+            private eventProcessors: IEventProcessor<DocumentType, ContainerType>[] = [];
 
-            public RegisterEventProcessor(eventProc: IEventProcessor) {
+            public RegisterEventProcessor(eventProc: IEventProcessor<DocumentType, ContainerType>) {
                 this.eventProcessors.push(eventProc);
                 eventProc.Init(this);
             }
 
-            public UnregisterEventProcessor(eventProc: IEventProcessor) {
+            public UnregisterEventProcessor(eventProc: IEventProcessor<DocumentType, ContainerType>) {
                 var i = this.eventProcessors.indexOf(eventProc);
                 if (i >= 0) {
                     this.eventProcessors.splice(i, 1);
@@ -609,16 +539,22 @@ module jMusicScore {
         }
 
         /** Debug event processor: writes event info in #msg */
-        export class DummyEventProcessor implements IEventProcessor {
+        /*export class DummyEventProcessor implements IEventProcessor {
             public keydown(app: Application, event: Event): boolean {
                 $('#msg').text((<KeyboardEvent>event).char);
                 return false;
             }
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
             }
-            public Exit(app: Application.Application) {
+            public Exit(app: ScoreApplication.ScoreApplication) {
             }
-        }
+        }*/
+    }
+    export module ScoreApplication {
+        export type ScoreApplication = Application.Application<Model.IScore, JQuery>;
+        export type ScorePlugin = Application.IPlugIn<Model.IScore, JQuery>;
+        export type ScoreEventProcessor = Application.IEventProcessor<Model.IScore, JQuery>;
+        export type ScoreDesigner = Application.IDesigner<Model.IScore, JQuery>;
     }
 }

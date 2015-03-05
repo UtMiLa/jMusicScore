@@ -863,7 +863,7 @@
             VisitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
         }
 
-        export class SpacingDesigner implements Application.IDesigner {
+        export class SpacingDesigner implements ScoreApplication.ScoreDesigner {
             constructor(private spacer: Model.IVisitor = null) {
                 if (!spacer) {
                     this.spacer = new MinimalSpacer();
@@ -982,7 +982,7 @@
                 });
             }
 
-            public Validate(app: Application.Application) {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 var score = app.score;
 
                 this.CheckSpacingInfo(score); // create displayData and spacingInfo for all elements

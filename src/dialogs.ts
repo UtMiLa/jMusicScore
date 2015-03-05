@@ -212,7 +212,7 @@ module jMusicScore {
         }
 
         export class UIContainer {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
             }
 
             public AddWidget(widget: IWidget, parent: JQuery, id: string, label: string): IWidget {
@@ -222,7 +222,7 @@ module jMusicScore {
         }
 
         export class Dialog extends UIContainer {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
             }
 
@@ -292,7 +292,7 @@ module jMusicScore {
         }
 
         export class MeterDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "MeterDialog";
                 this.dialogTitle = "Select time signature";
@@ -343,7 +343,7 @@ module jMusicScore {
         }
 
         export class KeyDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "KeyDialog";
                 this.dialogTitle = "Edit key";
@@ -384,7 +384,7 @@ module jMusicScore {
         }
 
         export class ClefDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "ClefDialog";
                 this.dialogTitle = "Edit clef";
@@ -435,14 +435,14 @@ module jMusicScore {
             }
         }
         export class BarDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "BarDialog";
                 this.dialogTitle = "Edit bar settings";
             }
         }
         export class ArticulationDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "ArticulationDialog";
                 this.dialogTitle = "Select articulation";
@@ -481,7 +481,7 @@ module jMusicScore {
         }
 
         export class NoteDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "NoteDialog";
                 this.dialogTitle = "Edit note settings";
@@ -521,7 +521,7 @@ module jMusicScore {
         }
 
         export class VoiceDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "VoiceDialog";
                 this.dialogTitle = "Edit voice settings";
@@ -562,21 +562,21 @@ module jMusicScore {
         }
 
         export class NoteheadDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "NoteheadDialog";
                 this.dialogTitle = "Edit notehead settings";
             }
         }
         export class ScoreDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "ScoreDialog";
                 this.dialogTitle = "Edit score settings";
             }
         }
         export class LyricDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "LyricDialog";
                 this.dialogTitle = "Edit lyrics";
@@ -584,7 +584,7 @@ module jMusicScore {
         }
 
         export class TupletDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "TupletDialog";
                 this.dialogTitle = "Edit tuplet";
@@ -592,7 +592,7 @@ module jMusicScore {
         }
 
         export class SpannerDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "SpannerDialog";
                 this.dialogTitle = "Edit spanner";
@@ -600,7 +600,7 @@ module jMusicScore {
         }
 
         export class TextMarkDialog extends Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "TextMarkDialog";
                 this.dialogTitle = "Edit textmark";
@@ -610,7 +610,7 @@ module jMusicScore {
 
     // ****************** All the following must die! ******************* //
 
-    export function addDialog(dialogId: string, buttonId: any, a: Application.Application, dialogTransferrer: any = null) {
+    export function addDialog(dialogId: string, buttonId: any, a: ScoreApplication.ScoreApplication, dialogTransferrer: any = null) {
         if (!dialogTransferrer) {
             dialogTransferrer = {
                 buttonSettings: [
@@ -657,7 +657,7 @@ module jMusicScore {
             }*/
                 ).click(function () {
                     var obj = $(dialogId).data('dlgobj');
-                    var app: Application.Application = a;
+                    var app: ScoreApplication.ScoreApplication = a;
                     obj.initFunction(app);
                     $(dialogId).dialog("open");
                 });
@@ -665,7 +665,7 @@ module jMusicScore {
         else if (typeof buttonId === "object") {
             buttonId.click(function () {
                 var obj = $(dialogId).data('dlgobj');
-                var app: Application.Application = a;
+                var app: ScoreApplication.ScoreApplication = a;
                 obj.initFunction(app);
                 $(dialogId).dialog("open");
             });
@@ -674,7 +674,7 @@ module jMusicScore {
         return dlg;
     }
 
-    export function CreateMenus(app: Application.Application) {
+    export function CreateMenus(app: ScoreApplication.ScoreApplication) {
 
         // ****************** CLEF ******************* //
 

@@ -1,6 +1,10 @@
 module jMusicScore {
-//todo: tie vises ikke ved splitnode
-    //todo: nodehoved skal ændres ved splitnode
+   
+    export module Model {
+        export interface ILongDecorationSpacingInfo extends ISpacingInfo {
+            Render?: (deco: ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
+        }
+    }
 
     export module Views {
         export interface IBaseGraphicsEngine {
@@ -302,11 +306,11 @@ module jMusicScore {
             VisitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
         }
 
-        export class ExpressionRenderer implements Application.IDesigner {
+        export class ExpressionRenderer implements ScoreApplication.ScoreDesigner {
             constructor(private spacer: Model.IVisitor = null) {
             }
 
-            public Validate(app: Application.Application) {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 app.score.VisitAll(new ExpressionFactory()); // add renderer objects to all note/staff expressions
             }
         }
@@ -1022,11 +1026,11 @@ module jMusicScore {
         }
 
                 
-        class SVGSizeDesigner implements Application.IDesigner {
+        class SVGSizeDesigner implements ScoreApplication.ScoreDesigner {
             constructor(private svgHelper: SVGHelper) {
             }
 
-            Validate(app: Application.Application) {
+            Validate(app: ScoreApplication.ScoreApplication) {
 /*                var height = SVGMetrics.staffYStep * app.score.staffElements.length + SVGMetrics.staffYOffset;
                 var pixelHeight = this.svgHelper.unitSvgToHtml(height);
                 app.container.find('.clientArea').height(pixelHeight);
@@ -1152,13 +1156,13 @@ module jMusicScore {
 
         }
 
-        export class SVGViewer implements Application.IPlugIn {
+        export class SVGViewer implements ScoreApplication.ScorePlugin {
             constructor(private $svg: JQuery) {
             }
 
             private svgHelper: SVGHelper;
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 //var $svg = app.container.find('.svgArea');
                 if (!this.$svg.length) {
                     var $clientArea = app.container.find('.clientArea');
@@ -1495,7 +1499,7 @@ module jMusicScore {
             private graphic: Views.IGraphicsEngine;
             private voiceButtons: Element[] = [];
 
-            public checkVoiceButtons(app: Application.Application, staff: Model.IStaff) {
+            public checkVoiceButtons(app: ScoreApplication.ScoreApplication, staff: Model.IStaff) {
                 while (staff.voiceElements.length < this.voiceButtons.length) {
                     var voiceBtn = this.voiceButtons.pop();
                     var parent = voiceBtn.parentNode;
@@ -1755,7 +1759,7 @@ module jMusicScore {
 
         interface IHintArea {
             Staff: Model.IStaff;
-            checkVoiceButtons(app: Application.Application, staff: Model.IStaff): void;
+            checkVoiceButtons(app: ScoreApplication.ScoreApplication, staff: Model.IStaff): void;
             release(): void;
         }
 
@@ -1763,8 +1767,8 @@ module jMusicScore {
             addStaffButton(y: number, staff: Model.IStaff): IHintArea;
         }
 
-        class HintAreaDesigner implements Application.IDesigner, Application.IFeedbackClient {
-            constructor(private app: Application.Application, private svgHelper: IHintAreaCreator) {
+        class HintAreaDesigner implements ScoreApplication.ScoreDesigner, Application.IFeedbackClient {
+            constructor(private app: ScoreApplication.ScoreApplication, private svgHelper: IHintAreaCreator) {
                 app.FeedbackManager.registerClient(this);
             }
 
@@ -1779,7 +1783,7 @@ module jMusicScore {
                 }
             }
 
-            public Validate(app: Application.Application) {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 var score = app.score;
                 while (this.staffButtons.length > score.staffElements.length) {
                     var removeBtn = this.staffButtons.pop();
@@ -1801,7 +1805,7 @@ module jMusicScore {
             }
         }
 
-        class TimelineDesigner implements Application.IDesigner {
+        class TimelineDesigner implements ScoreApplication.ScoreDesigner {
             constructor(private svgHelper: SVGHelper) {                
             }
             private checkSensors: Views.DOMCheckSensorsVisitor;
@@ -1809,7 +1813,7 @@ module jMusicScore {
             private CheckHintButtons(score: Model.IScore) {
             }
 
-            public Validate(app: Application.Application) {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 var score = app.score;
                 var svgHelper = this.svgHelper;//<SVGHelper>app.GetState("svgHelper:" + this.context); // todo: Svghelper yt
 
@@ -1832,14 +1836,14 @@ module jMusicScore {
             }
         }
         /*
-        class BeamDesigner implements Application.IDesigner {
+        class BeamDesigner implements ScoreApplication.ScoreDesigner {
             constructor(private context: string, private svgHelper: SVGHelper) {
                 //this.noteOutputHelper = new NoteOutputHelper(this.context, svgHelper);
             }
 
             //private noteOutputHelper: NoteOutputHelper;
 
-            public Validate(app: Application.Application) {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 for (var iStaff = 0; iStaff < app.score.staffElements.length; iStaff++) {
                     var staff = app.score.staffElements[iStaff];
                     for (var iVoice = 0; iVoice < staff.voiceElements.length; iVoice++) {
@@ -1904,14 +1908,14 @@ module jMusicScore {
         dialogs (note, head, voice, staff)       
         */
 
-        class SVGWriter implements Application.IWriterPlugIn {
+        class SVGWriter implements Application.IWriterPlugIn<Model.ScoreElement, JQuery> {
             constructor(private svgHelper: SVGHelper) { }
 
-            Init(app: Application.Application) {
+            Init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
             }
 
-            private app: Application.Application;
+            private app: ScoreApplication.ScoreApplication;
 
             GetId(): string {
                 return "SVGWriter";
@@ -2179,13 +2183,13 @@ module jMusicScore {
         }*/
         
 
-        export class NoteEditor implements Application.IEventProcessor {
+        export class NoteEditor implements ScoreApplication.ScoreEventProcessor {
             constructor(public context: string) { }
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
             }
 
-            public Exit(app: Application.Application) {
+            public Exit(app: ScoreApplication.ScoreApplication) {
                 /*var event: any = { data: { voice: null } }; // todo: any
                 this.clickvoice(app, event);*/
             }
@@ -2193,7 +2197,7 @@ module jMusicScore {
             public mouseOverStyle: string = "color:#f00;fill:#0a0;fill-opacity:0.5;stroke:none";
             private cursorElement: SVGUseElement = null;
 
-            public mouseovernote(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseovernote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 app.Status.currentNote = note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
@@ -2202,14 +2206,14 @@ module jMusicScore {
                 app.Status.mouseOverElement = note; // todo: note cursor
                 return true;
             }
-            public mousemovenote(app: Application.Application, event: JQueryEventObject): boolean {
+            public mousemovenote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition(), event.data.pitch);*/
                 // todo: note cursor
                 return false;
             }
-            public mouseoutnote(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoutnote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 app.Status.currentNote = undefined;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
@@ -2219,7 +2223,7 @@ module jMusicScore {
                 return true;
             }
 
-            public mouseoverafternote(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoverafternote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(1), event.data.pitch);*/
@@ -2228,7 +2232,7 @@ module jMusicScore {
                 return false;
             }
 
-            public mousemoveafternote(app: Application.Application, event: JQueryEventObject): boolean {
+            public mousemoveafternote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(1), event.data.pitch);*/
@@ -2236,7 +2240,7 @@ module jMusicScore {
                 return false;
             }
 
-            public mouseoutafternote(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoutafternote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.HideNoteCursor();*/
@@ -2244,7 +2248,7 @@ module jMusicScore {
                 return false;
             }
 
-            public mousemovebeforenote(app: Application.Application, event: JQueryEventObject): boolean {
+            public mousemovebeforenote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(-1), event.data.pitch);*/
@@ -2252,7 +2256,7 @@ module jMusicScore {
                 return false;
             }
 
-            public mouseoverbeforenote(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoverbeforenote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 app.Status.currentNote = undefined;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
@@ -2261,14 +2265,14 @@ module jMusicScore {
                 return true;
             }
 
-            public mouseoutbeforenote(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoutbeforenote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.HideNoteCursor();*/
                 if (app.Status.mouseOverElement === note) app.Status.mouseOverElement = null;
                 return true;
             }
-            public mouseoverhead(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoverhead(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var head = <Model.INotehead>event.data.head;
                 app.Status.currentNotehead = head;
                 app.Status.currentNote = head.parent;
@@ -2278,7 +2282,7 @@ module jMusicScore {
                 app.Status.mouseOverElement = head;
                 return false;
             }
-            public mouseouthead(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseouthead(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var head = <Model.INotehead>event.data.head;
                 app.Status.currentNotehead = undefined;
                 app.Status.currentNote = undefined;
@@ -2294,7 +2298,7 @@ module jMusicScore {
 
 
         export class KeyboardNoteEditor extends NoteEditor {
-            public keydown(app: Application.Application, event: JQueryEventObject): boolean {
+            public keydown(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var theKeyCode = event.keyCode || event.which;
                 var keyDefs = <any>$.ui.keyCode;
                 for (var key in keyDefs) {
@@ -2305,7 +2309,7 @@ module jMusicScore {
                 return true;
             }
 
-            public keypress(app: Application.Application, event: JQueryEventObject): boolean {
+            public keypress(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var key = <string>event.key;
                 if (event.ctrlKey || event.altKey) {
                     if (event.altKey) key = 'ALT-' + key;
@@ -2315,7 +2319,7 @@ module jMusicScore {
                 return this.keyPressed(app, key);
             }
 
-            public keyPressed(app: Application.Application, key: string): boolean {
+            public keyPressed(app: ScoreApplication.ScoreApplication, key: string): boolean {
                 if (key === 'DELETE') {
                     if (app.Status.currentNotehead) {
                         app.ExecuteCommand(new Model.DeleteNoteheadCommand({
@@ -2393,7 +2397,7 @@ module jMusicScore {
 
         export class EditNoteEditor extends KeyboardNoteEditor {
 
-            public clicknote(app: Application.Application, event: JQueryEventObject): boolean {
+            public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 // note dialog
                 var dlg = new Dialogs.NoteDialog("ed", app);
                 dlg.Show(event.data.note);
@@ -2407,7 +2411,7 @@ module jMusicScore {
                 super(context);
             }
 
-            public clickafternote(app: Application.Application, event: JQueryEventObject): boolean {
+            public clickafternote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 this.mouseoutafternote(app, event);
 
                 var voice = <Model.IVoice>event.data.voice;
@@ -2439,7 +2443,7 @@ module jMusicScore {
                 return false;
             }
 
-            public clicknote(app: Application.Application, event: JQueryEventObject): boolean {
+            public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 this.mouseoutnote(app, event);
 
                 var note = <Model.INote>event.data.note;
@@ -2475,7 +2479,7 @@ module jMusicScore {
                 return false;
             }
 
-            public clickbeforenote(app: Application.Application, event: JQueryEventObject): boolean {
+            public clickbeforenote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 this.mouseoutbeforenote(app, event);
 
                 var note = <Model.INote>event.data.note;
@@ -2521,7 +2525,7 @@ module jMusicScore {
             }
             public editor: HTMLInputElement;
 
-            public Exit(app: Application.Application) {
+            public Exit(app: ScoreApplication.ScoreApplication) {
                 $(this.editor).hide();
             }
 
@@ -2627,7 +2631,7 @@ module jMusicScore {
                 }
             }
 
-            public clicknote(app: Application.Application, event: JQueryEventObject): boolean {
+            public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 this.mouseoutnote(app, event);
                 var note = <Model.INote>event.data.note;
                 var text = '';
@@ -2659,7 +2663,7 @@ module jMusicScore {
         }
 
         export class DeleteNoteEditor extends NoteEditor {
-            public clicknote(app: Application.Application, event: JQueryEventObject): boolean {
+            public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 this.mouseoutnote(app, event);
                 var note = <Model.INote>event.data.note;
                 app.ExecuteCommand(new Model.DeleteNoteCommand({
@@ -2668,7 +2672,7 @@ module jMusicScore {
                 return false;
             }
 
-            public clickhead(app: Application.Application, event: JQueryEventObject): boolean {
+            public clickhead(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 this.mouseouthead(app, event);
                 var head = <Model.INotehead>event.data.head;
                 // todo: slet eneste head bør gøre note til pause
@@ -2687,18 +2691,18 @@ module jMusicScore {
             }
         }
 
-        export class ChangeMeterEditor implements Application.IEventProcessor {
+        export class ChangeMeterEditor implements ScoreApplication.ScoreEventProcessor {
             constructor(public context: string) { }
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.score, this.context, false);
             }
 
-            public Exit(app: Application.Application) {
+            public Exit(app: ScoreApplication.ScoreApplication) {
             }
 
 
-            public clickbar(app: Application.Application, event: JQueryEventObject): boolean {
+            public clickbar(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var bar = <Model.IBar>event.data.bar;
 
                 var dlg = new Dialogs.MeterDialog("click", app);
@@ -2707,7 +2711,7 @@ module jMusicScore {
                 return false;
             }
 
-            public clickmeter(app: Application.Application, event: JQueryEventObject): boolean {
+            public clickmeter(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var meter = <Model.IMeter>event.data.meter;
 
                 var dlg = new Dialogs.MeterDialog("click", app);
@@ -2716,28 +2720,28 @@ module jMusicScore {
                 return false;
             }
 
-            public mouseoverbar(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoverbar(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var bar = <Model.IBar>event.data.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, true);*/
                 app.Status.mouseOverElement = bar;
                 return true;
             }
-            public mouseoutbar(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoutbar(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var bar = <Model.IBar>event.data.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, false);*/
                 if (app.Status.mouseOverElement === bar) app.Status.mouseOverElement = null;
                 return true;
             }
-            public mouseovermeter(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseovermeter(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var meter = <Model.IMeter>event.data.meter;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(meter, true);*/
                 app.Status.mouseOverElement = meter;
                 return true;
             }
-            public mouseoutmeter(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoutmeter(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var meter = <Model.IMeter>event.data.meter;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(meter, false);*/
@@ -2746,18 +2750,18 @@ module jMusicScore {
             }
         }
 
-        export class ChangeKeyEditor implements Application.IEventProcessor {
+        export class ChangeKeyEditor implements ScoreApplication.ScoreEventProcessor {
             constructor(public context: string) { }
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.score, this.context, false);
             }
 
-            public Exit(app: Application.Application) {
+            public Exit(app: ScoreApplication.ScoreApplication) {
             }
 
 
-            public clickbar(app: Application.Application, event: JQueryEventObject): boolean {
+            public clickbar(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var bar = <Model.IBar>event.data.bar;
 
                 var dlg = new Dialogs.KeyDialog("click", app);
@@ -2766,7 +2770,7 @@ module jMusicScore {
                 return false;
             }
 
-            public clickkey(app: Application.Application, event: JQueryEventObject): boolean {
+            public clickkey(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var key = <Model.IKey>event.data.key;
 
                 var dlg = new Dialogs.KeyDialog("click", app);
@@ -2774,28 +2778,28 @@ module jMusicScore {
 
                 return false;
             }
-            public mouseoverbar(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoverbar(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var bar = <Model.IBar>event.data.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, true);*/
                 app.Status.mouseOverElement = bar;
                 return true;
             }
-            public mouseoutbar(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoutbar(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var bar = <Model.IBar>event.data.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, false);*/
                 if (app.Status.mouseOverElement === bar) app.Status.mouseOverElement = null;
                 return true;
             }
-            public mouseoverkey(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoverkey(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var key = <Model.IKey>event.data.key;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(key, true);*/
                 app.Status.mouseOverElement = key;
                 return true;
             }
-            public mouseoutkey(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoutkey(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var key = <Model.IKey>event.data.key;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(key, false);*/
@@ -2805,19 +2809,19 @@ module jMusicScore {
         }
         
         
-        export class ChangeClefEditor implements Application.IEventProcessor {
+        export class ChangeClefEditor implements ScoreApplication.ScoreEventProcessor {
             constructor(public context: string) { }
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.score, this.context, true);
                 // Activate BeforeNote, AfterNote, clef
             }
 
-            public Exit(app: Application.Application) {
+            public Exit(app: ScoreApplication.ScoreApplication) {
             }
 
 
-            public clickbeforenote(app: Application.Application, event: JQueryEventObject): boolean {
+            public clickbeforenote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
 
                 var dlg = new Dialogs.ClefDialog("click", app);
@@ -2826,7 +2830,7 @@ module jMusicScore {
                 return false;
             }
 
-            public clickclef(app: Application.Application, event: JQueryEventObject): boolean {
+            public clickclef(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var clef = <Model.IClef>event.data.clef;
 
                 var dlg = new Dialogs.ClefDialog("click", app);
@@ -2836,13 +2840,13 @@ module jMusicScore {
             }
 
 
-            public mouseoverclef(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoverclef(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var clef = <Model.IClef>event.data.clef;
                 //var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 //fb.MouseOverElement(clef, true);
                 return true;
             }
-            public mouseoutclef(app: Application.Application, event: JQueryEventObject): boolean {
+            public mouseoutclef(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var clef = <Model.IClef>event.data.clef;
                 //var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 //fb.MouseOverElement(clef, false);
@@ -3184,7 +3188,7 @@ module jMusicScore {
         }
 
 
-        class TimelineDesigner implements Application.IDesigner {
+        class TimelineDesigner implements ScoreApplication.ScoreDesigner {
             constructor(private svgHelper: CanvasHelper) {
             }
             private checkSensors: Views.DOMCheckSensorsVisitor;
@@ -3192,7 +3196,7 @@ module jMusicScore {
             private CheckHintButtons(score: Model.IScore) {
             }
 
-            public Validate(app: Application.Application) {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 var score = app.score;
                 var svgHelper = this.svgHelper;//<SVGHelper>app.GetState("svgHelper:" + this.context); // todo: Svghelper yt
 
@@ -3216,13 +3220,13 @@ module jMusicScore {
         }
 
 
-        export class CanvasViewer implements Application.IPlugIn {
+        export class CanvasViewer implements ScoreApplication.ScorePlugin {
             constructor(private $root: JQuery) {
             }
 
             private canvasHelper: CanvasHelper;
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 //var $svg = app.container.find('.svgArea');
                 if (!this.$root.length) {
                     var $clientArea = app.container.find('.clientArea');

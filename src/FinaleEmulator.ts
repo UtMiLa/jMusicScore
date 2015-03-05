@@ -1,8 +1,8 @@
 ﻿module jMusicScore {
     export module FinaleUI {
 
-        class FillEmptySpaceValidator implements Application.IValidator {
-            public Validate(app: Application.Application) {
+        class FillEmptySpaceValidator implements Model.ScoreValidator {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 var scoreDuration: Model.AbsoluteTime;
                 if (app.score.bars.length) {
                     var lastBar = app.score.bars[app.score.bars.length - 1];
@@ -27,8 +27,8 @@
             }
         }
 
-        export class FinaleSmartEditPlugin implements Application.IPlugIn {
-            Init(app: Application.Application) {
+        export class FinaleSmartEditPlugin implements ScoreApplication.ScorePlugin {
+            Init(app: ScoreApplication.ScoreApplication) {
                 app.FeedbackManager.registerClient(this.smartEdit);
                 app.RegisterEventProcessor(this.smartEdit);
                 app.AddValidator(new FillEmptySpaceValidator);
@@ -40,7 +40,7 @@
         }
 
 
-        export class FinaleSpeedyEntry implements Application.IEventProcessor {
+        export class FinaleSpeedyEntry implements ScoreApplication.ScoreEventProcessor {
             private noteVals: { [Index: string]: { noteId: string; timeVal: Model.TimeSpan; } } = {
                 '1': { noteId: 'n1_64', timeVal: new Model.TimeSpan(1, 64) },
                 '2': { noteId: 'n1_32', timeVal: new Model.TimeSpan(1, 32) },
@@ -52,7 +52,7 @@
                 '8': { noteId: 'n2_1', timeVal: new Model.TimeSpan(2, 1) },
             };
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 $('#toolitem40').on('mousedown touchstart', function (ev) {
                     ev.key = "RIGHT";
                     app.ProcessEvent("keypress", ev);
@@ -85,10 +85,10 @@
                 });
             }
 
-            public Exit(app: Application.Application) {
+            public Exit(app: ScoreApplication.ScoreApplication) {
             }
 
-            public keydown(app: Application.Application, event: JQueryEventObject): boolean {
+            public keydown(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var theKeyCode = event.keyCode || event.which;
                 var keyDefs = <any>$.ui.keyCode;
                 for (var key in keyDefs) {
@@ -103,7 +103,7 @@
                 return true;
             }
 
-            public keypress(app: Application.Application, event: JQueryEventObject): boolean {
+            public keypress(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var key = <string>event.key;
                 if (event.ctrlKey || event.altKey) {
                     if (event.altKey) key = 'ALT-' + key;
@@ -113,7 +113,7 @@
                 return this.keyPressed(app, key);
             }
 
-            public clicknote(app: Application.Application, event: JQueryEventObject): boolean {
+            public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 // note dialog: dblclick
                 /*var dlg = new Dialogs.NoteDialog("ed", app);
                 dlg.Show(event.data.note);*/
@@ -122,7 +122,7 @@
                 return false;
             }
 
-            public keyPressed(app: Application.Application, key: string): boolean {
+            public keyPressed(app: ScoreApplication.ScoreApplication, key: string): boolean {
                 if (key === 'UP') {//Up a step ↑
                     if (app.Status.currentPitch) {
                         app.Status.currentPitch = new Model.Pitch(app.Status.currentPitch.pitch + 1, "");
@@ -165,7 +165,7 @@
                         if (app.Status.notesPressed.length) {
                             // replace noteheads with pressed chord
                             app.ExecuteCommand({
-                                Execute: (app: Application.Application) => {
+                                Execute: (app: ScoreApplication.ScoreApplication) => {
                                     var note = app.Status.currentNote;
                                     while (note.noteheadElements.length) { note.removeChild(note.noteheadElements[0]); }
                                     note.setRest(false);
@@ -296,14 +296,14 @@
                 else if (key === 'NUMPAD_MULTIPLY' || key === '*') { //Show/hide any accidental * (asterisk)
                     if (app.Status.currentNotehead) {
                         app.ExecuteCommand({
-                            Execute: (app: Application.Application) => { app.Status.currentNotehead.forceAccidental = !app.Status.currentNotehead.forceAccidental; }
+                            Execute: (app: ScoreApplication.ScoreApplication) => { app.Status.currentNotehead.forceAccidental = !app.Status.currentNotehead.forceAccidental; }
                         });
                     }
                 }
                 else if (key === '.') {//Add a dot . (period)
                     if (app.Status.currentNote) {
                         app.ExecuteCommand({
-                            Execute: (app: Application.Application) => {
+                            Execute: (app: ScoreApplication.ScoreApplication) => {
                                 if (app.Status.currentNote.dotNo)
                                     app.Status.currentNote.dotNo++;
                                 else app.Status.currentNote.dotNo = 1;
@@ -435,26 +435,26 @@ Restore all pitch keys to normal register K (with Caps Lock)
             }
         }
 
-        class FinaleSmartEdit implements Application.IFeedbackClient, Application.IEventProcessor {
+        class FinaleSmartEdit implements Application.IFeedbackClient, ScoreApplication.ScoreEventProcessor {
             changed(status: Application.IStatusManager, key: string, val: any) {
                 if (key === "currentNote") {
                     // flyt denne til 
                 }
             }
 
-            Init(app: Application.Application): void { }
-            Exit(app: Application.Application): void { }
+            Init(app: ScoreApplication.ScoreApplication): void { }
+            Exit(app: ScoreApplication.ScoreApplication): void { }
 
-            /*public clicknote(app: Application.Application, event: JQueryEventObject): boolean {
+            /*public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;
                 app.Status.currentNote = note;
                 return true;
             }*/
 
-            /*midinoteoff (app: Application.Application, event: Event): boolean { return false; }
-            keypressed (app: Application.Application, event: Event): boolean { return false; }
-            keyup (app: Application.Application, event: Event): boolean { return false; }
-            keydown (app: Application.Application, event: Event): boolean { return false; }*/
+            /*midinoteoff (app: ScoreApplication.ScoreApplication, event: Event): boolean { return false; }
+            keypressed (app: ScoreApplication.ScoreApplication, event: Event): boolean { return false; }
+            keyup (app: ScoreApplication.ScoreApplication, event: Event): boolean { return false; }
+            keydown (app: ScoreApplication.ScoreApplication, event: Event): boolean { return false; }*/
         }
     }
 }

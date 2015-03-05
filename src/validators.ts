@@ -1,7 +1,9 @@
 ﻿module jMusicScore {
     export module Model {
-        export class UpdateBarsValidator implements Application.IValidator {
-            public Validate(app: Application.Application) {
+        export type ScoreValidator = Application.IValidator<Model.IScore, JQuery>;
+
+        export class UpdateBarsValidator implements ScoreValidator {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 var score = app.score;
                 var maxTime = AbsoluteTime.startTime;
 
@@ -48,8 +50,8 @@
             }
         }
 
-        export class CreateTimelineValidator implements Application.IValidator {
-            public Validate(app: Application.Application) {
+        export class CreateTimelineValidator implements ScoreValidator {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 var score = app.score;
                 //score.updateBars();
                 var events: ITimedEvent[] = [];
@@ -84,8 +86,8 @@
             }
         }
 
-        export class UpdateAccidentalsValidator implements Application.IValidator {
-            public Validate(app: Application.Application) {
+        export class UpdateAccidentalsValidator implements ScoreValidator {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 var currentKey: IKey = null;
                 var pitchChanges: string[] = [];
                 var pitchClassChanges: string[] = [];
@@ -162,8 +164,8 @@
             }
         }
 
-        export class JoinNotesValidator implements Application.IValidator {
-            public Validate(app: Application.Application) {
+        export class JoinNotesValidator implements ScoreValidator {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 app.score.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices((voice: IVoice, index: number): void => {
                         voice.withNotes((note: INote, index: number): void => {
@@ -205,7 +207,7 @@
             }
         }
 
-        export class SplitNotesValidator implements Application.IValidator { //todo: tjek om der skiftes taktart inden noden ophører
+        export class SplitNotesValidator implements ScoreValidator { //todo: tjek om der skiftes taktart inden noden ophører
 
             public static BestNoteValues(time: TimeSpan): Array<TimeSpan> {
                 if (new TimeSpan(1, 1024).Gt(time)) {
@@ -233,7 +235,7 @@
                 return [runningTime].concat(this.BestNoteValues(time.Sub(runningTime)));
             }
 
-            public Validate(app: Application.Application) {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 app.score.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices((voice: IVoice, index: number): void => {
                         voice.withNotes((note: INote, index: number): void => {
@@ -290,8 +292,8 @@
             }
         }
 
-        export class BeamValidator implements Application.IValidator {
-            public Validate(app: Application.Application) {
+        export class BeamValidator implements ScoreValidator {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 app.score.withStaves((staff: Model.IStaff) => {
                     staff.withVoices((voice: Model.IVoice) => {
                         this.ValidateVoice(voice);
@@ -486,8 +488,8 @@
         }
 
 
-        export class TieValidator implements Application.IValidator {
-            public Validate(app: Application.Application) {
+        export class TieValidator implements ScoreValidator {
+            public Validate(app: ScoreApplication.ScoreApplication) {
                 app.score.withVoices((voice: IVoice, index: number) => {
                     this.ValidateVoice(voice);
                 });

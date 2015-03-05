@@ -39,7 +39,7 @@
 
         //export class GhostVoiceElement { }
 
-        export class GhostsValidator implements Application.IValidator {
+        export class GhostsValidator implements Model.ScoreValidator {
             private addGhostMeter(staff: Model.IStaff, meter: Model.IMeter) {
                 // tjek om der er ghostMeter til denne kombination af meter og staff
                 var ghostMeter = new GhostMeterElement(staff, meter);
@@ -47,7 +47,7 @@
                 staff.addChild(staff.meterElements, ghostMeter);
             }
 
-            public Validate(app: Application.Application) {
+            public Validate(app: ScoreApplication.ScoreApplication) {
 
                 app.score.withStaves((staff: Model.IStaff, index: number): void => {
 

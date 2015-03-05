@@ -9,20 +9,20 @@ module jMusicScore {
             action: (e: Event) => void;
         }
 
-        export class MenuPlugin implements Application.IPlugIn {
-            Init(app: Application.Application) {
+        export class MenuPlugin implements ScoreApplication.ScorePlugin {
+            Init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
                 var obj = this.GetMenuObj(app);
                 this.menu_addItem(obj/*, 0*/);
             }
 
-            private app: Application.Application;
+            private app: ScoreApplication.ScoreApplication;
 
             GetId(): string {
                 return "Menu";
             }
 
-            GetMenuObj(app: Application.Application): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 return {};
             }
 
@@ -160,7 +160,7 @@ module jMusicScore {
 
 
         export class SvgMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: Application.Application): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** svg ******************* //
                 return {
                     Id: "ExportMenu",
@@ -208,7 +208,7 @@ module jMusicScore {
 
 
         export class ExportMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: Application.Application): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** Export menu ******************* //
                 return {
                     Id: "ExportMenu",
@@ -243,7 +243,7 @@ module jMusicScore {
                                 ],
                                 okFunction: function () { },
                                 cancelFunction: function () { },
-                                initFunction: function (application: Application.Application) {
+                                initFunction: function (application: ScoreApplication.ScoreApplication) {
                                     $('#jsonText').text(application.SaveToString('JSON'));
                                 },
                                 width: 350,
@@ -314,7 +314,7 @@ module jMusicScore {
                                 ],
                                 okFunction: function () { },
                                 cancelFunction: function () { },
-                                initFunction: function (application: Application.Application) {
+                                initFunction: function (application: ScoreApplication.ScoreApplication) {
                                     //$('#musicXMLText').text(application.SaveToString('MusicXML'));
                                     $('#musicXMLText').html(application.SaveToString('MusicXML').replace(/&/g, '&amp;').replace(/</g, '\n&lt;').replace(/>/g, '&gt;'));
                                     /*var xmlGen = new MusicXml.MusicXmlWriter(application.score);
@@ -354,7 +354,7 @@ module jMusicScore {
                                 ],
                                 okFunction: function () { },
                                 cancelFunction: function () { },
-                                initFunction: function (application: Application.Application) {
+                                initFunction: function (application: ScoreApplication.ScoreApplication) {
 
                                     // We pass some notes to |MidiWriter.createNote| to create the MIDI
                                     // events that define the notes that will be in the final MIDI stream. If
@@ -459,7 +459,7 @@ module jMusicScore {
 
         // ****************** STAFF ******************* //
         export class StaffMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: Application.Application): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** staves ******************* //
                 return {
                     Id: "StaffMenu",
@@ -641,7 +641,7 @@ module jMusicScore {
         }
 
         export class FileDialog extends Dialogs.Dialog {
-            constructor(public idPrefix: string, public app: Application.Application) {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
@@ -697,7 +697,7 @@ module jMusicScore {
         }
 
         export class OpenFileMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: Application.Application): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** Open file ******************* //
                 return {
                     
@@ -797,7 +797,7 @@ module jMusicScore {
 
 
         export class SaveAsFileMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: Application.Application): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** Save file ******************* //
                 return {
                     Id: "FileMenu",
@@ -932,7 +932,7 @@ module jMusicScore {
                 super();
             }
 
-            GetMenuObj(app: Application.Application): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** Custom action ******************* //
                 var menuItem = {
                     Id: this.id,
@@ -950,7 +950,7 @@ module jMusicScore {
 
 
         export class VoiceMenuPlugin extends QuickMenuPlugin {
-            constructor(app: Application.Application) {
+            constructor(app: ScoreApplication.ScoreApplication) {
                 super("VoiceMenu", "Voice", "", "", function () {
                     new Dialogs.VoiceDialog('menu', app).Show(<Model.IVoice>app.Status.currentVoice);
                 });
@@ -958,7 +958,7 @@ module jMusicScore {
         }
 
         export class NewScorePlugin extends QuickMenuPlugin {
-            constructor(app: Application.Application) {
+            constructor(app: ScoreApplication.ScoreApplication) {
                 super("NewMenu", "New", "FileMenu", "File", function () {
                     app.ExecuteCommand(new Model.ClearScoreCommand({}));
                 });

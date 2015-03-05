@@ -418,14 +418,6 @@ module jMusicScore {
                     }
                 }
             }
-            public generateMap(): void {
-                var events: ITimedEvent[] = this.parent.getEvents();
-                events.sort(MeasureMap.compareEvents);
-                $('#events').empty();
-                for (var i = 0; i < events.length; i++) {
-                    $('#events').append('<li>' + events[i].absTime.ToString() + ": " + events[i].debug() + '</li>');
-                }
-            }
         }
 
         export interface IMeterOwner extends IMusicElement {
@@ -2199,7 +2191,7 @@ module jMusicScore {
             distX: number;
             endNoteY: number;
             endNoteheadY: number;
-            Render?: (deco: ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
+            //Render?: (deco: ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
             //CalcSpacing?: (deco: ILongDecorationElement) => void;
         }
         export interface IVoiceSpacingInfo extends ISpacingInfo { }

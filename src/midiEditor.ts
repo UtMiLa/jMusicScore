@@ -2,13 +2,13 @@
     export module Editors {
         declare var $: any;
 
-        export class MidiEditor implements Application.IEventProcessor {
-            public Init(app: Application.Application) {
+        export class MidiEditor implements ScoreApplication.ScoreEventProcessor {
+            public Init(app: ScoreApplication.ScoreApplication) {
             }
-            public Exit(app: Application.Application) {
+            public Exit(app: ScoreApplication.ScoreApplication) {
             }
             private noCtrl = 0;
-            public midicontrol(app: Application.Application, event: Event): boolean {
+            public midicontrol(app: ScoreApplication.ScoreApplication, event: Event): boolean {
                 /*v pedal ned: 
                 ctlNo "43"
                 ctlValue "7f"
@@ -54,15 +54,15 @@
                 }*/
                 return true;
             }
-            public midinoteon(app: Application.Application, event: Event): boolean {
+            public midinoteon(app: ScoreApplication.ScoreApplication, event: Event): boolean {
                 app.Status.pressNoteKey(Model.Pitch.createFromMidi((<any>event).noteInt));
                 return true;
             }
-            public midinoteoff(app: Application.Application, event: Event): boolean {
+            public midinoteoff(app: ScoreApplication.ScoreApplication, event: Event): boolean {
                 app.Status.releaseNoteKey(Model.Pitch.createFromMidi((<any>event).noteInt));
                 return true;
             }
-            public midichordreleased(app: Application.Application, event: Event): boolean {
+            public midichordreleased(app: ScoreApplication.ScoreApplication, event: Event): boolean {
                 if (app.Status.currentVoice) { // todo: set as quickenter_editor
                     /*var rest = app.Status.rest;
                     var dots = app.Status.dots;

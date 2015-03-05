@@ -1,5 +1,5 @@
 ﻿module jMusicScore {
-    var app = new Application.Application($("#appContainer"));
+    var app = <ScoreApplication.ScoreApplication>new Application.Application<Model.ScoreElement, JQuery>($("#appContainer"), new Model.ScoreElement(null));
 
     /* JSONReader */
     app.AddPlugin(new MusicXml.MusicXmlPlugin());
@@ -118,8 +118,15 @@
 
         app.AddPlugin(new Menus.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function () { app.LoadUsing('saved.xml', 'Server', 'JSON'); }));
         app.AddPlugin(new Menus.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function () { app.SaveUsing('saved.xml', 'Server', 'JSON'); }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function () { app.ExecuteCommand({ Execute: (app: Application.Application) => { } }); }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("MeasureMapMenu", "Show Measure Map", "TestMenu", "Test", function () { app.map.generateMap(); }));
+        app.AddPlugin(new Menus.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function () { app.ExecuteCommand({ Execute: (app: ScoreApplication.ScoreApplication) => { } }); }));
+        app.AddPlugin(new Menus.QuickMenuPlugin("MeasureMapMenu", "Show Measure Map", "TestMenu", "Test", function () {
+            var events: Model.ITimedEvent[] = this.parent.getEvents();
+            events.sort(Model.MeasureMap.compareEvents);
+            $('#events').empty();
+            for (var i = 0; i < events.length; i++) {
+                $('#events').append('<li>' + events[i].absTime.ToString() + ": " + events[i].debug() + '</li>');
+            }
+        }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TestFileDlgMenu", "File Dialog", "TestMenu", "Test", function () { new Menus.FileDialog("open", app).Show(); }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function () { $('.overlay').toggle(); }));
         //app.AddPlugin(new Menus.QuickMenuPlugin("TestShowCanvasMenu", "Show on Canvas (gl)", "TestMenu", "Test", function () { CanvasView.ShowExperimentalCanvas(app.score); }));
@@ -129,7 +136,7 @@
             var note2 = app.score.staffElements[0].voiceElements[0].noteElements[4];
             note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.Diff(note1.absTime), Model.LongDecorationType.slur));
             app.ExecuteCommand({
-                Execute: (app: Application.Application) => { }
+                Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function () {
@@ -140,14 +147,14 @@
             var note4 = app.score.staffElements[0].voiceElements[0].noteElements[8];
             note3.addChild(note3.longDecorationElements, new Model.NoteLongDecorationElement(note3, note4.absTime.Diff(note3.absTime), Model.LongDecorationType.decresc));
             app.ExecuteCommand({
-                Execute: (app: Application.Application) => { }
+                Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function () {
             var staff1 = app.score.staffElements[0];
             staff1.setStaffExpression("Allegro", Model.AbsoluteTime.startTime);
             app.ExecuteCommand({
-                Execute: (app: Application.Application) => { }
+                Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function () {
@@ -198,7 +205,7 @@
         app.AddPlugin(new Menus.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function () {
             app.score.withBars((bar: Model.IBar, index: number) => { app.score.removeChild(bar); });
             app.ExecuteCommand({
-                Execute: (app: Application.Application) => { }
+                Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("MementoTextMenu", "Show memento", "TestMenu", "Test", function () {
@@ -217,13 +224,13 @@
                 });
             });
             app.ExecuteCommand({
-                Execute: (app: Application.Application) => { }
+                Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
         app.AddPlugin(new Menus.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function () {
             app.score = <Model.IScore>Model.MusicElementFactory.RecreateElement(null, app.score.getMemento());
             app.ExecuteCommand({
-                Execute: (app: Application.Application) => { }
+                Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
         //app.AddPlugin(new UI.PianoPlugIn());

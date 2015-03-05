@@ -96,10 +96,10 @@
             }
         }
 
-        class LilypondReader implements Application.IReaderPlugIn {
-            private app: Application.Application;
+        class LilypondReader implements Application.IReaderPlugIn<Model.ScoreElement, JQuery> {
+            private app: ScoreApplication.ScoreApplication;
 
-            Init(app: Application.Application) {
+            Init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
             }
 
@@ -128,14 +128,14 @@
 
 
 
-        export class LilypondWriter implements Application.IWriterPlugIn {
+        export class LilypondWriter implements Application.IWriterPlugIn<Model.ScoreElement, JQuery> {
             constructor(public score: Model.IScore) {
             }
 
             //private doc;
 
 
-            Init(app: Application.Application) { /*this.app = app;*/ }
+            Init(app: ScoreApplication.ScoreApplication) { /*this.app = app;*/ }
 
             GetId(): string {
                 return "LilypondWriter";
@@ -252,11 +252,11 @@
 
 
 
-        export class LilypondPlugin implements Application.IPlugIn {
+        export class LilypondPlugin implements ScoreApplication.ScorePlugin {
             constructor() {
             }
 
-            public Init(app: Application.Application) {
+            public Init(app: ScoreApplication.ScoreApplication) {
                 app.AddReader(new LilypondReader());
                 app.AddWriter(new LilypondWriter(app.score));
             }

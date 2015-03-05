@@ -2,7 +2,7 @@
     export module UI {
 
         export class JToolbar {
-            constructor(private app: Application.Application) {
+            constructor(private app: ScoreApplication.ScoreApplication) {
                 //var _this = this;
                 /*UtMiLa.application.State("currentVoice", null);
                 UtMiLa.application.State("rest", false);
@@ -283,7 +283,7 @@
                             dx: 7,
                             dy: 16,
                             scale: 1.2,
-                            onChecked: function (button: HTMLInputElement, app: Application.Application) {
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
                                 //toolbar.rest = button.checked;
                                 app.Status.rest = button.checked;
                             }
@@ -295,7 +295,7 @@
                             dx: 8,
                             dy: 17,
                             scale: 1.2,
-                            onChecked: function (button: HTMLInputElement, app: Application.Application) {
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
                                 //toolbar.dots = button.checked ? 1 : 0;
                                 app.Status.dots = button.checked ? 1: 0;
                             }
@@ -307,7 +307,7 @@
                             dx: 19,
                             dy: 29,
                             scale: 0.8,
-                            onChecked: function (button: HTMLInputElement, app: Application.Application) {
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
                                 app.Status.grace = button.checked;
                             }
                         },
@@ -360,7 +360,7 @@
                                     var notedata = $(this).data('notedata');
                                     var parent = $(this).data('parent');
                                     //var score =  $( this ).data('score');
-                                    var app = <Application.Application>$(this).data('app');
+                                    var app = <ScoreApplication.ScoreApplication>$(this).data('app');
 
                                     if (notedata.mode) {
                                         parent.unregisterModes();
@@ -395,8 +395,8 @@
         }
 
 
-        export class PianoPlugIn implements Application.IPlugIn, Application.IFeedbackClient { // todo: change sizing of clientArea etc.
-            Init(app: Application.Application) {
+        export class PianoPlugIn implements ScoreApplication.ScorePlugin, Application.IFeedbackClient { // todo: change sizing of clientArea etc.
+            Init(app: ScoreApplication.ScoreApplication) {
                 var $root = (<any>$('<div>').addClass('piano').appendTo('#footer'));
                 this.createPianoKeyboard($root, { tgWidth: 40 }, app);
                 app.FeedbackManager.registerClient(this);
@@ -413,7 +413,7 @@
                 }
             }
 
-            private createPianoKeyboard($root: JQuery, param: {tgWidth: number}, app: Application.Application) {
+            private createPianoKeyboard($root: JQuery, param: {tgWidth: number}, app: ScoreApplication.ScoreApplication) {
                 var tgSpacing = param.tgWidth * 7 / 12;
                 for (var i = 21; i < 109; i++) {
                     var det = ((i + 7) * 7) % 12;
