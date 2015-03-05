@@ -95,7 +95,7 @@
     $(function () {
         /* Menus */
         app.AddPlugin(new CanvasView.CanvasViewer($('#svgArea')));
-        app.AddPlugin(new SvgView.SVGViewer($('#svgArea')));
+        //app.AddPlugin(new SvgView.SVGViewer($('#svgArea')));
 
         app.AddPlugin(new ToolbarPlugin());
 
@@ -104,12 +104,7 @@
         app.AddPlugin(new Menus.SaveAsFileMenuPlugin());
         app.AddPlugin(new Menus.SvgMenuPlugin());
         app.AddPlugin(new Menus.ExportMenuPlugin());
-        //app.AddPlugin(new Menus.VoiceMenuPlugin());
-
         app.AddPlugin(new Menus.VoiceMenuPlugin(app));
-        /*"VoiceMenu", "Voice", "", "", function () {
-            new Dialogs.VoiceDialog('menu', app).Show(<Model.VoiceElement>app.GetState("currentVoice"));
-        }));*/
 
 
         app.AddPlugin(new Menus.StaffMenuPlugin());
