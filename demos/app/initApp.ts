@@ -124,7 +124,7 @@
         app.AddPlugin(new Menus.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function () { app.ExecuteCommand({ Execute: (app: ScoreApplication.ScoreApplication) => { } }); }));
         app.AddPlugin(new Menus.QuickMenuPlugin("MeasureMapMenu", "Show Measure Map", "TestMenu", "Test", function () {
             var events: Model.ITimedEvent[] = this.parent.getEvents();
-            events.sort(Model.MeasureMap.compareEvents);
+            events.sort(Model.Music.compareEvents);
             $('#events').empty();
             for (var i = 0; i < events.length; i++) {
                 $('#events').append('<li>' + events[i].absTime.ToString() + ": " + events[i].debug() + '</li>');
@@ -238,6 +238,24 @@
         }));
         //app.AddPlugin(new UI.PianoPlugIn());
 
+        app.AddPlugin(new Menus.QuickMenuPlugin("UndoMenu", "Undo", "TestMenu", "Test", function () {
+            if (app.canUndo()) {
+                app.Undo();
+            }
+            else {
+                alert("Can't");
+            }
+        }));
+  
+        app.AddPlugin(new Menus.QuickMenuPlugin("RedoMenu", "Redo", "TestMenu", "Test", function () {
+            if (app.canRedo()) {
+                app.Redo();
+            }
+            else {
+                alert("Can't");
+            }
+        }));
+  
         app.AddPlugin(new FinaleUI.FinaleSmartEditPlugin());
     });
 } 

@@ -728,7 +728,7 @@
                     var startTime = !i ? Model.AbsoluteTime.startTime : this.app.document.bars[i - 1].absTime;
                     var endTime = i === this.app.document.bars.length - 1 ? Model.AbsoluteTime.Infinity : this.app.document.bars[i].absTime;
                     var events = staffElement.getEvents(startTime, endTime);
-                    events.sort(Model.MeasureMap.compareEventsByVoice);
+                    events.sort(Model.Music.compareEventsByVoice);
 
                     var str = "";
                     var updateMeter = false;

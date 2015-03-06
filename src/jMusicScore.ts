@@ -380,46 +380,6 @@ module jMusicScore {
             }
         }
 
-        export class MeasureMap {
-            constructor(public parent: IEventContainer) {
-            }
-
-            public static compareEvents(a: ITimedEvent, b: ITimedEvent): number {
-                return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
-            }
-            public static compareEventsByVoice(a: ITimedEvent, b: ITimedEvent) {
-                var va = a.getVoice();
-                var vb = b.getVoice();
-                if (va !== null && vb !== null && va === vb) {
-                    return MeasureMap.compareEvents(a, b);
-                }
-                else if (!va && !!vb) {
-                    if (vb === vb.parent.voiceElements[0]) 
-                        return MeasureMap.compareEvents(a, b);
-                    return -1;
-                }
-                else if (!!va && !vb) {
-                    if (va === va.parent.voiceElements[0])
-                        return MeasureMap.compareEvents(a, b);
-                    return 1;
-                }
-                else if (!va && !vb) {
-                    return MeasureMap.compareEvents(a, b);
-                }
-                else {
-                    var staffa = va.parent;
-                    var staffb = vb.parent;
-                    if (staffa === staffb) {
-                        return staffa.voiceElements.indexOf(va) - staffa.voiceElements.indexOf(vb);
-                    }
-                    else {
-                        var score = staffa.parent;
-                        return score.staffElements.indexOf(staffa) - score.staffElements.indexOf(staffb);
-                    }
-                }
-            }
-        }
-
         export interface IMeterOwner extends IMusicElement {
             setMeter(meter: IMeterDefinition, absTime: AbsoluteTime): void;
             withMeters(f: (meter: IMeter, index: number) => void): void;
@@ -723,21 +683,21 @@ module jMusicScore {
 
             public getStaffContext(absTime: AbsoluteTime): StaffContext {
                 var clef: IClef;
-                this.clefElements.sort(MeasureMap.compareEvents);
+                this.clefElements.sort(Music.compareEvents);
                 for (var i = 0; i < this.clefElements.length; i++) {
                     if (this.clefElements[i].absTime.Gt(absTime)) break;
                     clef = this.clefElements[i];
                 }
                 var key: IKey;
                 //var keys = this.keyElements.length ? this.keyElements : this.parent.keyElements;
-                this.keyElements.sort(MeasureMap.compareEvents);
+                this.keyElements.sort(Music.compareEvents);
                 for (var i = 0; i < this.keyElements.length; i++) {
                     if (this.keyElements[i].absTime.Gt(absTime)) break;
                     key = this.keyElements[i];
                 }
                 var meter: IMeter;
                 var meters = this.meterElements.length ? this.meterElements : this.parent.meterElements;
-                meters.sort(MeasureMap.compareEvents);
+                meters.sort(Music.compareEvents);
                 var barNo = 0;
                 var timeInBar = new TimeSpan(0);
                 var oldTime = AbsoluteTime.startTime;
@@ -2381,9 +2341,43 @@ module jMusicScore {
                 }
             }
 
-            static setBar(staff: IStaff, absTime: AbsoluteTime): IBar;
-            static setBar(score: IScore, absTime: AbsoluteTime): IBar;
-            static setBar(owner: IMusicElement, absTime: AbsoluteTime): IBar {
+            public static compareEvents(a: ITimedEvent, b: ITimedEvent): number {
+                return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
+            }
+
+            public static compareEventsByVoice(a: ITimedEvent, b: ITimedEvent) {
+                var va = a.getVoice();
+                var vb = b.getVoice();
+                if (va !== null && vb !== null && va === vb) {
+                    return Music.compareEvents(a, b);
+                }
+                else if (!va && !!vb) {
+                    if (vb === vb.parent.voiceElements[0])
+                        return Music.compareEvents(a, b);
+                    return -1;
+                }
+                else if (!!va && !vb) {
+                    if (va === va.parent.voiceElements[0])
+                        return Music.compareEvents(a, b);
+                    return 1;
+                }
+                else if (!va && !vb) {
+                    return Music.compareEvents(a, b);
+                }
+                else {
+                    var staffa = va.parent;
+                    var staffb = vb.parent;
+                    if (staffa === staffb) {
+                        return staffa.voiceElements.indexOf(va) - staffa.voiceElements.indexOf(vb);
+                    }
+                    else {
+                        var score = staffa.parent;
+                        return score.staffElements.indexOf(staffa) - score.staffElements.indexOf(staffb);
+                    }
+                }
+            }
+
+            static setBar(owner: IStaff | IScore, absTime: AbsoluteTime): IBar {
                 var score: IScore;
                 if (owner.getElementName() === "Staff") {
                     score = (<IStaff>owner).parent;

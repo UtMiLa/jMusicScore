@@ -98,7 +98,7 @@
                     // get events (bar lines + notes + keys changes) sorted by absTime from all voices
                     var events = staff.getEvents();
                     events = events.concat(scoreEvents);
-                    events.sort(Model.MeasureMap.compareEvents);
+                    events.sort(Model.Music.compareEvents);
                     // for each event:
                     for (var iEvent = 0; iEvent < events.length; iEvent++) {
                         var event = events[iEvent];

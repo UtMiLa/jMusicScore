@@ -90,10 +90,14 @@
             note
             direction ['UP','DOWN','FREE']
             */
+            private _oldDirection: Model.StemDirectionType;
 
             public Execute(app: ScoreApplication.ScoreApplication) {
                 var direction = this.args.direction;
                 var note = <INote>this.args.note;
+
+                this._oldDirection = note.getStemDirection();
+
                 if (typeof (direction) === "number") {
                     note.setStemDirection(<Model.StemDirectionType>direction);
                 }
@@ -106,7 +110,12 @@
                 else {
                     note.setStemDirection(Model.StemDirectionType.stemFree);
                 }
-            }            
+            }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                var note = <INote>this.args.note;
+                note.setStemDirection(this._oldDirection);
+            }       
         }
 
         export interface NoteDurationArgs {

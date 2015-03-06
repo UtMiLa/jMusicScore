@@ -931,14 +931,14 @@
                 });
 
                 var events: Model.ITimedEvent[] = score.getEvents();
-                events.sort(Model.MeasureMap.compareEvents);
+                events.sort(Model.Music.compareEvents);
 
                 var pos = Metrics.firstPos;
                 var oldpos = pos;
                 var eventWidth = 0;
                 for (var i = 0; i < events.length; i++) {
                     if (i > 0) {
-                        if (Model.MeasureMap.compareEvents(events[i], events[i - 1]) == 0) {
+                        if (Model.Music.compareEvents(events[i], events[i - 1]) == 0) {
                             pos = oldpos;
                         }
                         else {
@@ -946,7 +946,7 @@
                             eventWidth = 0;
                             // Find getPreWidth()
                             var j = i;
-                            while (j < events.length && Model.MeasureMap.compareEvents(events[i], events[j]) == 0) {
+                            while (j < events.length && Model.Music.compareEvents(events[i], events[j]) == 0) {
                                 //var eventDisplayData = <SVGBaseDisplayData>(<any>events[j]).getDisplayData(this.context);
                                 var eventSpacing = events[j].spacingInfo;
                                 if (eventSpacing) {

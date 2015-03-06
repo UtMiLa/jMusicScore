@@ -31,6 +31,7 @@ module jMusicScore {
         /** Interface for commands. Every user action that changes data in the model must use Command objects. */
         export interface ICommand<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
             Execute(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            Undo?(app: Application<DocumentType, StatusManager, ContainerType>): void;
         }
 
         /** Interface for objects that check and refines the model after every change (like beam calculation) */
@@ -316,9 +317,47 @@ module jMusicScore {
                 return null;
             }
 
+            private _undoStack: ICommand<DocumentType, StatusManager, ContainerType>[] = [];
+            private _redoStack: ICommand<DocumentType, StatusManager, ContainerType>[] = [];
+
             public ExecuteCommand(command: ICommand<DocumentType, StatusManager, ContainerType>) {
                 command.Execute(this);
-                //this.ExecuteEventQueue();
+                if (command.Undo) {
+                    this._undoStack.push(command);
+                }
+                else {
+                    this._undoStack = [];
+                }
+                this._redoStack = [];
+                
+                this.FixModel();
+                this.FixDesign();
+                this.FixEditors();
+            }
+
+            public canUndo(): boolean {
+                return (this._undoStack.length) > 0;
+            }
+
+            public canRedo(): boolean {
+                return this._redoStack.length > 0;
+            }
+
+            public Undo() {
+                var cmd = this._undoStack.pop();
+                cmd.Undo(this);
+                this._redoStack.push(cmd);
+                
+                this.FixModel();
+                this.FixDesign();
+                this.FixEditors();
+            }
+
+            public Redo() {
+                var cmd = this._redoStack.pop();
+                cmd.Execute(this);
+                this._undoStack.push(cmd);
+                
                 this.FixModel();
                 this.FixDesign();
                 this.FixEditors();
