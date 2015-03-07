@@ -1213,7 +1213,6 @@ module jMusicScore {
                 app.AddDesigner(new MusicSpacing.SpacingDesigner());
                 app.AddDesigner(new Views.ExpressionRenderer());
                 app.AddDesigner(new TimelineDesigner(this.svgHelper));
-                app.AddDesigner(new HintAreaDesigner(app, this.svgHelper)); // todo: til egen plugin?
                 //app.AddDesigner(new BeamDesigner(this.context, this.svgHelper));
                 var editors = false;
                 if (editors) {
@@ -1797,8 +1796,8 @@ module jMusicScore {
 
         export class HintAreaPlugin implements ScoreApplication.ScorePlugin, IHintAreaCreator {
             Init(app: ScoreApplication.ScoreApplication) {
+                this.svg = $('.appContainer');
                 app.AddDesigner(new HintAreaDesigner(app, this));
-                this.svg = app.container.find('.appContainer');
             }
 
             private svg;
@@ -1809,6 +1808,7 @@ module jMusicScore {
 
             addStaffButton(y: number, staff: Model.IStaff): IHintArea {
                 var svgHintArea = new SVGHintArea(this.svg, staff.parent.spacingInfo.scale, y, staff);
+                //var svgHintArea = new SVGHintArea($('.appContainer'), staff.parent.spacingInfo.scale, y, staff);
                 return svgHintArea;
             }
         }
