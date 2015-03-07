@@ -110,6 +110,9 @@
 			//this.current_in = this.Jazz.MidiInOpen(newMidiIn, _midiProc);
 			return this.Jazz;
 		}
+		else if (action === "send") {
+		    this.Jazz.MidiOut(arg2.code, arg2.a1, arg2.a2);
+		}
 		else if (action === "close") {
 			this.Jazz.MidiInClose();
 			this.midiInVars.current_in='';

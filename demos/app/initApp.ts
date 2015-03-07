@@ -263,5 +263,6 @@
         }));
   
         app.AddPlugin(new FinaleUI.FinaleSmartEditPlugin());
+        app.AddPlugin(new Players.MidiPlayer());
     });
 } 

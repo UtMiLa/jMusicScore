@@ -114,4 +114,64 @@
 
 
     }
+    export module Players {
+
+        
+
+        export class MidiPlayer extends Menus.MenuPlugin {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
+                // ****************** midi out ******************* //
+                var me = this;
+                return {
+                    Id: "PlayMenu",
+                    Caption: "Play",
+                    action: (): void => {
+                        var events = app.document.getEvents();
+                        events.sort(Model.Music.compareEvents);
+                        var absTime = Model.AbsoluteTime.startTime;
+                        var concurrentEvents = [];
+                        for (var i = 0; i < events.length; i++) {
+                            var event = events[i];
+                            if (event.getElementName() === "Note") {
+                                /*if (!event.absTime.Eq(absTime)) {
+                                    me._midiEvents.push({ time: absTime, events: concurrentEvents });
+                                    concurrentEvents = [];
+                                    absTime = event.absTime;
+                                }
+                                var note = <Model.INote>event;
+                                note.withHeads((head: Model.INotehead) => {
+                                    concurrentEvents.push({ midi: head.pitch.toMidi(), on: true, velo: 100 });
+                                });*/
+                            }
+                        }
+
+                        this.PlayNextNote();
+                    }
+                };
+            }
+
+            private _midiEvents = [];
+
+            private PlayNextNote() {
+                var nextEvents = this._midiEvents.shift();
+                var me = this;
+
+                for (var i = 0; i < nextEvents.events.length; i++) {
+                    (<any>$).midiIn('send', { code: 0x90, a1: nextEvents.events[i].midi, a2: nextEvents.events[i].velo });
+                }
+                /*setTimeout(() => {
+                    (<any>$).midiIn('send', { code: 0x80, a1: nextEvents.events[i].midi, a2: 0 });
+                }, 200);*/
+
+                if (me._midiEvents.length) {
+                    var time = 2000 * (me._midiEvents[0].time.ToNumber() - nextEvents.time.ToNumber());
+                    setTimeout(() => {
+                        me.PlayNextNote();
+                    }, time);
+                }
+            }
+
+            GetId() { return "MidiPlayer"; }
+        }
+    }
 }
