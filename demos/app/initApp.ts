@@ -122,7 +122,12 @@
 
         app.AddPlugin(new Menus.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function () { app.LoadUsing('saved.xml', 'Server', 'JSON'); }));
         app.AddPlugin(new Menus.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function () { app.SaveUsing('saved.xml', 'Server', 'JSON'); }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function () { app.ExecuteCommand({ Execute: (app: ScoreApplication.ScoreApplication) => { } }); }));
+        app.AddPlugin(new Menus.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function () {
+            app.ExecuteCommand({
+                Execute: (app: ScoreApplication.ScoreApplication) => { },
+                Undo: (app: ScoreApplication.ScoreApplication) => { }
+            });
+        }));
         app.AddPlugin(new Menus.QuickMenuPlugin("MeasureMapMenu", "Show Measure Map", "TestMenu", "Test", function () {
             var events: Model.ITimedEvent[] = this.parent.getEvents();
             events.sort(Model.Music.compareEvents);

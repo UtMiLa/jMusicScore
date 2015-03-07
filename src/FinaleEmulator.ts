@@ -164,13 +164,32 @@
                     if (app.Status.currentNote) {
                         if (app.Status.notesPressed.length) {
                             // replace noteheads with pressed chord
+                            var newPitches = [];
+                            for (var i = 0; i < app.Status.notesPressed.length; i++) {
+                                newPitches.push(app.Status.notesPressed[i]);
+                            }
                             app.ExecuteCommand({
-                                Execute: (app: ScoreApplication.ScoreApplication) => {
+                                oldPitches: [],
+                                newPitches: newPitches,
+                                Execute: function(app: ScoreApplication.ScoreApplication) {
+                                    var note = app.Status.currentNote;
+                                    this.oldPitches = [];
+                                    while (note.noteheadElements.length) {
+                                        this.oldPitches.push(note.noteheadElements[0]);
+                                        note.removeChild(note.noteheadElements[0]);
+                                    }
+                                    note.setRest(false);
+                                    for (var i = 0; i < this.newPitches.length; i++) {
+                                        note.setPitch(this.newPitches[i]);
+                                    }
+                                },
+                                Undo: function(app: ScoreApplication.ScoreApplication)  {
                                     var note = app.Status.currentNote;
                                     while (note.noteheadElements.length) { note.removeChild(note.noteheadElements[0]); }
                                     note.setRest(false);
-                                    for (var i = 0; i < app.Status.notesPressed.length; i++) {
-                                        note.setPitch(app.Status.notesPressed[i]);
+                                    for (var i = 0; i < this.oldPitches.length; i++) {
+                                        note.addChild(note.noteheadElements, this.oldPitches[i]);
+                                            //.setPitch(app.Status.notesPressed[i]);
                                     }
                                 }
                             });
@@ -296,7 +315,8 @@
                 else if (key === 'NUMPAD_MULTIPLY' || key === '*') { //Show/hide any accidental * (asterisk)
                     if (app.Status.currentNotehead) {
                         app.ExecuteCommand({
-                            Execute: (app: ScoreApplication.ScoreApplication) => { app.Status.currentNotehead.forceAccidental = !app.Status.currentNotehead.forceAccidental; }
+                            Execute: (app: ScoreApplication.ScoreApplication) => { app.Status.currentNotehead.forceAccidental = !app.Status.currentNotehead.forceAccidental; },
+                            Undo: (app: ScoreApplication.ScoreApplication) => { app.Status.currentNotehead.forceAccidental = !app.Status.currentNotehead.forceAccidental; }
                         });
                     }
                 }
@@ -307,6 +327,10 @@
                                 if (app.Status.currentNote.dotNo)
                                     app.Status.currentNote.dotNo++;
                                 else app.Status.currentNote.dotNo = 1;
+                            },
+                            Undo: (app: ScoreApplication.ScoreApplication) => {
+                                if (app.Status.currentNote.dotNo > 0)
+                                    app.Status.currentNote.dotNo--;
                             }
                         });
                     }

@@ -236,17 +236,6 @@ module jMusicScore {
             }
 
             public Save(name: string, fileManager: IFileManager<DocumentType, StatusManager, ContainerType>, type: string) {
-                /*for (var i = 0; i < this.writers.length; i++) {
-                    if (this.writers[i].Supports(type)) {
-                        var writer = this.writers[i];
-                        var extension = writer.GetExtension(type);
-                        if (name.substr(name.length - extension.length - 1) != '.' + extension) {
-                            name += '.' + extension;
-                        }
-                        fileManager.saveFile(name, writer.Save(), function (res: string) { });
-                    }
-                }
-                throw "Output format not supported: " + type;*/
                 fileManager.saveFile(name, this.SaveToString(type), function (res: string) { });
             }
 
@@ -282,6 +271,8 @@ module jMusicScore {
                             score.clear();
 
                             var a = reader.Load(data);
+                            this._undoStack = [];
+                            this._redoStack = [];
                             app.FixModel();
                             app.FixDesign();
                             app.FixEditors();
@@ -301,6 +292,8 @@ module jMusicScore {
                         score.clear();
 
                         var a = this.readers[i].Load(data);
+                        this._undoStack = [];
+                        this._redoStack = [];
                         this.FixModel();
                         this.FixDesign();
                         this.FixEditors();
