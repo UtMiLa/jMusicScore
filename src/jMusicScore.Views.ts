@@ -1,5 +1,164 @@
 module jMusicScore {
-   
+
+    export module ScoreApplication {
+        export interface ScoreApplication extends Application.Application<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface ScorePlugin extends Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface ScoreEventProcessor extends Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface ScoreDesigner extends Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> { }
+
+        export class ScoreStatusManager implements Application.IStatusManager {
+            constructor() { }
+
+            private feedbackManager: Application.IFeedbackManager;
+
+            public setFeedbackManager(f: Application.IFeedbackManager): void {
+                this.feedbackManager = f;
+            }
+
+            private _currentPitch: Model.Pitch;
+            private _currentNote: Model.INote;
+            private _currentNotehead: Model.INotehead;
+            private _currentVoice: Model.IVoice;
+            private _currentStaff: Model.IStaff;
+            private _insertPoint: Model.HorizPosition;
+            private _selectionStart: Model.AbsoluteTime; // todo: property
+            private _selectionEnd: Model.AbsoluteTime; // todo: property
+            private _selectionStartStaff: Model.IStaff; // todo: property
+            private _selectionEndStaff: Model.IStaff; // todo: property
+            private _rest: boolean = false;
+            private _dots: number = 0;
+            private _grace: boolean = false;
+            private _currentTuplet: Model.TupletDef;
+            private _mouseOverElement: Model.IMusicElement;
+
+            private changed(key: string, val: any) {
+                if (this.feedbackManager) {
+                    this.feedbackManager.changed(this, key, val);
+                }
+            }
+
+            public get currentPitch(): Model.Pitch { return this._currentPitch; }
+            public set currentPitch(v: Model.Pitch) {
+                if (this._currentPitch !== v) {
+                    this._currentPitch = v;
+                    this.changed("currentPitch", v);
+                    if (v && this.currentNote && this.currentNote.matchesPitch(v, true)) {
+                        this.currentNote.withHeads((head: Model.INotehead) => {
+                            if (head.pitch.pitch === v.pitch) {
+                                this.currentNotehead = head;
+                                return;
+                            }
+                        });
+                    }
+                    else this.currentNotehead = undefined;
+                }
+            }
+            public get currentNote(): Model.INote { return this._currentNote; }
+            public set currentNote(v: Model.INote) {
+                if (this._currentNote !== v) {
+                    this._currentNote = v;
+                    if (v) {
+                        this.currentVoice = v.parent;
+                    }
+                    this.changed("currentNote", v);
+                    if (v && this.currentPitch && v.matchesPitch(this.currentPitch, true)) {
+                        v.withHeads((head: Model.INotehead) => {
+                            if (head.pitch.pitch === this.currentPitch.pitch) {
+                                this.currentNotehead = head;
+                                return;
+                            }
+                        });
+                    }
+                    else this.currentNotehead = undefined;
+                }
+            }
+            public get currentNotehead(): Model.INotehead { return this._currentNotehead; }
+            public set currentNotehead(v: Model.INotehead) {
+                if (this._currentNotehead !== v) {
+                    this._currentNotehead = v;
+                    this.changed("currentNotehead", v);
+                }
+            }
+            public get currentVoice(): Model.IVoice { return this._currentVoice; }
+            public set currentVoice(v: Model.IVoice) {
+                if (this._currentVoice !== v) {
+                    this._currentVoice = v;
+                    this.changed("currentVoice", v);
+                }
+            }
+            public get currentStaff(): Model.IStaff { return this._currentStaff; }
+            public set currentStaff(v: Model.IStaff) {
+                if (this._currentStaff !== v) {
+                    this._currentStaff = v;
+                    this.changed("currentStaff", v);
+                }
+            }
+            public get currentTuplet(): Model.TupletDef { return this._currentTuplet; }
+            public set currentTuplet(v: Model.TupletDef) {
+                if (!this._currentTuplet || !v || !this._currentTuplet.Eq(v)) {
+                    this._currentTuplet = v;
+                    this.changed("currentTuplet", v);
+                }
+            }
+            public get insertPoint(): Model.HorizPosition { return this._insertPoint; }
+            public set insertPoint(v: Model.HorizPosition) {
+                if (this._insertPoint !== v) {
+                    this._insertPoint = v;
+                    this.changed("insertPoint", v);
+                }
+            }
+
+            public get mouseOverElement(): Model.IMusicElement {
+                return this._mouseOverElement;
+            }
+            public set mouseOverElement(v: Model.IMusicElement) {
+                if (this._mouseOverElement !== v) {
+                    if (this._mouseOverElement) this.changed("mouseOutElement", this._mouseOverElement);
+                    this._mouseOverElement = v;
+                    if (v) this.changed("mouseOverElement", v);
+                }
+            }
+
+            public get rest(): boolean { return this._rest; }
+            public set rest(v: boolean) {
+                if (this._rest !== v) {
+                    this._rest = v;
+                    this.changed("rest", v);
+                }
+            }
+            public get dots(): number { return this._dots; }
+            public set dots(v: number) {
+                if (this._dots !== v) {
+                    this._dots = v;
+                    this.changed("dots", v);
+                }
+            }
+            public get grace(): boolean { return this._grace; }
+            public set grace(v: boolean) {
+                if (this._grace !== v) {
+                    this._grace = v;
+                    this.changed("grace", v);
+                }
+            }
+            private _notesPressed: Model.Pitch[] = [];
+            private _noteValSelected: Model.TimeSpan;
+
+            public get notesPressed(): Model.Pitch[] { return this._notesPressed; }
+            public pressNoteKey(pitch: Model.Pitch) {
+                this._notesPressed.push(pitch);
+                this.changed("pressKey", pitch);
+            }
+            public releaseNoteKey(pitch: Model.Pitch) {
+                for (var i = 0; i < this._notesPressed.length; i++) {
+                    if (this._notesPressed[i].equals(pitch)) {
+                        this._notesPressed.splice(i, 1);
+                        this.changed("releaseKey", pitch);
+                    }
+                }
+            }
+        }
+    }
+
     export module Model {
         export interface ILongDecorationSpacingInfo extends ISpacingInfo {
             Render?: (deco: ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
@@ -840,22 +999,6 @@ module jMusicScore {
     /// Music 
     export module SvgView {
 
-
-/*        class SVGOutput {
-            constructor(public context: string, public svgHelper: SVGHelper) {
-            }
-
-            public static moveContext(elem: Model.IMusicElement, context: string) {
-                this.move(elem, <SVGBaseDisplayData>elem.getDisplayData(context));
-            }
-            public static move(elem: Model.IMusicElement, displayData: SVGBaseDisplayData) {
-                var spacing = elem.getSpacingInfo();
-                if (spacing) {
-                    SVGHelper.move(displayData.ref, spacing.offset.x, spacing.offset.y);
-                }
-            }
-        }*/
-
         class SVGMetrics { // todo: yt
             // NoteOutput
             static pitchYFactor = MusicSpacing.Metrics.pitchYFactor;
@@ -876,45 +1019,6 @@ module jMusicScore {
             static meterY1 = MusicSpacing.Metrics.meterY1;
 
         }
-        
-        // Herfra SVGDisplayere
-        /************************************* Staves *****************************************/
-
-
-        /*class SVGScoreDisplayData extends SVGBaseDisplayData {
-            constructor() { super(); }
-            public beginPos = 0;
-        }*/
-
-
-        //class SVGStaffDisplayData extends SVGBaseDisplayData {
-            //constructor() { super(); }
-
-            //quickBtnContainer: /*SVGG*/SVGHintArea;
-            //public staffLength = SVGMetrics.staffLength;
-            //private svgHelper: SVGHelper;
-
-            /*public beginPos(staff: Model.IStaff) {
-                return SVGStaffOutput.beginPos(staff, this);
-            }*/
-
-            /*public setLength(staff: Model.IStaff, value: number) {
-                SVGStaffOutput.setLength(staff, this, value);
-            }
-
-            public getLength(staff: Model.IStaff): number {
-                return SVGStaffOutput.getLength(staff, this);
-            }*/
-
-        //}
-
-    
-
-        /*class SVGVoiceDisplayData extends SVGBaseDisplayData {
-            constructor() { super(); }
-            public quickBtn: Element;
-       
-        }*/
 
 
         /***************************************** Notes ****************************************************/
@@ -936,61 +1040,6 @@ module jMusicScore {
             flag_suffix?: string;
             rest?: boolean;
         };
-
-
-        /*class SVGStaffOutput {
-            public static setLength(staff: Model.IStaff, displayData: SVGStaffDisplayData, value: number) {
-                //var displayData = <SVGStaffDisplayData>staff.getDisplayData(context);
-                var staffSpacing = staff.spacingInfo;
-                staffSpacing.staffLength = value;
-                for (var i = 0; i < displayData.ref.childNodes.length; i++) {
-                    var staffline = <SVGElement>displayData.ref.childNodes[i];
-                    staffline.setAttributeNS(null, "d", "m 0," + i * SVGMetrics.pitchYFactor * 2 + " " + staffSpacing.staffLength + ",0");
-                }
-            }
-            public static getLength(staff: Model.IStaff, displayData: SVGStaffDisplayData): number {
-                //var displayData = <SVGStaffDisplayData>staff.getDisplayData(context);
-                var staffSpacing = staff.spacingInfo;
-
-                return staffSpacing.staffLength;
-            }
-
-            public static beginPos(staff: Model.IStaff, displayData: SVGStaffDisplayData) {
-                var res = 0;
-
-                return res;
-            }
-            
-        }*/
-
-
-
-        //todo: still some spacing
-        //class SVGMeterOutput {
-        /*public static meterDefs = [
-            'e_zero', 'e_one', 'e_two', 'e_three', 'e_four', 'e_five', 'e_six', 'e_seven', 'e_eight', 'e_nine'
-        ];
-
-        public getWidth() {
-            return (<SVGMeterDisplayData>this.owner.getDisplayData(this.getContext())).width;
-        }*/
-
-        /*
-        3/8         frac(3,8)
-        3/4+1/8     add(frac(3,4), frac(1,8))
-        3+2+2/4     frac(nadd(3,2,2), 4)
-        2/4 3/4     alt(frac(2,4), frac(3,4))
-
-
-        meter.display(function f() {}) {
-            f("" + this.numerator, "" + this.denominator);
-            f("+")
-            f("" + this.numerator + " " + this.num2, "" + this.denominator);
-        }
-                
-        */
-
-
 
         //todo: still some spacing
         class SVGClefOutput {
@@ -1096,27 +1145,6 @@ module jMusicScore {
             }
 
             public mouseOverStyle: string = "color:#f00;fill:#960;fill-opacity:0.5;stroke:none";
-
-            /*SelectNote(select: boolean) { }
-            SelectNoteHead(select: boolean) { }
-            SelectInsertPoint(voice: Model.IVoice, horizPos: Model.HorizPosition, pitch: Model.Pitch) {
-
-                var events = voice.getEvents();
-                for (var i = 0; i < events.length; i++) {
-                    var ev = events[i];
-                    if (ev.getHorizPosition().Eq(horizPos)) {
-                        var staffContext = voice.parent.getStaffContext(horizPos.absTime);
-                        var staffLine = staffContext.clef.pitchToStaffLine(pitch);
-                        var id = ev.id;
-                        this.sensorEngine.ShowInsertionPoint(ev.id, horizPos.beforeAfter * 9, staffLine * SVGMetrics.pitchYFactor);
-                    }
-                }
-
-
-                
-            }
-            SelectVoice(voice: Model.IVoice, select: boolean) { }
-            SelectStaff(staff: Model.IStaff, select: boolean) { }*/
 
             ShowNoteCursor(noteId: string, voice: Model.IVoice, horizPos: Model.HorizPosition, pitch: Model.Pitch) {
                 this.sensorEngine.ShowCursor(noteId);
@@ -1475,7 +1503,7 @@ module jMusicScore {
 
 
         class SVGHintArea {
-            constructor(private svgParent: SVGElement, private scale: number, private y: number, private staff: Model.IStaff) {
+            constructor(private svgParent: JQuery, private scale: number, private y: number, private staff: Model.IStaff) {
                 this.buttonElement = this.createButton();
             }
 
@@ -1579,7 +1607,7 @@ module jMusicScore {
             }
 
             private createButton(): Element {
-                var $appContainer = $(this.svgParent).parents('.appContainer');
+                var $appContainer = this.svgParent;
                 $('#appContainer, #clientArea').on("scroll", (event) => { this.onScroll(event); });
                 
                 var $overlayDiv = $appContainer.find('.overlay');
@@ -1732,7 +1760,7 @@ module jMusicScore {
             public get EditGraphicsHelper(): Views.ISensorGraphicsEngine { return this._EditGraphicsHelper; }
 
             public addStaffButton(y: number, staff: Model.IStaff): SVGHintArea {
-                var svgHintArea = new SVGHintArea(this.svg, staff.parent.spacingInfo.scale, y, staff);
+                var svgHintArea = new SVGHintArea($(this.svg).parentsUntil('.appContainer'), staff.parent.spacingInfo.scale, y, staff);
                 return svgHintArea/*.buttonElement*/;
             }
 
@@ -1765,6 +1793,24 @@ module jMusicScore {
 
         interface IHintAreaCreator {
             addStaffButton(y: number, staff: Model.IStaff): IHintArea;
+        }
+
+        export class HintAreaPlugin implements ScoreApplication.ScorePlugin, IHintAreaCreator {
+            Init(app: ScoreApplication.ScoreApplication) {
+                app.AddDesigner(new HintAreaDesigner(app, this));
+                this.svg = app.container.find('.appContainer');
+            }
+
+            private svg;
+
+            GetId() {
+                return "HintArea";
+            }
+
+            addStaffButton(y: number, staff: Model.IStaff): IHintArea {
+                var svgHintArea = new SVGHintArea(this.svg, staff.parent.spacingInfo.scale, y, staff);
+                return svgHintArea;
+            }
         }
 
         class HintAreaDesigner implements ScoreApplication.ScoreDesigner, Application.IFeedbackClient {

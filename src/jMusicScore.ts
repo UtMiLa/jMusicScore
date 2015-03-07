@@ -2377,7 +2377,9 @@ module jMusicScore {
                 }
             }
 
-            static setBar(owner: IStaff | IScore, absTime: AbsoluteTime): IBar {
+            static setBar(owner: IStaff, absTime: AbsoluteTime): IBar;
+            static setBar(owner: IScore, absTime: AbsoluteTime): IBar;
+            static setBar(owner: IMusicElement, absTime: AbsoluteTime): IBar {
                 var score: IScore;
                 if (owner.getElementName() === "Staff") {
                     score = (<IStaff>owner).parent;
