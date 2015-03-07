@@ -153,6 +153,7 @@ module jMusicScore {
             moved(): void;/**/
             id: string;
 
+            parent: IMusicElement;
             spacingInfo: ISpacingInfo;
             setSpacingInfo(info: ISpacingInfo): void;
             InviteVisitor(spacer: IVisitor): void;

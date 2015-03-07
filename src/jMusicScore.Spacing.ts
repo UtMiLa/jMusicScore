@@ -1223,6 +1223,18 @@
             }
         }
 
+        export function absolutePos(elm: Model.IMusicElement, x: number, y: number): Model.Point {
+            x *= elm.spacingInfo.scale;
+            y *= elm.spacingInfo.scale;
+            x += elm.spacingInfo.offset.x;
+            y += elm.spacingInfo.offset.y;
+            if (elm.parent) {
+                return this.absolutePos(elm.parent, x, y);
+            }
+            else {
+                return new Model.Point(x, y);
+            }
+        }
 
     }
 }

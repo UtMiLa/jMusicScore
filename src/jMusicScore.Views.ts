@@ -1501,218 +1501,7 @@ module jMusicScore {
         }
 
 
-        class SVGHintArea {
-            constructor(private svgParent: JQuery, private scale: number, private y: number, private staff: Model.IStaff) {
-                this.buttonElement = this.createButton();
-            }
-
-            public buttonElement: Element;
-            public get Staff() { return this.staff; }
-            public set Staff(v: Model.IStaff) {
-                if (this.staff !== v) {
-                    this.staff = v;
-                    this.onScroll(null);
-                }
-            }
-
-            private keyDefinition: Model.IKeyDefinition;
-            private clefDefinition: Model.ClefDefinition;
-            private meterDefinition: Model.IMeterDefinition;
-
-            private clefElement: Element;
-            private meterElement: Element;
-            private keyElement: Element;
-            private $HelperDiv: any;
-            private graphic: Views.IGraphicsEngine;
-            private voiceButtons: Element[] = [];
-
-            public checkVoiceButtons(app: ScoreApplication.ScoreApplication, staff: Model.IStaff) {
-                while (staff.voiceElements.length < this.voiceButtons.length) {
-                    var voiceBtn = this.voiceButtons.pop();
-                    var parent = voiceBtn.parentNode;
-                    if (parent) parent.removeChild(voiceBtn);
-                }
-                var $staffBtnDiv = $(this.buttonElement);
-                var voiceButtons = this.voiceButtons;
-                staff.withVoices((voice: Model.IVoice, indexVoice: number): void => {
-                    if (!voiceButtons[indexVoice]) {
-                        var $btnDiv = $('<div>')
-                            .text('voice ' + indexVoice)
-                            .addClass('voiceBtn')
-                            .addClass('voiceBtn' + voice.id)
-                            .appendTo($staffBtnDiv)
-                            .click(function () {
-                                app.Status.currentVoice = voice;
-                            });
-                        var voiceBtn = $btnDiv[0];
-                        if (voiceBtn) {
-                            voiceBtn.setAttributeNS(null, "style", 'opacity: 0.5');
-                            //$(voiceBtn).css('opacity', '0.5');
-                            voiceButtons[indexVoice] = voiceBtn;
-                        }
-                    }                    
-                    else {
-                        $(voiceButtons[indexVoice])
-                        .addClass('voiceBtn')
-                        .addClass('voiceBtn' + voice.id)
-                        .text('voice ' + indexVoice);
-                    }
-                });
-            }
-
-            private onScroll(event: Event) {
-                var newKey: Model.IKey, newMeter: Model.IMeter, newClef: Model.IClef;
-                if (event) {
-                    var s = (<Element>event.target).scrollTop;
-                    $('.overlay').css('top', 80-s);// todo: 80 parameter
-                }
-
-                var left = -Infinity;
-                this.staff.withKeys((key: Model.IKey, i: number) => {
-                    var keyElem = document.getElementById('' + key.id); // todo: function til at slå element op ud fra id og context/parent/svghelper/...
-                    if (keyElem) {
-                        var r = keyElem.getBoundingClientRect(); // todo: unik generering af id'er til svg-elementer
-                        if (r.left < 150 && r.left > left) { newKey = key; left = r.left; }
-                    }
-                    else {
-                        var a = key.id;
-                    }
-                });
-                var left = -Infinity;
-                this.staff.withClefs((clef: Model.IClef, i: number) => {
-                    var clefElem = document.getElementById('' + clef.id);
-                    var r = clefElem.getBoundingClientRect();
-                    if (r.left < 150 && r.left > left) { newClef = clef; left = r.left; }
-                });
-                var left = -Infinity;
-                this.staff.withMeters((meter: Model.IMeter, i: number) => {
-                    var meterElem = document.getElementById('' + meter.id);
-                    var r = meterElem.getBoundingClientRect();
-                    if (r.left < 150 && r.left > left) { newMeter = meter; left = r.left; }
-                });
-                if (newMeter) {
-                    this.setMeter(newMeter.definition);
-                }
-                if (newClef) {
-                    this.setClef(newClef.definition);
-                }
-                if (newKey) {
-                    this.setKey(newKey.definition, newClef.definition);
-                }
-            }
-
-            public release() {
-                $('#appContainer, #clientArea').off("scroll");
-            }
-
-            private createButton(): Element {
-                var $appContainer = this.svgParent;
-                $('#appContainer, #clientArea').on("scroll", (event) => { this.onScroll(event); });
-                
-                var $overlayDiv = $appContainer.find('.overlay');
-                var scale = this.scale;
-                var me = this;
-                var $btnDiv = $('<div>')
-                    .text('staff')
-                    .addClass('staffTitleArea')
-                    .css({ top: this.y })
-                    .appendTo($overlayDiv);
-                this.$HelperDiv = $('<div>')
-                    .addClass('helperArea')
-                    .appendTo($btnDiv);
-
-                var svg = document.createElementNS(SVGHelper.xmlns, "svg");
-                svg.setAttributeNS(null, "version", "1.1");
-                svg.setAttributeNS(null, "width", "100");
-                svg.setAttributeNS(null, "height", "65");
-                this.$HelperDiv.append(svg);
-
-
-                var hidden = <SVGElement>document.createElementNS(SVGHelper.xmlns, "g");
-                hidden.setAttributeNS(null, "display", "none");
-                svg.appendChild(hidden);
-                var main = <SVGElement>document.createElementNS(SVGHelper.xmlns, "g");
-                svg.appendChild(main);
-                me.graphic = new SVGUseGraphicsEngine(main, hidden);
-
-                this.onScroll(null);
-                var staffContext = this.staff.getStaffContext(Model.AbsoluteTime.startTime);
-                if (staffContext.clef) this.setClef(staffContext.clef.definition);
-                if (staffContext.meter) this.setMeter(staffContext.meter.definition);
-                if (staffContext.key) this.setKey(staffContext.key.definition, staffContext.clef.definition);
-                return $btnDiv[0];
-            }
-            
-            private redraw() {
-                this.graphic.BeginDraw();
-                var staffLines = this.graphic.BeginGroup('hintstaff' + this.staff.id, 0, 0, this.scale, 'staffLineHelper');
-                // staff
-                for (var i = 0; i < 5; i++) {
-                    this.graphic.CreatePathObject("m 10," + (SVGMetrics.staffHelperYOffset + i * SVGMetrics.pitchYFactor * 2) + " l 80,0", 0, 0, 1, '#bbb', undefined);
-                }
-                //this.graphic.DrawText('teksterbne', 'Hej', 10, 10, 'left');
-                // clef
-                if (this.clefDefinition) {
-                    var clef = this.graphic.BeginGroup('hintclef' + this.staff.id, (10 + SVGMetrics.clefXOffset), SVGMetrics.staffHelperYOffset + (this.clefDefinition.clefLine - 1) * 2 * SVGMetrics.pitchYFactor, 1, 'clefHelper');
-                    this.clefElement = this.graphic.CreateMusicObject('hintclefg' + this.staff.id, SVGClefOutput.RefId(this.clefDefinition, false), 0, 0, 1);
-                    this.graphic.EndGroup(clef);
-                }
-                // meter
-                if (this.meterDefinition) {
-                    var keyWidth = 0;
-                    var index = 0;
-                    if (this.keyDefinition) {
-                        keyWidth = this.keyDefinition.enumerateKeys().length * SVGMetrics.keyXPerAcc;
-                    }
-                    var meter = this.graphic.BeginGroup('hintmeter' + this.staff.id, 30 + keyWidth + SVGMetrics.clefXOffset + SVGMetrics.meterX, (SVGMetrics.staffHelperYOffset), 1, 'meterHelper');
-                    var fracFunc = (num: string, den: string): any => {
-                        var len = Math.max(num.length, den.length);
-                        Views.MeterDrawer.addStringXY('hintmeter' + this.staff.id + '_' + index++, this.graphic, num, 0, SVGMetrics.staffHelperYOffset + SVGMetrics.meterY0 - SVGMetrics.pitchYFactor * 6, len);
-                        Views.MeterDrawer.addStringXY('hintmeter' + this.staff.id + '_' + index++, this.graphic, den, 0, SVGMetrics.staffHelperYOffset + SVGMetrics.meterY1 - SVGMetrics.pitchYFactor * 6, len);
-                    };
-                    var fullFunc = (full: string): any => {
-                        var len = full.length;
-                        Views.MeterDrawer.addStringXY('hintmeter' + this.staff.id + '_' + index++, this.graphic, full, 0, SVGMetrics.staffHelperYOffset + SVGMetrics.meterY0 - SVGMetrics.pitchYFactor * 6, len);
-                    };
-
-                    var res = this.meterDefinition.display(fracFunc, fullFunc);
-                    $(this.meterElement).data('meter', this.meterDefinition);
-                    this.graphic.EndGroup(meter);
-                }
-                // key
-                if (this.keyDefinition && this.clefDefinition) {
-                    var key = this.graphic.BeginGroup('hintkey' + this.staff.id, 28 + SVGMetrics.clefXOffset, (SVGMetrics.staffHelperYOffset), 1, 'keyHelper');
-                    Views.KeyDrawer.addKeyXY('hintkeyg' + this.staff.id, this.graphic, this.keyDefinition, this.clefDefinition, 0, 0);
-                    this.graphic.EndGroup(key);
-                }
-                this.graphic.EndGroup(staffLines);
-                this.graphic.EndDraw();
-            }
-
-            public setClef(clefDefinition: Model.ClefDefinition) {
-                if (!this.clefDefinition || !this.clefDefinition.Eq(clefDefinition)) {
-                    this.clefDefinition = clefDefinition;
-                    this.redraw();
-                }
-            }
-
-            public setKey(keyDefinition: Model.IKeyDefinition, clefDefinition: Model.ClefDefinition) {
-                if (!this.keyDefinition || !this.keyDefinition.Eq(keyDefinition)) {
-                    this.keyDefinition = keyDefinition;
-                    this.redraw();
-                }
-            }
-
-            public setMeter(meterDefinition: Model.IMeterDefinition) {
-                if (!this.meterDefinition || !this.meterDefinition.Eq(meterDefinition)) {
-                    this.meterDefinition = meterDefinition;
-                    this.redraw();
-                }
-
-            }
-        }
-
-        class SVGHelper implements IHintAreaCreator {
+        class SVGHelper {
             constructor(private svgDocument: Document, svg: SVGSVGElement) {
                 this.svg = svg;
 
@@ -1758,19 +1547,6 @@ module jMusicScore {
             public get MusicGraphicsHelper(): Views.IGraphicsEngine { return this._MusicGraphicsHelper; }
             public get EditGraphicsHelper(): Views.ISensorGraphicsEngine { return this._EditGraphicsHelper; }
 
-            public addStaffButton(y: number, staff: Model.IStaff): SVGHintArea {
-                var svgHintArea = new SVGHintArea($(this.svg).parentsUntil('.appContainer'), staff.parent.spacingInfo.scale, y, staff);
-                return svgHintArea/*.buttonElement*/;
-            }
-
-            /*public addVoiceButton(staffBtn: Element, voiceNo: number): Element {
-                var $staffBtnDiv = $(staffBtn);
-                var $btnDiv = $('<div>')
-                    .text('voice ' + voiceNo)
-                    .appendTo($staffBtnDiv);
-                return $btnDiv[0];
-            }*/
-
             public createRectElement(): SVGRectElement {
                 return <SVGRectElement>(<Document>this.svgDocument).createElementNS(SVGHelper.xmlns, "rect");
             }
@@ -1794,20 +1570,228 @@ module jMusicScore {
             addStaffButton(y: number, staff: Model.IStaff): IHintArea;
         }
 
+        class HintArea {
+            constructor(private svgParent: JQuery, private scale: number, private y: number, private staff: Model.IStaff) {
+                this.buttonElement = this.createButton();
+            }
+
+            public buttonElement: Element;
+            public get Staff() { return this.staff; }
+            public set Staff(v: Model.IStaff) {
+                if (this.staff !== v) {
+                    this.staff = v;
+                    this.onScroll(null);
+                }
+            }
+
+            private keyDefinition: Model.IKeyDefinition;
+            private clefDefinition: Model.ClefDefinition;
+            private meterDefinition: Model.IMeterDefinition;
+
+            private clefElement: Element;
+            private meterElement: Element;
+            private keyElement: Element;
+            private $HelperDiv: any;
+            private graphic: Views.IGraphicsEngine;
+            private voiceButtons: Element[] = [];
+
+            public checkVoiceButtons(app: ScoreApplication.ScoreApplication, staff: Model.IStaff) {
+                while (staff.voiceElements.length < this.voiceButtons.length) {
+                    var voiceBtn = this.voiceButtons.pop();
+                    var parent = voiceBtn.parentNode;
+                    if (parent) parent.removeChild(voiceBtn);
+                }
+                var $staffBtnDiv = $(this.buttonElement);
+                var voiceButtons = this.voiceButtons;
+                staff.withVoices((voice: Model.IVoice, indexVoice: number): void => {
+                    if (!voiceButtons[indexVoice]) {
+                        var $btnDiv = $('<div>')
+                            .text('voice ' + indexVoice)
+                            .addClass('voiceBtn')
+                            .addClass('voiceBtn' + voice.id)
+                            .appendTo($staffBtnDiv)
+                            .click(function () {
+                            app.Status.currentVoice = voice;
+                        });
+                        var voiceBtn = $btnDiv[0];
+                        if (voiceBtn) {
+                            voiceBtn.setAttributeNS(null, "style", 'opacity: 0.5');
+                            //$(voiceBtn).css('opacity', '0.5');
+                            voiceButtons[indexVoice] = voiceBtn;
+                        }
+                    }
+                    else {
+                        $(voiceButtons[indexVoice])
+                            .addClass('voiceBtn')
+                            .addClass('voiceBtn' + voice.id)
+                            .text('voice ' + indexVoice);
+                    }
+                });
+            }
+
+            private onScroll(event: Event) {
+                var newKey: Model.IKey, newMeter: Model.IMeter, newClef: Model.IClef;
+                var scrollLeft = 0;
+                if (event) {
+                    var s = (<Element>event.target).scrollTop;
+                    $('.overlay').css('top', 80 - s);// todo: 80 parameter
+                    scrollLeft = (<Element>event.target).scrollLeft;
+                }
+
+                var left = -Infinity;
+                this.staff.withKeys((key: Model.IKey, i: number) => {
+                    var p = MusicSpacing.absolutePos(key, 0, 0);
+                    p.x -= scrollLeft;
+                    if (p.x < 150 && p.x > left) { newKey = key; left = p.x; }
+                });
+                var left = -Infinity;
+                this.staff.withClefs((clef: Model.IClef, i: number) => {
+                    var p = MusicSpacing.absolutePos(clef, 0, 0);
+                    p.x -= scrollLeft;
+                    if (p.x < 150 && p.x > left) { newClef = clef; left = p.x; }
+                });
+                var left = -Infinity;
+                this.staff.withMeters((meter: Model.IMeter, i: number) => {
+                    var p = MusicSpacing.absolutePos(meter, 0, 0);
+                    p.x -= scrollLeft;
+                    if (p.x < 150 && p.x > left) { newMeter = meter; left = p.x; }
+                });
+                if (newMeter) {
+                    this.setMeter(newMeter.definition);
+                }
+                if (newClef) {
+                    this.setClef(newClef.definition);
+                }
+                if (newKey) {
+                    this.setKey(newKey.definition, newClef.definition);
+                }
+            }
+
+            public release() {
+                $('#appContainer, #clientArea').off("scroll");
+            }
+
+            private createButton(): Element {
+                var $appContainer = this.svgParent;
+                $('#appContainer, #clientArea').on("scroll",(event) => { this.onScroll(event); });
+
+                var $overlayDiv = $appContainer.find('.overlay');
+                var scale = this.scale;
+                var me = this;
+                var $btnDiv = $('<div>')
+                    .text('staff')
+                    .addClass('staffTitleArea')
+                    .css({ top: this.y })
+                    .appendTo($overlayDiv);
+                this.$HelperDiv = $('<div>')
+                    .addClass('helperArea')
+                    .appendTo($btnDiv);
+
+                var svg = document.createElementNS(SVGHelper.xmlns, "svg");
+                svg.setAttributeNS(null, "version", "1.1");
+                svg.setAttributeNS(null, "width", "100");
+                svg.setAttributeNS(null, "height", "65");
+                this.$HelperDiv.append(svg);
+
+
+                var hidden = <SVGElement>document.createElementNS(SVGHelper.xmlns, "g");
+                hidden.setAttributeNS(null, "display", "none");
+                svg.appendChild(hidden);
+                var main = <SVGElement>document.createElementNS(SVGHelper.xmlns, "g");
+                svg.appendChild(main);
+                me.graphic = new SVGUseGraphicsEngine(main, hidden);
+
+                this.onScroll(null);
+                var staffContext = this.staff.getStaffContext(Model.AbsoluteTime.startTime);
+                if (staffContext.clef) this.setClef(staffContext.clef.definition);
+                if (staffContext.meter) this.setMeter(staffContext.meter.definition);
+                if (staffContext.key) this.setKey(staffContext.key.definition, staffContext.clef.definition);
+                return $btnDiv[0];
+            }
+
+            private redraw() {
+                this.graphic.BeginDraw();
+                var staffLines = this.graphic.BeginGroup('hintstaff' + this.staff.id, 0, 0, this.scale, 'staffLineHelper');
+                // staff
+                for (var i = 0; i < 5; i++) {
+                    this.graphic.CreatePathObject("m 10," + (SVGMetrics.staffHelperYOffset + i * SVGMetrics.pitchYFactor * 2) + " l 80,0", 0, 0, 1, '#bbb', undefined);
+                }
+                //this.graphic.DrawText('teksterbne', 'Hej', 10, 10, 'left');
+                // clef
+                if (this.clefDefinition) {
+                    var clef = this.graphic.BeginGroup('hintclef' + this.staff.id,(10 + SVGMetrics.clefXOffset), SVGMetrics.staffHelperYOffset + (this.clefDefinition.clefLine - 1) * 2 * SVGMetrics.pitchYFactor, 1, 'clefHelper');
+                    this.clefElement = this.graphic.CreateMusicObject('hintclefg' + this.staff.id, SVGClefOutput.RefId(this.clefDefinition, false), 0, 0, 1);
+                    this.graphic.EndGroup(clef);
+                }
+                // meter
+                if (this.meterDefinition) {
+                    var keyWidth = 0;
+                    var index = 0;
+                    if (this.keyDefinition) {
+                        keyWidth = this.keyDefinition.enumerateKeys().length * SVGMetrics.keyXPerAcc;
+                    }
+                    var meter = this.graphic.BeginGroup('hintmeter' + this.staff.id, 30 + keyWidth + SVGMetrics.clefXOffset + SVGMetrics.meterX,(SVGMetrics.staffHelperYOffset), 1, 'meterHelper');
+                    var fracFunc = (num: string, den: string): any => {
+                        var len = Math.max(num.length, den.length);
+                        Views.MeterDrawer.addStringXY('hintmeter' + this.staff.id + '_' + index++, this.graphic, num, 0, SVGMetrics.staffHelperYOffset + SVGMetrics.meterY0 - SVGMetrics.pitchYFactor * 6, len);
+                        Views.MeterDrawer.addStringXY('hintmeter' + this.staff.id + '_' + index++, this.graphic, den, 0, SVGMetrics.staffHelperYOffset + SVGMetrics.meterY1 - SVGMetrics.pitchYFactor * 6, len);
+                    };
+                    var fullFunc = (full: string): any => {
+                        var len = full.length;
+                        Views.MeterDrawer.addStringXY('hintmeter' + this.staff.id + '_' + index++, this.graphic, full, 0, SVGMetrics.staffHelperYOffset + SVGMetrics.meterY0 - SVGMetrics.pitchYFactor * 6, len);
+                    };
+
+                    var res = this.meterDefinition.display(fracFunc, fullFunc);
+                    $(this.meterElement).data('meter', this.meterDefinition);
+                    this.graphic.EndGroup(meter);
+                }
+                // key
+                if (this.keyDefinition && this.clefDefinition) {
+                    var key = this.graphic.BeginGroup('hintkey' + this.staff.id, 28 + SVGMetrics.clefXOffset,(SVGMetrics.staffHelperYOffset), 1, 'keyHelper');
+                    Views.KeyDrawer.addKeyXY('hintkeyg' + this.staff.id, this.graphic, this.keyDefinition, this.clefDefinition, 0, 0);
+                    this.graphic.EndGroup(key);
+                }
+                this.graphic.EndGroup(staffLines);
+                this.graphic.EndDraw();
+            }
+
+            public setClef(clefDefinition: Model.ClefDefinition) {
+                if (!this.clefDefinition || !this.clefDefinition.Eq(clefDefinition)) {
+                    this.clefDefinition = clefDefinition;
+                    this.redraw();
+                }
+            }
+
+            public setKey(keyDefinition: Model.IKeyDefinition, clefDefinition: Model.ClefDefinition) {
+                if (!this.keyDefinition || !this.keyDefinition.Eq(keyDefinition)) {
+                    this.keyDefinition = keyDefinition;
+                    this.redraw();
+                }
+            }
+
+            public setMeter(meterDefinition: Model.IMeterDefinition) {
+                if (!this.meterDefinition || !this.meterDefinition.Eq(meterDefinition)) {
+                    this.meterDefinition = meterDefinition;
+                    this.redraw();
+                }
+
+            }
+        }
+
         export class HintAreaPlugin implements ScoreApplication.ScorePlugin, IHintAreaCreator {
             Init(app: ScoreApplication.ScoreApplication) {
-                this.svg = $('.appContainer');
+                this.container = $('.appContainer');
                 app.AddDesigner(new HintAreaDesigner(app, this));
             }
 
-            private svg;
+            private container;
 
             GetId() {
                 return "HintArea";
             }
 
             addStaffButton(y: number, staff: Model.IStaff): IHintArea {
-                var svgHintArea = new SVGHintArea(this.svg, staff.parent.spacingInfo.scale, y, staff);
+                var svgHintArea = new HintArea(this.container, staff.parent.spacingInfo.scale, y, staff);
                 //var svgHintArea = new SVGHintArea($('.appContainer'), staff.parent.spacingInfo.scale, y, staff);
                 return svgHintArea;
             }
