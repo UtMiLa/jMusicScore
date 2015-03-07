@@ -1306,9 +1306,9 @@ module jMusicScore {
                     this.insertionElement.appendChild(vert);
                 }
                 $('#ed_' + id).prepend(this.insertionElement);
-                $(this.insertionElement).attr({ transform: "translate (" + x + ",0)" });
-                $(this.insertionElement).find('.horiz').attr({ transform: "translate (0, " + y + ")" });
-                $(this.insertionElement).attr({ display: "inline" });
+                this.insertionElement.setAttribute('transform', "translate (" + x + ",0)");
+                (<SVGPathElement>this.insertionElement.getElementsByTagName('path')[0]).setAttribute('transform', "translate (0, " + y + ")");
+                this.insertionElement.setAttribute('display', "inline");
             }
             public HideInsertionPoint() {
                 $(this.insertionElement).attr({ display: "none" });
