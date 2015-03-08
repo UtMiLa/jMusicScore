@@ -9,6 +9,35 @@
             checkEnabled(): void;
         }
 
+        /*
+        Needed images for buttons:
+        Key
+        Clef
+        Meter
+        Play
+        Rest
+        Dot
+        Grace
+        Finale speedy entry
+        Note values 1/128 - 2/1
+        Enter
+        Arrows up down left right
+        Accidental +
+        Accidental -
+        Accidental toggle
+        Accidental ()
+        Tie
+        Flip stem
+        Enharmonic
+        courtesy accidental
+        Delete
+        Change voice
+        Tuplet 2-8 and generic
+        Change staff
+        Break/join beam
+        Insert
+
+        */
 
         export class JToolbar {
             constructor(private app: ScoreApplication.ScoreApplication) {
