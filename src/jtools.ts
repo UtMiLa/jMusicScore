@@ -1,6 +1,15 @@
 ﻿module jMusicScore {
     export module UI {
 
+        export interface IAction {
+            getCaption(): string;
+            getImageUri(): string;
+            getSvg(): string;
+            getIndex(): number;
+            checkEnabled(): void;
+        }
+
+
         export class JToolbar {
             constructor(private app: ScoreApplication.ScoreApplication) {
                 //var _this = this;

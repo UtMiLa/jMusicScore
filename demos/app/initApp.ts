@@ -242,7 +242,7 @@
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
-        //app.AddPlugin(new UI.PianoPlugIn());
+        app.AddPlugin(new UI.PianoPlugIn());
 
         app.AddPlugin(new Menus.QuickMenuPlugin("UndoMenu", "Undo", "TestMenu", "Test", function () {
             if (app.canUndo()) {

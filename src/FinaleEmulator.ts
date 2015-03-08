@@ -164,7 +164,7 @@
                     if (app.Status.currentNote) {
                         if (app.Status.notesPressed.length) {
                             // replace noteheads with pressed chord
-                            var newPitches = [];
+                            var newPitches: Model.Pitch[] = [];
                             for (var i = 0; i < app.Status.notesPressed.length; i++) {
                                 newPitches.push(app.Status.notesPressed[i]);
                             }

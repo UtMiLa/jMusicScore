@@ -27,12 +27,12 @@ interface JQueryLayout {
     resizeContent(pane: any): any;
     resizeAll(): any;
 
-    addToggleBtn(selector: string, pane: any)
-    addCloseBtn(selector: string, pane: any)
-    addOpenBtn(selector: string, pane: any)
-    addPinBtn(selector: string, pane: any)
-    allowOverflow(elemOrPane: any)
-    resetOverflow(elemOrPane: any)
+    addToggleBtn(selector: string, pane: any): void;
+    addCloseBtn(selector: string, pane: any): void;
+    addOpenBtn(selector: string, pane: any): void;
+    addPinBtn(selector: string, pane: any): void;
+    allowOverflow(elemOrPane: any): any;
+    resetOverflow(elemOrPane: any): any;
 }
 
 interface JQuery {

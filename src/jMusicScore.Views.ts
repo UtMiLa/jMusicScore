@@ -1784,7 +1784,7 @@ module jMusicScore {
                 app.AddDesigner(new HintAreaDesigner(app, this));
             }
 
-            private container;
+            private container: JQuery;
 
             GetId() {
                 return "HintArea";

@@ -262,7 +262,7 @@ module jMusicScore {
 
             public Load(name: string, fileManager: IFileManager<DocumentType, StatusManager, ContainerType>, type: string) {
                 var app = this;
-                this.ProcessEvent("clickvoice", <any>{ 'data': { voice: null } });
+                this.ProcessEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
                 for (var i = 0; i < this.readers.length; i++) {
                     if (this.readers[i].Supports(type) || (type === '*' && name.match(this.readers[i].GetExtension(type) + "$"))) {
                         var reader = this.readers[i];
@@ -285,7 +285,7 @@ module jMusicScore {
             }
 
             public LoadFromString(data: any, type: string) {
-                this.ProcessEvent("clickvoice", <any>{ 'data': { voice: null } });
+                this.ProcessEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
                 for (var i = 0; i < this.readers.length; i++) {
                     if (this.readers[i].Supports(type)) {
                         var score = this.document;

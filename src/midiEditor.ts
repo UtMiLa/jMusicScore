@@ -115,10 +115,24 @@
 
     }
     export module Players {
-
+        interface MidiEvent {
+            time: Model.AbsoluteTime;
+            midi: number;
+            on: boolean;
+            velo: number;
+        }
+        interface ConcurrentEvent {
+            time: Model.AbsoluteTime;
+            onEvents: MidiEvent[];
+            offEvents: MidiEvent[];
+        }
         export class MidiPlayer extends Menus.MenuPlugin {
             GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** midi out ******************* //
+                // todo: midi channels and patches
+                // todo: tied notes on/off
+                // todo: set tempo
+                // todo: graphic feedback
                 var me = this;
                 return {
                     Id: "PlayMenu",
@@ -126,7 +140,7 @@
                     action: (): void => {
                         var events = app.document.getEvents();
                         //events.sort(Model.Music.compareEvents);
-                        var allEvents = [];
+                        var allEvents: MidiEvent[] = [];
                         for (var i = 0; i < events.length; i++) {
                             var event = events[i];
                             if (event.getElementName() === "Note") {
@@ -141,8 +155,8 @@
                             if (a.time.Eq(b.time)) return 0;
                             return a.time.Gt(b.time) ? 1 : -1;
                         });
-                        var concurrentOnEvents = [];
-                        var concurrentOffEvents = [];
+                        var concurrentOnEvents: MidiEvent[] = [];
+                        var concurrentOffEvents: MidiEvent[] = [];
                         var absTime = Model.AbsoluteTime.startTime;
                         while (allEvents.length) {
                             var theEvent = allEvents.shift();
@@ -165,7 +179,7 @@
                 };
             }
 
-            private _midiEvents = [];
+            private _midiEvents: ConcurrentEvent[] = [];
 
             private PlayNextNote() {
                 var nextEvents = this._midiEvents.shift();
