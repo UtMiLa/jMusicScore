@@ -116,8 +116,6 @@
     }
     export module Players {
 
-        
-
         export class MidiPlayer extends Menus.MenuPlugin {
             GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** midi out ******************* //
@@ -127,24 +125,41 @@
                     Caption: "Play",
                     action: (): void => {
                         var events = app.document.getEvents();
-                        events.sort(Model.Music.compareEvents);
-                        var absTime = Model.AbsoluteTime.startTime;
-                        var concurrentEvents = [];
+                        //events.sort(Model.Music.compareEvents);
+                        var allEvents = [];
                         for (var i = 0; i < events.length; i++) {
                             var event = events[i];
                             if (event.getElementName() === "Note") {
-                                /*if (!event.absTime.Eq(absTime)) {
-                                    me._midiEvents.push({ time: absTime, events: concurrentEvents });
-                                    concurrentEvents = [];
-                                    absTime = event.absTime;
-                                }
                                 var note = <Model.INote>event;
                                 note.withHeads((head: Model.INotehead) => {
-                                    concurrentEvents.push({ midi: head.pitch.toMidi(), on: true, velo: 100 });
-                                });*/
+                                    allEvents.push({ time: note.absTime, midi: head.pitch.toMidi(), on: true, velo: 100 });
+                                    allEvents.push({ time: note.absTime.Add(note.getTimeVal()), midi: head.pitch.toMidi(), on: false, velo: 0 });
+                                });
                             }
                         }
-
+                        allEvents.sort((a, b) => {
+                            if (a.time.Eq(b.time)) return 0;
+                            return a.time.Gt(b.time) ? 1 : -1;
+                        });
+                        var concurrentOnEvents = [];
+                        var concurrentOffEvents = [];
+                        var absTime = Model.AbsoluteTime.startTime;
+                        while (allEvents.length) {
+                            var theEvent = allEvents.shift();
+                            if (!theEvent.time.Eq(absTime)) {
+                                me._midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
+                                concurrentOnEvents = [];
+                                concurrentOffEvents = [];
+                                absTime = theEvent.time;
+                            }
+                            if (theEvent.on) {
+                                concurrentOnEvents.push(theEvent);
+                            }
+                            else {
+                                concurrentOffEvents.push(theEvent);
+                            }
+                        }
+                        me._midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
                         this.PlayNextNote();
                     }
                 };
@@ -156,15 +171,18 @@
                 var nextEvents = this._midiEvents.shift();
                 var me = this;
 
-                for (var i = 0; i < nextEvents.events.length; i++) {
-                    (<any>$).midiIn('send', { code: 0x90, a1: nextEvents.events[i].midi, a2: nextEvents.events[i].velo });
+                for (var i = 0; i < nextEvents.offEvents.length; i++) {
+                    var ev = nextEvents.offEvents[i];
+                    (<any>$).midiIn('send', { code: 0x80, a1: ev.midi, a2: ev.velo });
                 }
-                /*setTimeout(() => {
-                    (<any>$).midiIn('send', { code: 0x80, a1: nextEvents.events[i].midi, a2: 0 });
-                }, 200);*/
+
+                for (var i = 0; i < nextEvents.onEvents.length; i++) {
+                    var ev = nextEvents.onEvents[i];
+                    (<any>$).midiIn('send', { code: 0x90, a1: ev.midi, a2: ev.velo });
+                }
 
                 if (me._midiEvents.length) {
-                    var time = 2000 * (me._midiEvents[0].time.ToNumber() - nextEvents.time.ToNumber());
+                    var time = 3000 * (me._midiEvents[0].time.ToNumber() - nextEvents.time.ToNumber());
                     setTimeout(() => {
                         me.PlayNextNote();
                     }, time);
