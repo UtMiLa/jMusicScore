@@ -35,7 +35,8 @@
         Tuplet 2-8 and generic
         Change staff
         Break/join beam
-        Insert
+        Undo
+        Redo
 
         */
 
