@@ -385,11 +385,17 @@
                             var label = (<any>$('<label/>').attr('for', btnDef.id)
                                 .attr("title", btnDef.label))
                                 .text('')
+                                /*.addClass('ui-icon')
+                                .addClass('note-icon')
+                                .addClass(btnDef.glyph)*/
                                 .append('<div style="background-position: -4px -4px; background-image: url(images/symbol1/' + btnDef.glyph + '.png); width:35px; height:35px;"></div>')
                                 .appendTo(grp);
 
                             btn.button({
                                 text: true,
+                                icons: {
+                                    primary: btnDef.glyph
+                                },
                             })
                                 .data('notedata', btnDef)
                             //.data('score', this.scoreOutput)

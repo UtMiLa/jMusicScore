@@ -260,6 +260,7 @@
     <Content Include="demos\app\images\symbol1\slur.png" />
     <Content Include="demos\app\images\symbol1\sprite1.png" />
     <Content Include="demos\app\images\symbol1\tenor-clef.png" />
+    <Content Include="demos\app\images\UIimages.png" />
     <Content Include="demos\app\Score.htm" />
     <Content Include="packages.config" />
     <Content Include="demos\app\css\emmentaler-16.otf" />
