@@ -1,4 +1,5 @@
 module jMusicScore {
+    /** logical music definition classes and classes for music concepts */
     export module Model {
 
         export class Rational {
