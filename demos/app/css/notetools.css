@@ -6,37 +6,6 @@
     height: 24px; 
 }
 
-.ui-button .ui-icon.icon-2_1 {
-	background-position: -5px -5px;
-}
-.ui-button .ui-icon.icon-1_1 {
-	background-position: -35px -5px;
-}
-.ui-button .ui-icon.icon-1_2 {
-	background-position: -65px -5px;
-}
-.ui-button .ui-icon.icon-1_4 {
-	background-position: -95px -5px;
-}
-.ui-button .ui-icon.icon-rest {
-	background-position: -125px -5px;
-}
-.ui-button .ui-icon.icon-dot {
-	background-position: -155px -5px;
-}
-.ui-button .ui-icon.icon-1_8 {
-	background-position: -5px -35px;
-}
-.ui-button .ui-icon.icon-del {
-	background-position: -95px -35px;
-}
-.ui-button .ui-icon.icon-meter {
-	background-position: -125px -35px;
-}
-.ui-button .ui-icon.icon-key {
-	background-position: -155px -35px;
-}
-
 .ui-icon.icon-key-1x {
 	background-position: -5px -65px;
 }

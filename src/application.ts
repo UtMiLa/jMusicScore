@@ -360,7 +360,7 @@ module jMusicScore {
                 for (var i = 0; i < this.validators.length; i++) {
                     var t = Date.now();
                     this.validators[i].Validate(this);
-                    console.log((Date.now()-t) + " " + i);
+                    //console.log((Date.now()-t) + " " + i);
                 }
             }
 
@@ -368,7 +368,7 @@ module jMusicScore {
                 for (var i = 0; i < this.designers.length; i++) {
                     var t = Date.now();
                     this.designers[i].Validate(this);
-                    console.log((Date.now() - t) + " " + i);
+                    //console.log((Date.now() - t) + " " + i);
                 }
             }
 
@@ -376,7 +376,7 @@ module jMusicScore {
                 for (var i = 0; i < this.editors.length; i++) {
                     var t = Date.now();
                     this.editors[i].Validate(this);
-                    console.log((Date.now() - t) + " " + i);
+                    //console.log((Date.now() - t) + " " + i);
                 }
             }
 

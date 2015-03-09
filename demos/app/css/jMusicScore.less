@@ -182,3 +182,79 @@ body {
     border: solid black thin;
     float: left;
 }
+
+
+
+@spliceWidth0: -11px;
+@spliceWidth: -36px;
+@spliceHeight0: -13px;
+@spliceHeight: -60px;
+
+.ui-button .ui-icon {
+    background-image: url(../images/UIimages.png);
+    width: 27px;
+    height: 35px;
+    top: 0px;
+    margin-top: 0px;
+
+
+    &.icon-2_1 {
+	    background-position: (@spliceWidth0 + 2*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-1_1 {
+	    background-position: (@spliceWidth0 + 3*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-1_2 {
+	    background-position: (@spliceWidth0 + 4*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-1_4 {
+	    background-position: (@spliceWidth0 + 5*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-rest {
+	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-dot {
+	    background-position: (@spliceWidth0 + 1*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-1_8 {
+	    background-position: (@spliceWidth0 + 6*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-1_16 {
+	    background-position: (@spliceWidth0 + 7*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-1_32 {
+	    background-position: (@spliceWidth0 + 8*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-1_64 {
+	    background-position: (@spliceWidth0 + 9*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-del {
+	    background-position: -95px -35px;
+    }
+    &.icon-meter {
+	    background-position: (@spliceWidth0 + 9*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-key {
+	    background-position: (@spliceWidth0 + 4*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-clef {
+	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-grace {
+	    background-position: (@spliceWidth0 + 8*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-finale {
+	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 3*@spliceHeight);
+    }
+    &.icon-lyric {
+	    background-position: (@spliceWidth0 + 1*@spliceWidth) (@spliceHeight0 + 3*@spliceHeight);
+    }
+    &.icon-redo {
+	    background-position: (@spliceWidth0 + 6*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
+    }
+    &.icon-undo{
+	    background-position: (@spliceWidth0 + 5*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
+    }
+}
+
+
