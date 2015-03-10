@@ -101,7 +101,7 @@
         //app.AddPlugin(new SvgView.SVGViewer($('#svgArea')));
         app.AddPlugin(new SvgView.HintAreaPlugin());
 
-        app.AddPlugin(new ToolbarPlugin());
+        app.AddPlugin(new UI.ToolbarPlugin());
         
         app.AddPlugin(new Menus.NewScorePlugin(app));
         app.AddPlugin(new Menus.OpenFileMenuPlugin());

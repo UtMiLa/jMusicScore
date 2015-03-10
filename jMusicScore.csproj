@@ -309,7 +309,6 @@
     <TypeScriptCompile Include="src\jMusicScore.ts" />
     <TypeScriptCompile Include="src\jMusicScore.Views.ts" />
     <TypeScriptCompile Include="src\jsonReader.ts" />
-    <TypeScriptCompile Include="src\jtools.ts" />
     <TypeScriptCompile Include="src\keyboard.ts" />
     <TypeScriptCompile Include="src\menu.ts" />
     <TypeScriptCompile Include="src\midiEditor.ts" />
