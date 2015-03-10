@@ -174,17 +174,18 @@ module jMusicScore {
                 {
                     type: "Buttongroup",
                     id: "_edit_operations",
-                    buttons: [{
-                        id: "undo",
-                        label: "Undo",
-                        glyph: "icon-undo",
-                        onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
-                            app.Undo();
+                    buttons: [
+                        {
+                            id: "undo",
+                            label: "Undo",
+                            glyph: "icon-undo",
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+                                app.Undo();
+                            },
+                            validate: function (app: ScoreApplication.ScoreApplication): boolean {
+                                return app.canUndo();
+                            }
                         },
-                        validate: function (app: ScoreApplication.ScoreApplication): boolean {
-                            return app.canUndo();
-                        }
-                    },
                         {
                             id: "redo",
                             label: "Redo",
@@ -195,6 +196,35 @@ module jMusicScore {
                             validate: function (app: ScoreApplication.ScoreApplication): boolean {
                                 return app.canRedo();
                             }
+                        },
+                    ],
+                },
+                {
+                    type: "Buttongroup",
+                    id: "_play_operations",
+                    buttons: [
+                        {
+                            id: "play",
+                            label: "Play",
+                            glyph: "icon-play",// todo: disable when playing
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+                                var player = new Players.MidiPlayer();
+                                player.playAll(app);
+                            },
+                            /*validate: function (app: ScoreApplication.ScoreApplication): boolean {
+                                return app.canUndo();
+                            }*/
+                        },
+                        {
+                            id: "pause",
+                            label: "Pause",
+                            glyph: "icon-pause",
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+
+                            },
+                            /*validate: function (app: ScoreApplication.ScoreApplication): boolean {
+                                return app.canRedo();
+                            }*/
                         },
                     ],
                 }

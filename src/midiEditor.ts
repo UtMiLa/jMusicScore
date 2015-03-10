@@ -126,57 +126,62 @@
             onEvents: MidiEvent[];
             offEvents: MidiEvent[];
         }
-        export class MidiPlayer extends Menus.MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
+        export class MidiPlayer {
+            /*GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** midi out ******************* //
-                // todo: midi channels and patches
-                // todo: tied notes on/off
-                // todo: set tempo
-                // todo: graphic feedback
                 var me = this;
                 return {
                     Id: "PlayMenu",
                     Caption: "Play",
                     action: (): void => {
-                        var events = app.document.getEvents();
-                        //events.sort(Model.Music.compareEvents);
-                        var allEvents: MidiEvent[] = [];
-                        for (var i = 0; i < events.length; i++) {
-                            var event = events[i];
-                            if (event.getElementName() === "Note") {
-                                var note = <Model.INote>event;
-                                note.withHeads((head: Model.INotehead) => {
-                                    allEvents.push({ time: note.absTime, midi: head.pitch.toMidi(), on: true, velo: 100 });
-                                    allEvents.push({ time: note.absTime.Add(note.getTimeVal()), midi: head.pitch.toMidi(), on: false, velo: 0 });
-                                });
-                            }
-                        }
-                        allEvents.sort((a, b) => {
-                            if (a.time.Eq(b.time)) return 0;
-                            return a.time.Gt(b.time) ? 1 : -1;
-                        });
-                        var concurrentOnEvents: MidiEvent[] = [];
-                        var concurrentOffEvents: MidiEvent[] = [];
-                        var absTime = Model.AbsoluteTime.startTime;
-                        while (allEvents.length) {
-                            var theEvent = allEvents.shift();
-                            if (!theEvent.time.Eq(absTime)) {
-                                me._midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
-                                concurrentOnEvents = [];
-                                concurrentOffEvents = [];
-                                absTime = theEvent.time;
-                            }
-                            if (theEvent.on) {
-                                concurrentOnEvents.push(theEvent);
-                            }
-                            else {
-                                concurrentOffEvents.push(theEvent);
-                            }
-                        }
-                        me._midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
-                        this.PlayNextNote();
+                        me.playAll(app);
                     }
                 };
+            }*/
+
+            // todo: midi channels and patches
+            // todo: tied notes on/off
+            // todo: set tempo
+            // todo: graphic feedback
+
+            public playAll(app: ScoreApplication.ScoreApplication) {
+                var events = app.document.getEvents();
+                //events.sort(Model.Music.compareEvents);
+                var allEvents: MidiEvent[] = [];
+                for (var i = 0; i < events.length; i++) {
+                    var event = events[i];
+                    if (event.getElementName() === "Note") {
+                        var note = <Model.INote>event;
+                        note.withHeads((head: Model.INotehead) => {
+                            allEvents.push({ time: note.absTime, midi: head.pitch.toMidi(), on: true, velo: 100 });
+                            allEvents.push({ time: note.absTime.Add(note.getTimeVal()), midi: head.pitch.toMidi(), on: false, velo: 0 });
+                        });
+                    }
+                }
+                allEvents.sort((a, b) => {
+                    if (a.time.Eq(b.time)) return 0;
+                    return a.time.Gt(b.time) ? 1 : -1;
+                });
+                var concurrentOnEvents: MidiEvent[] = [];
+                var concurrentOffEvents: MidiEvent[] = [];
+                var absTime = Model.AbsoluteTime.startTime;
+                while (allEvents.length) {
+                    var theEvent = allEvents.shift();
+                    if (!theEvent.time.Eq(absTime)) {
+                        this._midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
+                        concurrentOnEvents = [];
+                        concurrentOffEvents = [];
+                        absTime = theEvent.time;
+                    }
+                    if (theEvent.on) {
+                        concurrentOnEvents.push(theEvent);
+                    }
+                    else {
+                        concurrentOffEvents.push(theEvent);
+                    }
+                }
+                this._midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
+                this.PlayNextNote();
             }
 
             private _midiEvents: ConcurrentEvent[] = [];
