@@ -244,24 +244,6 @@
         }));
         app.AddPlugin(new UI.PianoPlugIn());
 
-        app.AddPlugin(new Menus.QuickMenuPlugin("UndoMenu", "Undo", "TestMenu", "Test", function () {
-            if (app.canUndo()) {
-                app.Undo();
-            }
-            else {
-                alert("Can't");
-            }
-        }));
-  
-        app.AddPlugin(new Menus.QuickMenuPlugin("RedoMenu", "Redo", "TestMenu", "Test", function () {
-            if (app.canRedo()) {
-                app.Redo();
-            }
-            else {
-                alert("Can't");
-            }
-        }));
-  
         app.AddPlugin(new FinaleUI.FinaleSmartEditPlugin());
         app.AddPlugin(new Players.MidiPlayer());
     });

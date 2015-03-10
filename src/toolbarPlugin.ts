@@ -1,8 +1,5 @@
 module jMusicScore {
-    /*export = ToolbarPlugin;
 
-import UI = require('../views/jtools');
-*/
     export class ToolbarPlugin implements ScoreApplication.ScorePlugin {
         constructor() {
         }
