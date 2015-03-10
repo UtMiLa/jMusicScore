@@ -11,33 +11,9 @@
 
         /*
         Needed images for buttons:
-        Key
-        Clef
-        Meter
-        Play
-        Rest
-        Dot
-        Grace
-        Finale speedy entry
-        Note values 1/128 - 2/1
-        Enter
-        Arrows up down left right
-        Accidental +
-        Accidental -
-        Accidental toggle
-        Accidental ()
-        Tie
-        Flip stem
-        Enharmonic
-        courtesy accidental
         Delete
         Change voice
-        Tuplet 2-8 and generic
         Change staff
-        Break/join beam
-        Undo
-        Redo
-
         */
 
         export class JToolbar {
@@ -353,39 +329,39 @@
                     ]
                 },
                 {
-                    type: "Button",
-
-                    id: "undo",
-                    label: "Undo",
-                    glyph: "icon-undo",
-                    dx: 7,
-                    dy: 16,
-                    scale: 1.2,
-                    onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
-                        //toolbar.rest = button.checked;
-                        app.Status.rest = button.checked;
-                    }
-                },
-                {
-                    type: "Button",
-                    id: "redo",
-                    label: "Redo",
-                    glyph: "icon-redo",
-                    dx: 8,
-                    dy: 17,
-                    scale: 1.2,
-                    onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
-                        //toolbar.dots = button.checked ? 1 : 0;
-                        app.Status.dots = button.checked ? 1 : 0;
-                    }
-                },
+                    type: "Buttongroup",
+                    id: "_edit_operations",
+                    buttons: [{
+                        id: "undo",
+                        label: "Undo",
+                        glyph: "icon-undo",
+                        dx: 7,
+                        dy: 16,
+                        scale: 1.2,
+                        onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+                            app.Undo();
+                        }
+                    },
+                        {
+                            id: "redo",
+                            label: "Redo",
+                            glyph: "icon-redo",
+                            dx: 8,
+                            dy: 17,
+                            scale: 1.2,
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+                                app.Redo();
+                            }
+                        },
+                    ],
+                }
             ];
 
             public unregisterModes() {
                 var def = JToolbar.menuDef;
                 for (var i = 0; i < def.length; i++) {
                     var item = <any>def[i];
-                    if (item.type == "Radiogroup" || item.type == "Checkgroup") {
+                    if (item.type === "Radiogroup" || item.type === "Checkgroup" || item.type === 'Buttongroup') {
                         for (var j = 0; j < item.buttons.length; j++) {
                             var btnDef = <any>item.buttons[j];
                             if (btnDef.mode) { this.app.UnregisterEventProcessor(btnDef.mode); }
@@ -398,26 +374,40 @@
                 var toolbar = $(id).addClass("ui-widget-header").addClass("ui-corner-all");
                 for (var i = 0; i < def.length; i++) {
                     var item = def[i];
-                    if (item.type == "Radiogroup" || item.type == "Checkgroup") {
+                    if (item.type == "Radiogroup" || item.type == "Checkgroup" || item.type === 'Buttongroup') {
                         var grp = $('<span>').attr('id', item.id).appendTo(toolbar);
                         for (var j = 0; j < item.buttons.length; j++) {
                             var btnDef = item.buttons[j];
-                            var btn = $('<input/>').attr({
-                                type: item.type == "Radiogroup" ? "radio" : "checkbox",
-                                id: btnDef.id,
-                                name: item.type == "Radiogroup" ? item.name : btnDef.id
-                            })
-                                .addClass('note-icon')
-                                .appendTo(grp);
+                            var btn: JQuery;
+                            if (item.type === 'Buttongroup') {
+                                btn = $('<button/>').attr({
+                                    id: btnDef.id,
+                                    name: btnDef.id
+                                })
+                                    .addClass('note-icon')
+                                    .appendTo(grp);
+                            }
+                            else {
+                                btn = $('<input/>').attr({
+                                    type: item.type === "Radiogroup" ? "radio" : "checkbox",
+                                    id: btnDef.id,
+                                    name: item.type === "Radiogroup" ? item.name : btnDef.id
+                                })
+                                    .addClass('note-icon')
+                                    .appendTo(grp);
+                            }
 
-                            var label = (<any>$('<label/>').attr('for', btnDef.id)
-                                .attr("title", btnDef.label))
-                                .text('')
-                                /*.addClass('ui-icon')
-                                .addClass('note-icon')
-                                .addClass(btnDef.glyph)*/
-                                .append('<div style="background-position: -4px -4px; background-image: url(images/symbol1/' + btnDef.glyph + '.png); width:35px; height:35px;"></div>')
-                                .appendTo(grp);
+                            if (item.type !== 'Buttongroup') {
+                                var label = (<any>$('<label/>').attr('for', btnDef.id)
+                                    .attr("title", btnDef.label))
+                                //.text('')
+                                    .append('<div style="width:35px; height:35px;"></div>')
+                                //                                    .append('<div style="background-position: -4px -4px; background-image: url(images/symbol1/' + btnDef.glyph + '.png); width:35px; height:35px;"></div>')
+                                    .appendTo(grp);
+                            }
+                            else {
+                                //btn.attr('src','');
+                            }
 
                             btn.button({
                                 text: true,
@@ -449,17 +439,16 @@
                                     }
                                 });/**/
                         }
-                        grp.buttonset();
+                        //if (item.type !== 'Buttongroup')
+                            grp.buttonset();
 
-                        grp.find('svg')
+                        /*grp.find('svg')
                             .height(30)
-                            .width(35);
+                            .width(35);*/
 
                         grp.find('span.ui-button-text')
                             .css('padding', '2px');
 
-                    }
-                    else if (item.type == "Button") {
                     }
                 }
             }

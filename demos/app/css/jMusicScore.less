@@ -185,19 +185,61 @@ body {
 
 
 
-@spliceWidth0: -11px;
+@spliceWidth0: 0px;
 @spliceWidth: -36px;
-@spliceHeight0: -13px;
+@spliceHeight0: -8px;
 @spliceHeight: -60px;
 
-.ui-button .ui-icon {
+.toolbarArea #notetools1 .ui-button-text {
+    width: 35px;
+    height: 38px;
+}
+.toolbarArea #notetools1 .ui-button .ui-icon {
     background-image: url(../images/UIimages.png);
-    width: 27px;
-    height: 35px;
+    width: 33px;
+    height: 40px;
     top: 0px;
     margin-top: 0px;
+    left: 50%;
+    margin-left: -19px;
 
+    &.icon-acc-b {
+	    background-position: (@spliceWidth0 + 0*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-acc-x {
+	    background-position: (@spliceWidth0 + 1*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-acc-n {
+	    background-position: (@spliceWidth0 + 2*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-acc-paren {
+	    background-position: (@spliceWidth0 + 3*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-key {
+	    background-position: (@spliceWidth0 + 4*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-acc-enharm {
+	    background-position: (@spliceWidth0 + 5*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-acc-courtesy {
+	    background-position: (@spliceWidth0 + 6*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-acc-hide {
+	    background-position: (@spliceWidth0 + 7*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-none {
+	    background-position: (@spliceWidth0 + 8*@spliceWidth) @spliceHeight0;
+    }
+    &.icon-meter {
+	    background-position: (@spliceWidth0 + 9*@spliceWidth) @spliceHeight0;
+    }
 
+    &.icon-rest {
+	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
+    &.icon-dot {
+	    background-position: (@spliceWidth0 + 1*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
+    }
     &.icon-2_1 {
 	    background-position: (@spliceWidth0 + 2*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
     }
@@ -209,12 +251,6 @@ body {
     }
     &.icon-1_4 {
 	    background-position: (@spliceWidth0 + 5*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
-    }
-    &.icon-rest {
-	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
-    }
-    &.icon-dot {
-	    background-position: (@spliceWidth0 + 1*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
     }
     &.icon-1_8 {
 	    background-position: (@spliceWidth0 + 6*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
@@ -228,32 +264,85 @@ body {
     &.icon-1_64 {
 	    background-position: (@spliceWidth0 + 9*@spliceWidth) (@spliceHeight0 + 1*@spliceHeight);
     }
-    &.icon-del {
-	    background-position: -95px -35px;
-    }
-    &.icon-meter {
-	    background-position: (@spliceWidth0 + 9*@spliceWidth) @spliceHeight0;
-    }
-    &.icon-key {
-	    background-position: (@spliceWidth0 + 4*@spliceWidth) @spliceHeight0;
-    }
+
     &.icon-clef {
 	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-clef-g {
+	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-clef-f {
+	    background-position: (@spliceWidth0 + 1*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-clef-c {
+	    background-position: (@spliceWidth0 + 2*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-clef-perc {
+	    background-position: (@spliceWidth0 + 3*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-clef-tab {
+	    background-position: (@spliceWidth0 + 4*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-clef-tie {
+	    background-position: (@spliceWidth0 + 5*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-clef-flip-stem {
+	    background-position: (@spliceWidth0 + 6*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+    &.icon-clef-tuplet {
+	    background-position: (@spliceWidth0 + 7*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
     }
     &.icon-grace {
 	    background-position: (@spliceWidth0 + 8*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
     }
+    &.icon-1_128 {
+	    background-position: (@spliceWidth0 + 9*@spliceWidth) (@spliceHeight0 + 2*@spliceHeight);
+    }
+
     &.icon-finale {
 	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 3*@spliceHeight);
     }
     &.icon-lyric {
 	    background-position: (@spliceWidth0 + 1*@spliceWidth) (@spliceHeight0 + 3*@spliceHeight);
     }
+    &.icon-split-beam {
+	    background-position: (@spliceWidth0 + 2*@spliceWidth) (@spliceHeight0 + 3*@spliceHeight);
+    }
+
+    &.icon-play {
+	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 4*@spliceHeight);
+    }
+    &.icon-pause {
+	    background-position: (@spliceWidth0 + 1*@spliceWidth) (@spliceHeight0 + 4*@spliceHeight);
+    }
+    &.icon-stop {
+	    background-position: (@spliceWidth0 + 2*@spliceWidth) (@spliceHeight0 + 4*@spliceHeight);
+    }
+
+    &.icon-right {
+	    background-position: (@spliceWidth0 + 0*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
+    }
+    &.icon-left {
+	    background-position: (@spliceWidth0 + 1*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
+    }
+    &.icon-down {
+	    background-position: (@spliceWidth0 + 2*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
+    }
+    &.icon-up {
+	    background-position: (@spliceWidth0 + 3*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
+    }
+    &.icon-enter {
+	    background-position: (@spliceWidth0 + 4*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
+    }
+    &.icon-undo {
+	    background-position: (@spliceWidth0 + 5*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
+    }
     &.icon-redo {
 	    background-position: (@spliceWidth0 + 6*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
     }
-    &.icon-undo{
-	    background-position: (@spliceWidth0 + 5*@spliceWidth) (@spliceHeight0 + 5*@spliceHeight);
+
+    &.icon-del {
+	    background-position: -95px -35px;
     }
 }
 
