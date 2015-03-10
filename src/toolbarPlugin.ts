@@ -16,6 +16,7 @@ import UI = require('../views/jtools');
         Init(app: ScoreApplication.ScoreApplication) {
             //var outputPlugin = <any>app.GetPlugin("Output");
             this.toolbar = new UI.JToolbar(app);
+            app.AddDesigner(new UI.CheckButtons());
             //app.AddDesigner(new Model.EditorDesigner(outputPlugin.context));
         }
 

@@ -307,9 +307,9 @@
                             id: "dotted",
                             label: "Dotted",
                             glyph: "icon-dot",
-                            dx: 8,
+                            /*dx: 8,
                             dy: 17,
-                            scale: 1.2,
+                            scale: 1.2,*/
                             onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
                                 //toolbar.dots = button.checked ? 1 : 0;
                                 app.Status.dots = button.checked ? 1 : 0;
@@ -319,9 +319,9 @@
                             id: "grace",
                             label: "Grace",
                             glyph: "icon-grace",
-                            dx: 19,
+                            /*dx: 19,
                             dy: 29,
-                            scale: 0.8,
+                            scale: 0.8,*/
                             onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
                                 app.Status.grace = button.checked;
                             }
@@ -335,22 +335,22 @@
                         id: "undo",
                         label: "Undo",
                         glyph: "icon-undo",
-                        dx: 7,
-                        dy: 16,
-                        scale: 1.2,
                         onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
                             app.Undo();
+                        },
+                        validate: function (app: ScoreApplication.ScoreApplication): boolean {
+                            return app.canUndo();
                         }
                     },
                         {
                             id: "redo",
                             label: "Redo",
                             glyph: "icon-redo",
-                            dx: 8,
-                            dy: 17,
-                            scale: 1.2,
                             onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
                                 app.Redo();
+                            },
+                            validate: function (app: ScoreApplication.ScoreApplication): boolean {
+                                return app.canRedo();
                             }
                         },
                     ],
@@ -400,9 +400,6 @@
                             if (item.type !== 'Buttongroup') {
                                 var label = (<any>$('<label/>').attr('for', btnDef.id)
                                     .attr("title", btnDef.label))
-                                //.text('')
-                                    .append('<div style="width:35px; height:35px;"></div>')
-                                //                                    .append('<div style="background-position: -4px -4px; background-image: url(images/symbol1/' + btnDef.glyph + '.png); width:35px; height:35px;"></div>')
                                     .appendTo(grp);
                             }
                             else {
@@ -416,13 +413,11 @@
                                 },
                             })
                                 .data('notedata', btnDef)
-                            //.data('score', this.scoreOutput)
                                 .data('parent', this)
                                 .data('app', this.app)
                                 .click(function () {
                                     var notedata = $(this).data('notedata');
                                     var parent = $(this).data('parent');
-                                    //var score =  $( this ).data('score');
                                     var app = <ScoreApplication.ScoreApplication>$(this).data('app');
 
                                     if (notedata.mode) {
@@ -439,12 +434,7 @@
                                     }
                                 });/**/
                         }
-                        //if (item.type !== 'Buttongroup')
-                            grp.buttonset();
-
-                        /*grp.find('svg')
-                            .height(30)
-                            .width(35);*/
+                        grp.buttonset();
 
                         grp.find('span.ui-button-text')
                             .css('padding', '2px');
@@ -452,10 +442,24 @@
                     }
                 }
             }
-
-
         }
 
+        export class CheckButtons implements ScoreApplication.ScoreDesigner {
+            Validate(app: ScoreApplication.ScoreApplication) {
+                var $buttons = $('.note-icon');
+                $buttons.each((i: number, e: Element) => {
+                    var btnDef = $(e).data('notedata');
+                    if (btnDef && btnDef.validate) {
+                        if (btnDef.validate(app)) {
+                            $(e).button('enable');
+                        }
+                        else {
+                            $(e).button('disable');
+                        }
+                    }
+                });
+            }
+        }
 
         export class PianoPlugIn implements ScoreApplication.ScorePlugin, Application.IFeedbackClient { // todo: change sizing of clientArea etc.
             Init(app: ScoreApplication.ScoreApplication) {
@@ -540,6 +544,7 @@
                 return "PianoPlugin";
             }
         }
+
 
     }
 }
