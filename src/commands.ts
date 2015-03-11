@@ -1,7 +1,7 @@
 ﻿module jMusicScore {
     export module Model {
 
-        export type ScoreCommand = Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery>;
+        export interface ScoreCommand extends Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
 
         export class ClearScoreCommand implements ScoreCommand {
             constructor(private args: any) { }
