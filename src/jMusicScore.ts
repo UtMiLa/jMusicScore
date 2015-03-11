@@ -1597,25 +1597,32 @@ module jMusicScore {
                 }
             }
             static createFromMemento(parent: IVoice, memento: IMemento): INote {
-                var timeVal = TimeSpan.createFromMemento(memento.def.time);
-                var note: INote = new NoteElement(parent, memento.def.noteId, timeVal);
-                note.absTime = AbsoluteTime.createFromMemento(memento.def.abs);
-                if (memento.def.dots) note.setDots(memento.def.dots);
+                //var timeVal = TimeSpan.createFromMemento(memento.def.time);
+                //var note: INote = new NoteElement(parent, memento.def.noteId, timeVal);
+                //note.absTime = AbsoluteTime.createFromMemento(memento.def.abs);
+                //if (memento.def.dots) note.setDots(memento.def.dots);
                 // todo: tuplet
+                var tupletDef: TupletDef;
                 if (memento.def.tuplet) {
                     var fullTime: TimeSpan;
                     if (memento.def.tuplet.fullTime) fullTime = TimeSpan.createFromMemento(memento.def.tuplet.fullTime);
                     var fraction = Rational.createFromMemento(memento.def.tuplet);
                     var tuplet = new TupletDef(fullTime, fraction);
-                    note.tupletDef = tuplet;
+                    tupletDef = tuplet;
                 }
-                if (memento.def.grace) { note.graceType = memento.def.grace; }
-                if (memento.def.rest) { note.rest = true; }
-                if (memento.def.hidden) { note.noteId = "hidden"; }
+                //if (memento.def.grace) { note.graceType = memento.def.grace; }
+                //if (memento.def.rest) { note.rest = true; }
+                //if (memento.def.hidden) { note.noteId = "hidden"; }
                 // todo: beams
-                if (memento.def.stem) { note.setStemDirection(memento.def.stem); }
-                if (parent) parent.addChild(parent.noteElements, note); // todo: at index
-                return note;
+                if (parent) {//parent.addChild(parent.noteElements, note); // todo: at index
+                    var noteType: NoteType = memento.def.hidden ? NoteType.placeholder : memento.def.rest ? NoteType.rest : NoteType.note;
+                    var beforeNote: INote = null;
+                    var note = Music.AddNote(parent, noteType, AbsoluteTime.createFromMemento(memento.def.abs), memento.def.noteId,
+                        TimeSpan.createFromMemento(memento.def.time), beforeNote, true, memento.def.dots, tupletDef);
+                    if (memento.def.grace) { note.graceType = memento.def.grace; }
+                    if (memento.def.stem) { note.setStemDirection(memento.def.stem); }
+                    return note;
+                }
             }
 
             public doGetMemento(): any {

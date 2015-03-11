@@ -8,9 +8,15 @@
 
             /* args:
             */
+            private _memento: Model.IMemento;
 
             Execute(app: ScoreApplication.ScoreApplication) {
+                this._memento = app.document.getMemento();
                 app.document.clear();
+            }
+
+            Undo(app: ScoreApplication.ScoreApplication) {
+                app.document = <IScore>Model.MusicElementFactory.RecreateElement(null, this._memento);
             }
         }
 
@@ -30,15 +36,21 @@
             constructor(private args: AddNoteArgs) { }
 
             // todo: fjern absTime eller beforeNote
+            private _note: INote;
 
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var note = Music.AddNote(this.args.voice, this.args.rest ? NoteType.rest : NoteType.note, this.args.absTime, 'n' + this.args.noteName, this.args.noteTime,
+                this._note = Music.AddNote(this.args.voice, this.args.rest ? NoteType.rest : NoteType.note, this.args.absTime, 'n' + this.args.noteName, this.args.noteTime,
                     this.args.beforeNote, true, this.args.dots, this.args.tuplet);
-                if (this.args.grace) note.graceType = "normal";
+                if (this.args.grace) this._note.graceType = "normal";
 
                 for (var i = 0; i < this.args.pitches.length; i++) {
-                    note.setPitch(this.args.pitches[i]);
+                    this._note.setPitch(this.args.pitches[i]);
                 }
+            }
+
+            Undo(app: ScoreApplication.ScoreApplication) {
+                var voice = this._note.parent;
+                voice.removeChild(this._note);
             }
         }
 
@@ -48,43 +60,62 @@
         export class DeleteNoteCommand implements ScoreCommand {
             constructor(private args: IDeleteNoteArgs) { }
             
+            private _memento: Model.IMemento;
+            private _voice: Model.IVoice;
+
             Execute(app: ScoreApplication.ScoreApplication) {
-                var voice = this.args.note.parent;
-                voice.removeChild(this.args.note);
+                this._memento = this.args.note.getMemento();
+                this._voice = this.args.note.parent;
+                this._voice.removeChild(this.args.note);
             }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                var note = Model.MusicElementFactory.RecreateElement(this._voice, this._memento);
+            }
+
         }
 
         export class DeleteNoteheadCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: { head:INotehead }) { }
 
             /* args:
             head
             */
+            private _memento: IMemento;
+            private _note: INote;
 
             Execute(app: ScoreApplication.ScoreApplication) {
                 var head = <Model.INotehead>this.args.head;
-                var note = head.parent;
-                note.removeChild(head);
+                this._note = head.parent;
+                this._memento = head.getMemento();
+                this._note.removeChild(head);
+            }
+
+            Undo(app: ScoreApplication.ScoreApplication) {
+                MusicElementFactory.RecreateElement(this._note, this._memento);
             }
         }
 
         export class SetVoiceStemDirectionCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: { voice: IVoice; direction: StemDirectionType; }) { }
 
-            /* args:
-            note
-            direction
-            */
+            private _oldDirection: Model.StemDirectionType;
 
             public Execute(app: ScoreApplication.ScoreApplication) {
                 var direction = this.args.direction;
-                var voice = <IVoice>this.args.voice;
-                voice.setStemDirection(<number>direction);                
+                var voice = this.args.voice;
+                this._oldDirection = voice.getStemDirection();
+                voice.setStemDirection(direction);                
             }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                var voice = this.args.voice;
+                voice.setStemDirection(this._oldDirection);
+            }   
         }
 
         export class SetNoteStemDirectionCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: { note: INote; direction: any; }) { }
 
             /* args:
             note
