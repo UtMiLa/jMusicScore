@@ -54,7 +54,7 @@ module jMusicScore {
                             .text(e.Caption)
                             .addClass("ui-widget-header").addClass("ui-corner-all")
                         );
-                    addDialog("#" + e.Id + "Dialog", "#" + e.Id + "Button", this.app, e.Dialog);
+                    this.addDialog("#" + e.Id + "Dialog", "#" + e.Id + "Button", this.app, e.Dialog);
                 }
                 if (e.Menu) {
                     if ($('#' + e.Id + "Button").length === 0) {
@@ -113,6 +113,70 @@ module jMusicScore {
             }
 
 
+            private addDialog(dialogId: string, buttonId: any, a: ScoreApplication.ScoreApplication, dialogTransferrer: any = null) {
+                if (!dialogTransferrer) {
+                    dialogTransferrer = {
+                        buttonSettings: [
+                            {
+                                id: 'BtnOk_' + dialogId.substring(1),
+                                text: "Ok",
+                                click: function () { $(this).dialog("close"); }
+                            },
+                            {
+                                id: 'BtnCancel_' + dialogId.substring(1),
+                                text: "Cancel",
+                                click: function () { $(this).dialog("close"); }
+                            }
+                        ],
+                        okFunction: function () { },
+                        cancelFunction: function () { },
+                        initFunction: function () { },
+                        width: 350,
+                        height: 300
+                    }
+                }
+                var dlg = $(dialogId)
+                    .data('dlgobj', dialogTransferrer)
+                    .dialog({
+                    autoOpen: false,
+                    height: dialogTransferrer.height,
+                    width: dialogTransferrer.width,
+                    modal: true,
+                    buttons: dialogTransferrer.buttonSettings,
+                    open: dialogTransferrer.open,
+                    close: function () {
+                        //allFields.val( "" ).removeClass( "ui-state-error" );
+                    }
+                });
+
+                if (typeof buttonId === "string") {
+                    $(buttonId).button(
+                    /*{ 
+                        text: false,
+                        icons: {
+                                primary: "note-icon icon-meter",
+                                //secondary: "ui-icon-triangle-1-s"
+                            } 
+                    }*/
+                        ).click(function () {
+                        var obj = $(dialogId).data('dlgobj');
+                        var app: ScoreApplication.ScoreApplication = a;
+                        obj.initFunction(app);
+                        $(dialogId).dialog("open");
+                    });
+                }
+                else if (typeof buttonId === "object") {
+                    buttonId.click(function () {
+                        var obj = $(dialogId).data('dlgobj');
+                        var app: ScoreApplication.ScoreApplication = a;
+                        obj.initFunction(app);
+                        $(dialogId).dialog("open");
+                    });
+                }
+
+                return dlg;
+            }
+
             private menu_subMenu(e: IMenuDef) {
                 var menuItems = $('<ul>');
                 var me = this;
@@ -142,7 +206,7 @@ module jMusicScore {
 
                         //$("#" + e1.Id + "Button").click( function() { alert ("hej"); });
 
-                        addDialog("#" + e1.Id + "Dialog", menuItem, me.app, e1.Dialog);
+                        me.addDialog("#" + e1.Id + "Dialog", menuItem, me.app, e1.Dialog);
                     }
                     if (e1.Menu) {
                         menuItem.append(this.menu_subMenu(e1));

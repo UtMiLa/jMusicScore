@@ -116,7 +116,7 @@
         app.AddPlugin(new Editors.MidiInputPlugin());
         app.RegisterEventProcessor(new Editors.MidiEditor()); // "midiNoteOff", 
 
-        CreateMenus(app);// todo: encapsulate in class
+        //CreateMenus(app);// todo: encapsulate in class
 
         /** test **/
 
