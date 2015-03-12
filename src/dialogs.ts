@@ -70,6 +70,27 @@ module jMusicScore {
             }
         }
 
+        export class DisplayTextWidget implements IWidget {
+            constructor() {                
+            }
+
+            private $ctl: JQuery;
+            
+            public set Value(value: string) {
+                this.$ctl.text(value);
+            }
+
+            public get Value(): string {
+                return this.$ctl.text();
+            }
+
+            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+                this.$ctl = $("<div>");
+                parent.append(this.$ctl);
+                return this.$ctl;
+            }
+        }
+
         export class KeyWidget implements IWidget {
             constructor() {
             }
@@ -606,6 +627,36 @@ module jMusicScore {
                 this.dialogTitle = "Edit textmark";
             }
         }
+
+        export class ShowTextDialog extends Dialog {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+                super(idPrefix, app);
+                this.dialogId = "ShowTextDialog";
+                this.dialogTitle = "Show text";
+                this.width = 600;
+                this.height = 500;
+            }
+            private textDivCtl: DisplayTextWidget;
+
+            public CreateBodyElements($element: JQuery) {
+                this.AddWidget(this.textDivCtl = new DisplayTextWidget(), $element, "ShowTextDialogTextDiv", "Text");
+            }
+
+            public Show(text: string) {
+                this.addDialog();
+                var $dlg = this.DialogObject;
+                this.onInit();
+                this.textDivCtl.Value = text;
+
+                $dlg.dialog("open");
+            }
+
+            public onOk(): boolean {
+                return true;
+            }
+
+        }
+
     }
 
 }

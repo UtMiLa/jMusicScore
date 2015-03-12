@@ -98,7 +98,7 @@
     $(function () {
         /* Menus */
         app.AddPlugin(new CanvasView.CanvasViewer($('#svgArea')));
-        //app.AddPlugin(new SvgView.SVGViewer($('#svgArea')));
+        app.AddPlugin(new SvgView.SVGViewer($('#svgArea')));
         app.AddPlugin(new SvgView.HintAreaPlugin());
 
         app.AddPlugin(new UI.ToolbarPlugin());
@@ -106,9 +106,10 @@
         app.AddPlugin(new Menus.NewScorePlugin(app));
         app.AddPlugin(new Menus.OpenFileMenuPlugin());
         app.AddPlugin(new Menus.SaveAsFileMenuPlugin());
-        app.AddPlugin(new Menus.SvgMenuPlugin());
-        app.AddPlugin(new Menus.ExportMenuPlugin());
+        //app.AddPlugin(new Menus.SvgMenuPlugin());
+        //app.AddPlugin(new Menus.ExportMenuPlugin());
         app.AddPlugin(new Menus.VoiceMenuPlugin(app));
+        app.AddPlugin(new Menus.ExportMenuPlugin(app));
 
 
         app.AddPlugin(new Menus.StaffMenuPlugin());

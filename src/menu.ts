@@ -235,7 +235,7 @@ module jMusicScore {
         }
 
 
-        export class SvgMenuPlugin extends MenuPlugin {
+        /*export class SvgMenuPlugin extends MenuPlugin {
             GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** svg ******************* //
                 return {
@@ -280,9 +280,9 @@ module jMusicScore {
                 };
             }
         }
+        */
 
-
-
+        /*
         export class ExportMenuPlugin extends MenuPlugin {
             GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** Export menu ******************* //
@@ -397,7 +397,7 @@ module jMusicScore {
                                     $('#musicXMLText').html(
                                         xmlGen.getAsXml()
                                             .replace(/&/g, '&amp;').replace(/</g, '\n&lt;').replace(/>/g, '&gt;')
-                                        );*/
+                                        );* /
                                 },
                                 width: 350,
                                 height: 300
@@ -406,7 +406,7 @@ module jMusicScore {
                     ]
                 };
             }
-        }
+        }*/
 
 
         // ****************** STAFF ******************* //
@@ -904,8 +904,52 @@ module jMusicScore {
         export class VoiceMenuPlugin extends QuickMenuPlugin {
             constructor(app: ScoreApplication.ScoreApplication) {
                 super("VoiceMenu", "Voice", "", "", function () {
-                    new Dialogs.VoiceDialog('menu', app).Show(<Model.IVoice>app.Status.currentVoice);
+                    new Dialogs.VoiceDialog('menu', app).Show(app.Status.currentVoice);
                 });
+            }
+        }
+
+
+        export class ExportMenuPlugin extends MenuPlugin {
+            constructor(app: ScoreApplication.ScoreApplication) {
+                super();
+            }
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+                return {
+                    Id: "ExportMenu",
+                    Caption: "Export", 
+                    Menu: [
+                        {
+                            Id: "SVGMenu",
+                            Caption: "SVG",
+                            action: () => {
+                                new Dialogs.ShowTextDialog('menu', app).Show(app.SaveToString('SVG'));
+                            }
+                        },
+                        {
+                            Id: "ExportJson",
+                            Caption: "JSON",
+                            action: () => {
+                                new Dialogs.ShowTextDialog('menu', app).Show(app.SaveToString('JSON'));
+                            }
+                        },
+                        {
+                            Id: "ExportLilypond",
+                            Caption: "Lilypond",
+                            action: () => {
+                                new Dialogs.ShowTextDialog('menu', app).Show(app.SaveToString('Lilypond'));
+                            }
+                        },
+                        // ****************** MusicXml ******************* //
+                        {
+                            Id: "MusicXmlMenu",
+                            Caption: "MusicXml",
+                            action: () => {
+                                new Dialogs.ShowTextDialog('menu', app).Show(app.SaveToString('MusicXML'));
+                            }
+                        }
+                    ]
+                };
             }
         }
 
