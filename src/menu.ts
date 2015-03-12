@@ -1,12 +1,24 @@
 module jMusicScore {
     export module Menus {
 
+        interface IControlDef {
+            tag: string;
+            id: string;
+            text?: string;
+            options?: { [key: number]: string };
+        }
+
+        interface IDialogDef {
+            Title: string;
+            Controls: IControlDef[];
+        }
+
         interface IMenuDef {
             Id: string;
-            Dialog: any;
-            Menu: IMenuDef;
+            Dialog?: IDialogDef;
+            Menu?: IMenuDef[];
             Caption: string;
-            action: (e: Event) => void;
+            action?: (e: Event) => void;
         }
 
         export class MenuPlugin implements ScoreApplication.ScorePlugin {
@@ -22,8 +34,8 @@ module jMusicScore {
                 return "Menu";
             }
 
-            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
-                return {};
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+                return null;
             }
 
             private menu_addItem(e: IMenuDef /*, level*/) {
@@ -112,7 +124,7 @@ module jMusicScore {
                 }
             }
 
-
+            /** old style dialog creation - should die eventually */
             private addDialog(dialogId: string, buttonId: any, a: ScoreApplication.ScoreApplication, dialogTransferrer: any = null) {
                 if (!dialogTransferrer) {
                     dialogTransferrer = {
@@ -224,7 +236,7 @@ module jMusicScore {
 
 
         export class SvgMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** svg ******************* //
                 return {
                     Id: "ExportMenu",
@@ -272,7 +284,7 @@ module jMusicScore {
 
 
         export class ExportMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** Export menu ******************* //
                 return {
                     Id: "ExportMenu",
@@ -399,7 +411,7 @@ module jMusicScore {
 
         // ****************** STAFF ******************* //
         export class StaffMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** staves ******************* //
                 return {
                     Id: "StaffMenu",
@@ -637,7 +649,7 @@ module jMusicScore {
         }
 
         export class OpenFileMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** Open file ******************* //
                 return {
                     
@@ -737,7 +749,7 @@ module jMusicScore {
 
 
         export class SaveAsFileMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** Save file ******************* //
                 return {
                     Id: "FileMenu",
@@ -872,7 +884,7 @@ module jMusicScore {
                 super();
             }
 
-            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** Custom action ******************* //
                 var menuItem = {
                     Id: this.id,
