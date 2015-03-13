@@ -229,185 +229,7 @@ module jMusicScore {
                 });
                 return menuItems;
             }
-
-
-
         }
-
-
-        /*export class SvgMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
-                // ****************** svg ******************* //
-                return {
-                    Id: "ExportMenu",
-                    Caption: "Export",
-                    Menu: [
-                        {
-                            Id: "SvgMenu",
-                            Caption: "SVG",
-                            Dialog: {
-                                Title: "SVG",
-                                Controls: [
-                                    {
-                                        tag: "<div>",
-                                        id: "svgText"
-                                    }
-                                ],
-                                buttonSettings: [
-                                    {
-                                        id: 'BtnOk_SVGDialog',
-                                        text: "OK",
-                                        click: function () {
-                                            $(this).dialog("close");
-                                        }
-                                    },
-                                    {
-                                        id: 'BtnCancel_SVGDialog',
-                                        text: "Cancel",
-                                        click: function () { $(this).dialog("close"); }
-                                    }
-                                ],
-                                okFunction: function () { },
-                                cancelFunction: function () { },
-                                initFunction: function () {
-                                    $('#svgText').html(app.SaveToString('SVG').replace(/&/g, '&amp;').replace(/</g, '\n&lt;').replace(/>/g, '&gt;'));
-                                },
-                                width: 350,
-                                height: 300
-                            }
-                        }
-                    ]
-                };
-            }
-        }
-        */
-
-        /*
-        export class ExportMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
-                // ****************** Export menu ******************* //
-                return {
-                    Id: "ExportMenu",
-                    Caption: "Export",
-                    Menu: [
-                        // ****************** JSON ******************* //
-                        {
-                            Id: "ExportJson",
-                            Caption: "JSON",
-                            Dialog: {
-
-                                Title: "JSON",
-                                Controls: [
-                                    {
-                                        tag: "<div>",
-                                        id: "jsonText"
-                                    }
-                                ],
-                                buttonSettings: [
-                                    {
-                                        id: 'BtnOk_JSONDialog',
-                                        text: "OK",
-                                        click: function () {
-                                            $(this).dialog("close");
-                                        }
-                                    },
-                                    {
-                                        id: 'BtnCancel_JSONDialog',
-                                        text: "Cancel",
-                                        click: function () { $(this).dialog("close"); }
-                                    }
-                                ],
-                                okFunction: function () { },
-                                cancelFunction: function () { },
-                                initFunction: function (application: ScoreApplication.ScoreApplication) {
-                                    $('#jsonText').text(application.SaveToString('JSON'));
-                                },
-                                width: 350,
-                                height: 300
-                            }
-                        },
-                        // ****************** Lilypond ******************* //
-                        {
-                            Id: "ExportLily",
-                            Caption: "Lilypond",
-                            Dialog: {
-
-                                Title: "Lilypond",
-                                Controls: [
-                                    {
-                                        tag: "<div>",
-                                        id: "lilypond"
-                                    }
-                                ],
-                                buttonSettings: [
-                                    {
-                                        id: 'BtnOk_LilypondDialog',
-                                        text: "OK",
-                                        click: function () {
-                                            $(this).dialog("close");
-                                        }
-                                    },
-                                    {
-                                        id: 'BtnCancel_LilypondDialog',
-                                        text: "Cancel",
-                                        click: function () { $(this).dialog("close"); }
-                                    }
-                                ],
-                                okFunction: function () { },
-                                cancelFunction: function () { },
-                                initFunction: function () {
-                                },
-                                width: 350,
-                                height: 300
-
-                            }
-                        },
-                        // ****************** MusicXml ******************* //
-                        {
-                            Id: "MusicXmlMenu",
-                            Caption: "MusicXml",
-                            Dialog: {
-                                Title: "MusicXml",
-                                Controls: [
-                                    {
-                                        tag: "<div>",
-                                        id: "musicXMLText"
-                                    }
-                                ],
-                                buttonSettings: [
-                                    {
-                                        id: 'BtnOk_MusicXmlDialog',
-                                        text: "OK",
-                                        click: function () {
-                                            $(this).dialog("close");
-                                        }
-                                    },
-                                    {
-                                        id: 'BtnCancel_MusicXmlDialog',
-                                        text: "Cancel",
-                                        click: function () { $(this).dialog("close"); }
-                                    }
-                                ],
-                                okFunction: function () { },
-                                cancelFunction: function () { },
-                                initFunction: function (application: ScoreApplication.ScoreApplication) {
-                                    //$('#musicXMLText').text(application.SaveToString('MusicXML'));
-                                    $('#musicXMLText').html(application.SaveToString('MusicXML').replace(/&/g, '&amp;').replace(/</g, '\n&lt;').replace(/>/g, '&gt;'));
-                                    /*var xmlGen = new MusicXml.MusicXmlWriter(application.score);
-                                    $('#musicXMLText').html(
-                                        xmlGen.getAsXml()
-                                            .replace(/&/g, '&amp;').replace(/</g, '\n&lt;').replace(/>/g, '&gt;')
-                                        );* /
-                                },
-                                width: 350,
-                                height: 300
-                            }
-                        },
-                    ]
-                };
-            }
-        }*/
-
 
         // ****************** STAFF ******************* //
         export class StaffMenuPlugin extends MenuPlugin {
@@ -559,6 +381,12 @@ module jMusicScore {
                 return this.$list.data("filename");
             }
 
+
+            public existsInFileList(name: string): boolean {
+                // tjek om findes
+                return this.$list.children("li[value='" + name + "']").length > 0;
+            }
+
             public UpdateFileList(data: string[]) {
                 var $list = this.$list;
                 $list.empty();
@@ -592,8 +420,62 @@ module jMusicScore {
             }
         }
 
-        export class FileDialog extends Dialogs.Dialog {
+        export class StavesDialog extends Dialogs.ScoreDialog {
             constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+                super(idPrefix, app);
+                /*this.dialogId = "FileDialog";
+                this.dialogTitle = "Select file";
+                this.height = 600;*/
+            }
+            /*private sourceWidget: Dialogs.DropdownWidget;
+            private fileListWidget = new FileListWidget();
+            private fileTypeWidget: Dialogs.DropdownWidget;*/
+
+            public onOk(): boolean {
+                return true;
+            }
+
+            public Show() {
+                /*this.addDialog();
+
+                var $dlg = this.DialogObject;
+                //$dlg.data('absTime', absTime);
+                this.onInit();
+
+                /**** /
+
+                var ids = this.app.GetFileManagerIds();
+                this.sourceWidget.SetOptions(<any>$.map(ids,(e, i) => { return { val: e, label: e }; }));
+                this.fileTypeWidget.SetOptions(<any>$.map(this.app.GetFileSaveTypes(),(e, i) => { return { val: e, label: e }; }));
+
+                var me = this;
+                var updateFileList = function (source: string) {
+                    me.app.GetFileList(source, function (data: string[]) {
+                        me.fileListWidget.UpdateFileList(data);
+                    });
+                }
+                this.sourceWidget.change(function () {
+                    var item = $(this).val();
+                    updateFileList(item);
+                });
+                updateFileList(this.sourceWidget.Value);
+
+                
+                $dlg.dialog("open");*/
+            }
+
+            public CreateBodyElements($element: JQuery) {
+                /*this.AddWidget(this.sourceWidget = new Dialogs.DropdownWidget({ 0: 'Local', 1: 'Server' }), $element, "fileSource", "File source");
+                this.AddWidget(this.fileListWidget = new FileListWidget(), $element, "FileList", "Select file"); // todo: class 
+                this.AddWidget(this.fileTypeWidget = new Dialogs.DropdownWidget({}), $element, "fileTypes", "Select file type");*/
+            }
+
+        }
+
+
+
+        export class FileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends Dialogs.Dialog<DocumentType, StatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager , ContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
@@ -644,6 +526,15 @@ module jMusicScore {
                 return this.sourceWidget.Value;
             }
 
+            public get fileFormat() {
+                return this.fileTypeWidget.Value;
+            }
+
+            public existsInFileList(name: string): boolean {
+                // tjek om findes
+                return this.fileListWidget.existsInFileList(name);
+            }
+
             public CreateBodyElements($element: JQuery) {
                 this.AddWidget(this.sourceWidget = new Dialogs.DropdownWidget({ 0: 'Local', 1: 'Server' }), $element, "fileSource", "File source");
                 this.AddWidget(this.fileListWidget = new FileListWidget(), $element, "FileList", "Select file"); // todo: class 
@@ -651,12 +542,12 @@ module jMusicScore {
             }
         }
 
-        export class OpenFileDialog extends FileDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+        class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "OpenFileDialog";
                 this.dialogTitle = "Open file";
-                this.height = 600;
+                this.height = 500;
             }
 
             // todo: dbclk filelist
@@ -670,238 +561,68 @@ module jMusicScore {
             }
         }
 
-        export class SaveFileDialog extends FileDialog {
-        }
-
-        /*export class OpenFileMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
-                // ****************** Open file ******************* //
-                return {
-                    
-                Id: "FileMenu",
-                    Caption: "File",
-                    Menu: [{
-
-                        Id: "OpenMenu",
-                        Caption: "Open",
-                        Dialog: {
-                            Title: "Open file",
-                            Controls: [
-                                {
-                                    tag: "<select>",
-                                    id: "OpenFileSourceSelect",
-                                    options: {
-                                        0: "Local",
-                                        1: "Server"
-                                    }
-                                },
-                                {
-                                    tag: "<ul>",
-                                    id: "openFileList",
-                                }
-                            ],
-                            buttonSettings: [
-                                {
-                                    id: 'BtnOk_Open_FileDialog',
-                                    text: "OK",
-                                    click: function () {
-                                        // Open file
-                                        var name: string = $('#openFileList').data("filename");
-                                        if (name) {
-                                            var source = $("#OpenFileSourceSelect").val();
-                                            var type: string = '*';
-                                            app.LoadUsing(name, source, type);
-                                            $(this).dialog("close");
-                                        }
-                                    }
-                                },
-                                {
-                                    id: 'BtnCancel_Open_FileDialog',
-                                    text: "Cancel",
-                                    click: function () { $(this).dialog("close"); }
-                                }
-                            ],
-                            okFunction: function () { },
-                            cancelFunction: function () { },
-                            initFunction: function () {
-                                var ids = app.GetFileManagerIds();
-                                var $this = $(this);
-                                var $source = $("#OpenFileSourceSelect");
-                                $source.empty();
-                                for (var i = 0; i < ids.length; i++) {
-                                    $('<option>').text(ids[i]).appendTo($source);
-                                }
-                                var updateFileList = function (source: string) {
-                                    app.GetFileList(source, function (data: string[]) {
-                                        $('#openFileList').empty();
-                                        $.each(data, function (i, e) {
-                                            if (e) {
-                                                $('#openFileList').append(
-                                                    $('<li>')
-                                                        .attr("value", e)
-                                                        .append(
-                                                        $("<a>").text(e)
-                                                            .attr("href", "#")
-                                                            .click(function () {
-                                                                var name = $(this).text();                                                                
-                                                                $("#openFileList li").removeClass('selected');
-                                                                $(this).parent().addClass('selected');
-                                                                $('#openFileList').data("filename", name);
-                                                            })
-                                                            .dblclick(function () { $('#BtnOk_Open_FileDialog').trigger('click'); })
-                                                        ));
-                                            }
-                                        });
-                                    });
-                                }
-                                $source.change(function () {
-                                    var item = $(this).val();
-                                    updateFileList(item);
-                                });
-                                updateFileList($source.val());
-                                
-                                return this;
-                            },
-                            width: 350,
-                            height: 500
-                        }
-                    }
-                ]};
+        class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+                super(idPrefix, app);
+                this.dialogId = "SaveFileDialog";
+                this.dialogTitle = "Save file";
+                this.height = 600;
             }
-        }*/
 
-
-        export class SaveAsFileMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
-                // ****************** Save file ******************* //
-                return {
-                    Id: "FileMenu",
-                    Caption: "File",
-                    Menu: [{
-
-                        Id: "SaveAsMenu",
-                        Caption: "Save as...",
-                        Dialog: {
-                            Title: "Save file",
-                            Controls: [
-                                {
-                                    tag: "<select>",
-                                    id: "SaveFileSourceSelect",
-                                    options: {
-                                        0: "Local",
-                                        1: "Server"
-                                    }
-                                },
-                                {
-                                    tag: "<ul>",
-                                    id: "saveFileList",
-                                },
-                                {
-                                    tag: "<select>",
-                                    id: "saveFileFormats",
-                                },
-                                {
-                                    tag: "<input>",
-                                    id: "saveFileEdit",
-                                }
-                            ],
-                            buttonSettings: [
-                                {
-                                    id: 'BtnOk_SaveAsDialog',
-                                    text: "OK",
-                                    click: function () {
-                                        // Save file
-                                        var format = $('#saveFileFormats').val();
-                                        var name: string = $('#saveFileEdit').val();
-                                        name = name.replace(/[^a-zA-Z0-9_\.]/, '');
-                                        try {
-                                            name = app.SetExtension(name, format);
-                                            $('#saveFileEdit').val(name);
-                                        }
-                                        catch (Exception) {
-                                            alert("Illegal name");
-                                            name = "";
-                                        }
-                                        if (name) {
-                                            // tjek om findes
-                                            if ($("#saveFileList li[value='" + name + "']").length) {
-                                                if (!window.confirm("File exists; overwrite?")) { return; }
-                                            }
-                                            var source = $("#SaveFileSourceSelect").val();                                            
-                                            app.SaveUsing(name, source, format);
-                                            $(this).dialog("close");
-                                        }
-                                    }
-                                },
-                                {
-                                    id: 'BtnCancel_SaveAsDialog',
-                                    text: "Cancel",
-                                    click: function () { $(this).dialog("close"); }
-                                }
-                            ],
-                            okFunction: function () { },
-                            cancelFunction: function () { },
-                            open: function () {
-                                var updateFileList = function (source: string) {
-                                    app.GetFileList(source, function (data: string[]) {
-                                        $('#saveFileList').empty();
-                                        $.each(data, function (i, e) {
-                                            if (e) {
-                                                $('#saveFileList').append(
-                                                    $('<li>')
-                                                        .attr("value", e)
-                                                        .append(
-                                                        $("<a>").text(e)
-                                                            .attr("href", "#")
-                                                            .click(function () {
-                                                                var name = $(this).text();
-                                                                $("#saveFileList li").removeClass('selected');
-                                                                $(this).parent().addClass('selected');
-                                                                $('#saveFileEdit').val(name);
-                                                            })
-                                                            .dblclick(function () { $('#BtnOk_SaveAsDialog').trigger('click'); })
-                                                        ));
-                                            }
-                                        });
-                                    });
-                                }
-                                var $source = $("#SaveFileSourceSelect");
-                                $source.change(function () {
-                                    var item = $(this).val();
-                                    updateFileList(item);
-                                });
-                                updateFileList($source.val());
-                            },
-                            initFunction: function () {
-                                var ids = app.GetFileManagerIds();
-                                var $this = $(this);
-                                var $source = $("#SaveFileSourceSelect");
-                                $source.empty();
-                                var $saveFileFormats = $('#saveFileFormats');
-                                $saveFileFormats.empty();
-                                $.each(app.GetFileSaveTypes(), function (i: number, e: string) {
-                                        $('<option>')
-                                            .attr('value', e)
-                                            .text(e)
-                                            .appendTo($saveFileFormats);
-                                    });                                
-
-                                for (var i = 0; i < ids.length; i++) {
-                                    $('<option>').text(ids[i]).appendTo($source);
-                                }
-
-                                return this;
-                            },
-                            width: 350,
-                            height: 500
-                        }
+            // todo: dbclk filelist
+            // todo: filelist clk => filename
+            /*.click(function () {
+                var name = $(this).text();
+                $("#saveFileList li").removeClass('selected');
+                $(this).parent().addClass('selected');
+                $('#saveFileEdit').val(name);
+            })
+            .dblclick(function () { $('#BtnOk_SaveAsDialog').trigger('click'); })
+            */
+            public onOk(): boolean {
+                if (this.filename) {
+                    // Save file
+                    var format = this.fileFormat;
+                    var name: string = this.filename;
+                    name = name.replace(/[^a-zA-Z0-9_\.]/, '');
+                    try {
+                        name = this.app.SetExtension(name, format);
+                        this.filename = name;
                     }
-                    ]
-                };
+                    catch (Exception) {
+                        alert("Illegal name");
+                        name = "";
+                    }
+                    if (name) {
+                        if (this.existsInFileList(name)) {
+                            if (!window.confirm("File exists; overwrite?")) { return; }
+                        }
+                        var source = this.source;
+                        this.app.SaveUsing(name, source, format);
+                        return true;                        
+                    }
+                    return false;
+                }
+
+                return true;
+            }
+
+            private fileNameWidget: Dialogs.TextEditWidget;
+
+            public get filename() {
+                return this.fileNameWidget.Value;
+            }
+
+            public set filename(name: string) {
+                this.fileNameWidget.Value = name;
+            }
+
+            public CreateBodyElements($element: JQuery) {
+                super.CreateBodyElements($element);
+                this.AddWidget(this.fileNameWidget = new Dialogs.TextEditWidget(), $element, "fileName", "Enter file name");
             }
         }
-
-
+        
         export class QuickMenuPlugin extends MenuPlugin {
             constructor(private id: string, private menuCaption: string, private parentId: string, private parentCaption: string, private menuAction: () => void) {
                 super();
@@ -994,16 +715,16 @@ module jMusicScore {
                         },
                         {
                             Id: "OpenMenu",
-                            Caption: "Open",
+                            Caption: "Open...",
                             action: () => {
-                                new OpenFileDialog('open', app).Show();
+                                new OpenFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('open', app).Show();
                             }
                         },
                         {
-                            Id: "SaveMenu1",
-                            Caption: "Save1",
+                            Id: "SaveMenu",
+                            Caption: "Save as...",
                             action: () => {
-                                new SaveFileDialog('save', app).Show();
+                                new SaveFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('save', app).Show();
                             }
                         },
                     ]

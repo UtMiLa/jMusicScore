@@ -103,15 +103,9 @@
 
         app.AddPlugin(new UI.ToolbarPlugin());
         
-        //app.AddPlugin(new Menus.NewScorePlugin(app));
-        //app.AddPlugin(new Menus./OpenFileMenuPlugin());
-        app.AddPlugin(new Menus.SaveAsFileMenuPlugin());
-        //app.AddPlugin(new Menus.SvgMenuPlugin());
-        //app.AddPlugin(new Menus.ExportMenuPlugin());
+        app.AddPlugin(new Menus.FileMenuPlugin());
         app.AddPlugin(new Menus.VoiceMenuPlugin(app));
         app.AddPlugin(new Menus.ExportMenuPlugin());
-        app.AddPlugin(new Menus.FileMenuPlugin());
-
 
         app.AddPlugin(new Menus.StaffMenuPlugin());
         app.AddPlugin(new Editors.KeybordInputPlugin());
@@ -130,18 +124,16 @@
                 Undo: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("MeasureMapMenu", "Show Measure Map", "TestMenu", "Test", function () {
+        /*app.AddPlugin(new Menus.QuickMenuPlugin("MeasureMapMenu", "Show Measure Map", "TestMenu", "Test", function () {
             var events: Model.ITimedEvent[] = this.parent.getEvents();
             events.sort(Model.Music.compareEvents);
             $('#events').empty();
             for (var i = 0; i < events.length; i++) {
                 $('#events').append('<li>' + events[i].absTime.ToString() + ": " + events[i].debug() + '</li>');
             }
-        }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("TestFileDlgMenu", "File Dialog", "TestMenu", "Test", function () { new Menus.FileDialog("open", app).Show(); }));
+        }));*/
+        //app.AddPlugin(new Menus.QuickMenuPlugin("TestFileDlgMenu", "File Dialog", "TestMenu", "Test", function () { new Menus.FileDialog("open", app).Show(); }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function () { $('.overlay').toggle(); }));
-        //app.AddPlugin(new Menus.QuickMenuPlugin("TestShowCanvasMenu", "Show on Canvas (gl)", "TestMenu", "Test", function () { CanvasView.ShowExperimentalCanvas(app.score); }));
-        //    app.AddPlugin(new Menus.QuickMenuPlugin("TestShowCanvasMenu", "Show on Canvas", "TestMenu", "Test", function () { CanvasView.ShowExperimentalCanvas1(app.score); }));
         app.AddPlugin(new Menus.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function () {
             var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
             var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
@@ -219,10 +211,10 @@
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("MementoTextMenu", "Show memento", "TestMenu", "Test", function () {
+        /*app.AddPlugin(new Menus.QuickMenuPlugin("MementoTextMenu", "Show memento", "TestMenu", "Test", function () {
             var memento = app.document.getMemento(true);
             $('#events').empty().text(JSON.stringify(memento));
-        }));
+        }));*/
         app.AddPlugin(new Menus.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function () {
             app.document.withVoices(function (voice, index) {
                 voice.withNotes((note: Model.INote) => {
