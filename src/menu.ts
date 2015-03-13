@@ -551,11 +551,11 @@ module jMusicScore {
                 this.$list.empty();
             }
 
-            public set Value(value: number) {
+            public set Value(value: string) {
                 this.$list.data("filename", value);
             }
 
-            public get Value(): number {
+            public get Value(): string {
                 return this.$list.data("filename");
             }
 
@@ -586,7 +586,7 @@ module jMusicScore {
             public AddTo(parent: JQuery, id: string, label: string): JQuery {
                 var $div = $("<div>");
                 $("<label>").attr("for", id).text(label).appendTo($div);
-                this.$list = $("<ul>").appendTo($div);
+                this.$list = $("<ul>").attr('id', id).appendTo($div);
                 parent.append($div);
                 return this.$list;
             }
@@ -597,9 +597,10 @@ module jMusicScore {
                 super(idPrefix, app);
                 this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
+                this.height = 600;
             }
             private sourceWidget: Dialogs.DropdownWidget;
-            private fileListWidget = new FileListWidget
+            private fileListWidget = new FileListWidget();
             private fileTypeWidget: Dialogs.DropdownWidget;
 
             public onOk(): boolean {
@@ -635,6 +636,14 @@ module jMusicScore {
                 $dlg.dialog("open");
             }
 
+            public get filename(): string {
+                return this.fileListWidget.Value;
+            }
+
+            public get source(): string {
+                return this.sourceWidget.Value;
+            }
+
             public CreateBodyElements($element: JQuery) {
                 this.AddWidget(this.sourceWidget = new Dialogs.DropdownWidget({ 0: 'Local', 1: 'Server' }), $element, "fileSource", "File source");
                 this.AddWidget(this.fileListWidget = new FileListWidget(), $element, "FileList", "Select file"); // todo: class 
@@ -643,12 +652,28 @@ module jMusicScore {
         }
 
         export class OpenFileDialog extends FileDialog {
-        } // todo: implement
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+                super(idPrefix, app);
+                this.dialogId = "OpenFileDialog";
+                this.dialogTitle = "Open file";
+                this.height = 600;
+            }
+
+            // todo: dbclk filelist
+            public onOk(): boolean {
+                if (this.filename) {
+                    var type: string = '*';
+                    this.app.LoadUsing(this.filename, this.source, type);
+                }
+
+                return true;
+            }
+        }
 
         export class SaveFileDialog extends FileDialog {
         }
 
-        export class OpenFileMenuPlugin extends MenuPlugin {
+        /*export class OpenFileMenuPlugin extends MenuPlugin {
             GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** Open file ******************* //
                 return {
@@ -685,8 +710,6 @@ module jMusicScore {
                                         if (name) {
                                             var source = $("#OpenFileSourceSelect").val();
                                             var type: string = '*';
-                                            /*if (name.match(/\.json$/)) { type = "JSON"; }
-                                            if (name.match(/\.xml$/)) { type = "MusicXML"; }*/
                                             app.LoadUsing(name, source, type);
                                             $(this).dialog("close");
                                         }
@@ -745,7 +768,7 @@ module jMusicScore {
                     }
                 ]};
             }
-        }
+        }*/
 
 
         export class SaveAsFileMenuPlugin extends MenuPlugin {
@@ -911,7 +934,7 @@ module jMusicScore {
 
 
         export class ExportMenuPlugin extends MenuPlugin {
-            constructor(app: ScoreApplication.ScoreApplication) {
+            constructor() {
                 super();
             }
             GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
@@ -953,11 +976,38 @@ module jMusicScore {
             }
         }
 
-        export class NewScorePlugin extends QuickMenuPlugin {
-            constructor(app: ScoreApplication.ScoreApplication) {
-                super("NewMenu", "New", "FileMenu", "File", function () {
-                    app.ExecuteCommand(new Model.ClearScoreCommand({}));
-                });
+        export class FileMenuPlugin extends MenuPlugin {
+            constructor() {
+                super();
+            }
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+                return {
+                    Id: "FileMenu",
+                    Caption: "File",
+                    Menu: [
+                        {
+                            Id: "NewMenu",
+                            Caption: "New",
+                            action: () => {
+                                app.ExecuteCommand(new Model.ClearScoreCommand({}));
+                            }
+                        },
+                        {
+                            Id: "OpenMenu",
+                            Caption: "Open",
+                            action: () => {
+                                new OpenFileDialog('open', app).Show();
+                            }
+                        },
+                        {
+                            Id: "SaveMenu1",
+                            Caption: "Save1",
+                            action: () => {
+                                new SaveFileDialog('save', app).Show();
+                            }
+                        },
+                    ]
+                };
             }
         }
 
