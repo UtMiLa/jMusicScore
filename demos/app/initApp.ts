@@ -107,7 +107,9 @@
         app.AddPlugin(new Menus.VoiceMenuPlugin(app));
         app.AddPlugin(new Menus.ExportMenuPlugin());
 
+        app.AddPlugin(new Menus.StavesMenuPlugin(app));
         app.AddPlugin(new Menus.StaffMenuPlugin());
+
         app.AddPlugin(new Editors.KeybordInputPlugin());
         app.AddPlugin(new Editors.MidiInputPlugin());
         app.RegisterEventProcessor(new Editors.MidiEditor()); // "midiNoteOff", 

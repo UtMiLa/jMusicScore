@@ -91,6 +91,154 @@ module jMusicScore {
             }
         }
 
+        export class CollectionWidget implements IWidget {
+            constructor() {
+            }
+
+            private $ctl: JQuery;
+
+            public set Value(value: string) {
+                this.$ctl.text(value);
+            }
+
+            public get Value(): string {
+                return this.$ctl.text();
+            }
+
+            public AddItem(item: IContainer): void { // todo: IContainer
+                /*var newItem = $('<div class="StaffItem"></div>');
+                newItem.append('<h2>New</h2>');
+                newItem.append('<div class="StaffDetails">Title: <input class="TitleInput" type="text" value="New" />Clef: <ul id="staff-clef"><li><a href="#">G<span class="ui-icon note-icon icon-clef-g"></span></a></li><li><a href="#">G8<span class="ui-icon note-icon icon-clef-g8"></span></a></li></ul></div>');*/
+                this.$ctl.append(item.$container);
+                item.$container.data('owner', item);
+                this.$ctl.accordion("refresh");
+            }
+
+            public withItems(f: (item: IContainer, index: number) => boolean): void {
+                this.$ctl.each(function (i: number, e: Element) {
+                    return f($(e).data('owner'), i);
+                });
+            }
+
+            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+                this.$ctl = $("<div>").attr('id', id);
+                parent.append(this.$ctl);
+                return this.$ctl;
+            }
+            /*
+                        buttonSettings: [
+                            {
+                                id: 'BtnOk_StaffDialog',
+                                text: "Update staves",
+                                click: function () {
+                                    // todo: DeleteStaffCommand
+                                    $("#Staves .StaffItem")
+                                        .each(function (i, e) {
+                                            var staffItem = $(e);
+                                            var staff = <Model.IStaff>staffItem.data('staff');
+                                            if (staff) {
+                                                var application = app;
+                                                application.ExecuteCommand(new Model.UpdateStaffCommand({
+                                                    staff: staff,
+                                                    index: i,
+                                                    title: staffItem.find('.TitleInput').val()
+                                                }));
+                                            }
+                                            else {
+                                                // Add Staff
+                                                var application = app;
+                                                application.ExecuteCommand(new Model.NewStaffCommand({
+                                                    index: i,
+                                                    initClef: Model.ClefDefinition.clefG,
+                                                    title: staffItem.find('.TitleInput').val()
+                                                }));
+                                            }
+                                        });
+                                    $(this).dialog("close");
+                                }
+                            },
+                            {
+                                id: 'BtnCancel_StaffDialog',
+                                text: "Cancel",
+                                click: function () { $(this).dialog("close"); }
+                            }
+                        ],
+                        okFunction: function () { },
+                        cancelFunction: function () { },
+                        initFunction: function () {
+                            var score = app.document;
+
+                            $('#Staves').empty();
+                            score.withStaves((staff: Model.IStaff, index: number) => {
+                                var staffItem = $('<div class="StaffItem" >');
+                                $('<h2>').text(staff.title + ' (' + index + ')').appendTo(staffItem);
+                                var staffDetails = $('<div class="StaffDetails">');
+                                staffDetails
+                                    .append('Title: <input class="TitleInput" type="text" value="' + staff.title + '" />')
+                                    .append('Clef: <span class="staffClef" ></span>');
+                                staffItem.append(staffDetails);
+                                staffItem.data('staff', staff);
+                                $('#Staves').append(staffItem);
+                            });
+
+                            $("#Staves")
+                                .accordion({
+                                    header: "> div > h2",
+                                    collapsible: true,
+                                    heightStyle: "content"
+                                })
+                                .sortable({
+                                    axis: "y",
+                                    handle: "h2",
+                                    stop: function (event: Event, ui: JQueryUI.SortableUIParams) {
+                                        // IE doesn't register the blur when sorting
+                                        // so trigger focusout handlers to remove .ui-state-focus
+                                        ui.item.children("h3").triggerHandler("focusout");
+                                    }
+                                });
+                            //$( "#Staves" ).disableSelection();
+
+                            // todo: clefs
+                            /*$('.staffClef')
+                                .svg(function (svg, error) {
+                                    svg.path(emmentaler_notes['e_clefs.C'], {
+                                        transform: 'scale(1,1), translate(0,0)'
+                                    });
+                                })
+                                .append('<button />')
+                            ;* /
+
+            $(".StaffItem .TitleInput")
+                                .change(function () {
+                //alert(this.value);
+                $(this).parent().parent().children("h2").text(this.value);
+            });
+
+            $("#stavesButton").button(
+            /* {
+                    text: false,
+                    icons: {
+                        primary: "note-icon icon-meter",
+                        //secondary: "ui-icon-triangle-1-s"
+                    }
+                }* /
+                ).click(function () {
+                $("#StaffDialog").dialog("open");
+            });
+
+                            return this;
+    },
+    width: 750,
+    height: 500
+}
+                };
+
+            
+            */
+        }
+
+
+
         export class KeyWidget implements IWidget {
             constructor() {
             }
@@ -252,12 +400,19 @@ module jMusicScore {
             }
         }
 
+        export interface IContainer {
+            AddWidget(widget: IWidget, parent: JQuery, id: string, label: string): IWidget;
+            $container: JQuery;
+        }
+
         export class UIContainer<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> {
             constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
             }
 
-            public AddWidget(widget: IWidget, parent: JQuery, id: string, label: string): IWidget {
-                widget.AddTo(parent, this.idPrefix + id, label);
+            public $container: JQuery; // todo: ContainerType;
+
+            public AddWidget(widget: IWidget, id: string, label: string): IWidget {
+                widget.AddTo(this.$container, this.idPrefix + id, label);
                 return widget;
             }
         }
@@ -267,7 +422,8 @@ module jMusicScore {
                 super(idPrefix, app);
             }
 
-            private $dialog: JQuery;
+            private get $dialog(): JQuery { return this.$container; }
+            private set $dialog(d: JQuery) { this.$container = d; }
             public dialogId: string;
             public dialogTitle: string;
             public width = 350;
@@ -285,6 +441,10 @@ module jMusicScore {
             }
 
             public CreateBodyElements($element: JQuery) {
+            }
+
+            public Open() {
+                this.DialogObject.dialog("open");
             }
 
             public onOk(): boolean { return true; }
@@ -364,8 +524,8 @@ module jMusicScore {
                 this.absTime = absTime;
                 this.addDialog();
 
-                var $dlg = this.DialogObject;
-                $dlg.data('absTime', absTime);
+                //var $dlg = this.DialogObject;
+                //$dlg.data('absTime', absTime);
                 this.onInit();
 
                 if (definition) {
@@ -375,13 +535,14 @@ module jMusicScore {
                     this.upbCtl.Value = false;
                 }
 
-                $dlg.dialog("open");
+                //$dlg.dialog("open");
+                this.Open();
             }
 
             public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.numCtl = new SpinnerWidget(), $element, "spinner_num", "Numerator");
-                this.AddWidget(this.denCtl = new TimeWidget(), $element, "spinner_den", "Denominator");
-                this.AddWidget(this.upbCtl = new CheckboxWidget(), $element, "check_upbeat", "Upbeat");
+                this.AddWidget(this.numCtl = new SpinnerWidget(), "spinner_num", "Numerator");
+                this.AddWidget(this.denCtl = new TimeWidget(), "spinner_den", "Denominator");
+                this.AddWidget(this.upbCtl = new CheckboxWidget(), "check_upbeat", "Upbeat");
             }
         }
 
@@ -409,8 +570,8 @@ module jMusicScore {
                 this.absTime = absTime;
                 this.addDialog();
 
-                var $dlg = this.DialogObject;
-                $dlg.data('absTime', absTime);
+                //var $dlg = this.DialogObject;
+                //$dlg.data('absTime', absTime);
                 this.onInit();
 
                 if (key) {
@@ -418,11 +579,12 @@ module jMusicScore {
                     this.keyCtl.Value = def.number + def.acci;
                 }
 
-                $dlg.dialog("open");
+                //$dlg.dialog("open");
+                this.Open();
             }
 
             public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.keyCtl = new KeyWidget(), $element, "key", "Key");                
+                this.AddWidget(this.keyCtl = new KeyWidget(), "key", "Key");                
             }
         }
 
@@ -456,7 +618,7 @@ module jMusicScore {
                 this.staff = staff;
                 this.addDialog();
 
-                var $dlg = this.DialogObject;
+                //var $dlg = this.DialogObject;
                 //$dlg.data('absTime', absTime);
                 this.onInit();
 
@@ -467,13 +629,14 @@ module jMusicScore {
                     this.lineWidget.Value = def.clefLine;
                 }
 
-                $dlg.dialog("open");
+                //$dlg.dialog("open");
+                this.Open();
             }
 
             public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.clefWidget = new DropdownWidget({1: 'G', 2: 'C', 3: 'F', 4: 'Percussion'}), $element, "clef", "Clef");
-                this.AddWidget(this.lineWidget = new SpinnerWidget(), $element, "line", "Line");
-                this.AddWidget(this.transposeWidget = new SpinnerWidget(), $element, "transpose", "Transpose");
+                this.AddWidget(this.clefWidget = new DropdownWidget({1: 'G', 2: 'C', 3: 'F', 4: 'Percussion'}), "clef", "Clef");
+                this.AddWidget(this.lineWidget = new SpinnerWidget(), "line", "Line");
+                this.AddWidget(this.transposeWidget = new SpinnerWidget(), "transpose", "Transpose");
                 this.transposeWidget.Value = 0;
             }
         }
@@ -530,29 +693,29 @@ module jMusicScore {
                 this.dialogTitle = "Edit note settings";
             }
             private stemDirCtl: DropdownWidget;
+            private note: Model.INote;
 
             public CreateBodyElements($element: JQuery) {
                 this.AddWidget(this.stemDirCtl = new DropdownWidget({
                     "0": "Free",
                     "1": "Up",
                     "2": "Down"
-                }), $element, "NoteDialogStemDirection", "Stem direction");
+                }), "NoteDialogStemDirection", "Stem direction");
             }
 
             public Show(note: Model.INote) {
                 this.addDialog();
-                var $dlg = this.DialogObject;
-                $dlg.data('note', note);
+                this.note = note;
                 this.onInit();
                 this.stemDirCtl.Value = "" + note.getStemDirection();
 
-                $dlg.dialog("open");
+                this.Open();
             }
              
             public onOk(): boolean {
                 var stemDir = this.stemDirCtl.Value;
 
-                var note = $("#" + this.idPrefix + this.dialogId).data("note");
+                var note = this.note;
                 
                 this.app.ExecuteCommand(new Model.SetNoteStemDirectionCommand({
                     note: note,
@@ -570,29 +733,28 @@ module jMusicScore {
                 this.dialogTitle = "Edit voice settings";
             }
             private stemDirCtl: DropdownWidget;
+            private voice: Model.IVoice;
 
             public CreateBodyElements($element: JQuery) {
                 this.AddWidget(this.stemDirCtl = new DropdownWidget({
                     "0": "Free",
                     "1": "Up",
                     "2": "Down"
-                }), $element, "NoteDialogStemDirection", "Stem direction");
+                }), "NoteDialogStemDirection", "Stem direction");
             }
 
             public Show(voice: Model.IVoice) {
                 this.addDialog();
-                var $dlg = this.DialogObject;
-                $dlg.data('voice', voice);
+                this.voice = voice;
                 this.onInit();
                 this.stemDirCtl.Value = "" + voice.getStemDirection();
-
-                $dlg.dialog("open");
+                this.Open();
             }
 
             public onOk(): boolean {
                 var stemDir = this.stemDirCtl.Value;
 
-                var voice = this.DialogObject.data("voice");
+                var voice = this.voice;
 
                 this.app.ExecuteCommand(new Model.SetVoiceStemDirectionCommand({
                     voice: voice,
@@ -661,16 +823,17 @@ module jMusicScore {
             private textDivCtl: DisplayTextWidget;
 
             public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.textDivCtl = new DisplayTextWidget(), $element, "ShowTextDialogTextDiv", "Text");
+                this.AddWidget(this.textDivCtl = new DisplayTextWidget(), "ShowTextDialogTextDiv", "Text");
             }
 
             public Show(text: string) {
                 this.addDialog();
-                var $dlg = this.DialogObject;
+                //var $dlg = this.DialogObject;
                 this.onInit();
                 this.textDivCtl.Value = text;
 
-                $dlg.dialog("open");
+                //$dlg.dialog("open");
+                this.Open();
             }
 
             public onOk(): boolean {

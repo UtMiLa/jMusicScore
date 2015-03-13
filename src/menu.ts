@@ -426,6 +426,9 @@ module jMusicScore {
                 /*this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
                 this.height = 600;*/
+                this.width = 750;
+                this.height = 500;
+
             }
             /*private sourceWidget: Dialogs.DropdownWidget;
             private fileListWidget = new FileListWidget();
@@ -436,8 +439,8 @@ module jMusicScore {
             }
 
             public Show() {
-                /*this.addDialog();
-
+                this.addDialog();
+/*
                 var $dlg = this.DialogObject;
                 //$dlg.data('absTime', absTime);
                 this.onInit();
@@ -462,6 +465,7 @@ module jMusicScore {
 
                 
                 $dlg.dialog("open");*/
+                this.Open();
             }
 
             public CreateBodyElements($element: JQuery) {
@@ -471,8 +475,6 @@ module jMusicScore {
             }
 
         }
-
-
 
         export class FileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends Dialogs.Dialog<DocumentType, StatusManager, ContainerType> {
             constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager , ContainerType>) {
@@ -492,11 +494,7 @@ module jMusicScore {
             public Show() {
                 this.addDialog();
 
-                var $dlg = this.DialogObject;
-                //$dlg.data('absTime', absTime);
                 this.onInit();
-
-                /****/
 
                 var ids = this.app.GetFileManagerIds();
                 this.sourceWidget.SetOptions(<any>$.map(ids, (e, i) => { return { val: e, label: e }; }));
@@ -514,8 +512,7 @@ module jMusicScore {
                 });
                 updateFileList(this.sourceWidget.Value);
 
-                /*****/
-                $dlg.dialog("open");
+                this.Open();
             }
 
             public get filename(): string {
@@ -536,9 +533,9 @@ module jMusicScore {
             }
 
             public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.sourceWidget = new Dialogs.DropdownWidget({ 0: 'Local', 1: 'Server' }), $element, "fileSource", "File source");
-                this.AddWidget(this.fileListWidget = new FileListWidget(), $element, "FileList", "Select file"); // todo: class 
-                this.AddWidget(this.fileTypeWidget = new Dialogs.DropdownWidget({}), $element, "fileTypes", "Select file type");
+                this.AddWidget(this.sourceWidget = new Dialogs.DropdownWidget({ 0: 'Local', 1: 'Server' }), "fileSource", "File source");
+                this.AddWidget(this.fileListWidget = new FileListWidget(), "FileList", "Select file"); // todo: class 
+                this.AddWidget(this.fileTypeWidget = new Dialogs.DropdownWidget({}), "fileTypes", "Select file type");
             }
         }
 
@@ -619,7 +616,7 @@ module jMusicScore {
 
             public CreateBodyElements($element: JQuery) {
                 super.CreateBodyElements($element);
-                this.AddWidget(this.fileNameWidget = new Dialogs.TextEditWidget(), $element, "fileName", "Enter file name");
+                this.AddWidget(this.fileNameWidget = new Dialogs.TextEditWidget(), "fileName", "Enter file name");
             }
         }
         
@@ -653,7 +650,14 @@ module jMusicScore {
             }
         }
 
-
+        export class StavesMenuPlugin extends QuickMenuPlugin {
+            constructor(app: ScoreApplication.ScoreApplication) {
+                super("StavesMenu", "Staves", "", "", function () {
+                    new StavesDialog('menu', app).Show();
+                });
+            }
+        }
+            
         export class ExportMenuPlugin extends MenuPlugin {
             constructor() {
                 super();
