@@ -115,7 +115,7 @@ module jMusicScore {
             }
 
             public withItems(f: (item: IContainer, index: number) => boolean): void {
-                this.$ctl.each(function (i: number, e: Element) {
+                this.$ctl.children().each(function (i: number, e: Element) {
                     return f($(e).data('owner'), i);
                 });
             }
@@ -123,118 +123,24 @@ module jMusicScore {
             public AddTo(parent: JQuery, id: string, label: string): JQuery {
                 this.$ctl = $("<div>").attr('id', id);
                 parent.append(this.$ctl);
-                return this.$ctl;
-            }
-            /*
-                        buttonSettings: [
-                            {
-                                id: 'BtnOk_StaffDialog',
-                                text: "Update staves",
-                                click: function () {
-                                    // todo: DeleteStaffCommand
-                                    $("#Staves .StaffItem")
-                                        .each(function (i, e) {
-                                            var staffItem = $(e);
-                                            var staff = <Model.IStaff>staffItem.data('staff');
-                                            if (staff) {
-                                                var application = app;
-                                                application.ExecuteCommand(new Model.UpdateStaffCommand({
-                                                    staff: staff,
-                                                    index: i,
-                                                    title: staffItem.find('.TitleInput').val()
-                                                }));
-                                            }
-                                            else {
-                                                // Add Staff
-                                                var application = app;
-                                                application.ExecuteCommand(new Model.NewStaffCommand({
-                                                    index: i,
-                                                    initClef: Model.ClefDefinition.clefG,
-                                                    title: staffItem.find('.TitleInput').val()
-                                                }));
-                                            }
-                                        });
-                                    $(this).dialog("close");
-                                }
-                            },
-                            {
-                                id: 'BtnCancel_StaffDialog',
-                                text: "Cancel",
-                                click: function () { $(this).dialog("close"); }
-                            }
-                        ],
-                        okFunction: function () { },
-                        cancelFunction: function () { },
-                        initFunction: function () {
-                            var score = app.document;
-
-                            $('#Staves').empty();
-                            score.withStaves((staff: Model.IStaff, index: number) => {
-                                var staffItem = $('<div class="StaffItem" >');
-                                $('<h2>').text(staff.title + ' (' + index + ')').appendTo(staffItem);
-                                var staffDetails = $('<div class="StaffDetails">');
-                                staffDetails
-                                    .append('Title: <input class="TitleInput" type="text" value="' + staff.title + '" />')
-                                    .append('Clef: <span class="staffClef" ></span>');
-                                staffItem.append(staffDetails);
-                                staffItem.data('staff', staff);
-                                $('#Staves').append(staffItem);
-                            });
-
-                            $("#Staves")
-                                .accordion({
-                                    header: "> div > h2",
-                                    collapsible: true,
-                                    heightStyle: "content"
-                                })
-                                .sortable({
-                                    axis: "y",
-                                    handle: "h2",
-                                    stop: function (event: Event, ui: JQueryUI.SortableUIParams) {
-                                        // IE doesn't register the blur when sorting
-                                        // so trigger focusout handlers to remove .ui-state-focus
-                                        ui.item.children("h3").triggerHandler("focusout");
-                                    }
-                                });
-                            //$( "#Staves" ).disableSelection();
-
-                            // todo: clefs
-                            /*$('.staffClef')
-                                .svg(function (svg, error) {
-                                    svg.path(emmentaler_notes['e_clefs.C'], {
-                                        transform: 'scale(1,1), translate(0,0)'
-                                    });
-                                })
-                                .append('<button />')
-                            ;* /
-
-            $(".StaffItem .TitleInput")
-                                .change(function () {
-                //alert(this.value);
-                $(this).parent().parent().children("h2").text(this.value);
-            });
-
-            $("#stavesButton").button(
-            /* {
-                    text: false,
-                    icons: {
-                        primary: "note-icon icon-meter",
-                        //secondary: "ui-icon-triangle-1-s"
+                this.$ctl
+                    .accordion({
+                    header: "> div > h2",
+                    collapsible: true,
+                    heightStyle: "content"
+                })
+                    .sortable({
+                    axis: "y",
+                    handle: "h2",
+                    stop: function (event: Event, ui: JQueryUI.SortableUIParams) {
+                        // IE doesn't register the blur when sorting
+                        // so trigger focusout handlers to remove .ui-state-focus
+                        ui.item.children("h3").triggerHandler("focusout");
                     }
-                }* /
-                ).click(function () {
-                $("#StaffDialog").dialog("open");
-            });
+                });
 
-                            return this;
-    },
-    width: 750,
-    height: 500
-}
-                };
-
-            
-            */
+                return this.$ctl;
+            }     
         }
 
 
@@ -401,7 +307,7 @@ module jMusicScore {
         }
 
         export interface IContainer {
-            AddWidget(widget: IWidget, parent: JQuery, id: string, label: string): IWidget;
+            AddWidget(widget: IWidget, id: string, label: string): IWidget;
             $container: JQuery;
         }
 
@@ -417,6 +323,12 @@ module jMusicScore {
             }
         }
 
+        export interface IButtonSettings {
+            id: string;
+            text: string;
+            click: () => void;
+        }
+
         export class Dialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends UIContainer<DocumentType, StatusManager, ContainerType> {
             constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
@@ -428,6 +340,7 @@ module jMusicScore {
             public dialogTitle: string;
             public width = 350;
             public height = 300;
+            public buttonSettings: IButtonSettings[];
 
             public get DialogObject(): JQuery {
                 if (!this.$dialog) this.CreateDialogElement();
@@ -455,7 +368,7 @@ module jMusicScore {
 
             public addDialog() {
                 var me = this;
-                var buttonSettings = [
+                var buttonSettings = this.buttonSettings || [
                             {
                                 id: 'BtnOk_' + this.idPrefix + this.dialogId,
                                 text: "Ok",

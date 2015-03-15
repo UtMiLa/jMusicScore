@@ -1,21 +1,8 @@
 module jMusicScore {
     export module Menus {
 
-        interface IControlDef {
-            tag: string;
-            id: string;
-            text?: string;
-            options?: { [key: number]: string };
-        }
-
-        interface IDialogDef {
-            Title: string;
-            Controls: IControlDef[];
-        }
-
         interface IMenuDef {
             Id: string;
-            Dialog?: IDialogDef;
             Menu?: IMenuDef[];
             Caption: string;
             action?: (e: Event) => void;
@@ -39,35 +26,6 @@ module jMusicScore {
             }
 
             private menu_addItem(e: IMenuDef /*, level*/) {
-                if (e.Dialog) {
-                    var dialogDom = $('<div>')
-                        .attr('id', e.Id + "Dialog")
-                        .attr('title', e.Dialog.Title)
-                        .addClass('Dialog');
-                    $.each(e.Dialog.Controls, function (i1, e1) {
-                        var elm = $(e1.tag)
-                            .attr('id', e1.id)
-                            .appendTo(dialogDom);
-                        if (e1.text) elm.text(e1.text);
-                        if (e1.options && typeof e1.options === "object") {
-                            $.each(e1.options, function (i2, e2) {
-                                $("<option>")
-                                    .attr('value', i2)
-                                    .text(e2)
-                                    .appendTo(elm);
-                            });
-                        }
-                    });
-                    $('body').append(dialogDom);
-                    $('#notetools')
-                        .append(
-                        $('<button>')
-                            .attr('id', e.Id + "Button")
-                            .text(e.Caption)
-                            .addClass("ui-widget-header").addClass("ui-corner-all")
-                        );
-                    this.addDialog("#" + e.Id + "Dialog", "#" + e.Id + "Button", this.app, e.Dialog);
-                }
                 if (e.Menu) {
                     if ($('#' + e.Id + "Button").length === 0) {
                         $('#notetools')
@@ -124,71 +82,6 @@ module jMusicScore {
                 }
             }
 
-            /** old style dialog creation - should die eventually */
-            private addDialog(dialogId: string, buttonId: any, a: ScoreApplication.ScoreApplication, dialogTransferrer: any = null) {
-                if (!dialogTransferrer) {
-                    dialogTransferrer = {
-                        buttonSettings: [
-                            {
-                                id: 'BtnOk_' + dialogId.substring(1),
-                                text: "Ok",
-                                click: function () { $(this).dialog("close"); }
-                            },
-                            {
-                                id: 'BtnCancel_' + dialogId.substring(1),
-                                text: "Cancel",
-                                click: function () { $(this).dialog("close"); }
-                            }
-                        ],
-                        okFunction: function () { },
-                        cancelFunction: function () { },
-                        initFunction: function () { },
-                        width: 350,
-                        height: 300
-                    }
-                }
-                var dlg = $(dialogId)
-                    .data('dlgobj', dialogTransferrer)
-                    .dialog({
-                    autoOpen: false,
-                    height: dialogTransferrer.height,
-                    width: dialogTransferrer.width,
-                    modal: true,
-                    buttons: dialogTransferrer.buttonSettings,
-                    open: dialogTransferrer.open,
-                    close: function () {
-                        //allFields.val( "" ).removeClass( "ui-state-error" );
-                    }
-                });
-
-                if (typeof buttonId === "string") {
-                    $(buttonId).button(
-                    /*{ 
-                        text: false,
-                        icons: {
-                                primary: "note-icon icon-meter",
-                                //secondary: "ui-icon-triangle-1-s"
-                            } 
-                    }*/
-                        ).click(function () {
-                        var obj = $(dialogId).data('dlgobj');
-                        var app: ScoreApplication.ScoreApplication = a;
-                        obj.initFunction(app);
-                        $(dialogId).dialog("open");
-                    });
-                }
-                else if (typeof buttonId === "object") {
-                    buttonId.click(function () {
-                        var obj = $(dialogId).data('dlgobj');
-                        var app: ScoreApplication.ScoreApplication = a;
-                        obj.initFunction(app);
-                        $(dialogId).dialog("open");
-                    });
-                }
-
-                return dlg;
-            }
-
             private menu_subMenu(e: IMenuDef) {
                 var menuItems = $('<ul>');
                 var me = this;
@@ -205,21 +98,7 @@ module jMusicScore {
                             .text(e1.Caption)
                         );
                     menuItems.append(menuItem);
-                    if (e1.Dialog) {
-                        var dialogDom = $('<div>')
-                            .attr('id', e1.Id + "Dialog")
-                            .attr('title', e1.Dialog.Title)
-                            .addClass('Dialog');
-                        $.each(e1.Dialog.Controls, function (i1, e2) {
-                            dialogDom.append($(e2.tag)
-                                .attr('id', e2.id));
-                        });
-                        $('body').append(dialogDom);
 
-                        //$("#" + e1.Id + "Button").click( function() { alert ("hej"); });
-
-                        me.addDialog("#" + e1.Id + "Dialog", menuItem, me.app, e1.Dialog);
-                    }
                     if (e1.Menu) {
                         menuItem.append(this.menu_subMenu(e1));
                     }
@@ -231,140 +110,6 @@ module jMusicScore {
             }
         }
 
-        // ****************** STAFF ******************* //
-        export class StaffMenuPlugin extends MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
-                // ****************** staves ******************* //
-                return {
-                    Id: "StaffMenu",
-                    Caption: "Staves",
-                    Dialog: {
-                        Title: "Edit staves",
-                        Controls: [
-                            {
-                                tag: "<div>",
-                                id: "Staves",
-                            }
-                        ],
-                        buttonSettings: [
-                            {
-                                id: 'BtnAdd_StaffDialog',
-                                text: "Add staff",
-                                click: function () {
-                                    var newItem = $('<div class="StaffItem"></div>');
-                                    newItem.append('<h2>New</h2>');
-                                    newItem.append('<div class="StaffDetails">Title: <input class="TitleInput" type="text" value="New" />Clef: <ul id="staff-clef"><li><a href="#">G<span class="ui-icon note-icon icon-clef-g"></span></a></li><li><a href="#">G8<span class="ui-icon note-icon icon-clef-g8"></span></a></li></ul></div>');
-                                    $("#Staves").append(newItem);
-                                    $("#Staves").accordion("refresh");
-                                }
-                            },
-                            {
-                                id: 'BtnOk_StaffDialog',
-                                text: "Update staves",
-                                click: function () {
-                                    // todo: DeleteStaffCommand
-                                    $("#Staves .StaffItem")
-                                        .each(function (i, e) {
-                                            var staffItem = $(e);
-                                            var staff = <Model.IStaff>staffItem.data('staff');
-                                            if (staff) {
-                                                var application = app;
-                                                application.ExecuteCommand(new Model.UpdateStaffCommand({
-                                                    staff: staff,
-                                                    index: i,
-                                                    title: staffItem.find('.TitleInput').val()
-                                                }));
-                                            }
-                                            else {
-                                                // Add Staff
-                                                var application = app;
-                                                application.ExecuteCommand(new Model.NewStaffCommand({
-                                                    index: i,
-                                                    initClef: Model.ClefDefinition.clefG,
-                                                    title: staffItem.find('.TitleInput').val()
-                                                }));
-                                            }
-                                        });
-                                    $(this).dialog("close");
-                                }
-                            },
-                            {
-                                id: 'BtnCancel_StaffDialog',
-                                text: "Cancel",
-                                click: function () { $(this).dialog("close"); }
-                            }
-                        ],
-                        okFunction: function () { },
-                        cancelFunction: function () { },
-                        initFunction: function () {
-                            var score = app.document;
-
-                            $('#Staves').empty();
-                            score.withStaves((staff: Model.IStaff, index: number) => {
-                                var staffItem = $('<div class="StaffItem" >');
-                                $('<h2>').text(staff.title + ' (' + index + ')').appendTo(staffItem);
-                                var staffDetails = $('<div class="StaffDetails">');
-                                staffDetails
-                                    .append('Title: <input class="TitleInput" type="text" value="' + staff.title + '" />')
-                                    .append('Clef: <span class="staffClef" ></span>');
-                                staffItem.append(staffDetails);
-                                staffItem.data('staff', staff);
-                                $('#Staves').append(staffItem);
-                            });
-
-                            $("#Staves")
-                                .accordion({
-                                    header: "> div > h2",
-                                    collapsible: true,
-                                    heightStyle: "content"
-                                })
-                                .sortable({
-                                    axis: "y",
-                                    handle: "h2",
-                                    stop: function (event: Event, ui: JQueryUI.SortableUIParams) {
-                                        // IE doesn't register the blur when sorting
-                                        // so trigger focusout handlers to remove .ui-state-focus
-                                        ui.item.children("h3").triggerHandler("focusout");
-                                    }
-                                });
-                            //$( "#Staves" ).disableSelection();
-
-                            // todo: clefs
-                            /*$('.staffClef')
-                                .svg(function (svg, error) {
-                                    svg.path(emmentaler_notes['e_clefs.C'], {
-                                        transform: 'scale(1,1), translate(0,0)'
-                                    });
-                                })
-                                .append('<button />')
-                            ;*/
-
-                            $(".StaffItem .TitleInput")
-                                .change(function () {
-                                    //alert(this.value);
-                                    $(this).parent().parent().children("h2").text(this.value);
-                                });
-
-                            $("#stavesButton").button(
-                            /* {
-                                    text: false,
-                                    icons: {
-                                        primary: "note-icon icon-meter",
-                                        //secondary: "ui-icon-triangle-1-s"
-                                    }
-                                }*/
-                                ).click(function () {
-                                    $("#StaffDialog").dialog("open");
-                                });
-
-                            return this;
-                        },
-                        width: 750,
-                        height: 500
-                    }
-                };
-            }
-        }
 
         class FileListWidget implements Dialogs.IWidget {
             private $list: JQuery;
@@ -420,60 +165,131 @@ module jMusicScore {
             }
         }
 
+        class StaffContainer extends Dialogs.UIContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication, staff: Model.IStaff, index: number) {
+                super(idPrefix, app);
+
+                var title = staff ? staff.title : 'New';
+
+                var $staffItem = $('<div class="StaffItem" >');
+                $('<h2>').text(title + ' (' + index + ')').appendTo($staffItem);
+
+                this.$staffDetails = $('<div class="StaffDetails">');
+                $staffItem.append(this.$staffDetails);
+
+                this.staff = staff;
+                this.$container = $staffItem;
+                this.CreateBodyElements();
+
+                // todo: generalize via this.titleWidget:
+                this.$staffDetails.find('#stafftitle') //Title: 
+                .change(function () {
+                    $staffItem.children("h2").text(this.value);
+                });
+            }
+
+            private $staffDetails: JQuery;
+            private titleWidget: Dialogs.TextEditWidget;
+            private clefWidget: Dialogs.DropdownWidget; // todo: clefWidget
+            private lineWidget: Dialogs.SpinnerWidget;
+            private transposeWidget: Dialogs.SpinnerWidget;
+            public staff: Model.IStaff;
+
+            public AddWidget(widget: Dialogs.IWidget, id: string, label: string): Dialogs.IWidget {
+                widget.AddTo(this.$staffDetails, this.idPrefix + id, label);
+                return widget;
+            }
+
+            public CreateBodyElements() {
+                this.AddWidget(this.titleWidget = new Dialogs.TextEditWidget(), 'title', 'Title');
+                this.AddWidget(this.clefWidget = new Dialogs.DropdownWidget({ 1: 'G', 2: 'C', 3: 'F', 4: 'Percussion' }), "clef", "Clef");
+                this.AddWidget(this.lineWidget = new Dialogs.SpinnerWidget(), "line", "Line");
+                this.AddWidget(this.transposeWidget = new Dialogs.SpinnerWidget(), "transpose", "Transpose");
+                this.transposeWidget.Value = 0;
+            }
+        }
+
         export class StavesDialog extends Dialogs.ScoreDialog {
             constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
-                /*this.dialogId = "FileDialog";
-                this.dialogTitle = "Select file";
-                this.height = 600;*/
+                this.dialogId = "StavesDialog";
+                this.dialogTitle = "Staves";
                 this.width = 750;
                 this.height = 500;
-
             }
-            /*private sourceWidget: Dialogs.DropdownWidget;
-            private fileListWidget = new FileListWidget();
-            private fileTypeWidget: Dialogs.DropdownWidget;*/
+            private stavesWidget: Dialogs.CollectionWidget;
 
             public onOk(): boolean {
                 return true;
             }
 
             public Show() {
-                this.addDialog();
-/*
-                var $dlg = this.DialogObject;
-                //$dlg.data('absTime', absTime);
-                this.onInit();
-
-                /**** /
-
-                var ids = this.app.GetFileManagerIds();
-                this.sourceWidget.SetOptions(<any>$.map(ids,(e, i) => { return { val: e, label: e }; }));
-                this.fileTypeWidget.SetOptions(<any>$.map(this.app.GetFileSaveTypes(),(e, i) => { return { val: e, label: e }; }));
-
                 var me = this;
-                var updateFileList = function (source: string) {
-                    me.app.GetFileList(source, function (data: string[]) {
-                        me.fileListWidget.UpdateFileList(data);
-                    });
-                }
-                this.sourceWidget.change(function () {
-                    var item = $(this).val();
-                    updateFileList(item);
-                });
-                updateFileList(this.sourceWidget.Value);
 
-                
-                $dlg.dialog("open");*/
+                this.buttonSettings = [
+                    {
+                        id: 'BtnAdd_StaffDialog',
+                        text: "Add staff",
+                        click: function () {
+                            var s = new StaffContainer('staff', me.app, null, 0);
+                            me.stavesWidget.AddItem(s);
+                        }
+                    },
+                    {
+                        id: 'BtnCancel_' + this.idPrefix + this.dialogId,
+                        text: "Cancel",
+                        click: function () {
+                            me.onCancel();
+                            $(this).dialog("close").remove();
+                        }
+                    },
+                    {
+                        id: 'BtnOk_StaffDialog',
+                        text: "Update staves",
+                        click: function () {
+                            // todo: DeleteStaffCommand
+                            me.stavesWidget.withItems((item: StaffContainer, index: number) => {
+                                var staffItem = $(item.$container);
+                                var staff = item.staff;//<Model.IStaff>staffItem.data('staff');
+                                if (staff) {
+                                    var application = me.app;
+                                    application.ExecuteCommand(new Model.UpdateStaffCommand({
+                                        staff: staff,
+                                        index: index,
+                                        title: staffItem.find('.TitleInput').val()
+                                    }));
+                                }
+                                else {
+                                    // Add Staff
+                                    var application = me.app;
+                                    application.ExecuteCommand(new Model.NewStaffCommand({
+                                        index: index,
+                                        initClef: Model.ClefDefinition.clefG,
+                                        title: staffItem.find('.TitleInput').val()
+                                    }));
+                                }
+
+                                return true;
+                            });
+
+                            $(this).dialog("close");
+                        }
+                    },
+                ];
+                this.addDialog();
+
+                this.app.document.withStaves((staff: Model.IStaff, index: number) => {
+                    var s = new StaffContainer('staff', me.app, staff, index);
+                    me.stavesWidget.AddItem(s);
+                });
+
                 this.Open();
             }
 
             public CreateBodyElements($element: JQuery) {
-                /*this.AddWidget(this.sourceWidget = new Dialogs.DropdownWidget({ 0: 'Local', 1: 'Server' }), $element, "fileSource", "File source");
-                this.AddWidget(this.fileListWidget = new FileListWidget(), $element, "FileList", "Select file"); // todo: class 
-                this.AddWidget(this.fileTypeWidget = new Dialogs.DropdownWidget({}), $element, "fileTypes", "Select file type");*/
+                var me = this;
+                this.AddWidget(this.stavesWidget = new Dialogs.CollectionWidget(), "staves", "Staves");
             }
-
         }
 
         export class FileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends Dialogs.Dialog<DocumentType, StatusManager, ContainerType> {
