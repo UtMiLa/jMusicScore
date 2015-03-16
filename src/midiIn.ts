@@ -80,7 +80,7 @@
 
 
         // ****************** STAFF ******************* //
-        /*export*/ class MidiMenuPlugin extends Menus.MenuPlugin {
+        /*export*/ class MidiMenuPlugin extends UI.MenuPlugin {
             GetMenuObj(app: ScoreApplication.ScoreApplication): any {
                 // ****************** staves ******************* //
                 return {

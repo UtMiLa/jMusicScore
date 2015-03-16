@@ -103,11 +103,11 @@
 
         app.AddPlugin(new UI.ToolbarPlugin());
         
-        app.AddPlugin(new Menus.FileMenuPlugin());
-        app.AddPlugin(new Menus.VoiceMenuPlugin(app));
-        app.AddPlugin(new Menus.ExportMenuPlugin());
+        app.AddPlugin(new UI.FileMenuPlugin());
+        app.AddPlugin(new UI.VoiceMenuPlugin(app));
+        app.AddPlugin(new UI.ExportMenuPlugin());
 
-        app.AddPlugin(new Menus.StavesMenuPlugin(app));
+        app.AddPlugin(new UI.StavesMenuPlugin(app));
 
         app.AddPlugin(new Editors.KeybordInputPlugin());
         app.AddPlugin(new Editors.MidiInputPlugin());
@@ -117,9 +117,9 @@
 
         /** test **/
 
-        app.AddPlugin(new Menus.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function () { app.LoadUsing('saved.xml', 'Server', 'JSON'); }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function () { app.SaveUsing('saved.xml', 'Server', 'JSON'); }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function () {
+        app.AddPlugin(new UI.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function () { app.LoadUsing('saved.xml', 'Server', 'JSON'); }));
+        app.AddPlugin(new UI.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function () { app.SaveUsing('saved.xml', 'Server', 'JSON'); }));
+        app.AddPlugin(new UI.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function () {
             app.ExecuteCommand({
                 Execute: (app: ScoreApplication.ScoreApplication) => { },
                 Undo: (app: ScoreApplication.ScoreApplication) => { }
@@ -134,8 +134,8 @@
             }
         }));*/
         //app.AddPlugin(new Menus.QuickMenuPlugin("TestFileDlgMenu", "File Dialog", "TestMenu", "Test", function () { new Menus.FileDialog("open", app).Show(); }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function () { $('.overlay').toggle(); }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function () {
+        app.AddPlugin(new UI.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function () { $('.overlay').toggle(); }));
+        app.AddPlugin(new UI.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function () {
             var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
             var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
             note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.Diff(note1.absTime), Model.LongDecorationType.slur));
@@ -143,7 +143,7 @@
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function () {
+        app.AddPlugin(new UI.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function () {
             var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
             var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
             note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.Diff(note1.absTime), Model.LongDecorationType.cresc));
@@ -154,14 +154,14 @@
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function () {
+        app.AddPlugin(new UI.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function () {
             var staff1 = app.document.staffElements[0];
             staff1.setStaffExpression("Allegro", Model.AbsoluteTime.startTime);
             app.ExecuteCommand({
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function () {
+        app.AddPlugin(new UI.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function () {
             var cmd = new Model.AddNoteCommand(
                 {
                     noteName: '1_4',
@@ -206,7 +206,7 @@
             app.ExecuteCommand(cmd);
         }));
 
-        app.AddPlugin(new Menus.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function () {
+        app.AddPlugin(new UI.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function () {
             app.document.withBars((bar: Model.IBar, index: number) => { app.document.removeChild(bar); });
             app.ExecuteCommand({
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
@@ -216,7 +216,7 @@
             var memento = app.document.getMemento(true);
             $('#events').empty().text(JSON.stringify(memento));
         }));*/
-        app.AddPlugin(new Menus.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function () {
+        app.AddPlugin(new UI.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function () {
             app.document.withVoices(function (voice, index) {
                 voice.withNotes((note: Model.INote) => {
                     var staff = voice.parent;
@@ -231,7 +231,7 @@
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
-        app.AddPlugin(new Menus.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function () {
+        app.AddPlugin(new UI.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function () {
             app.document = <Model.IScore>Model.MusicElementFactory.RecreateElement(null, app.document.getMemento());
             app.ExecuteCommand({
                 Execute: (app: ScoreApplication.ScoreApplication) => { }

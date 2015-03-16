@@ -1,12 +1,227 @@
 module jMusicScore {
-    export module Dialogs {
-        export class Menu {
-        }
-        export class MenuItem {
-        }
+    export module UI {
+
+        /* Abstract toolkit */
 
         export interface IWidget {
             AddTo(parent: JQuery, id: string, label: string): JQuery;
+        }
+
+        export interface IContainer {
+            AddWidget(widget: IWidget, id: string, label: string): IWidget;
+            $container: JQuery;
+        }
+
+        export class UIContainer<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+            }
+
+            public $container: JQuery; // todo: ContainerType;
+
+            public AddWidget(widget: IWidget, id: string, label: string): IWidget {
+                widget.AddTo(this.$container, this.idPrefix + id, label);
+                return widget;
+            }
+        }
+
+        export interface IButtonSettings {
+            id: string;
+            text: string;
+            click: () => void;
+        }
+
+
+        interface IMenuDef {
+            Id: string;
+            Menu?: IMenuDef[];
+            Caption: string;
+            action?: (e: Event) => void;
+        }
+
+        /* tools using JQuery */
+
+        export class MenuPlugin implements ScoreApplication.ScorePlugin {
+            Init(app: ScoreApplication.ScoreApplication) {
+                this.app = app;
+                var obj = this.GetMenuObj(app);
+                this.menu_addItem(obj/*, 0*/);
+            }
+
+            private app: ScoreApplication.ScoreApplication;
+
+            GetId(): string {
+                return "Menu";
+            }
+
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+                return null;
+            }
+
+            private menu_addItem(e: IMenuDef) {
+                if (e.Menu) {
+                    if ($('#' + e.Id + "Button").length === 0) {
+                        $('#notetools')
+                            .append(
+                            $('<span>')
+                                .append(
+                                $('<button>')
+                                    .attr('id', e.Id + "Button")
+                                    .text(e.Caption)
+                                    .addClass("ui-widget-header").addClass("ui-corner-all")
+                                )
+                                .append(this.menu_subMenu(e))
+                            );
+                        $('#' + e.Id + "Button")
+                            .button({
+                            text: true,
+                        })
+                            .click(function () {
+                            var menu = $(this).next().show().position({
+                                my: "left top",
+                                at: "left bottom",
+                                of: this
+                            });
+                            $(document).one("click", function () {
+                                menu.hide();
+                            });
+                            return false;
+                        })
+                            .next()
+                            .hide()
+                            .menu();
+                    }
+                    else {
+                        $('#' + e.Id + "Button")
+                            .next()
+                        //.find('ul')
+                            .append(this.menu_subMenu(e).children())
+                            .menu("refresh");
+                    }
+
+                }
+                if (e.action) {
+                    $('#notetools')
+                        .append(
+                        $('<button>')
+                            .attr('id', e.Id + "Button")
+                            .text(e.Caption)
+                            .addClass("ui-widget-header").addClass("ui-corner-all")
+                            .button({
+                            text: true,
+                        })
+                            .click(e.action)
+                        );
+                }
+            }
+
+            private menu_subMenu(e: IMenuDef) {
+                var menuItems = $('<ul>');
+                var me = this;
+                $.each(e.Menu, function (i, e1) {
+                    var menuItem = $('<li>')
+                        .attr('id', e1.Id + "Button")
+                        .append(
+                        $('<a>')
+                            .append(
+                            $('<span>')
+                                .addClass('ui-icon')
+                                .addClass('ui-icon-stop')
+                            )
+                            .text(e1.Caption)
+                        );
+                    menuItems.append(menuItem);
+
+                    if (e1.Menu) {
+                        menuItem.append(this.menu_subMenu(e1));
+                    }
+                    if (e1.action) {
+                        menuItem.click(e1.action);
+                    }
+                });
+                return menuItems;
+            }
+        }
+
+        export class Dialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends UIContainer<DocumentType, StatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+                super(idPrefix, app);
+                this.CreateDialogElement();
+            }
+
+            private get $dialog(): JQuery { return this.$container; }
+            private set $dialog(d: JQuery) { this.$container = d; }
+            public dialogId: string;
+            public dialogTitle: string;
+            public width = 350;
+            public height = 300;
+            public buttonSettings: IButtonSettings[];
+
+            public get DialogObject(): JQuery {
+                if (!this.$dialog) this.CreateDialogElement();
+                return this.$dialog;
+            }
+
+            public CreateDialogElement() {
+                this.$dialog = $("<div>").attr("id", this.idPrefix + this.dialogId).attr("title", this.dialogTitle).addClass("Dialog");
+                $('body').append(this.$dialog);
+                this.CreateBodyElements(this.$dialog);
+            }
+
+            public CreateBodyElements($element: JQuery) {
+            }
+
+            public Open() {
+                this.DialogObject.dialog("open");
+            }
+
+            public Show() {
+                this.addDialog();
+                this.onInit();
+                this.Open();
+            }
+
+            public onOk(): boolean { return true; }
+            public onCancel() { }
+            public onCreate() { }
+            public onInit() { }
+            public onOpen() { }
+
+            public addDialog() {
+                var me = this;
+                var buttonSettings = this.buttonSettings || [
+                    {
+                        id: 'BtnOk_' + this.idPrefix + this.dialogId,
+                        text: "Ok",
+                        click: function () {
+                            if (me.onOk()) {
+                                $(this).dialog("close").remove();
+                            }
+                        }
+                    },
+                    {
+                        id: 'BtnCancel_' + this.idPrefix + this.dialogId,
+                        text: "Cancel",
+                        click: function () {
+                            me.onCancel();
+                            $(this).dialog("close").remove();
+                        }
+                    }
+                ];
+
+                this.DialogObject.dialog({
+                    autoOpen: false,
+                    height: this.height,
+                    width: this.width,
+                    modal: true,
+                    buttons: buttonSettings,
+                    open: this.onOpen,
+                    close: function () {
+                        //allFields.val( "" ).removeClass( "ui-state-error" );
+                    }
+                });
+
+                this.onCreate();
+            }
         }
 
         export class CheckboxWidget implements IWidget {
@@ -105,10 +320,7 @@ module jMusicScore {
                 return this.$ctl.text();
             }
 
-            public AddItem(item: IContainer): void { // todo: IContainer
-                /*var newItem = $('<div class="StaffItem"></div>');
-                newItem.append('<h2>New</h2>');
-                newItem.append('<div class="StaffDetails">Title: <input class="TitleInput" type="text" value="New" />Clef: <ul id="staff-clef"><li><a href="#">G<span class="ui-icon note-icon icon-clef-g"></span></a></li><li><a href="#">G8<span class="ui-icon note-icon icon-clef-g8"></span></a></li></ul></div>');*/
+            public AddItem(item: IContainer): void {
                 this.$ctl.append(item.$container);
                 item.$container.data('owner', item);
                 this.$ctl.accordion("refresh");
@@ -143,7 +355,283 @@ module jMusicScore {
             }     
         }
 
+        export class SpinnerWidget implements IWidget {
+            private $spinner: JQuery;
 
+            public set Value(value: number) {
+                this.$spinner.spinner("value", value);
+            }
+
+            public get Value(): number {
+                return this.$spinner.spinner("value");
+            }
+
+            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+                var $div = $("<div>");
+                $("<label>").attr("for", id).text(label).appendTo($div);
+                this.$spinner = $("<input>").attr("id", id).val("1").attr("name", id).appendTo($div).spinner();
+                parent.append($div);
+                return this.$spinner;
+            }
+        }
+
+        export class TextEditWidget implements IWidget {
+            private $textEdit: JQuery;
+
+            public set Value(value: string) {
+                this.$textEdit.val(value);
+            }
+
+            public get Value(): string {
+                return this.$textEdit.val();
+            }
+
+            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+                var $div = $("<div>");
+                $("<label>").attr("for", id).text(label).appendTo($div);
+                this.$textEdit = $("<input>").attr({ "id": id }).attr("name", id).appendTo($div);
+                parent.append($div);
+                return this.$textEdit;
+            }
+        }
+
+        // ************************* File widgets & dialogs ************************ //
+
+        class FileListWidget implements UI.IWidget {
+            private $list: JQuery;
+
+            public Clear() {
+                this.$list.empty();
+            }
+
+            public set Value(value: string) {
+                this.$list.data("filename", value);
+            }
+
+            public get Value(): string {
+                return this.$list.data("filename");
+            }
+
+
+            public existsInFileList(name: string): boolean {
+                // tjek om findes
+                return this.$list.children("li[value='" + name + "']").length > 0;
+            }
+
+            public UpdateFileList(data: string[]) {
+                var $list = this.$list;
+                $list.empty();
+
+                $.each(data, function (i, e) {
+                    if (e) {
+                        $list.append(
+                            $('<li>')
+                                .attr("value", e)
+                                .append(
+                                $("<a>").text(e)
+                                    .attr("href", "#")
+                                    .click(function () {
+                                    var name = $(this).text();
+                                    $list.children("li").removeClass('selected');
+                                    $(this).parent().addClass('selected');
+                                    $list.data("filename", name);
+                                })
+                            // todo: .dblclick(function () { $('#BtnOk_Open_FileDialog').trigger('click'); })
+                                ));
+                    }
+                });
+            }
+
+            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+                var $div = $("<div>");
+                $("<label>").attr("for", id).text(label).appendTo($div);
+                this.$list = $("<ul>").attr('id', id).appendTo($div);
+                parent.append($div);
+                return this.$list;
+            }
+        }
+
+        export class FileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends UI.Dialog<DocumentType, StatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+                super(idPrefix, app);
+                this.dialogId = "FileDialog";
+                this.dialogTitle = "Select file";
+                this.height = 600;
+            }
+            private sourceWidget: UI.DropdownWidget;
+            private fileListWidget = new FileListWidget();
+            private fileTypeWidget: UI.DropdownWidget;
+
+            public onOk(): boolean {
+                return true;
+            }
+
+            public Show() {
+                this.addDialog();
+
+                this.onInit();
+
+                var ids = this.app.GetFileManagerIds();
+                this.sourceWidget.SetOptions(<any>$.map(ids,(e, i) => { return { val: e, label: e }; }));
+                this.fileTypeWidget.SetOptions(<any>$.map(this.app.GetFileSaveTypes(),(e, i) => { return { val: e, label: e }; }));
+
+                var me = this;
+                var updateFileList = function (source: string) {
+                    me.app.GetFileList(source, function (data: string[]) {
+                        me.fileListWidget.UpdateFileList(data);
+                    });
+                }
+                this.sourceWidget.change(function () {
+                    var item = $(this).val();
+                    updateFileList(item);
+                });
+                updateFileList(this.sourceWidget.Value);
+
+                this.Open();
+            }
+
+            public get filename(): string {
+                return this.fileListWidget.Value;
+            }
+
+            public get source(): string {
+                return this.sourceWidget.Value;
+            }
+
+            public get fileFormat() {
+                return this.fileTypeWidget.Value;
+            }
+
+            public existsInFileList(name: string): boolean {
+                // tjek om findes
+                return this.fileListWidget.existsInFileList(name);
+            }
+
+            public CreateBodyElements($element: JQuery) {
+                this.AddWidget(this.sourceWidget = new UI.DropdownWidget({ 0: 'Local', 1: 'Server' }), "fileSource", "File source");
+                this.AddWidget(this.fileListWidget = new FileListWidget(), "FileList", "Select file"); // todo: class 
+                this.AddWidget(this.fileTypeWidget = new UI.DropdownWidget({}), "fileTypes", "Select file type");
+            }
+        }
+
+        class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+                super(idPrefix, app);
+                this.dialogId = "OpenFileDialog";
+                this.dialogTitle = "Open file";
+                this.height = 500;
+            }
+
+            // todo: dbclk filelist
+            public onOk(): boolean {
+                if (this.filename) {
+                    var type: string = '*';
+                    this.app.LoadUsing(this.filename, this.source, type);
+                }
+
+                return true;
+            }
+        }
+
+        class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+                super(idPrefix, app);
+                this.dialogId = "SaveFileDialog";
+                this.dialogTitle = "Save file";
+                this.height = 600;
+            }
+
+            // todo: dbclk filelist
+            // todo: filelist clk => filename
+            /*.click(function () {
+                var name = $(this).text();
+                $("#saveFileList li").removeClass('selected');
+                $(this).parent().addClass('selected');
+                $('#saveFileEdit').val(name);
+            })
+            .dblclick(function () { $('#BtnOk_SaveAsDialog').trigger('click'); })
+            */
+            public onOk(): boolean {
+                if (this.filename) {
+                    // Save file
+                    var format = this.fileFormat;
+                    var name: string = this.filename;
+                    name = name.replace(/[^a-zA-Z0-9_\.]/, '');
+                    try {
+                        name = this.app.SetExtension(name, format);
+                        this.filename = name;
+                    }
+                    catch (Exception) {
+                        alert("Illegal name");
+                        name = "";
+                    }
+                    if (name) {
+                        if (this.existsInFileList(name)) {
+                            if (!window.confirm("File exists; overwrite?")) { return; }
+                        }
+                        var source = this.source;
+                        this.app.SaveUsing(name, source, format);
+                        return true;
+                    }
+                    return false;
+                }
+
+                return true;
+            }
+
+            private fileNameWidget: UI.TextEditWidget;
+
+            public get filename() {
+                return this.fileNameWidget.Value;
+            }
+
+            public set filename(name: string) {
+                this.fileNameWidget.Value = name;
+            }
+
+            public CreateBodyElements($element: JQuery) {
+                super.CreateBodyElements($element);
+                this.AddWidget(this.fileNameWidget = new UI.TextEditWidget(), "fileName", "Enter file name");
+            }
+        }
+
+        export class FileMenuPlugin extends MenuPlugin {
+            constructor() {
+                super();
+            }
+            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+                return {
+                    Id: "FileMenu",
+                    Caption: "File",
+                    Menu: [
+                        {
+                            Id: "NewMenu",
+                            Caption: "New",
+                            action: () => {
+                                app.ExecuteCommand(new Model.ClearScoreCommand({}));
+                            }
+                        },
+                        {
+                            Id: "OpenMenu",
+                            Caption: "Open...",
+                            action: () => {
+                                new OpenFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('open', app).Show();
+                            }
+                        },
+                        {
+                            Id: "SaveMenu",
+                            Caption: "Save as...",
+                            action: () => {
+                                new SaveFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('save', app).Show();
+                            }
+                        },
+                    ]
+                };
+            }
+        }
+
+
+        // ************************* Music widgets ************************ //
 
         export class KeyWidget implements IWidget {
             constructor() {
@@ -228,46 +716,6 @@ module jMusicScore {
 
         }
 
-        export class SpinnerWidget implements IWidget {
-            private $spinner: JQuery;
-
-            public set Value(value: number) {
-                this.$spinner.spinner("value", value);
-            }
-
-            public get Value(): number {
-                return this.$spinner.spinner("value");
-            }
-
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
-                var $div = $("<div>");
-                $("<label>").attr("for", id).text(label).appendTo($div);
-                this.$spinner = $("<input>").attr("id", id).val("1").attr("name", id).appendTo($div).spinner();
-                parent.append($div);
-                return this.$spinner;
-            }
-        }
-
-        export class TextEditWidget implements IWidget{
-            private $textEdit: JQuery;
-
-            public set Value(value: string) {
-                this.$textEdit.val(value);
-            }
-
-            public get Value(): string {
-                return this.$textEdit.val();
-            }
-
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
-                var $div = $("<div>");
-                $("<label>").attr("for", id).text(label).appendTo($div);
-                this.$textEdit = $("<input>").attr({ "id": id }).attr("name", id).appendTo($div);
-                parent.append($div);
-                return this.$textEdit;
-            }
-        }
-
         export class TimeWidget implements IWidget {
             private $spinner: JQuery;
 
@@ -306,111 +754,7 @@ module jMusicScore {
             }
         }
 
-        export interface IContainer {
-            AddWidget(widget: IWidget, id: string, label: string): IWidget;
-            $container: JQuery;
-        }
-
-        export class UIContainer<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
-            }
-
-            public $container: JQuery; // todo: ContainerType;
-
-            public AddWidget(widget: IWidget, id: string, label: string): IWidget {
-                widget.AddTo(this.$container, this.idPrefix + id, label);
-                return widget;
-            }
-        }
-
-        export interface IButtonSettings {
-            id: string;
-            text: string;
-            click: () => void;
-        }
-
-        export class Dialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends UIContainer<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
-                super(idPrefix, app);
-                this.CreateDialogElement();
-            }
-
-            private get $dialog(): JQuery { return this.$container; }
-            private set $dialog(d: JQuery) { this.$container = d; }
-            public dialogId: string;
-            public dialogTitle: string;
-            public width = 350;
-            public height = 300;
-            public buttonSettings: IButtonSettings[];
-
-            public get DialogObject(): JQuery {
-                if (!this.$dialog) this.CreateDialogElement();
-                return this.$dialog;
-            }
-
-            public CreateDialogElement() {
-                this.$dialog = $("<div>").attr("id", this.idPrefix + this.dialogId).attr("title", this.dialogTitle).addClass("Dialog");
-                $('body').append(this.$dialog);
-                this.CreateBodyElements(this.$dialog);                
-            }
-
-            public CreateBodyElements($element: JQuery) {
-            }
-
-            public Open() {
-                this.DialogObject.dialog("open");
-            }
-
-            public Show() {
-                this.addDialog();
-                this.onInit();
-                this.Open();
-            }
-
-            public onOk(): boolean { return true; }
-            public onCancel() { }
-            public onCreate() { }
-            public onInit() { }
-            public onOpen() { }
-
-            public addDialog() {
-                var me = this;
-                var buttonSettings = this.buttonSettings || [
-                            {
-                                id: 'BtnOk_' + this.idPrefix + this.dialogId,
-                                text: "Ok",
-                                click: function () {
-                                    if (me.onOk()) {
-                                        $(this).dialog("close").remove();
-                                    }
-                                }
-                            },
-                            {
-                                id: 'BtnCancel_' + this.idPrefix + this.dialogId,
-                                text: "Cancel",
-                                click: function () {
-                                    me.onCancel();
-                                    $(this).dialog("close").remove();
-                                }
-                            }
-                        ];
-                
-                this.DialogObject.dialog({
-                        autoOpen: false,
-                        height: this.height,
-                        width: this.width,
-                        modal: true,
-                        buttons: buttonSettings,
-                        open: this.onOpen,
-                        close: function () {
-                            //allFields.val( "" ).removeClass( "ui-state-error" );
-                        }
-                    });
-
-                this.onCreate();                
-            }
-
-        }
+        // ************************* Music dialogs ************************ //
 
         export class ScoreDialog extends Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
 
@@ -737,174 +1081,7 @@ module jMusicScore {
 
         }
 
-    }
-    export module Menus {
-
-        interface IMenuDef {
-            Id: string;
-            Menu?: IMenuDef[];
-            Caption: string;
-            action?: (e: Event) => void;
-        }
-
-        export class MenuPlugin implements ScoreApplication.ScorePlugin {
-            Init(app: ScoreApplication.ScoreApplication) {
-                this.app = app;
-                var obj = this.GetMenuObj(app);
-                this.menu_addItem(obj/*, 0*/);
-            }
-
-            private app: ScoreApplication.ScoreApplication;
-
-            GetId(): string {
-                return "Menu";
-            }
-
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
-                return null;
-            }
-
-            private menu_addItem(e: IMenuDef /*, level*/) {
-                if (e.Menu) {
-                    if ($('#' + e.Id + "Button").length === 0) {
-                        $('#notetools')
-                            .append(
-                            $('<span>')
-                                .append(
-                                $('<button>')
-                                    .attr('id', e.Id + "Button")
-                                    .text(e.Caption)
-                                    .addClass("ui-widget-header").addClass("ui-corner-all")
-                                )
-                                .append(this.menu_subMenu(e))
-                            );
-                        $('#' + e.Id + "Button")
-                            .button({
-                            text: true,
-                        })
-                            .click(function () {
-                            var menu = $(this).next().show().position({
-                                my: "left top",
-                                at: "left bottom",
-                                of: this
-                            });
-                            $(document).one("click", function () {
-                                menu.hide();
-                            });
-                            return false;
-                        })
-                            .next()
-                            .hide()
-                            .menu();
-                    }
-                    else {
-                        $('#' + e.Id + "Button")
-                            .next()
-                        //.find('ul')
-                            .append(this.menu_subMenu(e).children())
-                            .menu("refresh");
-                    }
-
-                }
-                if (e.action) {
-                    $('#notetools')
-                        .append(
-                        $('<button>')
-                            .attr('id', e.Id + "Button")
-                            .text(e.Caption)
-                            .addClass("ui-widget-header").addClass("ui-corner-all")
-                            .button({
-                            text: true,
-                        })
-                            .click(e.action)
-                        );
-                }
-            }
-
-            private menu_subMenu(e: IMenuDef) {
-                var menuItems = $('<ul>');
-                var me = this;
-                $.each(e.Menu, function (i, e1) {
-                    var menuItem = $('<li>')
-                        .attr('id', e1.Id + "Button")
-                        .append(
-                        $('<a>')
-                            .append(
-                            $('<span>')
-                                .addClass('ui-icon')
-                                .addClass('ui-icon-stop')
-                            )
-                            .text(e1.Caption)
-                        );
-                    menuItems.append(menuItem);
-
-                    if (e1.Menu) {
-                        menuItem.append(this.menu_subMenu(e1));
-                    }
-                    if (e1.action) {
-                        menuItem.click(e1.action);
-                    }
-                });
-                return menuItems;
-            }
-        }
-
-
-        class FileListWidget implements Dialogs.IWidget {
-            private $list: JQuery;
-
-            public Clear() {
-                this.$list.empty();
-            }
-
-            public set Value(value: string) {
-                this.$list.data("filename", value);
-            }
-
-            public get Value(): string {
-                return this.$list.data("filename");
-            }
-
-
-            public existsInFileList(name: string): boolean {
-                // tjek om findes
-                return this.$list.children("li[value='" + name + "']").length > 0;
-            }
-
-            public UpdateFileList(data: string[]) {
-                var $list = this.$list;
-                $list.empty();
-
-                $.each(data, function (i, e) {
-                    if (e) {
-                        $list.append(
-                            $('<li>')
-                                .attr("value", e)
-                                .append(
-                                $("<a>").text(e)
-                                    .attr("href", "#")
-                                    .click(function () {
-                                    var name = $(this).text();
-                                    $list.children("li").removeClass('selected');
-                                    $(this).parent().addClass('selected');
-                                    $list.data("filename", name);
-                                })
-                            // todo: .dblclick(function () { $('#BtnOk_Open_FileDialog').trigger('click'); })
-                                ));
-                    }
-                });
-            }
-
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
-                var $div = $("<div>");
-                $("<label>").attr("for", id).text(label).appendTo($div);
-                this.$list = $("<ul>").attr('id', id).appendTo($div);
-                parent.append($div);
-                return this.$list;
-            }
-        }
-
-        class StaffContainer extends Dialogs.UIContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        class StaffContainer extends UI.UIContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication, staff: Model.IStaff, index: number) {
                 super(idPrefix, app);
 
@@ -928,27 +1105,27 @@ module jMusicScore {
             }
 
             private $staffDetails: JQuery;
-            private titleWidget: Dialogs.TextEditWidget;
-            private clefWidget: Dialogs.DropdownWidget; // todo: clefWidget
-            private lineWidget: Dialogs.SpinnerWidget;
-            private transposeWidget: Dialogs.SpinnerWidget;
+            private titleWidget: UI.TextEditWidget;
+            private clefWidget: UI.DropdownWidget; // todo: clefWidget
+            private lineWidget: UI.SpinnerWidget;
+            private transposeWidget: UI.SpinnerWidget;
             public staff: Model.IStaff;
 
-            public AddWidget(widget: Dialogs.IWidget, id: string, label: string): Dialogs.IWidget {
+            public AddWidget(widget: UI.IWidget, id: string, label: string): UI.IWidget {
                 widget.AddTo(this.$staffDetails, this.idPrefix + id, label);
                 return widget;
             }
 
             public CreateBodyElements() {
-                this.AddWidget(this.titleWidget = new Dialogs.TextEditWidget(), 'title', 'Title');
-                this.AddWidget(this.clefWidget = new Dialogs.DropdownWidget({ 1: 'G', 2: 'C', 3: 'F', 4: 'Percussion' }), "clef", "Clef");
-                this.AddWidget(this.lineWidget = new Dialogs.SpinnerWidget(), "line", "Line");
-                this.AddWidget(this.transposeWidget = new Dialogs.SpinnerWidget(), "transpose", "Transpose");
+                this.AddWidget(this.titleWidget = new UI.TextEditWidget(), 'title', 'Title');
+                this.AddWidget(this.clefWidget = new UI.DropdownWidget({ 1: 'G', 2: 'C', 3: 'F', 4: 'Percussion' }), "clef", "Clef");
+                this.AddWidget(this.lineWidget = new UI.SpinnerWidget(), "line", "Line");
+                this.AddWidget(this.transposeWidget = new UI.SpinnerWidget(), "transpose", "Transpose");
                 this.transposeWidget.Value = 0;
             }
         }
 
-        export class StavesDialog extends Dialogs.ScoreDialog {
+        export class StavesDialog extends UI.ScoreDialog {
             constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "StavesDialog";
@@ -956,7 +1133,7 @@ module jMusicScore {
                 this.width = 750;
                 this.height = 500;
             }
-            private stavesWidget: Dialogs.CollectionWidget;
+            private stavesWidget: UI.CollectionWidget;
 
             public onOk(): boolean {
                 return true;
@@ -991,7 +1168,7 @@ module jMusicScore {
 
                             me.stavesWidget.withItems((item: StaffContainer, index: number) => {
                                 var staffItem = $(item.$container);
-                                var staff = item.staff;//<Model.IStaff>staffItem.data('staff');
+                                var staff = item.staff;
                                 if (staff) {
                                     changeStavesCommand.Add(new Model.UpdateStaffCommand({
                                         staff: staff,
@@ -1028,151 +1205,7 @@ module jMusicScore {
 
             public CreateBodyElements($element: JQuery) {
                 var me = this;
-                this.AddWidget(this.stavesWidget = new Dialogs.CollectionWidget(), "staves", "Staves");
-            }
-        }
-
-        export class FileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends Dialogs.Dialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
-                super(idPrefix, app);
-                this.dialogId = "FileDialog";
-                this.dialogTitle = "Select file";
-                this.height = 600;
-            }
-            private sourceWidget: Dialogs.DropdownWidget;
-            private fileListWidget = new FileListWidget();
-            private fileTypeWidget: Dialogs.DropdownWidget;
-
-            public onOk(): boolean {
-                return true;
-            }
-
-            public Show() {
-                this.addDialog();
-
-                this.onInit();
-
-                var ids = this.app.GetFileManagerIds();
-                this.sourceWidget.SetOptions(<any>$.map(ids,(e, i) => { return { val: e, label: e }; }));
-                this.fileTypeWidget.SetOptions(<any>$.map(this.app.GetFileSaveTypes(),(e, i) => { return { val: e, label: e }; }));
-
-                var me = this;
-                var updateFileList = function (source: string) {
-                    me.app.GetFileList(source, function (data: string[]) {
-                        me.fileListWidget.UpdateFileList(data);
-                    });
-                }
-                this.sourceWidget.change(function () {
-                    var item = $(this).val();
-                    updateFileList(item);
-                });
-                updateFileList(this.sourceWidget.Value);
-
-                this.Open();
-            }
-
-            public get filename(): string {
-                return this.fileListWidget.Value;
-            }
-
-            public get source(): string {
-                return this.sourceWidget.Value;
-            }
-
-            public get fileFormat() {
-                return this.fileTypeWidget.Value;
-            }
-
-            public existsInFileList(name: string): boolean {
-                // tjek om findes
-                return this.fileListWidget.existsInFileList(name);
-            }
-
-            public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.sourceWidget = new Dialogs.DropdownWidget({ 0: 'Local', 1: 'Server' }), "fileSource", "File source");
-                this.AddWidget(this.fileListWidget = new FileListWidget(), "FileList", "Select file"); // todo: class 
-                this.AddWidget(this.fileTypeWidget = new Dialogs.DropdownWidget({}), "fileTypes", "Select file type");
-            }
-        }
-
-        class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
-                super(idPrefix, app);
-                this.dialogId = "OpenFileDialog";
-                this.dialogTitle = "Open file";
-                this.height = 500;
-            }
-
-            // todo: dbclk filelist
-            public onOk(): boolean {
-                if (this.filename) {
-                    var type: string = '*';
-                    this.app.LoadUsing(this.filename, this.source, type);
-                }
-
-                return true;
-            }
-        }
-
-        class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
-                super(idPrefix, app);
-                this.dialogId = "SaveFileDialog";
-                this.dialogTitle = "Save file";
-                this.height = 600;
-            }
-
-            // todo: dbclk filelist
-            // todo: filelist clk => filename
-            /*.click(function () {
-                var name = $(this).text();
-                $("#saveFileList li").removeClass('selected');
-                $(this).parent().addClass('selected');
-                $('#saveFileEdit').val(name);
-            })
-            .dblclick(function () { $('#BtnOk_SaveAsDialog').trigger('click'); })
-            */
-            public onOk(): boolean {
-                if (this.filename) {
-                    // Save file
-                    var format = this.fileFormat;
-                    var name: string = this.filename;
-                    name = name.replace(/[^a-zA-Z0-9_\.]/, '');
-                    try {
-                        name = this.app.SetExtension(name, format);
-                        this.filename = name;
-                    }
-                    catch (Exception) {
-                        alert("Illegal name");
-                        name = "";
-                    }
-                    if (name) {
-                        if (this.existsInFileList(name)) {
-                            if (!window.confirm("File exists; overwrite?")) { return; }
-                        }
-                        var source = this.source;
-                        this.app.SaveUsing(name, source, format);
-                        return true;
-                    }
-                    return false;
-                }
-
-                return true;
-            }
-
-            private fileNameWidget: Dialogs.TextEditWidget;
-
-            public get filename() {
-                return this.fileNameWidget.Value;
-            }
-
-            public set filename(name: string) {
-                this.fileNameWidget.Value = name;
-            }
-
-            public CreateBodyElements($element: JQuery) {
-                super.CreateBodyElements($element);
-                this.AddWidget(this.fileNameWidget = new Dialogs.TextEditWidget(), "fileName", "Enter file name");
+                this.AddWidget(this.stavesWidget = new UI.CollectionWidget(), "staves", "Staves");
             }
         }
 
@@ -1201,7 +1234,7 @@ module jMusicScore {
         export class VoiceMenuPlugin extends QuickMenuPlugin {
             constructor(app: ScoreApplication.ScoreApplication) {
                 super("VoiceMenu", "Voice", "", "", function () {
-                    new Dialogs.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).Show();
+                    new UI.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).Show();
                 });
             }
         }
@@ -1227,65 +1260,30 @@ module jMusicScore {
                             Id: "SVGMenu",
                             Caption: "SVG",
                             action: () => {
-                                new Dialogs.ShowTextDialog('menu', app).setText(app.SaveToString('SVG')).Show();
+                                new UI.ShowTextDialog('menu', app).setText(app.SaveToString('SVG')).Show();
                             }
                         },
                         {
                             Id: "ExportJson",
                             Caption: "JSON",
                             action: () => {
-                                new Dialogs.ShowTextDialog('menu', app).setText(app.SaveToString('JSON')).Show();
+                                new UI.ShowTextDialog('menu', app).setText(app.SaveToString('JSON')).Show();
                             }
                         },
                         {
                             Id: "ExportLilypond",
                             Caption: "Lilypond",
                             action: () => {
-                                new Dialogs.ShowTextDialog('menu', app).setText(app.SaveToString('Lilypond')).Show();
+                                new UI.ShowTextDialog('menu', app).setText(app.SaveToString('Lilypond')).Show();
                             }
                         },
                         {
                             Id: "MusicXmlMenu",
                             Caption: "MusicXml",
                             action: () => {
-                                new Dialogs.ShowTextDialog('menu', app).setText(app.SaveToString('MusicXML')).Show();
+                                new UI.ShowTextDialog('menu', app).setText(app.SaveToString('MusicXML')).Show();
                             }
                         }
-                    ]
-                };
-            }
-        }
-
-        export class FileMenuPlugin extends MenuPlugin {
-            constructor() {
-                super();
-            }
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
-                return {
-                    Id: "FileMenu",
-                    Caption: "File",
-                    Menu: [
-                        {
-                            Id: "NewMenu",
-                            Caption: "New",
-                            action: () => {
-                                app.ExecuteCommand(new Model.ClearScoreCommand({}));
-                            }
-                        },
-                        {
-                            Id: "OpenMenu",
-                            Caption: "Open...",
-                            action: () => {
-                                new OpenFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('open', app).Show();
-                            }
-                        },
-                        {
-                            Id: "SaveMenu",
-                            Caption: "Save as...",
-                            action: () => {
-                                new SaveFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('save', app).Show();
-                            }
-                        },
                     ]
                 };
             }
