@@ -159,53 +159,86 @@
         export class SetNoteDurationCommand implements ScoreCommand {
             constructor(private args: NoteDurationArgs) { }
 
+            private oldDuration: NoteDurationArgs;
+
             public Execute(app: ScoreApplication.ScoreApplication) {
                 var note = this.args.note;
+                this.oldDuration = {
+                    note: note,
+                    noteId: note.noteId,
+                    timeVal: note.timeVal,
+                    dots: note.dotNo,
+                    tuplet: note.tupletDef
+                }
                 note.noteId = this.args.noteId;
                 note.timeVal = this.args.timeVal;
                 note.tupletDef = this.args.tuplet;
                 note.dotNo = this.args.dots;
                 note.setSpacingInfo(undefined);
             }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                var note = this.args.note;
+                note.noteId = this.oldDuration.noteId;
+                note.timeVal = this.oldDuration.timeVal;
+                note.tupletDef = this.oldDuration.tuplet;
+                note.dotNo = this.oldDuration.dots;
+                note.setSpacingInfo(undefined);
+            }
         }
 
         export class AddNoteheadCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: { note: Model.INote; pitch: Model.Pitch; }) { }
 
-            /* args:
-            note
-            pitch (Value)
-            */
+            //private noteMemento: IMemento;
 
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var pitch = <Pitch>this.args.pitch;
-                var note = <INote>this.args.note;
+                var pitch = this.args.pitch;
+                var note = this.args.note;
+                //this.noteMemento = note.getMemento();
                 note.setRest(false);
                 note.setPitch(pitch);
+            }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                var note = this.args.note;
+                var pitch = this.args.pitch;
+                /*note.parent.removeChild(note); // todo: what if other commands in undo stack refer to note?
+                this.args.note = <Model.INote>Model.MusicElementFactory.RecreateElement(note.parent, this.noteMemento);*/
+                if (note.matchesPitch(pitch, true) || note.rest) {
+                    note.withHeads((head: INotehead) => {
+                        if (head.matchesPitch(pitch, false)) {
+                            note.removeChild(head);
+                        }
+                    });
+                    note.setRest(note.noteheadElements.length === 0);
+                }
             }
         }
 
         export class RemoveNoteheadCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: { head: Model.INotehead; }) { }
 
-            /* args:
-            head (Element)
-            */
+            private head: INotehead;
+            private note: INote;
 
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var head = <INotehead>this.args.head;
+                var head = this.args.head;
                 var note = head.parent;
                 var voice = note.parent;
-
-                // Hvis node med én head: slet
-                /*if (note.matchesOnePitch(head.getPitch(), true) || note.rest) {
-                    var voice = note.parent;
-                    voice.removeChild(note);
-                }
-                // Hvis node med mange heades: slet denne head
-                else*/ if (note.matchesPitch(head.getPitch(), true) || note.rest) {
+                
+                if (note.matchesPitch(head.getPitch(), true) || note.rest) {
+                    this.head = head;
+                    this.note = note;
                     note.removeChild(head);
                     note.setRest(note.noteheadElements.length === 0);
+                }
+            }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                if (this.head) {
+                    this.note.addChild(this.note.noteheadElements, this.head);
+                    this.note.setRest(this.note.noteheadElements.length === 0);
                 }
             }
         }
@@ -217,29 +250,44 @@
         export class SetPitchCommand implements ScoreCommand {
             constructor(private args: ISetPitchCommand) { }
 
+            private oldPitch: Pitch;
+
             public Execute(app: ScoreApplication.ScoreApplication) {
+                this.oldPitch = this.args.head.pitch;
                 this.args.head.pitch.pitch = this.args.pitch.pitch;
                 this.args.head.pitch.alteration = this.args.pitch.alteration;
+            }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {                 
+                this.args.head.pitch.pitch = this.oldPitch.pitch;
+                this.args.head.pitch.alteration = this.oldPitch.alteration;
             }
         }
 
         export class RaisePitchAlterationCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: { head: INotehead; absAlteration?: string; deltaAlteration?: number }) { }
 
             /* args:
             head (Element)
             absAlteration || deltaAlteration
             */
+            private oldAlteration: string;
 
             // execute
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var head = <INotehead>this.args.head;
+                var head = this.args.head;
+                this.oldAlteration = head.pitch.alteration;
                 if (this.args.deltaAlteration) {
                     head.pitch.raiseAlteration(this.args.deltaAlteration);
                 }
                 else if (this.args.absAlteration !== undefined) {
                     head.pitch.alteration = this.args.absAlteration;
                 }
+            }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                var head = this.args.head;
+                head.pitch.alteration = this.oldAlteration;
             }
         }
 
