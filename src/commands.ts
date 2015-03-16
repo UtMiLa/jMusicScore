@@ -292,19 +292,20 @@
         }
 
         export class AddNoteDecorationCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: { note: INote; expression: NoteDecorationKind; placement: string; }) { }
 
-            /* args:
-            note
-            expression
-            placement
-            */
+            private theDeco: INoteDecorationElement;
 
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var note = <INote>this.args.note;
-                var deco = new Model.NoteDecorationElement(note, this.args.expression);
-                deco.placement = this.args.placement;
-                note.addChild(note.decorationElements, deco);
+                var note = this.args.note;
+                this.theDeco = new Model.NoteDecorationElement(note, this.args.expression);
+                this.theDeco.placement = this.args.placement;
+                note.addChild(note.decorationElements, this.theDeco);
+            }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                var note = this.args.note;
+                note.removeChild(this.theDeco, note.decorationElements);
             }
         }
 
@@ -487,6 +488,5 @@
         //Score addBarLine 
         //Voice setStemDirection
         //ClefElement setclef
-        //note.addChild(note.decorationElements, deco);
     }
 }
