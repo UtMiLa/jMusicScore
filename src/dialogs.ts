@@ -987,12 +987,13 @@ module jMusicScore {
                         text: "Update staves",
                         click: function () {
                             // todo: DeleteStaffCommand
+                            var changeStavesCommand = new Model.BundleCommand();
+
                             me.stavesWidget.withItems((item: StaffContainer, index: number) => {
                                 var staffItem = $(item.$container);
                                 var staff = item.staff;//<Model.IStaff>staffItem.data('staff');
                                 if (staff) {
-                                    var application = me.app;
-                                    application.ExecuteCommand(new Model.UpdateStaffCommand({
+                                    changeStavesCommand.Add(new Model.UpdateStaffCommand({
                                         staff: staff,
                                         index: index,
                                         title: staffItem.find('.TitleInput').val()
@@ -1000,16 +1001,16 @@ module jMusicScore {
                                 }
                                 else {
                                     // Add Staff
-                                    var application = me.app;
-                                    application.ExecuteCommand(new Model.NewStaffCommand({
+                                    changeStavesCommand.Add(new Model.NewStaffCommand({
                                         index: index,
                                         initClef: Model.ClefDefinition.clefG,
                                         title: staffItem.find('.TitleInput').val()
                                     }));
                                 }
-
                                 return true;
                             });
+
+                            me.app.ExecuteCommand(changeStavesCommand);                                    
 
                             $(this).dialog("close");
                         }

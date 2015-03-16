@@ -3,6 +3,36 @@
 
         export interface ScoreCommand extends Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
 
+        export class BundleCommand implements ScoreCommand {
+            constructor() { }
+
+            /* args:
+            */
+            private _commands: ScoreCommand[] = [];
+
+            public Add(cmd: ScoreCommand) {
+                this._commands.push(cmd);
+            }
+
+            Execute(app: ScoreApplication.ScoreApplication) {
+                var canUndo = true;
+                for (var i = 0; i < this._commands.length; i++) {
+                    this._commands[i].Execute(app);
+                    canUndo = canUndo && !!this._commands[i].Undo;
+                }
+                if (canUndo) {
+                    this.Undo = (app: ScoreApplication.ScoreApplication) => {
+                        for (var i = this._commands.length - 1; i >= 0; i--) {
+                            this._commands[i].Undo(app);
+                        }
+                    };
+                }
+            }
+
+            public Undo: (app: ScoreApplication.ScoreApplication) => void;
+        }
+
+
         export class ClearScoreCommand implements ScoreCommand {
             constructor(private args: any) { }
 
@@ -311,7 +341,14 @@
 
 
         export class UpdateStaffCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(
+                private args: {
+                    staff: IStaff;
+                    index: number;
+                    title: string;
+                    initClef?: ClefDefinition;
+                }) {
+            }
 
             /* args:
             staff
@@ -320,19 +357,34 @@
             initClef
             // StaffType (TAB/singleline etc)
             */
+            private oldIndex: number;
+            private oldTitle: string;
+            private oldClef: Model.ClefDefinition;
 
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var staff = <IStaff>this.args.staff;
+                var staff = this.args.staff;
+                this.oldTitle = staff.title;
+                this.oldIndex = staff.parent.staffElements.indexOf(staff);
                 if (this.args.title) {
                     staff.title = this.args.title;
                 }
                 // staff order
                 ScoreElement.PlaceInOrder(app.document, staff, this.args.index);
             }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                var staff = this.args.staff;
+                staff.title = this.oldTitle;
+                ScoreElement.PlaceInOrder(app.document, staff, this.oldIndex);
+            }
         }
 
         export class NewStaffCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: {
+                index: number;
+                title: string;
+                initClef: ClefDefinition;
+            }) { }
 
             /* args:
             index
@@ -341,18 +393,29 @@
             // StaffType (TAB/singleline etc)
             */
 
+            private theStaff: IStaff;
+
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var initClef = <Model.ClefDefinition>this.args.initClef;
-                var staff = app.document.addStaff(initClef);
-                staff.title = this.args.title;
-                staff.addVoice();
-                ScoreElement.PlaceInOrder(app.document, staff, this.args.index);
+                var initClef = this.args.initClef;
+                this.theStaff = app.document.addStaff(initClef);
+                this.theStaff.title = this.args.title;
+                this.theStaff.addVoice();
+                ScoreElement.PlaceInOrder(app.document, this.theStaff, this.args.index);
+            }
+
+            public Undo(app: ScoreApplication.ScoreApplication) {
+                this.theStaff.parent.removeChild(this.theStaff, this.theStaff.parent.staffElements);
             }
         }
 
 
         export class TieNoteheadCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: {
+                head: INotehead;
+                forced?: boolean;
+                remove?: boolean;
+                toggle: boolean;
+            }) { }
 
             /* args:
             head
@@ -361,17 +424,8 @@
             toggle
             */
 
-            /*public static SetTie(head: INotehead, forced: boolean) {
-                head.tie = true;
-                head.tieForced = forced;
-            }
-
-            public static RemoveTie(head: INotehead) {
-                head.tie = false;
-            }*/
-
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var head = <INotehead>this.args.head;
+                var head = this.args.head;
                 var forced = this.args.forced || false;
                 var remove = this.args.remove || (this.args.toggle && head.tie);
                 if (remove) {
@@ -388,7 +442,12 @@
         }
 
         export class TieNoteCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: {
+                note: INote;
+                forced?: boolean;
+                remove?: boolean;
+                toggle: boolean;
+            }) { }
 
             /* args:
             note
@@ -398,7 +457,7 @@
             */
 
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var note = <INote>this.args.note;
+                var note = this.args.note;
                 var forced = this.args.forced || false;
                 note.withHeads((head: INotehead, index: number) => {
                     var remove = this.args.remove || (this.args.toggle && head.tie);
@@ -440,7 +499,11 @@
         }
 
         export class SetKeyCommand implements ScoreCommand { // todo: KeyDefinition
-            constructor(private args: any) { }
+            constructor(private args: {
+                key: IKeyDefinition;
+                absTime: AbsoluteTime;
+                staff?: IStaff;
+            }) { }
 
             /* args:
             key (definition)
@@ -449,22 +512,23 @@
             */
 
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var key = <IKeyDefinition>this.args.key;
-                var absTime = <AbsoluteTime>this.args.absTime;
-                var staff = <IStaff>this.args.staff;
-                if (staff) {
+                if (this.args.staff) {
                     // staff key
-                    staff.setKey(key, absTime);
+                    this.args.staff.setKey(this.args.key, this.args.absTime);
                 }
                 else {
                     // score key
-                    app.document.setKey(key, absTime);
+                    app.document.setKey(this.args.key, this.args.absTime);
                 }
             }
         }
 
         export class SetClefCommand implements ScoreCommand {
-            constructor(private args: any) { }
+            constructor(private args: {
+                clef: ClefDefinition;
+                absTime: AbsoluteTime;
+                staff: IStaff;
+            }) { }
 
             /* args:
             clef
@@ -473,10 +537,7 @@
             */
 
             public Execute(app: ScoreApplication.ScoreApplication) {
-                var clef = <ClefDefinition>this.args.clef;
-                var absTime = <AbsoluteTime>this.args.absTime;
-                var staff = <IStaff>this.args.staff;
-                staff.setClef(clef, absTime);
+                this.args.staff.setClef(this.args.clef, this.args.absTime);
             }
         }
 
