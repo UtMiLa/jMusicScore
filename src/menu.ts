@@ -461,7 +461,7 @@ module jMusicScore {
         export class VoiceMenuPlugin extends QuickMenuPlugin {
             constructor(app: ScoreApplication.ScoreApplication) {
                 super("VoiceMenu", "Voice", "", "", function () {
-                    new Dialogs.VoiceDialog('menu', app).Show(app.Status.currentVoice);
+                    new Dialogs.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).Show();
                 });
             }
         }
@@ -487,29 +487,28 @@ module jMusicScore {
                             Id: "SVGMenu",
                             Caption: "SVG",
                             action: () => {
-                                new Dialogs.ShowTextDialog('menu', app).Show(app.SaveToString('SVG'));
+                                new Dialogs.ShowTextDialog('menu', app).setText(app.SaveToString('SVG')).Show();
                             }
                         },
                         {
                             Id: "ExportJson",
                             Caption: "JSON",
                             action: () => {
-                                new Dialogs.ShowTextDialog('menu', app).Show(app.SaveToString('JSON'));
+                                new Dialogs.ShowTextDialog('menu', app).setText(app.SaveToString('JSON')).Show();
                             }
                         },
                         {
                             Id: "ExportLilypond",
                             Caption: "Lilypond",
                             action: () => {
-                                new Dialogs.ShowTextDialog('menu', app).Show(app.SaveToString('Lilypond'));
+                                new Dialogs.ShowTextDialog('menu', app).setText(app.SaveToString('Lilypond')).Show();
                             }
                         },
-                        // ****************** MusicXml ******************* //
                         {
                             Id: "MusicXmlMenu",
                             Caption: "MusicXml",
                             action: () => {
-                                new Dialogs.ShowTextDialog('menu', app).Show(app.SaveToString('MusicXML'));
+                                new Dialogs.ShowTextDialog('menu', app).setText(app.SaveToString('MusicXML')).Show();
                             }
                         }
                     ]

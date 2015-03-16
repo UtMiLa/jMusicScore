@@ -332,6 +332,7 @@ module jMusicScore {
         export class Dialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends UIContainer<DocumentType, StatusManager, ContainerType> {
             constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
+                this.CreateDialogElement();
             }
 
             private get $dialog(): JQuery { return this.$container; }
@@ -358,6 +359,12 @@ module jMusicScore {
 
             public Open() {
                 this.DialogObject.dialog("open");
+            }
+
+            public Show() {
+                this.addDialog();
+                this.onInit();
+                this.Open();
             }
 
             public onOk(): boolean { return true; }
@@ -433,25 +440,19 @@ module jMusicScore {
                 return true;
             }
 
-            public Show(absTime: Model.AbsoluteTime, definition: Model.IMeterDefinition = null) {
+            public setTime(absTime: Model.AbsoluteTime): MeterDialog {
                 this.absTime = absTime;
-                this.addDialog();
-
-                //var $dlg = this.DialogObject;
-                //$dlg.data('absTime', absTime);
-                this.onInit();
-
-                if (definition) {
-                    var def = <Model.RegularMeterDefinition>definition;
-                    this.numCtl.Value = def.numerator;
-                    this.denCtl.Value = def.denominator;
-                    this.upbCtl.Value = false;
-                }
-
-                //$dlg.dialog("open");
-                this.Open();
+                return this;
             }
 
+            public setMeter(definition: Model.IMeterDefinition): MeterDialog {
+                var def = <Model.RegularMeterDefinition>definition;
+                this.numCtl.Value = def.numerator;
+                this.denCtl.Value = def.denominator;
+                this.upbCtl.Value = false;
+                return this;
+            }
+            
             public CreateBodyElements($element: JQuery) {
                 this.AddWidget(this.numCtl = new SpinnerWidget(), "spinner_num", "Numerator");
                 this.AddWidget(this.denCtl = new TimeWidget(), "spinner_den", "Denominator");
@@ -479,21 +480,15 @@ module jMusicScore {
                 return true;
             }
 
-            public Show(absTime: Model.AbsoluteTime, key: Model.IKey = null) {
+            public setTime(absTime: Model.AbsoluteTime): KeyDialog {
                 this.absTime = absTime;
-                this.addDialog();
-
-                //var $dlg = this.DialogObject;
-                //$dlg.data('absTime', absTime);
-                this.onInit();
-
-                if (key) {
-                    var def = <Model.RegularKeyDefinition>key.definition;
-                    this.keyCtl.Value = def.number + def.acci;
-                }
-
-                //$dlg.dialog("open");
-                this.Open();
+                return this;
+            }
+            
+            public setKey(key: Model.IKey): KeyDialog {
+                var def = <Model.RegularKeyDefinition>key.definition;
+                this.keyCtl.Value = def.number + def.acci;
+                return this;
             }
 
             public CreateBodyElements($element: JQuery) {
@@ -526,24 +521,21 @@ module jMusicScore {
                 return true;
             }
 
-            public Show(absTime: Model.AbsoluteTime, staff: Model.IStaff, clef: Model.IClef = null) {
+            public setTime(absTime: Model.AbsoluteTime): ClefDialog {
                 this.absTime = absTime;
+                return this;
+            }
+            
+            public setStaff(staff: Model.IStaff): ClefDialog {
                 this.staff = staff;
-                this.addDialog();
+                return this;
+            }
 
-                //var $dlg = this.DialogObject;
-                //$dlg.data('absTime', absTime);
-                this.onInit();
-
-                if (clef) {
-                    // todo: inititalize
-                    var def = clef.definition;
-                    this.clefWidget.Value = '' + def.clefCode;
-                    this.lineWidget.Value = def.clefLine;
-                }
-
-                //$dlg.dialog("open");
-                this.Open();
+            public setClef(clef: Model.IClef): ClefDialog {
+                var def = clef.definition;
+                this.clefWidget.Value = '' + def.clefCode;
+                this.lineWidget.Value = def.clefLine;
+                return this;
             }
 
             public CreateBodyElements($element: JQuery) {
@@ -616,13 +608,10 @@ module jMusicScore {
                 }), "NoteDialogStemDirection", "Stem direction");
             }
 
-            public Show(note: Model.INote) {
-                this.addDialog();
+            public setNote(note: Model.INote): NoteDialog {
                 this.note = note;
-                this.onInit();
                 this.stemDirCtl.Value = "" + note.getStemDirection();
-
-                this.Open();
+                return this;
             }
              
             public onOk(): boolean {
@@ -656,12 +645,10 @@ module jMusicScore {
                 }), "NoteDialogStemDirection", "Stem direction");
             }
 
-            public Show(voice: Model.IVoice) {
-                this.addDialog();
+            public setVoice(voice: Model.IVoice): VoiceDialog {
                 this.voice = voice;
-                this.onInit();
                 this.stemDirCtl.Value = "" + voice.getStemDirection();
-                this.Open();
+                return this;
             }
 
             public onOk(): boolean {
@@ -739,16 +726,11 @@ module jMusicScore {
                 this.AddWidget(this.textDivCtl = new DisplayTextWidget(), "ShowTextDialogTextDiv", "Text");
             }
 
-            public Show(text: string) {
-                this.addDialog();
-                //var $dlg = this.DialogObject;
-                this.onInit();
+            public setText(text: string): ShowTextDialog {
                 this.textDivCtl.Value = text;
-
-                //$dlg.dialog("open");
-                this.Open();
+                return this;
             }
-
+            
             public onOk(): boolean {
                 return true;
             }

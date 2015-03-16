@@ -2430,7 +2430,7 @@ module jMusicScore {
             public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 // note dialog
                 var dlg = new Dialogs.NoteDialog("ed", app);
-                dlg.Show(event.data.note);
+                dlg.setNote(event.data.note).Show();
                 return false;
             }
 
@@ -2736,7 +2736,7 @@ module jMusicScore {
                 var bar = <Model.IBar>event.data.bar;
 
                 var dlg = new Dialogs.MeterDialog("click", app);
-                dlg.Show(bar.absTime);
+                dlg.setTime(bar.absTime).Show();
 
                 return false;
             }
@@ -2745,7 +2745,7 @@ module jMusicScore {
                 var meter = <Model.IMeter>event.data.meter;
 
                 var dlg = new Dialogs.MeterDialog("click", app);
-                dlg.Show(meter.absTime, meter.definition);
+                dlg.setTime(meter.absTime).setMeter(meter.definition).Show();
 
                 return false;
             }
@@ -2795,7 +2795,7 @@ module jMusicScore {
                 var bar = <Model.IBar>event.data.bar;
 
                 var dlg = new Dialogs.KeyDialog("click", app);
-                dlg.Show(bar.absTime);
+                dlg.setTime(bar.absTime).Show();
 
                 return false;
             }
@@ -2804,7 +2804,7 @@ module jMusicScore {
                 var key = <Model.IKey>event.data.key;
 
                 var dlg = new Dialogs.KeyDialog("click", app);
-                dlg.Show(key.absTime, key);
+                dlg.setTime(key.absTime).setKey(key).Show();
 
                 return false;
             }
@@ -2855,7 +2855,7 @@ module jMusicScore {
                 var note = <Model.INote>event.data.note;
 
                 var dlg = new Dialogs.ClefDialog("click", app);
-                dlg.Show(note.absTime, note.parent.parent);
+                dlg.setTime(note.absTime).setStaff(note.parent.parent).Show();
 
                 return false;
             }
@@ -2864,7 +2864,7 @@ module jMusicScore {
                 var clef = <Model.IClef>event.data.clef;
 
                 var dlg = new Dialogs.ClefDialog("click", app);
-                dlg.Show(clef.absTime, clef.parent, clef);
+                dlg.setClef(clef).setTime(clef.absTime).setStaff(clef.parent).Show();
 
                 return false;
             }
