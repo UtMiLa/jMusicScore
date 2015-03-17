@@ -1091,7 +1091,7 @@ module jMusicScore {
             }
         }
 
-        export class SVGFeedbackClient implements Application.IFeedbackClient {
+        export class DOMFeedbackClient implements Application.IFeedbackClient {
             constructor(private sensorEngine: Views.ISensorGraphicsEngine) { }
             changed(status: ScoreApplication.ScoreStatusManager, key: string, val: any) {
                 if (key === "currentNote" || key === "currentPitch") {
@@ -1221,7 +1221,7 @@ module jMusicScore {
                 }
                 app.AddWriter(new SVGWriter(this.svgHelper));
 
-                app.FeedbackManager.registerClient(new SVGFeedbackClient(this.svgHelper.EditGraphicsHelper));
+                app.FeedbackManager.registerClient(new DOMFeedbackClient(this.svgHelper.EditGraphicsHelper));
             }
 
             public GetId(): string {
@@ -3300,7 +3300,7 @@ module jMusicScore {
                 }
                 app.AddWriter(new CanvasWriter(this.canvasHelper));
                 */
-                app.FeedbackManager.registerClient(new SvgView.SVGFeedbackClient(this.canvasHelper.EditGraphicsHelper));
+                app.FeedbackManager.registerClient(new SvgView.DOMFeedbackClient(this.canvasHelper.EditGraphicsHelper));
             }
 
             public GetId(): string {
