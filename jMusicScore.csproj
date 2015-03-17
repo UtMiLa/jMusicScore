@@ -281,7 +281,6 @@
   <ItemGroup>
     <Content Include="Scripts\jquery-ui-1.11.3.js" />
     <Content Include="Scripts\jquery-ui-1.11.3.min.js" />
-    <Content Include="src\jazzsoft\jquery.midi.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

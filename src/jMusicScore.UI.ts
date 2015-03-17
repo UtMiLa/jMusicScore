@@ -31,7 +31,7 @@ module jMusicScore {
         }
 
 
-        interface IMenuDef {
+        export interface IMenuDef {
             Id: string;
             Menu?: IMenuDef[];
             Caption: string;

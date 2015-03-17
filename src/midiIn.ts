@@ -1,9 +1,173 @@
 ﻿module jMusicScore {
     export module Editors {
-        declare var $: any;
+
+        class MidiHelper {
+
+            private trigger(event: any) {
+                (<any>$).event.trigger(event); // todo: send event directly to app and don't use $.event.trigger
+            }
+
+            private _midiProc(t: any, a: any, b: any, c: any) {
+                this.trigger({
+                    type: "rawMidiIn",
+                    param1: a,
+                    param2: b,
+                    param3: c,
+                    time: t
+                });
+
+                var cmd = Math.floor(a / 16);
+                var noteB = b;
+                var note = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'][b % 12] + Math.floor(b / 12);
+                var i: number;
+                a = a.toString(16);
+                b = (b < 16 ? '0' : '') + b.toString(16);
+                c = (c < 16 ? '0' : '') + c.toString(16);
+                if (cmd == 8) {
+                    this.midiIn("release_key", noteB);
+                    this.trigger({
+                        type: "midiNoteOff",
+
+                        noteInt: noteB,
+                        noteName: note,
+                        time: t
+
+                    });
+                }
+                else if (cmd == 9) {
+                    if (c == 0) {
+                        this.midiIn("release_key", noteB);
+                        this.trigger({
+                            type: "midiNoteOff",
+
+                            noteInt: noteB,
+                            noteName: note,
+                            time: t
+
+                        });
+                    }
+                    else {
+                        this.midiIn("press_key", noteB);
+                        this.trigger({
+                            type: "midiNoteOn",
+
+                            noteInt: noteB,
+                            noteName: note,
+                            time: t
+
+                        });
+                    }
+                }
+                else if (cmd == 10) {
+                    this.trigger({
+                        type: "midiAftertouch",
+
+                        aftNote: noteB,
+                        aftValue: c,
+                        time: t
+
+                    });
+                }
+                else if (cmd == 11) {
+                    this.trigger({
+                        type: "midiControl",
+
+                        ctlNo: b,
+                        ctlValue: c,
+                        time: t
+
+                    });
+                }
+                else if (cmd == 12) {
+                    this.trigger({
+                        type: "midiProgramChg",
+
+                        progNo: b,
+                        progValue: c,
+                        time: t
+
+                    });
+                }
+                else if (cmd == 13) {
+                    //str+="Aftertouch";
+                }
+                else if (cmd == 14) {
+                    //str+="Pitch Wheel";
+                }
+            }
+
+            private Jazz: any;
+            private midiInVars: any;
+
+            public midiIn(action: any, arg2?: any, newMidiIn?: any) {
+                if (action === "open") {
+                    if (!this.Jazz) {
+                        var r = $('<object>')
+                            .attr('classid', "CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90")
+                            .addClass("hidden");
+                        var s = $('<object>')
+                            .attr('type', "audio/x-jazz")
+                            .addClass("hidden");
+                        s.append('<p style="visibility:visible;">This page requires <a href="http://jazz-soft.net/">Jazz-Plugin</a> ...</p>');
+                        r.append(s);
+                        $('#MidiInStuff').append(r);
+                        this.Jazz = r[0];
+                        if (!this.Jazz || !this.Jazz.isJazz) this.Jazz = s[0];
+                    }
+                    this.midiInVars = {
+                        current_in: this.Jazz.MidiInOpen(newMidiIn,(t: any, a: any, b: any, c: any) => {
+                            this._midiProc(t, a, b, c);
+                        }),
+                        midiKeysPressed: new Array(),
+                        currentChord: new Array()
+                    };
+                    //this.current_in = this.Jazz.MidiInOpen(newMidiIn, _midiProc);
+                    return this.Jazz;
+                }
+                else if (action === "send") {
+                    this.Jazz.MidiOut(arg2.code, arg2.a1, arg2.a2);
+                }
+                else if (action === "close") {
+                    this.Jazz.MidiInClose();
+                    this.midiInVars.current_in = '';
+                }
+                else if (action === "list") {
+                    return this.Jazz.MidiInList();
+                }
+                else if (action === "current_in") {
+                    return this.midiInVars.current_in;
+                }
+                else if (action === "keys_pressed") {
+                    return this.midiInVars.midiKeysPressed.sort();
+                }
+                else if (action === "release_key") {
+                    var i: any;
+                    while ((i = this.midiInVars.midiKeysPressed.indexOf(arg2)) > -1) {
+                        this.midiInVars.midiKeysPressed.splice(i, 1);
+                    }
+                    if (this.midiInVars.midiKeysPressed.length == 0) {
+                        this.trigger({
+                            type: "midiChordReleased",
+                            chord: this.midiInVars.currentChord.sort()
+                        });
+                        //{ chord: this.midiInVars.currentChord.sort() });
+                        this.midiInVars.currentChord = new Array();
+                    }
+                }
+                else if (action === "press_key") {
+                    this.midiInVars.currentChord.push(arg2);
+                    this.midiInVars.midiKeysPressed.push(arg2);
+                }
+            }
+        }
+
+
+
+
         export class MidiInputPlugin implements ScoreApplication.ScorePlugin {
 
             private midiChannel: string;
+            private midiHelper: MidiHelper;
 
             public SetMidiChannel(val: string) {
                 if (this.midiChannel !== val) {
@@ -13,6 +177,8 @@
 
             public Init(app: ScoreApplication.ScoreApplication) {
                 var active_element: Element;
+                this.midiHelper = new MidiHelper();
+                var me = this;
 
                 function connectMidiIn() {
                     //alert("connect midi");
@@ -33,8 +199,8 @@
                 setTimeout(
                     () => {
                         try {
-                            $.midiIn("open", 0, 0);
-                            app.AddPlugin(new MidiMenuPlugin());
+                            me.midiHelper.midiIn("open", 0, 0);
+                            app.AddPlugin(new MidiMenuPlugin(me.midiHelper));
                         }
                         catch (err) {
                             // Jazz Midi In not supported
@@ -74,80 +240,79 @@
 
             }
 
-
             public GetId(): string { return 'MidiInputPlugin'; }
         }
 
+        class MidiSettingsDialog extends UI.ScoreDialog {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication, private helper: MidiHelper) {
+                super(idPrefix, app);
+                this.dialogId = "MidiDialog";
+                this.dialogTitle = "MIDI Setup";
+                this.height = 500;
+                this.width = 750;
+                this.CreateControls();
+            }
 
-        // ****************** STAFF ******************* //
-        /*export*/ class MidiMenuPlugin extends UI.MenuPlugin {
-            GetMenuObj(app: ScoreApplication.ScoreApplication): any {
+            private midiInCtl: UI.DropdownWidget;
+
+            setHelper(helper: MidiHelper): MidiSettingsDialog {
+                this.helper = helper;
+                return this;
+            }
+
+            public CreateControls() {
+                var values: { [index: string]: string } = {
+                    "": ' Not connected ',
+                };
+
+                try {
+                    var list = this.helper.midiIn('list');
+                    for (var i in list) {
+                        values[list[i]] = list[i];
+                    }
+
+                    this.AddWidget(this.midiInCtl = new UI.DropdownWidget(values), "midiIn", "Midi in");
+                    this.midiInCtl.Value = this.helper.midiIn("current_in");
+                }
+                catch (err) {
+                    alert("error4");
+                }
+            }
+
+            public onOk(): boolean {
+                // Vælg Midi-kanal
+                var midiChannel = this.midiInCtl.Value;
+                
+                try {
+                    if (midiChannel) {
+                        this.helper.midiIn("open", 0, midiChannel);
+                    } else {
+                        this.helper.midiIn('close');
+                    }
+                }
+                catch (err) {
+                    alert("error1: " + err.message);
+                }
+
+                return true;
+            }
+        }
+
+
+
+        // ****************** Midi ******************* //
+        class MidiMenuPlugin extends UI.MenuPlugin {
+            constructor(private helper: MidiHelper) { super(); }
+
+            GetMenuObj(app: ScoreApplication.ScoreApplication): UI.IMenuDef {
                 // ****************** staves ******************* //
+                var me = this;
                 return {
                     Id: "MidiMenu",
                     Caption: "MIDI Setup",
-                    Dialog: {
-                        Title: "MIDI Setup",
-                        Controls: [
-                            {
-                                tag: "<select>",
-                                id: "midiIn",
-                            }
-                        ],
-                        buttonSettings: [
-                            {
-                                id: 'BtnOK_MidiDialog',
-                                text: "OK",
-                                click: function () {
-                                    // Vælg Midi-kanal
-                                    var midiChannel = $('#midiIn :selected').attr('value');
-
-                                    try {
-                                        if (midiChannel) {
-                                            $.midiIn("open", 0, midiChannel);
-                                        } else {
-                                            $.midiIn('close');
-                                        }
-                                    }
-                                    catch (err) {
-                                        alert("error1: " + err.message);
-                                    }
-
-                                    $(this).dialog("close");
-                                }
-                            },
-                            {
-                                id: 'BtnCancel_MidiDialog',
-                                text: "Cancel",
-                                click: function () { $(this).dialog("close"); }
-                            }
-                        ],
-                        okFunction: function () { },
-                        cancelFunction: function () { },
-                        initFunction: function () {
-                            var score = app.document;
-
-                            $('#midiIn').empty().append('<option value = "" > Not connected </option >');
-
-                            try {
-                                var list = $.midiIn('list');
-                                for (var i in list) {
-                                    var $option = $('<option>').text(list[i]).attr('value', list[i]);
-                                    if (list[i] === $.midiIn("current_in")) {
-                                        $option.attr('selected', 'selected');
-                                    }
-                                    $('#midiIn').append($option);
-                                }
-                            }
-                            catch (err) {
-                                alert("error4");
-                            }
-
-                            return this;
-                        },
-                        width: 750,
-                        height: 500
-                    }
+                    action: () => {
+                        new MidiSettingsDialog('menu', app, me.helper).Show();
+                    },
                 };
             }
         }
