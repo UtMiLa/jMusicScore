@@ -1091,7 +1091,7 @@ module jMusicScore {
             }
         }
 
-        class SVGFeedbackClient implements Application.IFeedbackClient {
+        export class SVGFeedbackClient implements Application.IFeedbackClient {
             constructor(private sensorEngine: Views.ISensorGraphicsEngine) { }
             changed(status: ScoreApplication.ScoreStatusManager, key: string, val: any) {
                 if (key === "currentNote" || key === "currentPitch") {
@@ -3109,8 +3109,26 @@ module jMusicScore {
             ShowCursor(noteId: string): void { }
             HideCursor(): void { }
             // InsertionPoint
-            ShowInsertionPoint(id: string, x: number, y: number): void { }
-            HideInsertionPoint(): void { }
+            ShowInsertionPoint(id: string, x: number, y: number): void {
+                var $insertPoint = $('#insertionPoint');
+                if (!$insertPoint.length) {
+                    $insertPoint = $('<div>').attr('id', 'insertionPoint').css({
+                        position: 'relative',
+                        'margin-left': '-4px',
+                        'margin-top': '-4px',
+                        width: '5px',
+                        height: '5px',
+                        border: 'solid blue 1px'
+                   });
+                }
+                $insertPoint.css({
+                    top: y,
+                    left: x,
+                }).appendTo('#htmlSensor_ed_' + id);
+            }
+            HideInsertionPoint(): void {
+                $('#insertionPoint').remove();
+            }
 
             public BeginDraw() {
                 //this.scale = 1;
@@ -3136,6 +3154,7 @@ module jMusicScore {
             CreateRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any {
                 var $rect = $('<div>')
                     .css({ position: 'absolute', left: x, top: y, width: w, height: h/*, border: 'solid blue thin'*/ })
+                    //.css({ position: 'absolute', 'margin-top': y, 'margin-left': x, left: 0, top: 0, width: w, height: h, border: 'solid blue thin' })
                     .attr('id', this.idPrefix + id)
                     .appendTo(this.currentGroup);
                 return $rect;
@@ -3280,8 +3299,8 @@ module jMusicScore {
                     app.AddDesigner(new SVGSizeDesigner(this.canvasHelper));
                 }
                 app.AddWriter(new CanvasWriter(this.canvasHelper));
-
-                app.FeedbackManager.registerClient(new SVGFeedbackClient(this.canvasHelper.EditGraphicsHelper));*/
+                */
+                app.FeedbackManager.registerClient(new SvgView.SVGFeedbackClient(this.canvasHelper.EditGraphicsHelper));
             }
 
             public GetId(): string {

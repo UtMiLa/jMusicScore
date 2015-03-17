@@ -95,7 +95,7 @@
     $(function () {
         /* Menus */
         app.AddPlugin(new CanvasView.CanvasViewer($('#svgArea')));
-        app.AddPlugin(new SvgView.SVGViewer($('#svgArea')));
+        //app.AddPlugin(new SvgView.SVGViewer($('#svgArea')));
         app.AddPlugin(new SvgView.HintAreaPlugin());
 
         app.AddPlugin(new UI.ToolbarPlugin());
