@@ -459,18 +459,14 @@ module jMusicScore {
                 this.height = 600;
             }
             private sourceWidget: UI.DropdownWidget;
-            private fileListWidget = new FileListWidget();
+            private fileListWidget: FileListWidget;
             private fileTypeWidget: UI.DropdownWidget;
 
             public onOk(): boolean {
                 return true;
             }
 
-            public Show() {
-                this.addDialog();
-
-                this.onInit();
-
+            public onInit() {
                 var ids = this.app.GetFileManagerIds();
                 this.sourceWidget.SetOptions(<any>$.map(ids,(e, i) => { return { val: e, label: e }; }));
                 this.fileTypeWidget.SetOptions(<any>$.map(this.app.GetFileSaveTypes(),(e, i) => { return { val: e, label: e }; }));
@@ -486,8 +482,6 @@ module jMusicScore {
                     updateFileList(item);
                 });
                 updateFileList(this.sourceWidget.Value);
-
-                this.Open();
             }
 
             public get filename(): string {

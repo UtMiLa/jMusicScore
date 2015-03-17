@@ -18,14 +18,11 @@
     app.AddValidator(new Model.UpdateAccidentalsValidator());
 
     app.AddValidator(new GhostElements.GhostsValidator());
-    //app.AddDesigner(new MusicSpacing.SpacingDesigner());
     
     app.AddFileManager(new Application.ServerFileManager("/Handler.ashx", "Server (ashx)"));
     app.AddFileManager(new Application.ServerFileManager("/Handler.php", "Server (PHP)"));
     app.AddFileManager(new Application.LocalStorageFileManager("Local"));
     //UtMiLa.application.LoadUsing("Esajas40.xml", "Server", "MusicXML");
-    //UtMiLa.application.LoadUsing("Dichterliebe01.xml", "Server", "MusicXML");
-    //UtMiLa.application.LoadUsing("Fang os de ræve_3.xml", "Server", "MusicXML");//
 
     var mus = {
         "id": "89", "t": "Score", "def": { "metadata": {} },
@@ -113,8 +110,6 @@
         app.AddPlugin(new Editors.MidiInputPlugin());
         app.RegisterEventProcessor(new Editors.MidiEditor()); // "midiNoteOff", 
 
-        //CreateMenus(app);// todo: encapsulate in class
-
         /** test **/
 
         app.AddPlugin(new UI.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function () { app.LoadUsing('saved.xml', 'Server', 'JSON'); }));
@@ -125,15 +120,6 @@
                 Undo: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
-        /*app.AddPlugin(new Menus.QuickMenuPlugin("MeasureMapMenu", "Show Measure Map", "TestMenu", "Test", function () {
-            var events: Model.ITimedEvent[] = this.parent.getEvents();
-            events.sort(Model.Music.compareEvents);
-            $('#events').empty();
-            for (var i = 0; i < events.length; i++) {
-                $('#events').append('<li>' + events[i].absTime.ToString() + ": " + events[i].debug() + '</li>');
-            }
-        }));*/
-        //app.AddPlugin(new Menus.QuickMenuPlugin("TestFileDlgMenu", "File Dialog", "TestMenu", "Test", function () { new Menus.FileDialog("open", app).Show(); }));
         app.AddPlugin(new UI.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function () { $('.overlay').toggle(); }));
         app.AddPlugin(new UI.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function () {
             var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
@@ -212,10 +198,6 @@
                 Execute: (app: ScoreApplication.ScoreApplication) => { }
             });
         }));
-        /*app.AddPlugin(new Menus.QuickMenuPlugin("MementoTextMenu", "Show memento", "TestMenu", "Test", function () {
-            var memento = app.document.getMemento(true);
-            $('#events').empty().text(JSON.stringify(memento));
-        }));*/
         app.AddPlugin(new UI.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function () {
             app.document.withVoices(function (voice, index) {
                 voice.withNotes((note: Model.INote) => {
