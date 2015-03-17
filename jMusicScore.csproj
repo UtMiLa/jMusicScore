@@ -298,7 +298,7 @@
     <TypeScriptCompile Include="src\application.ts" />
     <TypeScriptCompile Include="src\jMusicScore.BrowserFileSystem.ts" />
     <TypeScriptCompile Include="src\commands.ts" />
-    <TypeScriptCompile Include="src\dialogs.ts" />
+    <TypeScriptCompile Include="src\jMusicScore.UI.ts" />
     <TypeScriptCompile Include="src\emmentaler.ts" />
     <TypeScriptCompile Include="src\FinaleEmulator.ts" />
     <TypeScriptCompile Include="src\ghostElements.ts" />
@@ -312,7 +312,6 @@
     <TypeScriptCompile Include="src\keyboard.ts" />
     <TypeScriptCompile Include="src\midiEditor.ts" />
     <TypeScriptCompile Include="src\midiIn.ts" />
-    <TypeScriptCompile Include="src\toolbarPlugin.ts" />
     <TypeScriptCompile Include="src\validators.ts" />
   </ItemGroup>
   <PropertyGroup>
