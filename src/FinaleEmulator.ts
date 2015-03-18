@@ -87,7 +87,7 @@
 
             public Exit(app: ScoreApplication.ScoreApplication) {
             }
-
+            /*
             public keydown(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
                 var theKeyCode = event.keyCode || event.which;
                 var keyDefs = <any>$.ui.keyCode;
@@ -97,7 +97,8 @@
                         if (event.shiftKey) key = 'SHIFT-' + key;
                         if (event.ctrlKey) key = 'CTRL-' + key;
 
-                        return this.keyPressed(app, key.toUpperCase());
+                        //return this.keyPressed(app, key.toUpperCase());
+                        return app.ProcessEvent("keymessage", { key: key });
                     }
                 }
                 return true;
@@ -110,15 +111,19 @@
                     if (event.shiftKey) key = 'SHIFT-' + key;
                     if (event.ctrlKey) key = 'CTRL-' + key;
                 }
-                return this.keyPressed(app, key);
+                return app.ProcessEvent("keymessage", {key: key}); //this.keyPressed(app, key);
+            }
+            */
+            public keymessage(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+                return this.keyPressed(app, event.key);
             }
 
-            public clicknote(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
+            public clicknote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
                 // note dialog: dblclick
                 /*var dlg = new Dialogs.NoteDialog("ed", app);
                 dlg.Show(event.data.note);*/
-                app.Status.currentPitch = event.data.pitch;
-                app.Status.currentNote = event.data.note;
+                app.Status.currentPitch = event.pitch;
+                app.Status.currentNote = event.note;
                 return false;
             }
 

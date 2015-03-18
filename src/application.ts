@@ -122,13 +122,7 @@ module jMusicScore {
         }
 
         export interface IMessage {
-            keyCode?: number;
             key?: string;
-            which?: number;
-            ctrlKey?: boolean;
-            altKey?: boolean;
-            shiftKey?: boolean;
-            data?: any;
         }
 
         export interface IEventReceiver {

@@ -8,7 +8,7 @@
             public Exit(app: ScoreApplication.ScoreApplication) {
             }
             private noCtrl = 0;
-            public midicontrol(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
+            public midicontrol(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
                 /*v pedal ned: 
                 ctlNo "43"
                 ctlValue "7f"
@@ -54,15 +54,15 @@
                 }*/
                 return true;
             }
-            public midinoteon(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
+            public midinoteon(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
                 app.Status.pressNoteKey(Model.Pitch.createFromMidi((<any>event).noteInt));
                 return true;
             }
-            public midinoteoff(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
+            public midinoteoff(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
                 app.Status.releaseNoteKey(Model.Pitch.createFromMidi((<any>event).noteInt));
                 return true;
             }
-            public midichordreleased(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
+            public midichordreleased(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
                 if (app.Status.currentVoice) { // todo: set as quickenter_editor
                     /*var rest = app.Status.rest;
                     var dots = app.Status.dots;
