@@ -5,8 +5,8 @@
             constructor(private eventReceiver: Application.IEventReceiver) { }
 
             private trigger(event: any) {
-                //(<any>$).event.trigger(event); // todo: send event directly to app and don't use $.event.trigger
-                this.eventReceiver.ProcessEvent(event.type, event);
+                var eventtype: string = event.type;
+                this.eventReceiver.ProcessEvent(eventtype.toLowerCase(), event);
             }
 
             private _midiProc(t: any, a: any, b: any, c: any) {
