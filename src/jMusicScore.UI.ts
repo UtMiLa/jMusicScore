@@ -35,7 +35,7 @@ module jMusicScore {
             Id: string;
             Menu?: IMenuDef[];
             Caption: string;
-            action?: (e: Event) => void;
+            action?: () => void;
         }
 
         /* tools using JQuery */

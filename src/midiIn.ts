@@ -218,29 +218,18 @@
                             return;
                         }
 
-                        $(document).on("midiNoteOn", function (e: Event) {
+                        /*$(document).on("midiNoteOn", function (e: Event) {
                             app.ProcessEvent("midinoteon", e);
-                            /*$('#tast' + e.noteInt).addClass('down');
-                            $('#Chord')
-                                .text(JSON.stringify($.midiIn('keys_pressed')));*/
                         });
                         $(document).on("midiNoteOff", function (e: Event) {
                             app.ProcessEvent("midinoteoff", e);
-                            /*$('#tast' + e.noteInt).removeClass('down');
-                            $('#Chord')
-                                .text(JSON.stringify($.midiIn('keys_pressed')));*/
                         });
                         $(document).on("midiControl", function (e: Event) {
                             app.ProcessEvent("midicontrol", e);
-                            /*$('#msg')
-                                .append("Control    " + e.ctlNo + " " + e.ctlValue + "<br>")
-                                .scrollTop($('#msg').prop('scrollHeight'));*/
                         });
                         $(document).on("midiChordReleased", function (e: Event) {
                             app.ProcessEvent("midichordreleased", e);
-                            /*$('#Chord1')
-                                .text(JSON.stringify(e.chord));*/
-                        });
+                        });*/
 
                         if (navigator.appName == 'Microsoft Internet Explorer') { document.onfocusin = onFocusIE; document.onfocusout = onBlurIE; }
                         else { window.onfocus = connectMidiIn; window.onblur = disconnectMidiIn; }
