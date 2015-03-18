@@ -121,6 +121,10 @@ module jMusicScore {
             }
         }
 
+        export interface IEventReceiver {
+            ProcessEvent(name: string, event: Event): boolean;
+        }
+
         export interface IAppDoc {
             clear(): void;
         }

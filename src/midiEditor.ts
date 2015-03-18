@@ -1,6 +1,6 @@
 ﻿module jMusicScore {
     export module Editors {
-        declare var $: any;
+        //declare var $: any;
 
         export class MidiEditor implements ScoreApplication.ScoreEventProcessor {
             public Init(app: ScoreApplication.ScoreApplication) {

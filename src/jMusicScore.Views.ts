@@ -474,13 +474,9 @@ module jMusicScore {
             }
         }
 
-        export interface IEventReceiver {
-            ProcessEvent(name: string, event: Event): boolean;
-        }
-
         /** Responsible for making event handlers on DOM (SVG/HTML) sensors */
         export class DOMCheckSensorsVisitor implements Model.IVisitor { // todo: remove event handlers when inactive
-            constructor(public sensorEngine: Views.ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: IEventReceiver) {
+            constructor(public sensorEngine: Views.ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: Application.IEventReceiver) {
             }
 
             VisitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
