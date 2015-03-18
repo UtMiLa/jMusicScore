@@ -1,7 +1,7 @@
 ﻿module jMusicScore {
     export module Editors {
 
-        class MidiHelper {
+        export class MidiHelper {
             constructor(private eventReceiver: Application.IEventReceiver) { }
 
             private trigger(event: any) {
@@ -165,13 +165,16 @@
             get KeysPressed(): any[] {
                 return this.midiInVars.midiKeysPressed.sort();
             }
-
         }
 
 
-
-
         export class MidiInputPlugin implements ScoreApplication.ScorePlugin {
+            private static _midiHelper: MidiHelper;
+
+            public static GetMidiHelper(app: Application.IEventReceiver): MidiHelper {
+                if (!this._midiHelper) this._midiHelper = new MidiHelper(app);
+                return this._midiHelper;
+            }
 
             private midiChannel: string;
             private midiHelper: MidiHelper;
@@ -184,7 +187,7 @@
 
             public Init(app: ScoreApplication.ScoreApplication) {
                 var active_element: Element;
-                this.midiHelper = new MidiHelper(app);
+                this.midiHelper = MidiInputPlugin.GetMidiHelper(app);
                 var me = this;
 
                 function connectMidiIn() {

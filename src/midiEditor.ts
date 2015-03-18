@@ -8,7 +8,7 @@
             public Exit(app: ScoreApplication.ScoreApplication) {
             }
             private noCtrl = 0;
-            public midicontrol(app: ScoreApplication.ScoreApplication, event: Event): boolean {
+            public midicontrol(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
                 /*v pedal ned: 
                 ctlNo "43"
                 ctlValue "7f"
@@ -54,15 +54,15 @@
                 }*/
                 return true;
             }
-            public midinoteon(app: ScoreApplication.ScoreApplication, event: Event): boolean {
+            public midinoteon(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
                 app.Status.pressNoteKey(Model.Pitch.createFromMidi((<any>event).noteInt));
                 return true;
             }
-            public midinoteoff(app: ScoreApplication.ScoreApplication, event: Event): boolean {
+            public midinoteoff(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
                 app.Status.releaseNoteKey(Model.Pitch.createFromMidi((<any>event).noteInt));
                 return true;
             }
-            public midichordreleased(app: ScoreApplication.ScoreApplication, event: Event): boolean {
+            public midichordreleased(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
                 if (app.Status.currentVoice) { // todo: set as quickenter_editor
                     /*var rest = app.Status.rest;
                     var dots = app.Status.dots;
@@ -143,10 +143,12 @@
             // todo: tied notes on/off
             // todo: set tempo
             // todo: graphic feedback
+            private midiHelper: Editors.MidiHelper;
 
             public playAll(app: ScoreApplication.ScoreApplication) {
                 var events = app.document.getEvents();
                 //events.sort(Model.Music.compareEvents);
+                this.midiHelper = Editors.MidiInputPlugin.GetMidiHelper(app);
                 var allEvents: MidiEvent[] = [];
                 for (var i = 0; i < events.length; i++) {
                     var event = events[i];
@@ -192,12 +194,12 @@
 
                 for (var i = 0; i < nextEvents.offEvents.length; i++) {
                     var ev = nextEvents.offEvents[i];
-                    (<any>$).midiIn('send', { code: 0x80, a1: ev.midi, a2: ev.velo });
+                    this.midiHelper.midiSend({ code: 0x80, a1: ev.midi, a2: ev.velo });
                 }
 
                 for (var i = 0; i < nextEvents.onEvents.length; i++) {
                     var ev = nextEvents.onEvents[i];
-                    (<any>$).midiIn('send', { code: 0x90, a1: ev.midi, a2: ev.velo });
+                    this.midiHelper.midiSend({ code: 0x90, a1: ev.midi, a2: ev.velo });
                 }
 
                 if (me._midiEvents.length) {

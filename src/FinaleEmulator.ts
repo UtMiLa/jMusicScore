@@ -55,31 +55,31 @@
             public Init(app: ScoreApplication.ScoreApplication) {
                 $('#toolitem40').on('mousedown touchstart', function (ev) {
                     ev.key = "RIGHT";
-                    app.ProcessEvent("keypress", ev);
+                    app.ProcessEvent("keypress", { key: "RIGHT" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
                 $('#toolitem41').on('mousedown touchstart', function (ev) {
                     ev.key = "LEFT";
-                    app.ProcessEvent("keypress", ev);
+                    app.ProcessEvent("keypress", { key: "LEFT" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
                 $('#toolitem42').on('mousedown touchstart', function (ev) {
                     ev.key = "UP";
-                    app.ProcessEvent("keypress", ev);
+                    app.ProcessEvent("keypress", { key: "UP" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
                 $('#toolitem43').on('mousedown touchstart', function (ev) {
                     ev.key = "DOWN";
-                    app.ProcessEvent("keypress", ev);
+                    app.ProcessEvent("keypress", { key: "DOWN" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
                 $('#toolitem19').on('mousedown touchstart', function (ev) {
                     ev.key = "ENTER";
-                    app.ProcessEvent("keypress", ev);
+                    app.ProcessEvent("keypress", { key: "ENTER" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
@@ -88,7 +88,7 @@
             public Exit(app: ScoreApplication.ScoreApplication) {
             }
 
-            public keydown(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
+            public keydown(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
                 var theKeyCode = event.keyCode || event.which;
                 var keyDefs = <any>$.ui.keyCode;
                 for (var key in keyDefs) {
@@ -103,7 +103,7 @@
                 return true;
             }
 
-            public keypress(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
+            public keypress(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
                 var key = <string>event.key;
                 if (event.ctrlKey || event.altKey) {
                     if (event.altKey) key = 'ALT-' + key;
@@ -113,7 +113,7 @@
                 return this.keyPressed(app, key);
             }
 
-            public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
+            public clicknote(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
                 // note dialog: dblclick
                 /*var dlg = new Dialogs.NoteDialog("ed", app);
                 dlg.Show(event.data.note);*/

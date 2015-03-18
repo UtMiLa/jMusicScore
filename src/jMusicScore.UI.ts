@@ -1684,8 +1684,8 @@ module jMusicScore {
                                 if (timer) {
                                     var ev = event;
                                     ev.type = "midinoteon";
-                                    (<any>ev).noteInt = parseInt(p);
-                                    app.ProcessEvent("midinoteon", ev);
+                                    //(<any>ev).noteInt = parseInt(p);
+                                    app.ProcessEvent("midinoteon", { noteInt: parseInt(p) });
                                 }
                             }, 50, p);
                             origEvent.preventDefault();
@@ -1693,8 +1693,8 @@ module jMusicScore {
                             .on('mouseup touchend', function (ev: JQueryEventObject) {
                             var p = $(this).attr('id').replace('tast', '');
                             ev.type = "midinoteoff";
-                            (<any>ev).noteInt = parseInt(p);
-                            app.ProcessEvent("midinoteoff", ev);
+                            //(<any>ev).noteInt = parseInt(p);
+                            app.ProcessEvent("midinoteoff", { noteInt: parseInt(p) });
                             event.preventDefault();
                         })
                     /*.on('touchmove', function (event) {

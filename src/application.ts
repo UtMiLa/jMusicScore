@@ -49,10 +49,10 @@ module jMusicScore {
             Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
             Exit(app: Application<DocumentType, StatusManager, ContainerType>): void;
 
-            /*midinoteoff? (app: Application, event: Event): boolean;
-            keypressed? (app: Application, event: Event): boolean;
-            keyup? (app: Application, event: Event): boolean;
-            keydown? (app: Application, event: Event): boolean;*/
+            midinoteoff? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
+            keypressed? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
+            keyup? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
+            keydown? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
         }
 
         /** Interface for file managers that can load and save files in various file systems (remote or local) */
@@ -121,8 +121,18 @@ module jMusicScore {
             }
         }
 
+        export interface IMessage {
+            keyCode?: number;
+            key?: string;
+            which?: number;
+            ctrlKey?: boolean;
+            altKey?: boolean;
+            shiftKey?: boolean;
+            data?: any;
+        }
+
         export interface IEventReceiver {
-            ProcessEvent(name: string, event: Event): boolean;
+            ProcessEvent(name: string, message: IMessage): boolean;
         }
 
         export interface IAppDoc {
@@ -399,11 +409,11 @@ module jMusicScore {
                 }
             }
 
-            public ProcessEvent(name: string, event: Event): boolean {
+            public ProcessEvent(name: string, message: IMessage): boolean {
                 for (var i = 0; i < this.eventProcessors.length; i++) {
                     var evPro: any = this.eventProcessors[i];
                     if (evPro[name]) {
-                        if (!evPro[name](this, event)) return false;
+                        if (!evPro[name](this, message)) return false;
                     }
                 }
                 return true;

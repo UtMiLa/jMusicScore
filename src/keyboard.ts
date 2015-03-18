@@ -32,6 +32,18 @@ module jMusicScore {
                 });
             }
 
+            /*
+            
+            {
+                            key: e.key,
+                            keyCode: e.keyCode,
+                            which: e.which,
+                            altKey: e.altKey,
+                            shiftKey: e.shiftKey,
+                            ctrlKey: e.ctrlKey
+                        }
+            */
+
             public GetId(): string { return 'KeybordInputPlugin'; }
         }
 
