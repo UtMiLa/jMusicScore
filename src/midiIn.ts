@@ -4,88 +4,77 @@
         export class MidiHelper {
             constructor(private eventReceiver: Application.IEventReceiver) { }
 
-            private trigger(event: any) {
-                var eventtype: string = event.type;
+            private trigger(eventtype: string, event: Application.IMessage) {
+                //var eventtype: string = event.type;
                 this.eventReceiver.ProcessEvent(eventtype.toLowerCase(), event);
             }
 
-            private _midiProc(t: any, a: any, b: any, c: any) {
-                this.trigger({
-                    type: "rawMidiIn",
-                    param1: a,
-                    param2: b,
-                    param3: c,
-                    time: t
-                });
+            private _midiProc(t: number, a: number, b: number, c: number) {
+                this.trigger("rawMidiIn",
+                    {
+                        param1: a,
+                        param2: b,
+                        param3: c,
+                        time: t
+                    });
 
                 var cmd = Math.floor(a / 16);
                 var noteB = b;
-                var note = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'][b % 12] + Math.floor(b / 12);
+                //var note = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'][b % 12] + Math.floor(b / 12);
                 var i: number;
-                a = a.toString(16);
-                b = (b < 16 ? '0' : '') + b.toString(16);
-                c = (c < 16 ? '0' : '') + c.toString(16);
+                //var a1 = a.toString(16);
+                var b1: string = (b < 16 ? '0' : '') + b.toString(16);
+                var c1 = (c < 16 ? '0' : '') + c.toString(16);
                 if (cmd == 8) {
                     this.releaseKey(noteB);
-                    this.trigger({
-                        type: "midiNoteOff",
+                    this.trigger("midiNoteOff",
+                        {
+                            noteInt: noteB,
+                            //noteName: note,
+                            time: t
 
-                        noteInt: noteB,
-                        noteName: note,
-                        time: t
-
-                    });
+                        });
                 }
                 else if (cmd == 9) {
                     if (c == 0) {
                         this.releaseKey(noteB);
-                        this.trigger({
-                            type: "midiNoteOff",
-
+                        this.trigger("midiNoteOff", {
                             noteInt: noteB,
-                            noteName: note,
+                            //noteName: note,
                             time: t
 
                         });
                     }
                     else {
                         this.pressKey(noteB);
-                        this.trigger({
-                            type: "midiNoteOn",
-
+                        this.trigger("midiNoteOn", {
                             noteInt: noteB,
-                            noteName: note,
+                            //noteName: note,
                             time: t
 
                         });
                     }
                 }
                 else if (cmd == 10) {
-                    this.trigger({
-                        type: "midiAftertouch",
-
+                    this.trigger("midiAftertouch", {
                         aftNote: noteB,
-                        aftValue: c,
+                        aftValue: c1,
                         time: t
 
                     });
                 }
                 else if (cmd == 11) {
-                    this.trigger({
-                        type: "midiControl",
-
-                        ctlNo: b,
-                        ctlValue: c,
+                    this.trigger("midiControl", {
+                        ctlNo: b1,
+                        ctlValue: c1,
                         time: t
 
                     });
                 }
                 else if (cmd == 12) {
-                    this.trigger({
-                        type: "midiProgramChg",
-
-                        progNo: b,
-                        progValue: c,
+                    this.trigger("midiProgramChg", {
+                        progNo: b1,
+                        progValue: c1,
                         time: t
 
                     });
@@ -99,9 +88,13 @@
             }
 
             private Jazz: any;
-            private midiInVars: any;
+            private midiInVars: {
+                current_in: any;
+                midiKeysPressed: number[];
+                currentChord: number[];
+            };
 
-            midiOpen(newMidiIn: any): any {
+            public midiOpen(newMidiIn: any): any {
                 if (!this.Jazz) {
                     var r = $('<object>')
                         .attr('classid', "CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90")
@@ -116,7 +109,7 @@
                     if (!this.Jazz || !this.Jazz.isJazz) this.Jazz = s[0];
                 }
                 this.midiInVars = {
-                    current_in: this.Jazz.MidiInOpen(newMidiIn,(t: any, a: any, b: any, c: any) => {
+                    current_in: this.Jazz.MidiInOpen(newMidiIn,(t: number, a: number, b: number, c: number) => {
                         this._midiProc(t, a, b, c);
                     }),
                     midiKeysPressed: new Array(),
@@ -140,13 +133,12 @@
             }
 
             releaseKey(arg: number) {
-                var i: any;
+                var i: number;
                 while ((i = this.midiInVars.midiKeysPressed.indexOf(arg)) > -1) {
                     this.midiInVars.midiKeysPressed.splice(i, 1);
                 }
                 if (this.midiInVars.midiKeysPressed.length == 0) {
-                    this.trigger({
-                        type: "midiChordReleased",
+                    this.trigger("midiChordReleased", {
                         chord: this.midiInVars.currentChord.sort()
                     });
                     //{ chord: this.midiInVars.currentChord.sort() });
@@ -162,7 +154,7 @@
             get CurrentIn(): string {
                 return this.midiInVars.current_in;
             }
-            get KeysPressed(): any[] {
+            get KeysPressed(): number[] {
                 return this.midiInVars.midiKeysPressed.sort();
             }
         }
