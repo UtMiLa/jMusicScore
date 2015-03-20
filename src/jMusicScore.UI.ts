@@ -1289,8 +1289,35 @@ module jMusicScore {
             getImageUri(): string;
             getSvg(): string;
             getIndex(): number;
+            getId(): string;
+            getParentId(): string;
             checkEnabled(): void;
         }
+
+        class RadioActionGroup {
+            getId(): string { return undefined; }
+        }
+
+        class RadioAction {
+        }
+
+        class FinaleSpeedyAction extends RadioAction {
+            getCaption(): string { return "Edit"; }
+            getImageUri(): string { return "icon-finale"; }
+            getSvg(): string { return undefined; }
+            getIndex(): number { return 0; }
+            getId(): string { return "edit"; }
+            getParentId(): string { return "notes"; }
+            checkEnabled(): void {
+            }
+
+            private _mode = new FinaleUI.FinaleSpeedyEntry();
+
+            getMode(): ScoreApplication.ScoreEventProcessor {
+                return this._mode;
+            }
+        }
+
 
         /*
         Needed images for buttons:
@@ -1298,6 +1325,21 @@ module jMusicScore {
         Change voice
         Change staff
         */
+        interface IToolBtnDef {
+            id: string;
+            label: string;
+            glyph: string;
+            mode?: ScoreApplication.ScoreEventProcessor;
+            onChecked?: (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) => void;
+            validate?: (app: ScoreApplication.ScoreApplication) => boolean;
+        }
+
+        interface IToolDef {
+            type: string;
+            name?: string;
+            id: string;
+            buttons?: IToolBtnDef[];
+        }
 
         class JToolbar {
             constructor(private app: ScoreApplication.ScoreApplication) {
@@ -1328,7 +1370,7 @@ module jMusicScore {
                 });
             }
 
-            static menuDef = [
+            static menuDef: IToolDef[] = [
                 {
                     type: "Radiogroup",
                     id: "notes",
@@ -1516,17 +1558,17 @@ module jMusicScore {
             public unregisterModes() {
                 var def = JToolbar.menuDef;
                 for (var i = 0; i < def.length; i++) {
-                    var item = <any>def[i];
+                    var item = def[i];
                     if (item.type === "Radiogroup" || item.type === "Checkgroup" || item.type === 'Buttongroup') {
                         for (var j = 0; j < item.buttons.length; j++) {
-                            var btnDef = <any>item.buttons[j];
+                            var btnDef = item.buttons[j];
                             if (btnDef.mode) { this.app.UnregisterEventProcessor(btnDef.mode); }
                         }
                     }
                 }
             }
 
-            private makeMenu(id: string, def: any[]) {
+            private makeMenu(id: string, def: IToolDef[]) {
                 var toolbar = $(id).addClass("ui-widget-header").addClass("ui-corner-all");
                 for (var i = 0; i < def.length; i++) {
                     var item = def[i];
