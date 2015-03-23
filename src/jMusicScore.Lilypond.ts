@@ -129,13 +129,13 @@
 
 
         export class LilypondWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            constructor(public score: Model.IScore) {
+            constructor() {
             }
 
             //private doc;
+            private app: ScoreApplication.ScoreApplication;
 
-
-            Init(app: ScoreApplication.ScoreApplication) { /*this.app = app;*/ }
+            Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
 
             GetId(): string {
                 return "LilypondWriter";
@@ -162,7 +162,7 @@
 
             private getAsLilypond(): string {
                 var res = "<<\n";
-                this.score.withStaves((staff: Model.IStaff, indexS: number) => {
+                this.app.document.withStaves((staff: Model.IStaff, indexS: number) => {
                     res += "\\new Staff {\n"; // relative c"første tones oktav"
                     
                     // add Key
@@ -176,6 +176,39 @@
                     }
 
                     // add Clef
+                    var clef: Model.IClef;
+                    if (staff.clefElements.length) {
+                        clef = staff.clefElements[0];
+                    }
+                    if (clef && (clef.absTime.numerator === 0)) {
+                        var def = clef.definition;
+                        var c = def.clefName() + def.clefLine;
+                        var clefName = "unknown";
+                        switch (c) {
+                            case "g4": clefName = 'treble'; break; //    return this.clefName() + this.clefLine + (this.transposition ? ("/" + this.transposition) : "");
+                            case "g4/8": clefName = 'treble_8'; break;
+                            case "g5": clefName = 'french'; break;
+
+                            case "f1": clefName = 'subbass'; break;
+                            case "f2": clefName = 'bass'; break;
+                            case "f3": clefName = 'varbaritone'; break;
+
+                            case "c1": clefName = 'baritone'; break;
+                            case "c2": clefName = 'tenor'; break;
+                            case "c3": clefName = 'alto'; break;
+                            case "c4": clefName = 'mezzosoprano'; break;
+                            case "c5": clefName = 'soprano'; break;
+                            //default: alert(c);
+                        }
+                        if (def.transposition > 0) {
+                            clefName += '^' + (def.transposition + 1)
+                        }
+                        else if (def.transposition < 0) {
+                            clefName += '_' + (-def.transposition + 1)
+                        }
+                        res += '\t\\clef "' + clefName + '" \n';
+                    }
+
                     // add Meter?
                     if (staff.voiceElements.length > 1) {
                         res += "\t<<\n";
@@ -216,12 +249,12 @@
             private getNoteAsLilypond(note: Model.INote): string {
                 var res = "";
                 if (note.graceType) res += '\\grace ';
-                if (note.rest) {
-                    res += "r";
-                }
-                else if (note.noteId === "hidden") {
+                if (note.noteId === "hidden") {
                     res += "s";
                 }
+                else if (note.rest) {
+                    res += "r";
+                }                
                     else if (note.noteheadElements.length === 1) {
                         res += note.noteheadElements[0].pitch.debug();
                     if (note.noteheadElements[0].tie) res += "~";
@@ -258,7 +291,7 @@
 
             public Init(app: ScoreApplication.ScoreApplication) {
                 app.AddReader(new LilypondReader());
-                app.AddWriter(new LilypondWriter(app.document));
+                app.AddWriter(new LilypondWriter());
             }
 
             GetId() {
