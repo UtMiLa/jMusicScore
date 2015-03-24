@@ -488,9 +488,6 @@ module jMusicScore {
                     this.withStaves((staff: IStaff) => {
                         events = events.concat(staff.getEvents());
                     });
-                    /*for (var i = 0; i < this.getChildren().length; i++) {
-                        events = events.concat(this.getChild(i).getEvents());
-                    }*/
                 }
                 events = events.concat(this.bars);
                 events = events.concat(this.meterElements);
