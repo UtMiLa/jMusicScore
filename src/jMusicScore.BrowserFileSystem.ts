@@ -1,16 +1,22 @@
-﻿module jMusicScore {
+﻿/// <reference path="jMusicScore.ts"/>
+/// <reference path="application.ts"/>
+/// <reference path="jMusicScore.UI.ts"/>
+/// <reference path="jMusicScore.Spacing.ts"/>
+/// <reference path="emmentaler.ts"/>
+/// <reference path="commands.ts"/>
+module jMusicScore {
 
-    export module Application {
+    export module IO {
 
         /** REST remote file manager */
-        export class ServerFileManager<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> implements IFileManager<DocumentType, StatusManager, ContainerType> {
+        export class ServerFileManager<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> implements Application.IFileManager<DocumentType, StatusManager, ContainerType> {
             constructor(private ajaxUrl: string, private id: string) {
                 // new ServerFileManager ("Handler.ashx")
             }
 
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void { }
+            Init(app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>): void { }
 
-            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void { }
+            Exit(app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>): void { }
 
             GetId(): string { return this.id; }
 
@@ -46,13 +52,13 @@
         }
 
         /** Local storage file manager using the browser's local storage*/
-        export class LocalStorageFileManager<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> implements IFileManager<DocumentType, StatusManager, ContainerType> {
+        export class LocalStorageFileManager<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> implements Application.IFileManager<DocumentType, StatusManager, ContainerType> {
             constructor(private id: string) {
             }
 
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void { }
+            Init(app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>): void { }
 
-            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void { }
+            Exit(app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>): void { }
 
             GetId(): string { return this.id; }
 

@@ -190,7 +190,7 @@
                     noteStem: "notestem",
                     noteStemRev: "notestemrev",
                     beamCount: 5,
-                    flag_suffix: "7",
+                    flag_suffix: "7"
                 }
             };
 

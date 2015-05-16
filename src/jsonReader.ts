@@ -1,3 +1,6 @@
+/// <reference path="jMusicScore.ts"/>
+/// <reference path="jMusicScore.Views.ts"/>
+/// <reference path="application.ts"/>
 module jMusicScore {
     export module Model {
 
@@ -78,7 +81,7 @@ module jMusicScore {
             }
 
             public Save() {
-                var seen: any[] = [];
+                var seen:any[] = [];
                 var text = JSON.stringify(this.app.document.getMemento());
                 return text;
             }

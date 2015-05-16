@@ -1,10 +1,10 @@
 
 describe("Viewer", function() {
-    var app: jMusicScore.Application.Application/*, score: jMusicScore.Model.IScore*/;
+    var app: jMusicScore.Application.AbstractApplication/*, score: jMusicScore.Model.IScore*/;
   
     
   beforeEach(function() {
-      app = new jMusicScore.Application.Application($('#application'));
+      app = new jMusicScore.Application.AbstractApplication($('#application'));
       //score = app.score;
       app.AddPlugin(new jMusicScore.Model.JsonPlugin());
 

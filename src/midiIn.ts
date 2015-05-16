@@ -1,4 +1,6 @@
-﻿module jMusicScore {
+﻿/// <reference path="jMusicScore.ts"/>
+/// <reference path="..\packages\jquery.TypeScript.DefinitelyTyped.1.4.0\Content\Scripts\typings\jquery\jquery.d.ts"/>
+module jMusicScore {
     export module Editors {
 
         export class MidiHelper {
@@ -112,8 +114,8 @@
                     current_in: this.Jazz.MidiInOpen(newMidiIn,(t: number, a: number, b: number, c: number) => {
                         this._midiProc(t, a, b, c);
                     }),
-                    midiKeysPressed: new Array(),
-                    currentChord: new Array()
+                    midiKeysPressed: [],
+                    currentChord: []
                 };
                 //this.current_in = this.Jazz.MidiInOpen(newMidiIn, _midiProc);
                 return this.Jazz;
@@ -142,7 +144,7 @@
                         chord: this.midiInVars.currentChord.sort()
                     });
                     //{ chord: this.midiInVars.currentChord.sort() });
-                    this.midiInVars.currentChord = new Array();
+                    this.midiInVars.currentChord = [];
                 }
             }
 

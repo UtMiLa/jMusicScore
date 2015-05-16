@@ -24,10 +24,10 @@ var initScore: any = { "id": "2", "t": "Score", "def": { "metadata": {} }, "chil
 
     describe("Score", function () {
         //var score: jMusicScore.Model.IScore;
-        var app: jMusicScore.Application.Application;
+        var app: jMusicScore.Application.AbstractApplication;
 
         beforeEach(function () {
-            app = new jMusicScore.Application.Application($('#application'));
+            app = new jMusicScore.Application.AbstractApplication($('#application'));
             //score = app.score;
             app.AddPlugin(new jMusicScore.Model.JsonPlugin());
         });

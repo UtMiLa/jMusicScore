@@ -1,4 +1,6 @@
-﻿module jMusicScore {
+﻿/// <reference path="jMusicScore.ts"/>
+/// <reference path="jMusicScore.Views.ts"/>
+module jMusicScore {
     export module GhostElements {
         
         export class GhostMeterElement extends Model.MusicElement<Model.IMeterSpacingInfo> implements Model.IMeter {

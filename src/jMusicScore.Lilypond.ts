@@ -1,4 +1,10 @@
-﻿module jMusicScore {
+﻿/// <reference path="jMusicScore.ts"/>
+/// <reference path="application.ts"/>
+/// <reference path="jMusicScore.UI.ts"/>
+/// <reference path="jMusicScore.Spacing.ts"/>
+/// <reference path="emmentaler.ts"/>
+/// <reference path="commands.ts"/>
+module jMusicScore {
 
     /*
     Eksport: format

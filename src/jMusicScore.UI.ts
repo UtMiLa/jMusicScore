@@ -1,3 +1,10 @@
+/// <reference path="jMusicScore.ts"/>
+/// <reference path="jMusicScore.Views.ts"/>
+/// <reference path="midiEditor.ts"/>
+/// <reference path="FinaleEmulator.ts"/>
+/// <reference path="validators.ts"/>
+/// <reference path="../packages\jquery.TypeScript.DefinitelyTyped.1.4.0\Content\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="../packages/jqueryui.TypeScript.DefinitelyTyped.0.3.6/Content/Scripts/typings/jqueryui/jqueryui.d.ts"/>
 module jMusicScore {
     export module UI {
 
@@ -13,7 +20,7 @@ module jMusicScore {
         }
 
         export class UIContainer<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
             }
 
             public $container: JQuery; // todo: ContainerType;
@@ -143,7 +150,7 @@ module jMusicScore {
         }
 
         export class Dialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends UIContainer<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
                 this.CreateDialogElement();
             }
@@ -452,7 +459,7 @@ module jMusicScore {
         }
 
         export class FileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends UI.Dialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
@@ -476,7 +483,7 @@ module jMusicScore {
                     me.app.GetFileList(source, function (data: string[]) {
                         me.fileListWidget.UpdateFileList(data);
                     });
-                }
+                };
                 this.sourceWidget.change(function () {
                     var item = $(this).val();
                     updateFileList(item);
@@ -509,7 +516,7 @@ module jMusicScore {
         }
 
         class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "OpenFileDialog";
                 this.dialogTitle = "Open file";
@@ -528,7 +535,7 @@ module jMusicScore {
         }
 
         class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "SaveFileDialog";
                 this.dialogTitle = "Save file";
@@ -750,7 +757,11 @@ module jMusicScore {
 
         // ************************* Music dialogs ************************ //
 
-        export class ScoreDialog extends Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
+        export class ScoreDialog extends Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+                super(idPrefix, app);
+            }
+        }
 
         export class MeterDialog extends ScoreDialog {
             constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
@@ -1210,7 +1221,7 @@ module jMusicScore {
 
             GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** Custom action ******************* //
-                var menuItem = {
+                var menuItem: IMenuDef = {
                     Id: this.id,
                     Caption: this.menuCaption,
                     action: this.menuAction
@@ -1623,7 +1634,7 @@ module jMusicScore {
 
             private toolbar: JToolbar;
 
-            public GetToolbar(): JToolbar {
+            private GetToolbar(): JToolbar {
                 return this.toolbar;
             }
 

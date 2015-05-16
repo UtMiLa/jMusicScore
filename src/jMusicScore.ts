@@ -261,7 +261,7 @@ module jMusicScore {
                 return string;
             }
 
-            public remove() {
+            public remove(): void {
                 for (var i = 0; i < this.childLists.length; i++) {
                     for (var j = 0; j < this.childLists[i].length; j++) {
                         this.childLists[i][j].remove();
@@ -734,7 +734,7 @@ module jMusicScore {
 
                 var f = (elm: ITimedEvent, index: number) => {
                     if (elm.absTime.Ge(fromTime) && toTime.Gt(elm.absTime)) events.push(elm);
-                }
+                };
 
                 this.withTimedEvents(f);
 
@@ -921,8 +921,7 @@ module jMusicScore {
             }
         }
 
-        export enum ClefType { clefNone, clefG, clefC, clefF, clefPercussion, clefTab };
-
+        export enum ClefType { clefNone, clefG, clefC, clefF, clefPercussion, clefTab }
         export class ClefDefinition {
             constructor(public clefCode: ClefType, public clefLine: number, public transposition: number = 0) { // clefline: top line is 1
             }
@@ -1118,7 +1117,7 @@ module jMusicScore {
                 return {
                     t: "Regular",
                     acci: this.acci,
-                    no: this.number,
+                    no: this.number
                 }
             }
         }
@@ -1129,8 +1128,8 @@ module jMusicScore {
 
         export class KeyDefinitionFactory {
             private static keyClasses: { [i: string]: IKeyDefCreator } = {
-                "Regular": RegularKeyDefinition,
-            }
+                "Regular": RegularKeyDefinition
+            };
 
             public static Register(key: string, cls: IKeyDefCreator) {
                 this.keyClasses[key] = cls;
@@ -1288,7 +1287,7 @@ module jMusicScore {
                 return {
                     t: "Regular",
                     num: this.numerator,
-                    den: this.denominator,
+                    den: this.denominator
                 }
             }
         }
@@ -1306,7 +1305,7 @@ module jMusicScore {
                 return super.nextBar(abstime.Sub(this.offset), meterTime).Add(this.offset);
             }
             static createFromMemento(memento: any): IMeterDefinition {
-                var offset = TimeSpan.createFromMemento(memento.offs)
+                var offset = TimeSpan.createFromMemento(memento.offs);
                 return new OffsetMeterDefinition(memento.num, memento.den, offset);
             }
             public getMemento(): any {
@@ -1326,8 +1325,8 @@ module jMusicScore {
         export class MeterDefinitionFactory {
             private static meterClasses: { [i: string]: IMeterDefCreator } = {
                 "Regular": RegularMeterDefinition,
-                "OffsetRegular": OffsetMeterDefinition,
-            }
+                "OffsetRegular": OffsetMeterDefinition
+            };
 
             public static Register(key: string, cls: IMeterDefCreator) {
                 this.meterClasses[key] = cls;
@@ -1407,9 +1406,8 @@ module jMusicScore {
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
         }
 
-        export enum NoteType { note, rest, placeholder };
-        export enum StemDirectionType { stemFree, stemUp, stemDown };
-
+        export enum NoteType { note, rest, placeholder }
+        export enum StemDirectionType { stemFree, stemUp, stemDown }
         export class PitchClass {
             // 0 = c, 1 = g, -1 = f etc.
             constructor(public pitchClass: number) {
@@ -1924,9 +1922,7 @@ module jMusicScore {
             upprall = 32, upmordent, pralldown, downprall, downmordent, prallup, lineprall,
             caesura = 39, lcomma, rvarcomma, lvarcomma,
             arpeggio = 43, arpeggioDown, nonArpeggio
-        };
-
-
+        }
         export interface INoteDecorationElement extends IMusicElement {
             parent: INote;
             placement: string;
@@ -1972,8 +1968,7 @@ module jMusicScore {
         }
 
         /** Long note decoration type, e.g. hairpin, trill extension and slur */
-        export enum LongDecorationType { trillExt, cresc, decresc, slur, bracket, tuplet, ottava };
-
+        export enum LongDecorationType { trillExt, cresc, decresc, slur, bracket, tuplet, ottava }
         /** Long note decoration interface, e.g. hairpin, trill extension and slur */
         export interface ILongDecorationElement extends IMusicElement {
             parent: INote;
@@ -2061,7 +2056,7 @@ module jMusicScore {
             }
             public set text(id: string) {
                 if (this._text !== id) {
-                    this._text = id
+                    this._text = id;
                     this.changed();
                 }
             }
@@ -2416,7 +2411,7 @@ module jMusicScore {
                 "TextSyllable": TextSyllableElement,
                 "Bar": BarElement,
                 "StaffExpression": StaffExpression
-            }
+            };
             static register(key: string, creator: IMusicElementCreator) {
                 this.mementoCreators[key] = creator;
             }

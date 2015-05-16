@@ -199,7 +199,7 @@
                     timeVal: note.timeVal,
                     dots: note.dotNo,
                     tuplet: note.tupletDef
-                }
+                };
                 note.noteId = this.args.noteId;
                 note.timeVal = this.args.timeVal;
                 note.tupletDef = this.args.tuplet;
