@@ -1,5 +1,14 @@
-﻿module jMusicScore {
-    var app = <ScoreApplication.ScoreApplication>new Application.Application<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(
+﻿/// <reference path="../../src/jMusicScore.ts"/>
+/// <reference path="../../src/jMusicScore.Views.ts"/>
+/// <reference path="../../src/application.ts"/>
+/// <reference path="../../src/jMusicScore.MusicXml.ts"/>
+/// <reference path="../../src/jMusicScore.Lilypond.ts"/>
+/// <reference path="../../src/ghostElements.ts"/>
+/// <reference path="../../src/jMusicScore.BrowserFileSystem.ts"/>
+
+//alert("Hej");
+module jMusicScore {
+    var app = <ScoreApplication.ScoreApplication>new Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(
         $("#appContainer"),
         new Model.ScoreElement(null),
         new ScoreApplication.ScoreStatusManager());
@@ -19,9 +28,9 @@
 
     app.AddValidator(new GhostElements.GhostsValidator());
     
-    app.AddFileManager(new Application.ServerFileManager("/Handler.ashx", "Server (ashx)"));
-    app.AddFileManager(new Application.ServerFileManager("/Handler.php", "Server (PHP)"));
-    app.AddFileManager(new Application.LocalStorageFileManager("Local"));
+    app.AddFileManager(new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
+    app.AddFileManager(new IO.ServerFileManager("/Handler.php", "Server (PHP)"));
+    app.AddFileManager(new IO.LocalStorageFileManager("Local"));
     //UtMiLa.application.LoadUsing("Esajas40.xml", "Server", "MusicXML");
 
     var mus = {
