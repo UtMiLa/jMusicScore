@@ -1,0 +1,101 @@
+<component name="libraryTable">
+  <library name="Generated files" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/src/ghostElements.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/lib/flashbar.js" />
+        <item url="file://$PROJECT_DIR$/tests/spec/viewerSpec.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/lib/form.js" />
+        <item url="file://$PROJECT_DIR$/tests/spec/scoreSpec.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/lib/confirm.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/application.js" />
+        <item url="file://$PROJECT_DIR$/src/jMusicScore.Spacing.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/events.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/router.js" />
+        <item url="file://$PROJECT_DIR$/src/jMusicScore.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/validation.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/user.js" />
+        <item url="file://$PROJECT_DIR$/src/jMusicScore.MusicXml.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/helpers.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/helpers.js" />
+        <item url="file://$PROJECT_DIR$/src/commands.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/navigation.js" />
+        <item url="file://$PROJECT_DIR$/src/jMusicScore.BrowserFileSystem.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/notfound.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/page.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/profile.js" />
+        <item url="file://$PROJECT_DIR$/src/midiEditor.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/membership.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/activable.js" />
+        <item url="file://$PROJECT_DIR$/src/validators.js" />
+        <item url="file://$PROJECT_DIR$/src/jMusicScore.Views.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/views/membership.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/views/profile.js" />
+        <item url="file://$PROJECT_DIR$/src/jMusicScore.Lilypond.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/changepassword.js" />
+        <item url="file://$PROJECT_DIR$/src/jsonReader.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/forgotpassword.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/router.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/application.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/session.js" />
+        <item url="file://$PROJECT_DIR$/src/emmentaler.js" />
+        <item url="file://$PROJECT_DIR$/src/application.js" />
+        <item url="file://$PROJECT_DIR$/src/jMusicScore.UI.js" />
+        <item url="file://$PROJECT_DIR$/src/keyboard.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/views/helpers.js" />
+        <item url="file://$PROJECT_DIR$/src/midiIn.js" />
+        <item url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/models/validation.js" />
+        <item url="file://$PROJECT_DIR$/demos/app/initApp.js" />
+        <item url="file://$PROJECT_DIR$/src/FinaleEmulator.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/lib/flashbar.js" />
+      <root url="file://$PROJECT_DIR$/src/ghostElements.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/lib/form.js" />
+      <root url="file://$PROJECT_DIR$/tests/spec/viewerSpec.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/lib/confirm.js" />
+      <root url="file://$PROJECT_DIR$/tests/spec/scoreSpec.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/application.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/events.js" />
+      <root url="file://$PROJECT_DIR$/src/jMusicScore.Spacing.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/router.js" />
+      <root url="file://$PROJECT_DIR$/src/jMusicScore.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/validation.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/user.js" />
+      <root url="file://$PROJECT_DIR$/src/jMusicScore.MusicXml.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/helpers.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/helpers.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/navigation.js" />
+      <root url="file://$PROJECT_DIR$/src/commands.js" />
+      <root url="file://$PROJECT_DIR$/src/jMusicScore.BrowserFileSystem.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/notfound.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/page.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/profile.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/membership.js" />
+      <root url="file://$PROJECT_DIR$/src/midiEditor.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/views/activable.js" />
+      <root url="file://$PROJECT_DIR$/src/validators.js" />
+      <root url="file://$PROJECT_DIR$/src/jMusicScore.Views.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/views/membership.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/views/profile.js" />
+      <root url="file://$PROJECT_DIR$/src/jMusicScore.Lilypond.js" />
+      <root url="file://$PROJECT_DIR$/src/jsonReader.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/changepassword.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/router.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/forgotpassword.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/application/models/session.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/application.js" />
+      <root url="file://$PROJECT_DIR$/src/emmentaler.js" />
+      <root url="file://$PROJECT_DIR$/src/application.js" />
+      <root url="file://$PROJECT_DIR$/src/jMusicScore.UI.js" />
+      <root url="file://$PROJECT_DIR$/src/keyboard.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/views/helpers.js" />
+      <root url="file://$PROJECT_DIR$/packages/backbone.js.typescript.starterkit.1.0.1/content/Scripts/specs/application/models/validation.js" />
+      <root url="file://$PROJECT_DIR$/src/midiIn.js" />
+      <root url="file://$PROJECT_DIR$/src/FinaleEmulator.js" />
+      <root url="file://$PROJECT_DIR$/demos/app/initApp.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>
