@@ -2,7 +2,7 @@
 /// <reference path="jMusicScore.Views.ts"/>
 /// <reference path="midiEditor.ts"/>
 /// <reference path="FinaleEmulator.ts"/>
-/// <reference path="..\packages\jquery.TypeScript.DefinitelyTyped.1.4.0\Content\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="jquery.d.ts"/>
 
 module jMusicScore {
     export module Editors {

@@ -24,16 +24,16 @@ var initScore: any = { "id": "2", "t": "Score", "def": { "metadata": {} }, "chil
 
     describe("Score", function () {
         //var score: jMusicScore.Model.IScore;
-        var app: jMusicScore.Application.AbstractApplication;
+        var app: jMusicScore.ScoreApplication.ScoreApplication;
 
         beforeEach(function () {
-            app = new jMusicScore.Application.AbstractApplication($('#application'));
+            app = new jMusicScore.ScoreApplication.ScoreApplication($('#application'));
             //score = app.score;
             app.AddPlugin(new jMusicScore.Model.JsonPlugin());
         });
 
         it("should be empty when created", function () {
-            expect(app.score.staffElements.length).toEqual(0);
+            expect(app.document.staffElements.length).toEqual(0);
         });
 
         describe("when a test song is loaded", function () {
@@ -44,18 +44,18 @@ var initScore: any = { "id": "2", "t": "Score", "def": { "metadata": {} }, "chil
             });
 
             it("should have 2 staves", function () {
-                expect(app.score.staffElements.length).toEqual(2);
+                expect(app.document.staffElements.length).toEqual(2);
             });
 
             it("should have 2 voices in first staff", function () {
-                expect(app.score.staffElements[0].voiceElements.length).toEqual(2);
+                expect(app.document.staffElements[0].voiceElements.length).toEqual(2);
             });
         });
 
         describe("when a g clef staff is added to an empty score", function () {
             var staff: jMusicScore.Model.IStaff;
             beforeEach(function () {
-                staff = app.score.addStaff(jMusicScore.Model.ClefDefinition.clefG);
+                staff = app.document.addStaff(jMusicScore.Model.ClefDefinition.clefG);
             });
 
             it("should have one staff", function () {

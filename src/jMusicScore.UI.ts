@@ -3,8 +3,10 @@
 /// <reference path="midiEditor.ts"/>
 /// <reference path="FinaleEmulator.ts"/>
 /// <reference path="validators.ts"/>
-/// <reference path="../packages\jquery.TypeScript.DefinitelyTyped.1.4.0\Content\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="../packages/jqueryui.TypeScript.DefinitelyTyped.0.3.6/Content/Scripts/typings/jqueryui/jqueryui.d.ts"/>
+
+/// <reference path="jquery.d.ts"/>
+/// <reference path="jquery-ui.d.ts"/>
+
 module jMusicScore {
     export module UI {
 
