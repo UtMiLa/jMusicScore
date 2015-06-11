@@ -1568,13 +1568,13 @@ module JMusicScore {
 
         /************************* Designers ********************************/
 
-        interface IHintArea {
+        export interface IHintArea {
             Staff: Model.IStaff;
             checkVoiceButtons(app: ScoreApplication.IScoreApplication, staff: Model.IStaff): void;
             release(): void;
         }
 
-        interface IHintAreaCreator {
+        export interface IHintAreaCreator {
             addStaffButton(y: number, staff: Model.IStaff): IHintArea;
         }
 
