@@ -89,7 +89,7 @@
 
             private Jazz: any;
             private midiInVars: {
-                currentIn: any;
+                current_in: any;
                 midiKeysPressed: number[];
                 currentChord: number[];
             };
@@ -109,7 +109,7 @@
                     if (!this.Jazz || !this.Jazz.isJazz) this.Jazz = s[0];
                 }
                 this.midiInVars = {
-                    currentIn: this.Jazz.MidiInOpen(newMidiIn,(t: number, a: number, b: number, c: number) => {
+                    current_in: this.Jazz.MidiInOpen(newMidiIn,(t: number, a: number, b: number, c: number) => {
                         this._midiProc(t, a, b, c);
                     }),
                     midiKeysPressed: new Array(),
@@ -125,7 +125,7 @@
 
             midiClose(): void {
                 this.Jazz.MidiInClose();
-                this.midiInVars.currentIn = '';
+                this.midiInVars.current_in = '';
             }
 
             midiInList(): string[] {
@@ -152,7 +152,7 @@
             }
 
             get CurrentIn(): string {
-                return this.midiInVars.currentIn;
+                return this.midiInVars.current_in;
             }
             get KeysPressed(): number[] {
                 return this.midiInVars.midiKeysPressed.sort();
