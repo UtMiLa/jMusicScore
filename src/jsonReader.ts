@@ -2,11 +2,11 @@ module JMusicScore {
     export module Model {
 
         class JsonReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
 
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
             getFormats(): string[] {
                 return [
@@ -34,18 +34,18 @@ module JMusicScore {
                 while (score.staffElements.length)
                     score.removeChild(score.staffElements[0], score.staffElements);
                 
-                this.app.document = <Model.IScore>Model.MusicElementFactory.RecreateElement(null, data); // memento format                
+                this.app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, data); // memento format                
             }
         }
 
 
-        export class JsonPlugin implements ScoreApplication.ScorePlugin {
+        export class JsonPlugin implements ScoreApplication.IScorePlugin {
             constructor() {
             }
 
-            public init(app: ScoreApplication.ScoreApplication) {
-                app.AddReader(new JsonReader());
-                app.AddWriter(new JsonWriter())
+            public init(app: ScoreApplication.IScoreApplication) {
+                app.addReader(new JsonReader());
+                app.addWriter(new JsonWriter())
             }
 
             getId() {
@@ -54,9 +54,9 @@ module JMusicScore {
         }
 
         class JsonWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
-            init(app: ScoreApplication.ScoreApplication) { this.app = app; }
+            init(app: ScoreApplication.IScoreApplication) { this.app = app; }
 
             getId(): string {
                 return "JSONReader";

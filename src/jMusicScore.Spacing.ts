@@ -190,7 +190,7 @@
                     noteStem: "notestem",
                     noteStemRev: "notestemrev",
                     beamCount: 5,
-                    flag_suffix: "7",
+                    flag_suffix: "7"
                 }
             };
 
@@ -311,7 +311,7 @@
             distX: number;
             endNoteY: number;
             endNoteheadY: number;
-            Render: (deco: Model.ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
+            render: (deco: Model.ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
         }
 
 
@@ -519,35 +519,35 @@
             public clefRefId(def: Model.ClefDefinition, change: boolean): string {
                 if (change) {
                     switch (def.clefCode) {
-                        case Model.ClefType.clefG: {
+                        case Model.ClefType.ClefG: {
                             if (def.transposition === -7) { return "tenor-clef"; }
                             else return "e_clefs.G_change";
                         }
-                        case Model.ClefType.clefC: return "e_clefs.C_change";
-                        case Model.ClefType.clefF: return "e_clefs.F_change";
-                        case Model.ClefType.clefNone: return "";
-                        case Model.ClefType.clefPercussion: return "e_clefs.percussion_change";
-                        case Model.ClefType.clefTab: return "e_clefs.tab_change";
+                        case Model.ClefType.ClefC: return "e_clefs.C_change";
+                        case Model.ClefType.ClefF: return "e_clefs.F_change";
+                        case Model.ClefType.ClefNone: return "";
+                        case Model.ClefType.ClefPercussion: return "e_clefs.percussion_change";
+                        case Model.ClefType.ClefTab: return "e_clefs.tab_change";
                     }
                 }
                 else {
                     switch (def.clefCode) {
-                        case Model.ClefType.clefG: {
+                        case Model.ClefType.ClefG: {
                             if (def.transposition === -7) { return "tenor-clef"; }
                             else return "e_clefs.G";
                         }
-                        case Model.ClefType.clefC: return "e_clefs.C";
-                        case Model.ClefType.clefF: return "e_clefs.F";
-                        case Model.ClefType.clefNone: return "";
-                        case Model.ClefType.clefPercussion: return "e_clefs.percussion";
-                        case Model.ClefType.clefTab: return "e_clefs.tab";
+                        case Model.ClefType.ClefC: return "e_clefs.C";
+                        case Model.ClefType.ClefF: return "e_clefs.F";
+                        case Model.ClefType.ClefNone: return "";
+                        case Model.ClefType.ClefPercussion: return "e_clefs.percussion";
+                        case Model.ClefType.ClefTab: return "e_clefs.tab";
                     }
                 }
             }
             public static longDecoCalculations(deco: Model.ILongDecorationElement) {
                 var noteSpacing = deco.parent.spacingInfo;
                 var notedecoSpacing = deco.spacingInfo;
-                var tiedToNoteSpacing = deco.EndEvent.spacingInfo; //todo: if (deco.EndEvent)
+                var tiedToNoteSpacing = deco.endEvent.spacingInfo; //todo: if (deco.EndEvent)
                 var stemDir = deco.parent.spacingInfo.rev;
 
                 // todo: if length is changed
@@ -595,7 +595,7 @@
             }
 
             public static getNoteDecoWidth(deco: Model.INoteDecorationElement) {
-                if (deco.getDecorationId() >= Model.NoteDecorationKind.arpeggio && deco.getDecorationId() <= Model.NoteDecorationKind.nonArpeggio) {
+                if (deco.getDecorationId() >= Model.NoteDecorationKind.Arpeggio && deco.getDecorationId() <= Model.NoteDecorationKind.NonArpeggio) {
                     return 10;
                 }
                 else {
@@ -608,7 +608,7 @@
                 var notedecoSpacing = deco.spacingInfo;
 
                 //notedecoSpacing.center.x = 0;
-                if (deco.getDecorationId() >= Model.NoteDecorationKind.arpeggio && deco.getDecorationId() <= Model.NoteDecorationKind.nonArpeggio) {
+                if (deco.getDecorationId() >= Model.NoteDecorationKind.Arpeggio && deco.getDecorationId() <= Model.NoteDecorationKind.NonArpeggio) {
                     //noteSpacing.preWidth += 10;
                 }
                 else {
@@ -863,21 +863,21 @@
             visitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
         }
 
-        export class SpacingDesigner implements ScoreApplication.ScoreDesigner {
+        export class SpacingDesigner implements ScoreApplication.IScoreDesigner {
             constructor(private spacer: Model.IVisitor = null) {
                 if (!spacer) {
                     this.spacer = new MinimalSpacer();
                 }
             }
 
-            private CheckSpacingInfo(score: Model.IScore) {
-                score.VisitAll(new SpacingFactory());
+            private checkSpacingInfo(score: Model.IScore) {
+                score.visitAll(new SpacingFactory());
             }
 
-            private CheckUpdateAll(score: Model.IScore) {
+            private checkUpdateAll(score: Model.IScore) {
                 var spacer = this.spacer;
 
-                score.VisitAll({
+                score.visitAll({
                     visitPre: (element: Model.IMusicElement): (element: Model.IMusicElement) => void => {
                         var spacing = element.spacingInfo;
                         if (spacing) {
@@ -901,14 +901,14 @@
             }
 
 
-            private CheckBars(score: Model.IScore) {
+            private checkBars(score: Model.IScore) {
                 score.withBars((bar: Model.IBar) => {
                     var barSpacing = bar.spacingInfo;
                     this.spacer.visitBar(bar, barSpacing);
                 });
             }
 
-            private CalculateSizes(score: Model.IScore) {
+            private calculateSizes(score: Model.IScore) {
                 score.withStaves((staff: Model.IStaff, index: number): void => {
                     staff.withTimedEvents((elm: Model.ITimedEvent, index: number) => {
                         elm.inviteVisitor(this.spacer);
@@ -922,7 +922,7 @@
                 });
             }
 
-            private MakeTimeline(score: Model.IScore) {
+            private makeTimeline(score: Model.IScore) {
                 var beginPos = 0;
                 score.withStaves((staff: Model.IStaff, index: number): void => {
                     var staffBeginPos = 0; //todo: staffSpacingInfo
@@ -982,19 +982,19 @@
                 });
             }
 
-            public validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 var score = app.document;
 
-                this.CheckSpacingInfo(score); // create displayData and spacingInfo for all elements
-                this.CalculateSizes(score); // calculate metrics
-                this.MakeTimeline(score); // position all svg elements
+                this.checkSpacingInfo(score); // create displayData and spacingInfo for all elements
+                this.calculateSizes(score); // calculate metrics
+                this.makeTimeline(score); // position all svg elements
                 // update multi-dependent objects (beams, slurs etc.)
-                this.CheckUpdateAll(score); // update svg elements
+                this.checkUpdateAll(score); // update svg elements
 
 
                 var test = false;
                 if (!test) {
-                    this.CheckBars(score);
+                    this.checkBars(score);
                 }
             }
 
@@ -1013,7 +1013,7 @@
                 return !note.rest && note.timeVal.denominator >= 2;
             }
 
-            static GetFlagCount(note: Model.INote): number {
+            static getFlagCount(note: Model.INote): number {
                 var denom = note.timeVal.denominator;
                 var no = 0;
                 while (denom > 4) {
@@ -1059,13 +1059,13 @@
                 //noteSpacing.highPitch = MusicSpacing.NoteSpacer.staffLineToPitch(highPitch, note);
                 noteSpacing.highPitchY = lowPitch;
                 noteSpacing.lowPitchY = highPitch;
-                if (note.getStemDirection() == Model.StemDirectionType.stemFree) {
-                    if (note.parent.getStemDirection() == Model.StemDirectionType.stemFree) {
+                if (note.getStemDirection() == Model.StemDirectionType.StemFree) {
+                    if (note.parent.getStemDirection() == Model.StemDirectionType.StemFree) {
                         noteSpacing.rev = highPitch + lowPitch < 10;
                     }
-                    else noteSpacing.rev = (note.parent.getStemDirection() == Model.StemDirectionType.stemDown);
+                    else noteSpacing.rev = (note.parent.getStemDirection() == Model.StemDirectionType.StemDown);
                 }
-                else noteSpacing.rev = (note.getStemDirection() == Model.StemDirectionType.stemDown);
+                else noteSpacing.rev = (note.getStemDirection() == Model.StemDirectionType.StemDown);
             }
 
 
@@ -1135,7 +1135,7 @@
                     }
 
                     if (NoteSpacer.hasFlag(note)) {
-                        noteSpacing.flagNo = NoteSpacer.GetFlagCount(note);
+                        noteSpacing.flagNo = NoteSpacer.getFlagCount(note);
                         if (noteSpacing.rev) {
                             noteSpacing.flagDisplacement.x = Metrics.revFlagXDisplacement * noteSpacing.graceScale;
                             noteSpacing.flagDisplacement.y = Metrics.revFlagYDisplacement;

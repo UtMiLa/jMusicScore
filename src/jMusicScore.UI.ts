@@ -1,5 +1,5 @@
 module JMusicScore {
-    export module UI {
+    export module Ui {
 
         /* Abstract toolkit */
 
@@ -12,8 +12,8 @@ module JMusicScore {
             $container: JQuery;
         }
 
-        export class UIContainer<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+        export class UiContainer<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
             }
 
             public $container: JQuery; // todo: ContainerType;
@@ -32,46 +32,46 @@ module JMusicScore {
 
 
         export interface IMenuDef {
-            Id: string;
-            Menu?: IMenuDef[];
-            Caption: string;
+            id: string;
+            menu?: IMenuDef[];
+            caption: string;
             action?: () => void;
         }
 
         /* tools using JQuery */
 
-        export class MenuPlugin implements ScoreApplication.ScorePlugin {
-            init(app: ScoreApplication.ScoreApplication) {
+        export class MenuPlugin implements ScoreApplication.IScorePlugin {
+            init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
                 var obj = this.getMenuObj(app);
-                this.menu_addItem(obj/*, 0*/);
+                this.menuAddItem(obj/*, 0*/);
             }
 
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
             getId(): string {
                 return "Menu";
             }
 
-            getMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef {
                 return null;
             }
 
-            private menu_addItem(e: IMenuDef) {
-                if (e.Menu) {
-                    if ($('#' + e.Id + "Button").length === 0) {
+            private menuAddItem(e: IMenuDef) {
+                if (e.menu) {
+                    if ($('#' + e.id + "Button").length === 0) {
                         $('#notetools')
                             .append(
                             $('<span>')
                                 .append(
                                 $('<button>')
-                                    .attr('id', e.Id + "Button")
-                                    .text(e.Caption)
+                                    .attr('id', e.id + "Button")
+                                    .text(e.caption)
                                     .addClass("ui-widget-header").addClass("ui-corner-all")
                                 )
-                                .append(this.menu_subMenu(e))
+                                .append(this.menuSubMenu(e))
                             );
-                        $('#' + e.Id + "Button")
+                        $('#' + e.id + "Button")
                             .button({
                             text: true,
                         })
@@ -91,10 +91,10 @@ module JMusicScore {
                             .menu();
                     }
                     else {
-                        $('#' + e.Id + "Button")
+                        $('#' + e.id + "Button")
                             .next()
                         //.find('ul')
-                            .append(this.menu_subMenu(e).children())
+                            .append(this.menuSubMenu(e).children())
                             .menu("refresh");
                     }
 
@@ -103,8 +103,8 @@ module JMusicScore {
                     $('#notetools')
                         .append(
                         $('<button>')
-                            .attr('id', e.Id + "Button")
-                            .text(e.Caption)
+                            .attr('id', e.id + "Button")
+                            .text(e.caption)
                             .addClass("ui-widget-header").addClass("ui-corner-all")
                             .button({
                             text: true,
@@ -114,12 +114,12 @@ module JMusicScore {
                 }
             }
 
-            private menu_subMenu(e: IMenuDef) {
+            private menuSubMenu(e: IMenuDef) {
                 var menuItems = $('<ul>');
                 var me = this;
-                $.each(e.Menu, function (i, e1) {
+                $.each(e.menu, function (i, e1) {
                     var menuItem = $('<li>')
-                        .attr('id', e1.Id + "Button")
+                        .attr('id', e1.id + "Button")
                         .append(
                         $('<a>')
                             .append(
@@ -127,11 +127,11 @@ module JMusicScore {
                                 .addClass('ui-icon')
                                 .addClass('ui-icon-stop')
                             )
-                            .text(e1.Caption)
+                            .text(e1.caption)
                         );
                     menuItems.append(menuItem);
 
-                    if (e1.Menu) {
+                    if (e1.menu) {
                         menuItem.append(this.menu_subMenu(e1));
                     }
                     if (e1.action) {
@@ -142,10 +142,10 @@ module JMusicScore {
             }
         }
 
-        export class Dialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends UIContainer<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+        export class Dialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends UiContainer<TDocumentType, TStatusManager, TContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
-                this.CreateDialogElement();
+                this.createDialogElement();
             }
 
             private get $dialog(): JQuery { return this.$container; }
@@ -156,12 +156,12 @@ module JMusicScore {
             public height = 300;
             public buttonSettings: IButtonSettings[];
 
-            public get DialogObject(): JQuery {
-                if (!this.$dialog) this.CreateDialogElement();
+            public get dialogObject(): JQuery {
+                if (!this.$dialog) this.createDialogElement();
                 return this.$dialog;
             }
 
-            public CreateDialogElement() {
+            public createDialogElement() {
                 this.$dialog = $("<div>").attr("id", this.idPrefix + this.dialogId).attr("title", this.dialogTitle).addClass("Dialog");
                 $('body').append(this.$dialog);
                 this.createBodyElements(this.$dialog);
@@ -170,14 +170,14 @@ module JMusicScore {
             public createBodyElements($element: JQuery) {
             }
 
-            public Open() {
-                this.DialogObject.dialog("open");
+            public open() {
+                this.dialogObject.dialog("open");
             }
 
-            public Show() {
+            public show() {
                 this.addDialog();
                 this.onInit();
-                this.Open();
+                this.open();
             }
 
             public onOk(): boolean { return true; }
@@ -208,7 +208,7 @@ module JMusicScore {
                     }
                 ];
 
-                this.DialogObject.dialog({
+                this.dialogObject.dialog({
                     autoOpen: false,
                     height: this.height,
                     width: this.width,
@@ -227,11 +227,11 @@ module JMusicScore {
         export class CheckboxWidget implements IWidget {
             private $check: JQuery;
 
-            public set Value(value: boolean) {
+            public set value(value: boolean) {
                 this.$check.prop("checked", value);
             }
 
-            public get Value(): boolean {
+            public get value(): boolean {
                 return this.$check.prop("checked");
             }
 
@@ -253,15 +253,15 @@ module JMusicScore {
             private $ctl: JQuery;
             //public values = {};
 
-            public set Value(value: string) {
+            public set value(value: string) {
                 this.$ctl.val(value);
             }
 
-            public get Value(): string {
+            public get value(): string {
                 return this.$ctl.val();
             }
 
-            public SetOptions(items: Array<any>) {
+            public setOptions(items: Array<any>) {
                 this.$ctl.empty();
                 $.each(items, (i: number, e: {label: string; val:string;}) => {
                     $('<option>').text(e.label).attr('value', e.val).appendTo(this.$ctl);
@@ -291,11 +291,11 @@ module JMusicScore {
 
             private $ctl: JQuery;
             
-            public set Value(value: string) {
+            public set value(value: string) {
                 this.$ctl.text(value);
             }
 
-            public get Value(): string {
+            public get value(): string {
                 return this.$ctl.text();
             }
 
@@ -312,15 +312,15 @@ module JMusicScore {
 
             private $ctl: JQuery;
 
-            public set Value(value: string) {
+            public set value(value: string) {
                 this.$ctl.text(value);
             }
 
-            public get Value(): string {
+            public get value(): string {
                 return this.$ctl.text();
             }
 
-            public AddItem(item: IContainer): void {
+            public addItem(item: IContainer): void {
                 this.$ctl.append(item.$container);
                 item.$container.data('owner', item);
                 this.$ctl.accordion("refresh");
@@ -358,11 +358,11 @@ module JMusicScore {
         export class SpinnerWidget implements IWidget {
             private $spinner: JQuery;
 
-            public set Value(value: number) {
+            public set value(value: number) {
                 this.$spinner.spinner("value", value);
             }
 
-            public get Value(): number {
+            public get value(): number {
                 return this.$spinner.spinner("value");
             }
 
@@ -378,11 +378,11 @@ module JMusicScore {
         export class TextEditWidget implements IWidget {
             private $textEdit: JQuery;
 
-            public set Value(value: string) {
+            public set value(value: string) {
                 this.$textEdit.val(value);
             }
 
-            public get Value(): string {
+            public get value(): string {
                 return this.$textEdit.val();
             }
 
@@ -397,7 +397,7 @@ module JMusicScore {
 
         // ************************* File widgets & dialogs ************************ //
 
-        class FileListWidget implements UI.IWidget {
+        class FileListWidget implements Ui.IWidget {
             private $list: JQuery;
 
             public clear() {
@@ -451,29 +451,29 @@ module JMusicScore {
             }
         }
 
-        export class FileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends UI.Dialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+        export class FileDialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends Ui.Dialog<TDocumentType, TStatusManager, TContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
                 this.height = 600;
             }
-            private sourceWidget: UI.DropdownWidget;
+            private sourceWidget: Ui.DropdownWidget;
             private fileListWidget: FileListWidget;
-            private fileTypeWidget: UI.DropdownWidget;
+            private fileTypeWidget: Ui.DropdownWidget;
 
             public onOk(): boolean {
                 return true;
             }
 
             public onInit() {
-                var ids = this.app.GetFileManagerIds();
-                this.sourceWidget.SetOptions(<any>$.map(ids,(e, i) => { return { val: e, label: e }; }));
-                this.fileTypeWidget.SetOptions(<any>$.map(this.app.GetFileSaveTypes(),(e, i) => { return { val: e, label: e }; }));
+                var ids = this.app.getFileManagerIds();
+                this.sourceWidget.setOptions(<any>$.map(ids,(e, i) => { return { val: e, label: e }; }));
+                this.fileTypeWidget.setOptions(<any>$.map(this.app.getFileSaveTypes(),(e, i) => { return { val: e, label: e }; }));
 
                 var me = this;
                 var updateFileList = function (source: string) {
-                    me.app.GetFileList(source, function (data: string[]) {
+                    me.app.getFileList(source, function (data: string[]) {
                         me.fileListWidget.updateFileList(data);
                     });
                 }
@@ -481,7 +481,7 @@ module JMusicScore {
                     var item = $(this).val();
                     updateFileList(item);
                 });
-                updateFileList(this.sourceWidget.Value);
+                updateFileList(this.sourceWidget.value);
             }
 
             public get filename(): string {
@@ -489,11 +489,11 @@ module JMusicScore {
             }
 
             public get source(): string {
-                return this.sourceWidget.Value;
+                return this.sourceWidget.value;
             }
 
             public get fileFormat() {
-                return this.fileTypeWidget.Value;
+                return this.fileTypeWidget.value;
             }
 
             public existsInFileList(name: string): boolean {
@@ -502,9 +502,9 @@ module JMusicScore {
             }
 
             public createBodyElements($element: JQuery) {
-                this.addWidget(this.sourceWidget = new UI.DropdownWidget({ 0: 'Local', 1: 'Server' }), "fileSource", "File source");
+                this.addWidget(this.sourceWidget = new Ui.DropdownWidget({ 0: 'Local', 1: 'Server' }), "fileSource", "File source");
                 this.addWidget(this.fileListWidget = new FileListWidget(), "FileList", "Select file"); // todo: class 
-                this.addWidget(this.fileTypeWidget = new UI.DropdownWidget({}), "fileTypes", "Select file type");
+                this.addWidget(this.fileTypeWidget = new Ui.DropdownWidget({}), "fileTypes", "Select file type");
             }
         }
 
@@ -520,7 +520,7 @@ module JMusicScore {
             public onOk(): boolean {
                 if (this.filename) {
                     var type: string = '*';
-                    this.app.LoadUsing(this.filename, this.source, type);
+                    this.app.loadUsing(this.filename, this.source, type);
                 }
 
                 return true;
@@ -552,7 +552,7 @@ module JMusicScore {
                     var name: string = this.filename;
                     name = name.replace(/[^a-zA-Z0-9_\.]/, '');
                     try {
-                        name = this.app.SetExtension(name, format);
+                        name = this.app.setExtension(name, format);
                         this.filename = name;
                     }
                     catch (exception) {
@@ -564,7 +564,7 @@ module JMusicScore {
                             if (!window.confirm("File exists; overwrite?")) { return; }
                         }
                         var source = this.source;
-                        this.app.SaveUsing(name, source, format);
+                        this.app.saveUsing(name, source, format);
                         return true;
                     }
                     return false;
@@ -573,19 +573,19 @@ module JMusicScore {
                 return true;
             }
 
-            private fileNameWidget: UI.TextEditWidget;
+            private fileNameWidget: Ui.TextEditWidget;
 
             public get filename() {
-                return this.fileNameWidget.Value;
+                return this.fileNameWidget.value;
             }
 
             public set filename(name: string) {
-                this.fileNameWidget.Value = name;
+                this.fileNameWidget.value = name;
             }
 
             public createBodyElements($element: JQuery) {
                 super.createBodyElements($element);
-                this.addWidget(this.fileNameWidget = new UI.TextEditWidget(), "fileName", "Enter file name");
+                this.addWidget(this.fileNameWidget = new Ui.TextEditWidget(), "fileName", "Enter file name");
             }
         }
 
@@ -593,30 +593,30 @@ module JMusicScore {
             constructor() {
                 super();
             }
-            getMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef {
                 return {
-                    Id: "FileMenu",
-                    Caption: "File",
-                    Menu: [
+                    id: "FileMenu",
+                    caption: "File",
+                    menu: [
                         {
-                            Id: "NewMenu",
-                            Caption: "New",
+                            id: "NewMenu",
+                            caption: "New",
                             action: () => {
-                                app.ExecuteCommand(new Model.ClearScoreCommand({}));
+                                app.executeCommand(new Model.ClearScoreCommand({}));
                             }
                         },
                         {
-                            Id: "OpenMenu",
-                            Caption: "Open...",
+                            id: "OpenMenu",
+                            caption: "Open...",
                             action: () => {
-                                new OpenFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('open', app).Show();
+                                new OpenFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('open', app).show();
                             }
                         },
                         {
-                            Id: "SaveMenu",
-                            Caption: "Save as...",
+                            id: "SaveMenu",
+                            caption: "Save as...",
                             action: () => {
-                                new SaveFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('save', app).Show();
+                                new SaveFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('save', app).show();
                             }
                         },
                     ]
@@ -650,7 +650,7 @@ module JMusicScore {
             private val: string;
             private $button: JQuery;
 
-            public set Value(value: string) {
+            public set value(value: string) {
                 this.val = value;
                 this.$button.button({
                     text: false,
@@ -661,7 +661,7 @@ module JMusicScore {
                 });
             }
 
-            public get Value(): string {
+            public get value(): string {
                 return this.val;
             }
 
@@ -680,7 +680,7 @@ module JMusicScore {
                         .append($('<span>').text(valu))
                         .click(function () {
                             var value = $(this).parent().attr('id');
-                            me.Value = value;
+                            me.value = value;
                         });
                 }
                 parent.append($div);
@@ -713,11 +713,11 @@ module JMusicScore {
         export class TimeWidget implements IWidget {
             private $spinner: JQuery;
 
-            public set Value(value: number) {
+            public set value(value: number) {
                 this.$spinner.spinner("value", value);
             }
 
-            public get Value(): number {
+            public get value(): number {
                 return this.$spinner.spinner("value");
             }
 
@@ -753,7 +753,7 @@ module JMusicScore {
         export class ScoreDialog extends Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
 
         export class MeterDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "MeterDialog";
                 this.dialogTitle = "Select time signature";
@@ -767,11 +767,11 @@ module JMusicScore {
             private absTime = Model.AbsoluteTime.startTime;
 
             public onOk(): boolean {
-                var numerator = this.numCtl.Value;
-                var denominator = this.denCtl.Value;
+                var numerator = this.numCtl.value;
+                var denominator = this.denCtl.value;
 
                 // todo: validation
-                this.app.ExecuteCommand(new Model.SetMeterCommand({
+                this.app.executeCommand(new Model.SetMeterCommand({
                     meter: new Model.RegularMeterDefinition(numerator, denominator),
                     absTime: this.absTime
                 }));
@@ -785,9 +785,9 @@ module JMusicScore {
 
             public setMeter(definition: Model.IMeterDefinition): MeterDialog {
                 var def = <Model.RegularMeterDefinition>definition;
-                this.numCtl.Value = def.numerator;
-                this.denCtl.Value = def.denominator;
-                this.upbCtl.Value = false;
+                this.numCtl.value = def.numerator;
+                this.denCtl.value = def.denominator;
+                this.upbCtl.value = false;
                 return this;
             }
             
@@ -799,7 +799,7 @@ module JMusicScore {
         }
 
         export class KeyDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "KeyDialog";
                 this.dialogTitle = "Edit key";
@@ -808,10 +808,10 @@ module JMusicScore {
             private keyCtl: KeyWidget;
 
             public onOk(): boolean {
-                var key = this.keyCtl.Value;
+                var key = this.keyCtl.value;
                 var no = parseInt(key.substr(0, 1));
                 var acci = key.substr(1, 1);
-                this.app.ExecuteCommand(new Model.SetKeyCommand({
+                this.app.executeCommand(new Model.SetKeyCommand({
                     key: new Model.RegularKeyDefinition(acci, no),
                     absTime: this.absTime
                 }));
@@ -825,7 +825,7 @@ module JMusicScore {
             
             public setKey(key: Model.IKey): KeyDialog {
                 var def = <Model.RegularKeyDefinition>key.definition;
-                this.keyCtl.Value = def.number + def.acci;
+                this.keyCtl.value = def.number + def.acci;
                 return this;
             }
 
@@ -835,7 +835,7 @@ module JMusicScore {
         }
 
         export class ClefDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "ClefDialog";
                 this.dialogTitle = "Edit clef";
@@ -847,11 +847,11 @@ module JMusicScore {
             private staff: Model.IStaff;
 
             public onOk(): boolean {
-                var clef = parseInt(this.clefWidget.Value);
-                var line = this.lineWidget.Value;
-                var transpose = this.transposeWidget.Value;
+                var clef = parseInt(this.clefWidget.value);
+                var line = this.lineWidget.value;
+                var transpose = this.transposeWidget.value;
 
-                this.app.ExecuteCommand(new Model.SetClefCommand({
+                this.app.executeCommand(new Model.SetClefCommand({
                     clef: new Model.ClefDefinition(clef, line, transpose),
                     staff: this.staff,
                     absTime: this.absTime
@@ -871,8 +871,8 @@ module JMusicScore {
 
             public setClef(clef: Model.IClef): ClefDialog {
                 var def = clef.definition;
-                this.clefWidget.Value = '' + def.clefCode;
-                this.lineWidget.Value = def.clefLine;
+                this.clefWidget.value = '' + def.clefCode;
+                this.lineWidget.value = def.clefLine;
                 return this;
             }
 
@@ -880,18 +880,18 @@ module JMusicScore {
                 this.addWidget(this.clefWidget = new DropdownWidget({1: 'G', 2: 'C', 3: 'F', 4: 'Percussion'}), "clef", "Clef");
                 this.addWidget(this.lineWidget = new SpinnerWidget(), "line", "Line");
                 this.addWidget(this.transposeWidget = new SpinnerWidget(), "transpose", "Transpose");
-                this.transposeWidget.Value = 0;
+                this.transposeWidget.value = 0;
             }
         }
         export class BarDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "BarDialog";
                 this.dialogTitle = "Edit bar settings";
             }
         }
         export class ArticulationDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "ArticulationDialog";
                 this.dialogTitle = "Select articulation";
@@ -930,7 +930,7 @@ module JMusicScore {
         }
 
         export class NoteDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "NoteDialog";
                 this.dialogTitle = "Edit note settings";
@@ -948,18 +948,18 @@ module JMusicScore {
 
             public setNote(note: Model.INote): NoteDialog {
                 this.note = note;
-                this.stemDirCtl.Value = "" + note.getStemDirection();
+                this.stemDirCtl.value = "" + note.getStemDirection();
                 return this;
             }
              
             public onOk(): boolean {
-                var stemDir = this.stemDirCtl.Value;
+                var stemDir = this.stemDirCtl.value;
 
                 var note = this.note;
                 
-                this.app.ExecuteCommand(new Model.SetNoteStemDirectionCommand({
+                this.app.executeCommand(new Model.SetNoteStemDirectionCommand({
                     note: note,
-                    direction: parseInt(this.stemDirCtl.Value)
+                    direction: parseInt(this.stemDirCtl.value)
                 }));
 
                 return true;
@@ -967,7 +967,7 @@ module JMusicScore {
         }
 
         export class VoiceDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "VoiceDialog";
                 this.dialogTitle = "Edit voice settings";
@@ -985,18 +985,18 @@ module JMusicScore {
 
             public setVoice(voice: Model.IVoice): VoiceDialog {
                 this.voice = voice;
-                this.stemDirCtl.Value = "" + voice.getStemDirection();
+                this.stemDirCtl.value = "" + voice.getStemDirection();
                 return this;
             }
 
             public onOk(): boolean {
-                var stemDir = this.stemDirCtl.Value;
+                var stemDir = this.stemDirCtl.value;
 
                 var voice = this.voice;
 
-                this.app.ExecuteCommand(new Model.SetVoiceStemDirectionCommand({
+                this.app.executeCommand(new Model.SetVoiceStemDirectionCommand({
                     voice: voice,
-                    direction: parseInt(this.stemDirCtl.Value)
+                    direction: parseInt(this.stemDirCtl.value)
                 }));
 
                 return true;
@@ -1005,21 +1005,21 @@ module JMusicScore {
         }
 
         export class NoteheadDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "NoteheadDialog";
                 this.dialogTitle = "Edit notehead settings";
             }
         }
         export class ScoreInfoDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "ScoreDialog";
                 this.dialogTitle = "Edit score settings";
             }
         }
         export class LyricDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "LyricDialog";
                 this.dialogTitle = "Edit lyrics";
@@ -1027,7 +1027,7 @@ module JMusicScore {
         }
 
         export class TupletDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "TupletDialog";
                 this.dialogTitle = "Edit tuplet";
@@ -1035,7 +1035,7 @@ module JMusicScore {
         }
 
         export class SpannerDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "SpannerDialog";
                 this.dialogTitle = "Edit spanner";
@@ -1043,7 +1043,7 @@ module JMusicScore {
         }
 
         export class TextMarkDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "TextMarkDialog";
                 this.dialogTitle = "Edit textmark";
@@ -1051,7 +1051,7 @@ module JMusicScore {
         }
 
         export class ShowTextDialog extends ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "ShowTextDialog";
                 this.dialogTitle = "Show text";
@@ -1065,7 +1065,7 @@ module JMusicScore {
             }
 
             public setText(text: string): ShowTextDialog {
-                this.textDivCtl.Value = text;
+                this.textDivCtl.value = text;
                 return this;
             }
             
@@ -1075,8 +1075,8 @@ module JMusicScore {
 
         }
 
-        class StaffContainer extends UI.UIContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> implements IContainer {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication, staff: Model.IStaff, index: number) {
+        class StaffContainer extends Ui.UiContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> implements IContainer {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication, staff: Model.IStaff, index: number) {
                 super(idPrefix, app);
 
                 var title = staff ? staff.title : 'New';
@@ -1099,41 +1099,41 @@ module JMusicScore {
             }
 
             private $staffDetails: JQuery;
-            private titleWidget: UI.TextEditWidget;
-            private clefWidget: UI.DropdownWidget; // todo: clefWidget
-            private lineWidget: UI.SpinnerWidget;
-            private transposeWidget: UI.SpinnerWidget;
+            private titleWidget: Ui.TextEditWidget;
+            private clefWidget: Ui.DropdownWidget; // todo: clefWidget
+            private lineWidget: Ui.SpinnerWidget;
+            private transposeWidget: Ui.SpinnerWidget;
             public staff: Model.IStaff;
 
-            public addWidget(widget: UI.IWidget, id: string, label: string): UI.IWidget {
+            public addWidget(widget: Ui.IWidget, id: string, label: string): Ui.IWidget {
                 widget.addTo(this.$staffDetails, this.idPrefix + id, label);
                 return widget;
             }
 
             public createBodyElements() {
-                this.addWidget(this.titleWidget = new UI.TextEditWidget(), 'title', 'Title');
-                this.addWidget(this.clefWidget = new UI.DropdownWidget({ 1: 'G', 2: 'C', 3: 'F', 4: 'Percussion' }), "clef", "Clef");
-                this.addWidget(this.lineWidget = new UI.SpinnerWidget(), "line", "Line");
-                this.addWidget(this.transposeWidget = new UI.SpinnerWidget(), "transpose", "Transpose");
-                this.transposeWidget.Value = 0;
+                this.addWidget(this.titleWidget = new Ui.TextEditWidget(), 'title', 'Title');
+                this.addWidget(this.clefWidget = new Ui.DropdownWidget({ 1: 'G', 2: 'C', 3: 'F', 4: 'Percussion' }), "clef", "Clef");
+                this.addWidget(this.lineWidget = new Ui.SpinnerWidget(), "line", "Line");
+                this.addWidget(this.transposeWidget = new Ui.SpinnerWidget(), "transpose", "Transpose");
+                this.transposeWidget.value = 0;
             }
         }
 
-        export class StavesDialog extends UI.ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication) {
+        export class StavesDialog extends Ui.ScoreDialog {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
                 this.dialogId = "StavesDialog";
                 this.dialogTitle = "Staves";
                 this.width = 750;
                 this.height = 500;
             }
-            private stavesWidget: UI.CollectionWidget;
+            private stavesWidget: Ui.CollectionWidget;
 
             public onOk(): boolean {
                 return true;
             }
 
-            public Show() {
+            public show() {
                 var me = this;
 
                 this.buttonSettings = [
@@ -1142,7 +1142,7 @@ module JMusicScore {
                         text: "Add staff",
                         click: function () {
                             var s = new StaffContainer('staff', me.app, null, 0);
-                            me.stavesWidget.AddItem(s);
+                            me.stavesWidget.addItem(s);
                         }
                     },
                     {
@@ -1164,7 +1164,7 @@ module JMusicScore {
                                 var staffItem = $(item.$container);
                                 var staff = item.staff;
                                 if (staff) {
-                                    changeStavesCommand.Add(new Model.UpdateStaffCommand({
+                                    changeStavesCommand.add(new Model.UpdateStaffCommand({
                                         staff: staff,
                                         index: index,
                                         title: staffItem.find('.TitleInput').val()
@@ -1172,7 +1172,7 @@ module JMusicScore {
                                 }
                                 else {
                                     // Add Staff
-                                    changeStavesCommand.Add(new Model.NewStaffCommand({
+                                    changeStavesCommand.add(new Model.NewStaffCommand({
                                         index: index,
                                         initClef: Model.ClefDefinition.clefG,
                                         title: staffItem.find('.TitleInput').val()
@@ -1181,7 +1181,7 @@ module JMusicScore {
                                 return true;
                             });
 
-                            me.app.ExecuteCommand(changeStavesCommand);                                    
+                            me.app.executeCommand(changeStavesCommand);                                    
 
                             $(this).dialog("close");
                         }
@@ -1191,15 +1191,15 @@ module JMusicScore {
 
                 this.app.document.withStaves((staff: Model.IStaff, index: number) => {
                     var s = new StaffContainer('staff', me.app, staff, index);
-                    me.stavesWidget.AddItem(s);
+                    me.stavesWidget.addItem(s);
                 });
 
-                this.Open();
+                this.open();
             }
 
             public createBodyElements($element: JQuery) {
                 var me = this;
-                this.addWidget(this.stavesWidget = new UI.CollectionWidget(), "staves", "Staves");
+                this.addWidget(this.stavesWidget = new Ui.CollectionWidget(), "staves", "Staves");
             }
         }
 
@@ -1208,35 +1208,35 @@ module JMusicScore {
                 super();
             }
 
-            getMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef {
                 // ****************** Custom action ******************* //
                 var menuItem = {
-                    Id: this.id,
-                    Caption: this.menuCaption,
+                    id: this.id,
+                    caption: this.menuCaption,
                     action: this.menuAction
                 };
 
                 return this.parentId ? {
-                    Id: this.parentId,
-                    Caption: this.parentCaption,
-                    Menu: [menuItem]
+                    id: this.parentId,
+                    caption: this.parentCaption,
+                    menu: [menuItem]
                 } : menuItem;
             }
         }
 
 
         export class VoiceMenuPlugin extends QuickMenuPlugin {
-            constructor(app: ScoreApplication.ScoreApplication) {
+            constructor(app: ScoreApplication.IScoreApplication) {
                 super("VoiceMenu", "Voice", "", "", function () {
-                    new UI.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).Show();
+                    new Ui.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).show();
                 });
             }
         }
 
         export class StavesMenuPlugin extends QuickMenuPlugin {
-            constructor(app: ScoreApplication.ScoreApplication) {
+            constructor(app: ScoreApplication.IScoreApplication) {
                 super("StavesMenu", "Staves", "", "", function () {
-                    new StavesDialog('menu', app).Show();
+                    new StavesDialog('menu', app).show();
                 });
             }
         }
@@ -1245,37 +1245,37 @@ module JMusicScore {
             constructor() {
                 super();
             }
-            getMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef {
                 return {
-                    Id: "ExportMenu",
-                    Caption: "Export",
-                    Menu: [
+                    id: "ExportMenu",
+                    caption: "Export",
+                    menu: [
                         {
-                            Id: "SVGMenu",
-                            Caption: "SVG",
+                            id: "SVGMenu",
+                            caption: "SVG",
                             action: () => {
-                                new UI.ShowTextDialog('menu', app).setText(app.SaveToString('SVG')).Show();
+                                new Ui.ShowTextDialog('menu', app).setText(app.saveToString('SVG')).show();
                             }
                         },
                         {
-                            Id: "ExportJson",
-                            Caption: "JSON",
+                            id: "ExportJson",
+                            caption: "JSON",
                             action: () => {
-                                new UI.ShowTextDialog('menu', app).setText(app.SaveToString('JSON')).Show();
+                                new Ui.ShowTextDialog('menu', app).setText(app.saveToString('JSON')).show();
                             }
                         },
                         {
-                            Id: "ExportLilypond",
-                            Caption: "Lilypond",
+                            id: "ExportLilypond",
+                            caption: "Lilypond",
                             action: () => {
-                                new UI.ShowTextDialog('menu', app).setText(app.SaveToString('Lilypond')).Show();
+                                new Ui.ShowTextDialog('menu', app).setText(app.saveToString('Lilypond')).show();
                             }
                         },
                         {
-                            Id: "MusicXmlMenu",
-                            Caption: "MusicXml",
+                            id: "MusicXmlMenu",
+                            caption: "MusicXml",
                             action: () => {
-                                new UI.ShowTextDialog('menu', app).setText(app.SaveToString('MusicXML')).Show();
+                                new Ui.ShowTextDialog('menu', app).setText(app.saveToString('MusicXML')).show();
                             }
                         }
                     ]
@@ -1311,9 +1311,9 @@ module JMusicScore {
             checkEnabled(): void {
             }
 
-            private mode = new FinaleUI.FinaleSpeedyEntry();
+            private mode = new JMusicScore.FinaleUi.FinaleSpeedyEntry();
 
-            getMode(): ScoreApplication.ScoreEventProcessor {
+            getMode(): ScoreApplication.IScoreEventProcessor {
                 return this.mode;
             }
         }
@@ -1329,9 +1329,9 @@ module JMusicScore {
             id: string;
             label: string;
             glyph: string;
-            mode?: ScoreApplication.ScoreEventProcessor;
-            onChecked?: (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) => void;
-            validate?: (app: ScoreApplication.ScoreApplication) => boolean;
+            mode?: ScoreApplication.IScoreEventProcessor;
+            onChecked?: (button: HTMLInputElement, app: ScoreApplication.IScoreApplication) => void;
+            validate?: (app: ScoreApplication.IScoreApplication) => boolean;
         }
 
         export interface IToolDef {
@@ -1342,7 +1342,7 @@ module JMusicScore {
         }
 
         export class JToolbar {
-            constructor(private app: ScoreApplication.ScoreApplication) {
+            constructor(private app: ScoreApplication.IScoreApplication) {
                 this.makeMenu('#notetools1', JToolbar.menuDef);
 
                 $("#clefs").button(
@@ -1380,7 +1380,7 @@ module JMusicScore {
                             id: "edit",
                             label: "Edit",
                             glyph: "icon-finale",
-                            mode: new FinaleUI.FinaleSpeedyEntry()
+                            mode: new JMusicScore.FinaleUi.FinaleSpeedyEntry()
                         },
                         {
                             id: "delete",
@@ -1474,7 +1474,7 @@ module JMusicScore {
                             id: "rest",
                             label: "Rest",
                             glyph: "icon-rest",
-                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.IScoreApplication) {
                                 app.Status.rest = button.checked;
                             }
                         },
@@ -1482,7 +1482,7 @@ module JMusicScore {
                             id: "dotted",
                             label: "Dotted",
                             glyph: "icon-dot",
-                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.IScoreApplication) {
                                 app.Status.dots = button.checked ? 1 : 0;
                             }
                         },
@@ -1490,7 +1490,7 @@ module JMusicScore {
                             id: "grace",
                             label: "Grace",
                             glyph: "icon-grace",
-                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.IScoreApplication) {
                                 app.Status.grace = button.checked;
                             }
                         },
@@ -1504,10 +1504,10 @@ module JMusicScore {
                             id: "undo",
                             label: "Undo",
                             glyph: "icon-undo",
-                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
-                                app.Undo();
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.IScoreApplication) {
+                                app.undo();
                             },
-                            validate: function (app: ScoreApplication.ScoreApplication): boolean {
+                            validate: function (app: ScoreApplication.IScoreApplication): boolean {
                                 return app.canUndo();
                             }
                         },
@@ -1515,10 +1515,10 @@ module JMusicScore {
                             id: "redo",
                             label: "Redo",
                             glyph: "icon-redo",
-                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
-                                app.Redo();
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.IScoreApplication) {
+                                app.redo();
                             },
-                            validate: function (app: ScoreApplication.ScoreApplication): boolean {
+                            validate: function (app: ScoreApplication.IScoreApplication): boolean {
                                 return app.canRedo();
                             }
                         },
@@ -1532,7 +1532,7 @@ module JMusicScore {
                             id: "play",
                             label: "Play",
                             glyph: "icon-play",// todo: disable when playing
-                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.IScoreApplication) {
                                 var player = new Players.MidiPlayer();
                                 player.playAll(app);
                             },
@@ -1544,7 +1544,7 @@ module JMusicScore {
                             id: "pause",
                             label: "Pause",
                             glyph: "icon-pause",
-                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.ScoreApplication) {
+                            onChecked: function (button: HTMLInputElement, app: ScoreApplication.IScoreApplication) {
 
                             },
                             /*validate: function (app: ScoreApplication.ScoreApplication): boolean {
@@ -1562,7 +1562,7 @@ module JMusicScore {
                     if (item.type === "Radiogroup" || item.type === "Checkgroup" || item.type === 'Buttongroup') {
                         for (var j = 0; j < item.buttons.length; j++) {
                             var btnDef = item.buttons[j];
-                            if (btnDef.mode) { this.app.UnregisterEventProcessor(btnDef.mode); }
+                            if (btnDef.mode) { this.app.unregisterEventProcessor(btnDef.mode); }
                         }
                     }
                 }
@@ -1616,11 +1616,11 @@ module JMusicScore {
                                 .click(function () {
                                 var notedata = $(this).data('notedata');
                                 var parent = $(this).data('parent');
-                                var app = <ScoreApplication.ScoreApplication>$(this).data('app');
+                                var app = <ScoreApplication.IScoreApplication>$(this).data('app');
 
                                 if (notedata.mode) {
                                     parent.unregisterModes();
-                                    app.RegisterEventProcessor(notedata.mode);
+                                    app.registerEventProcessor(notedata.mode);
                                 }
                                 /*if (notedata.createMode) {
                                     parent.currentNoteMode = notedata.createMode(score);
@@ -1642,8 +1642,8 @@ module JMusicScore {
             }
         }
 
-        class CheckButtons implements ScoreApplication.ScoreDesigner {
-            validate(app: ScoreApplication.ScoreApplication) {
+        class CheckButtons implements ScoreApplication.IScoreDesigner {
+            validate(app: ScoreApplication.IScoreApplication) {
                 var $buttons = $('.note-icon');
                 $buttons.each((i: number, e: Element) => {
                     var btnDef = $(e).data('notedata');
@@ -1659,19 +1659,19 @@ module JMusicScore {
             }
         }
 
-        export class ToolbarPlugin implements ScoreApplication.ScorePlugin {
+        export class ToolbarPlugin implements ScoreApplication.IScorePlugin {
             constructor() {
             }
 
             private toolbar: JToolbar;
 
-            public GetToolbar(): JToolbar {
+            public getToolbar(): JToolbar {
                 return this.toolbar;
             }
 
-            init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.IScoreApplication) {
                 this.toolbar = new JToolbar(app);
-                app.AddDesigner(new CheckButtons());
+                app.addDesigner(new CheckButtons());
             }
 
             getId(): string {
@@ -1679,8 +1679,8 @@ module JMusicScore {
             }
         }
 
-        export class PianoPlugIn implements ScoreApplication.ScorePlugin, Application.IFeedbackClient { // todo: change sizing of clientArea etc.
-            init(app: ScoreApplication.ScoreApplication) {
+        export class PianoPlugIn implements ScoreApplication.IScorePlugin, Application.IFeedbackClient { // todo: change sizing of clientArea etc.
+            init(app: ScoreApplication.IScoreApplication) {
                 var $root = (<any>$('<div>').addClass('piano').appendTo('#footer'));
                 this.createPianoKeyboard($root, { tgWidth: 40 }, app);
                 app.FeedbackManager.registerClient(this);
@@ -1697,7 +1697,7 @@ module JMusicScore {
                 }
             }
 
-            private createPianoKeyboard($root: JQuery, param: { tgWidth: number }, app: ScoreApplication.ScoreApplication) {
+            private createPianoKeyboard($root: JQuery, param: { tgWidth: number }, app: ScoreApplication.IScoreApplication) {
                 var tgSpacing = param.tgWidth * 7 / 12;
                 for (var i = 21; i < 109; i++) {
                     var det = ((i + 7) * 7) % 12;
@@ -1727,7 +1727,7 @@ module JMusicScore {
                                     var ev = event;
                                     ev.type = "midinoteon";
                                     //(<any>ev).noteInt = parseInt(p);
-                                    app.ProcessEvent("midinoteon", { noteInt: parseInt(p) });
+                                    app.processEvent("midinoteon", { noteInt: parseInt(p) });
                                 }
                             }, 50, p);
                             origEvent.preventDefault();
@@ -1736,7 +1736,7 @@ module JMusicScore {
                             var p = $(this).attr('id').replace('tast', '');
                             ev.type = "midinoteoff";
                             //(<any>ev).noteInt = parseInt(p);
-                            app.ProcessEvent("midinoteoff", { noteInt: parseInt(p) });
+                            app.processEvent("midinoteoff", { noteInt: parseInt(p) });
                             event.preventDefault();
                         })
                     /*.on('touchmove', function (event) {

@@ -1,7 +1,7 @@
 module JMusicScore {
     export module Editors {
-        export class KeybordInputPlugin implements ScoreApplication.ScorePlugin {
-            public init(app: ScoreApplication.ScoreApplication) {
+        export class KeybordInputPlugin implements ScoreApplication.IScorePlugin {
+            public init(app: ScoreApplication.IScoreApplication) {
                 document.addEventListener("keydown", function (event: JQueryEventObject) {
                     //if (document.activeElement && document.activeElement !== document.body && document.activeElement.tagName !== 'svg') return; // todo: svg element also gets focus
 
@@ -14,7 +14,7 @@ module JMusicScore {
                             if (event.ctrlKey) key = 'CTRL-' + key;
 
                             //return this.keyPressed(app, key.toUpperCase());
-                            if (!app.ProcessEvent("keymessage", { key: key })) {
+                            if (!app.processEvent("keymessage", { key: key })) {
                                 event.preventDefault();
                                 event.stopPropagation();
                             }
@@ -31,7 +31,7 @@ module JMusicScore {
                             if (event.shiftKey) key = 'SHIFT-' + key;
                             if (event.ctrlKey) key = 'CTRL-' + key;
                         }
-                        if (!app.ProcessEvent("keymessage", { key: key })) {
+                        if (!app.processEvent("keymessage", { key: key })) {
                             e.preventDefault();
                             e.stopPropagation();
                             return;
@@ -43,7 +43,7 @@ module JMusicScore {
                             return;
                         }*/
                     }
-                    if (!app.ProcessEvent("keyup", e)) {
+                    if (!app.processEvent("keyup", e)) {
                         e.preventDefault();
                         e.stopPropagation();
                     }
@@ -60,7 +60,7 @@ module JMusicScore {
                         if (event.shiftKey) key = 'SHIFT-' + key;
                         if (event.ctrlKey) key = 'CTRL-' + key;
                     }*/
-                    if (!app.ProcessEvent("keymessage", { key: key })) {
+                    if (!app.processEvent("keymessage", { key: key })) {
                         e.preventDefault();
                         e.stopPropagation();
                     }

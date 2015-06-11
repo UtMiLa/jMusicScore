@@ -97,9 +97,9 @@
         }
 
         class LilypondReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
-            init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
 
@@ -133,9 +133,9 @@
             }
 
             //private doc;
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
-            init(app: ScoreApplication.ScoreApplication) { this.app = app; }
+            init(app: ScoreApplication.IScoreApplication) { this.app = app; }
 
             getId(): string {
                 return "LilypondWriter";
@@ -285,13 +285,13 @@
 
 
 
-        export class LilypondPlugin implements ScoreApplication.ScorePlugin {
+        export class LilypondPlugin implements ScoreApplication.IScorePlugin {
             constructor() {
             }
 
-            public init(app: ScoreApplication.ScoreApplication) {
-                app.AddReader(new LilypondReader());
-                app.AddWriter(new LilypondWriter());
+            public init(app: ScoreApplication.IScoreApplication) {
+                app.addReader(new LilypondReader());
+                app.addWriter(new LilypondWriter());
             }
 
             getId() {

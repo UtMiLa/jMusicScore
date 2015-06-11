@@ -1,8 +1,8 @@
 ﻿module JMusicScore {
-    export module FinaleUI {
+    export module FinaleUi {
 
-        class FillEmptySpaceValidator implements Model.ScoreValidator {
-            public validate(app: ScoreApplication.ScoreApplication) {
+        class FillEmptySpaceValidator implements Model.IScoreValidator {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 var scoreDuration: Model.AbsoluteTime;
                 if (app.document.bars.length) {
                     var lastBar = app.document.bars[app.document.bars.length - 1];
@@ -14,24 +14,24 @@
                 app.document.withVoices((voice: Model.IVoice) => {
                     // Fill voice with placeholders until last bar
                     var voiceLength = voice.getEndTime();
-                    while (scoreDuration.Gt(voiceLength)) {
+                    while (scoreDuration.gt(voiceLength)) {
                         // Add placeholder until next bar
                         var staffContext = voice.parent.getStaffContext(voiceLength);
                         var meter = staffContext.meter;
                         var timeInBar = staffContext.timeInBar;
-                        var restTime = meter.getMeasureTime().Sub(staffContext.timeInBar);
-                        var newNote = Model.Music.AddNote(voice, Model.NoteType.placeholder, voiceLength, "hidden", restTime);
+                        var restTime = meter.getMeasureTime().sub(staffContext.timeInBar);
+                        var newNote = Model.Music.addNote(voice, Model.NoteType.Placeholder, voiceLength, "hidden", restTime);
                         voiceLength = voice.getEndTime();
                     }
                 });
             }
         }
 
-        export class FinaleSmartEditPlugin implements ScoreApplication.ScorePlugin {
-            init(app: ScoreApplication.ScoreApplication) {
+        export class FinaleSmartEditPlugin implements ScoreApplication.IScorePlugin {
+            init(app: ScoreApplication.IScoreApplication) {
                 app.FeedbackManager.registerClient(this.smartEdit);
-                app.RegisterEventProcessor(this.smartEdit);
-                app.AddValidator(new FillEmptySpaceValidator);
+                app.registerEventProcessor(this.smartEdit);
+                app.addValidator(new FillEmptySpaceValidator);
             }
 
             private smartEdit: FinaleSmartEdit = new FinaleSmartEdit();
@@ -40,7 +40,7 @@
         }
 
 
-        export class FinaleSpeedyEntry implements ScoreApplication.ScoreEventProcessor {
+        export class FinaleSpeedyEntry implements ScoreApplication.IScoreEventProcessor {
             private noteVals: { [index: string]: { noteId: string; timeVal: Model.TimeSpan; } } = {
                 '1': { noteId: 'n1_64', timeVal: new Model.TimeSpan(1, 64) },
                 '2': { noteId: 'n1_32', timeVal: new Model.TimeSpan(1, 32) },
@@ -52,40 +52,40 @@
                 '8': { noteId: 'n2_1', timeVal: new Model.TimeSpan(2, 1) },
             };
 
-            public init(app: ScoreApplication.ScoreApplication) {
+            public init(app: ScoreApplication.IScoreApplication) {
                 $('#toolitem40').on('mousedown touchstart', function (ev) {
                     ev.key = "RIGHT";
-                    app.ProcessEvent("keypress", { key: "RIGHT" });
+                    app.processEvent("keypress", { key: "RIGHT" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
                 $('#toolitem41').on('mousedown touchstart', function (ev) {
                     ev.key = "LEFT";
-                    app.ProcessEvent("keypress", { key: "LEFT" });
+                    app.processEvent("keypress", { key: "LEFT" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
                 $('#toolitem42').on('mousedown touchstart', function (ev) {
                     ev.key = "UP";
-                    app.ProcessEvent("keypress", { key: "UP" });
+                    app.processEvent("keypress", { key: "UP" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
                 $('#toolitem43').on('mousedown touchstart', function (ev) {
                     ev.key = "DOWN";
-                    app.ProcessEvent("keypress", { key: "DOWN" });
+                    app.processEvent("keypress", { key: "DOWN" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
                 $('#toolitem19').on('mousedown touchstart', function (ev) {
                     ev.key = "ENTER";
-                    app.ProcessEvent("keypress", { key: "ENTER" });
+                    app.processEvent("keypress", { key: "ENTER" });
                     ev.stopPropagation();
                     ev.preventDefault();
                 });
             }
 
-            public exit(app: ScoreApplication.ScoreApplication) {
+            public exit(app: ScoreApplication.IScoreApplication) {
             }
             /*
             public keydown(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
@@ -114,11 +114,11 @@
                 return app.ProcessEvent("keymessage", {key: key}); //this.keyPressed(app, key);
             }
             */
-            public keymessage(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public keymessage(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 return this.keyPressed(app, event.key);
             }
 
-            public clicknote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 // note dialog: dblclick
                 /*var dlg = new Dialogs.NoteDialog("ed", app);
                 dlg.Show(event.data.note);*/
@@ -127,7 +127,7 @@
                 return false;
             }
 
-            public keyPressed(app: ScoreApplication.ScoreApplication, key: string): boolean {
+            public keyPressed(app: ScoreApplication.IScoreApplication, key: string): boolean {
                 if (key === 'UP') {//Up a step ↑
                     if (app.Status.currentPitch) {
                         app.Status.currentPitch = new Model.Pitch(app.Status.currentPitch.pitch + 1, "");
@@ -173,10 +173,10 @@
                             for (var i = 0; i < app.Status.notesPressed.length; i++) {
                                 newPitches.push(app.Status.notesPressed[i]);
                             }
-                            app.ExecuteCommand({
+                            app.executeCommand({
                                 oldPitches: [],
                                 newPitches: newPitches,
-                                Execute: function(app: ScoreApplication.ScoreApplication) {
+                                execute: function(app: ScoreApplication.IScoreApplication) {
                                     var note = app.Status.currentNote;
                                     this.oldPitches = [];
                                     while (note.noteheadElements.length) {
@@ -188,7 +188,7 @@
                                         note.setPitch(this.newPitches[i]);
                                     }
                                 },
-                                Undo: function(app: ScoreApplication.ScoreApplication)  {
+                                undo: function(app: ScoreApplication.IScoreApplication)  {
                                     var note = app.Status.currentNote;
                                     while (note.noteheadElements.length) { note.removeChild(note.noteheadElements[0]); }
                                     note.setRest(false);
@@ -202,14 +202,14 @@
                         else if (app.Status.currentPitch) {
                             // toggle notehead at insert point
                             if (app.Status.currentNotehead) {
-                                app.ExecuteCommand(new Model.RemoveNoteheadCommand({ head: app.Status.currentNotehead }));
+                                app.executeCommand(new Model.RemoveNoteheadCommand({ head: app.Status.currentNotehead }));
                                 app.Status.currentNotehead = undefined;
                             }
                             else {
                                 var staffContext = app.Status.currentNote.parent.parent.getStaffContext(app.Status.currentNote.absTime);
                                 var alt = staffContext.key.getFixedAlteration(app.Status.currentPitch.pitch);
                                 var pitch = new Model.Pitch(app.Status.currentPitch.pitch, alt);
-                                app.ExecuteCommand(new Model.AddNoteheadCommand({
+                                app.executeCommand(new Model.AddNoteheadCommand({
                                     note: app.Status.currentNote,
                                     pitch: pitch
                                 }));
@@ -219,7 +219,7 @@
                 }
                 else if (key === '+' || key === "NUMPAD_ADD" || key === 'S') {//Raise by a half step + (plus) or shift-S
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand(new Model.RaisePitchAlterationCommand({
+                        app.executeCommand(new Model.RaisePitchAlterationCommand({
                             head: app.Status.currentNotehead,
                             deltaAlteration: 1
                         }));
@@ -230,7 +230,7 @@
                 }
                 else if (key === '-' || key === "NUMPAD_SUBTRACT" || key === 'F') {//Lower by a half step – (minus) or shift - F
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand(new Model.RaisePitchAlterationCommand({
+                        app.executeCommand(new Model.RaisePitchAlterationCommand({
                             head: app.Status.currentNotehead,
                             deltaAlteration: -1
                         }));
@@ -241,7 +241,7 @@
                 }
                 else if (key === 'L' || key === "l") { //Flip stem in opposite direction L
                     if (app.Status.currentNote) {
-                        app.ExecuteCommand(new Model.SetNoteStemDirectionCommand({
+                        app.executeCommand(new Model.SetNoteStemDirectionCommand({
                             note: app.Status.currentNote,
                             direction: app.Status.currentNote.spacingInfo.rev ? "UP" : "DOWN"
                         }));
@@ -249,7 +249,7 @@
                 }
                 else if (key === 'CTRL-l' || key === 'ALT-l') { //Restore stem direction to “floating” status Ctrl - L: duer ikke - er shortcut for adressefeltet
                     if (app.Status.currentNote) {
-                        app.ExecuteCommand(new Model.SetNoteStemDirectionCommand({
+                        app.executeCommand(new Model.SetNoteStemDirectionCommand({
                             note: app.Status.currentNote,
                             direction: "FREE"
                         }));
@@ -257,7 +257,7 @@
                 }
                 else if (key === '9') {//Flip a note to its enharmonic equivalent 9
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand(new Model.SetPitchCommand({
+                        app.executeCommand(new Model.SetPitchCommand({
                             head: app.Status.currentNotehead,
                             pitch: app.Status.currentNotehead.pitch.getEnharmonicPitch()
                         }));
@@ -265,7 +265,7 @@
                 }
                 else if (key === 'CTRL-9') {//todo: Flip enharmonic throughout measure Ctrl - 9(cursor on first note in measure)
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand(new Model.SetPitchCommand({
+                        app.executeCommand(new Model.SetPitchCommand({
                             head: app.Status.currentNotehead,
                             pitch: app.Status.currentNotehead.pitch.getEnharmonicPitch()
                         }));
@@ -281,7 +281,7 @@
                             if (tuplet.fullTime.denominator === 0) {
                                 // first note in tuplet - new fulltime = notetime * numereator
                                 // note: 1/4, fraction: 2/3: fulltime = 1/2
-                                tuplet.fullTime = noteType.timeVal.MultiplyScalar(tuplet.fraction.numerator);
+                                tuplet.fullTime = noteType.timeVal.multiplyScalar(tuplet.fraction.numerator);
                             }
                         }
                         if (app.Status.currentNote.NoteId === 'hidden') {
@@ -292,7 +292,7 @@
                                     pitches.push(app.Status.notesPressed[i]);
                                 }
                             }
-                            app.ExecuteCommand(new Model.AddNoteCommand({
+                            app.executeCommand(new Model.AddNoteCommand({
                                 //note: app.Status.currentNote,
                                 noteName: noteType.noteId.substr(1),
                                 noteTime: noteType.timeVal,
@@ -306,7 +306,7 @@
                             }));
                         }
                         else {
-                            app.ExecuteCommand(new Model.SetNoteDurationCommand({
+                            app.executeCommand(new Model.SetNoteDurationCommand({
                                 note: app.Status.currentNote,
                                 noteId: noteType.noteId,
                                 timeVal: noteType.timeVal,
@@ -319,21 +319,21 @@
                 }
                 else if (key === 'NUMPAD_MULTIPLY' || key === '*') { //Show/hide any accidental * (asterisk)
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand({
-                            Execute: (app: ScoreApplication.ScoreApplication) => { app.Status.currentNotehead.forceAccidental = !app.Status.currentNotehead.forceAccidental; },
-                            Undo: (app: ScoreApplication.ScoreApplication) => { app.Status.currentNotehead.forceAccidental = !app.Status.currentNotehead.forceAccidental; }
+                        app.executeCommand({
+                            execute: (app: ScoreApplication.IScoreApplication) => { app.Status.currentNotehead.forceAccidental = !app.Status.currentNotehead.forceAccidental; },
+                            undo: (app: ScoreApplication.IScoreApplication) => { app.Status.currentNotehead.forceAccidental = !app.Status.currentNotehead.forceAccidental; }
                         });
                     }
                 }
                 else if (key === '.') {//Add a dot . (period)
                     if (app.Status.currentNote) {
-                        app.ExecuteCommand({
-                            Execute: (app: ScoreApplication.ScoreApplication) => {
+                        app.executeCommand({
+                            execute: (app: ScoreApplication.IScoreApplication) => {
                                 if (app.Status.currentNote.dotNo)
                                     app.Status.currentNote.dotNo++;
                                 else app.Status.currentNote.dotNo = 1;
                             },
-                            Undo: (app: ScoreApplication.ScoreApplication) => {
+                            undo: (app: ScoreApplication.IScoreApplication) => {
                                 if (app.Status.currentNote.dotNo > 0)
                                     app.Status.currentNote.dotNo--;
                             }
@@ -345,7 +345,7 @@
                 else if (key === 'DELETE') {//Remove note, rest or chord delete
                     if (app.Status.currentNote) {
                         var nextNote = Model.Music.nextNote(app.Status.currentNote);
-                        app.ExecuteCommand(new Model.DeleteNoteCommand({ note: app.Status.currentNote }));
+                        app.executeCommand(new Model.DeleteNoteCommand({ note: app.Status.currentNote }));
                         app.Status.currentNote = nextNote;
                     }
                 }
@@ -355,7 +355,7 @@ Tie / untie to previous note Ctrl = (equals) or shift - T
 Flip a tie Ctrl - F
 Restore tie direction to automatic Ctrl - shift - F*/
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand(new Model.TieNoteheadCommand({
+                        app.executeCommand(new Model.TieNoteheadCommand({
                             head: app.Status.currentNotehead,
                             toggle: true,
                             forced: false
@@ -363,7 +363,7 @@ Restore tie direction to automatic Ctrl - shift - F*/
                     }
                     else
                         if (app.Status.currentNote) {
-                            app.ExecuteCommand(new Model.TieNoteCommand({
+                            app.executeCommand(new Model.TieNoteCommand({
                                 note: app.Status.currentNote,
                                 forced: false,
                                 toggle: true
@@ -464,15 +464,15 @@ Restore all pitch keys to normal register K (with Caps Lock)
             }
         }
 
-        class FinaleSmartEdit implements Application.IFeedbackClient, ScoreApplication.ScoreEventProcessor {
+        class FinaleSmartEdit implements Application.IFeedbackClient, ScoreApplication.IScoreEventProcessor {
             changed(status: Application.IStatusManager, key: string, val: any) {
                 if (key === "currentNote") {
                     // flyt denne til 
                 }
             }
 
-            init(app: ScoreApplication.ScoreApplication): void { }
-            exit(app: ScoreApplication.ScoreApplication): void { }
+            init(app: ScoreApplication.IScoreApplication): void { }
+            exit(app: ScoreApplication.IScoreApplication): void { }
 
             /*public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;

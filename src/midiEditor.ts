@@ -2,13 +2,13 @@
     export module Editors {
         //declare var $: any;
 
-        export class MidiEditor implements ScoreApplication.ScoreEventProcessor {
-            public init(app: ScoreApplication.ScoreApplication) {
+        export class MidiEditor implements ScoreApplication.IScoreEventProcessor {
+            public init(app: ScoreApplication.IScoreApplication) {
             }
-            public exit(app: ScoreApplication.ScoreApplication) {
+            public exit(app: ScoreApplication.IScoreApplication) {
             }
             private noCtrl = 0;
-            public midicontrol(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public midicontrol(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 /*v pedal ned: 
                 ctlNo "43"
                 ctlValue "7f"
@@ -54,15 +54,15 @@
                 }*/
                 return true;
             }
-            public midinoteon(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public midinoteon(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 app.Status.pressNoteKey(Model.Pitch.createFromMidi((<any>event).noteInt));
                 return true;
             }
-            public midinoteoff(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public midinoteoff(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 app.Status.releaseNoteKey(Model.Pitch.createFromMidi((<any>event).noteInt));
                 return true;
             }
-            public midichordreleased(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public midichordreleased(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 if (app.Status.currentVoice) { // todo: set as quickenter_editor
                     /*var rest = app.Status.rest;
                     var dots = app.Status.dots;
@@ -145,10 +145,10 @@
             // todo: graphic feedback
             private midiHelper: Editors.MidiHelper;
 
-            public playAll(app: ScoreApplication.ScoreApplication) {
+            public playAll(app: ScoreApplication.IScoreApplication) {
                 var events = app.document.getEvents();
                 //events.sort(Model.Music.compareEvents);
-                this.midiHelper = Editors.MidiInputPlugin.GetMidiHelper(app);
+                this.midiHelper = Editors.MidiInputPlugin.getMidiHelper(app);
                 var allEvents: IMidiEvent[] = [];
                 for (var i = 0; i < events.length; i++) {
                     var event = events[i];
@@ -156,21 +156,21 @@
                         var note = <Model.INote>event;
                         note.withHeads((head: Model.INotehead) => {
                             allEvents.push({ time: note.absTime, midi: head.pitch.toMidi(), on: true, velo: 100 });
-                            allEvents.push({ time: note.absTime.Add(note.getTimeVal()), midi: head.pitch.toMidi(), on: false, velo: 0 });
+                            allEvents.push({ time: note.absTime.add(note.getTimeVal()), midi: head.pitch.toMidi(), on: false, velo: 0 });
                         });
                     }
                 }
                 allEvents.sort((a, b) => {
-                    if (a.time.Eq(b.time)) return 0;
-                    return a.time.Gt(b.time) ? 1 : -1;
+                    if (a.time.eq(b.time)) return 0;
+                    return a.time.gt(b.time) ? 1 : -1;
                 });
                 var concurrentOnEvents: IMidiEvent[] = [];
                 var concurrentOffEvents: IMidiEvent[] = [];
                 var absTime = Model.AbsoluteTime.startTime;
                 while (allEvents.length) {
                     var theEvent = allEvents.shift();
-                    if (!theEvent.time.Eq(absTime)) {
-                        this._midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
+                    if (!theEvent.time.eq(absTime)) {
+                        this.midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
                         concurrentOnEvents = [];
                         concurrentOffEvents = [];
                         absTime = theEvent.time;
@@ -182,14 +182,14 @@
                         concurrentOffEvents.push(theEvent);
                     }
                 }
-                this._midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
-                this.PlayNextNote();
+                this.midiEvents.push({ time: absTime, onEvents: concurrentOnEvents, offEvents: concurrentOffEvents });
+                this.playNextNote();
             }
 
-            private _midiEvents: IConcurrentEvent[] = [];
+            private midiEvents: IConcurrentEvent[] = [];
 
-            private PlayNextNote() {
-                var nextEvents = this._midiEvents.shift();
+            private playNextNote() {
+                var nextEvents = this.midiEvents.shift();
                 var me = this;
 
                 for (var i = 0; i < nextEvents.offEvents.length; i++) {
@@ -202,15 +202,15 @@
                     this.midiHelper.midiSend({ code: 0x90, a1: ev.midi, a2: ev.velo });
                 }
 
-                if (me._midiEvents.length) {
-                    var time = 3000 * (me._midiEvents[0].time.ToNumber() - nextEvents.time.ToNumber());
+                if (me.midiEvents.length) {
+                    var time = 3000 * (me.midiEvents[0].time.toNumber() - nextEvents.time.toNumber());
                     setTimeout(() => {
-                        me.PlayNextNote();
+                        me.playNextNote();
                     }, time);
                 }
             }
 
-            GetId() { return "MidiPlayer"; }
+            getId() { return "MidiPlayer"; }
         }
 
 

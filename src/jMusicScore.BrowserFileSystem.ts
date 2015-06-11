@@ -3,20 +3,20 @@
     export module Application {
 
         /** REST remote file manager */
-        export class ServerFileManager<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> implements IFileManager<DocumentType, StatusManager, ContainerType> {
+        export class ServerFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> implements IFileManager<TDocumentType, TStatusManager, TContainerType> {
             constructor(private ajaxUrl: string, private id: string) {
                 // new ServerFileManager ("Handler.ashx")
             }
 
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void { }
+            init(app: Application<TDocumentType, TStatusManager, TContainerType>): void { }
 
-            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void { }
+            exit(app: Application<TDocumentType, TStatusManager, TContainerType>): void { }
 
-            GetId(): string { return this.id; }
+            getId(): string { return this.id; }
 
             public getFileList(handler: (data: string[]) => void) {
                 $.ajax(this.ajaxUrl, {
-                    success: function (data) {
+                    success: function (data: string) {
                         var files = data.split('\n');
                         handler(files);
                     },
@@ -26,7 +26,7 @@
 
             public loadFile(name: string, handler: (data: string, name: string) => void) {
                 $.ajax(this.ajaxUrl, {
-                    success: function (data) {
+                    success: function (data: string) {
                         handler(data, name);
                     },
                     data: { 'Name': name },
@@ -36,7 +36,7 @@
 
             public saveFile(name: string, data: string, handler: (res: string) => void) {
                 $.ajax(this.ajaxUrl, {
-                    success: function (res) {
+                    success: function (res: string) {
                         handler(res);
                     },
                     type: 'POST',
@@ -46,15 +46,15 @@
         }
 
         /** Local storage file manager using the browser's local storage*/
-        export class LocalStorageFileManager<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> implements IFileManager<DocumentType, StatusManager, ContainerType> {
+        export class LocalStorageFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> implements IFileManager<TDocumentType, TStatusManager, TContainerType> {
             constructor(private id: string) {
             }
 
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void { }
+            init(app: Application<TDocumentType, TStatusManager, TContainerType>): void { }
 
-            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void { }
+            exit(app: Application<TDocumentType, TStatusManager, TContainerType>): void { }
 
-            GetId(): string { return this.id; }
+            getId(): string { return this.id; }
 
             public getFileList(handler: (data: string[]) => void) {
                 var a: string = 'file:' + this.id + ':';

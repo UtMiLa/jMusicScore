@@ -5,7 +5,7 @@ module JMusicScore {
         export class Rational {
             constructor(public numerator: number, public denominator: number = 1) {
                 if (denominator < 0) {
-                    throw "Illegal denominator: " + this.ToString();
+                    throw "Illegal denominator: " + this.toString();
                 }
             }
 
@@ -14,15 +14,15 @@ module JMusicScore {
                 return this.gcd(b, a % b);
             }
 
-            public ToNumber() {
+            public toNumber() {
                 return this.numerator / this.denominator;
             }
 
-            public ToString() {
+            public toString() {
                 return this.numerator + "/" + this.denominator;
             }
 
-            public Reduce(): Rational {
+            public reduce(): Rational {
                 if (this.denominator < 0) {
                     this.denominator = -this.denominator;
                     this.numerator = -this.numerator;
@@ -39,14 +39,14 @@ module JMusicScore {
                 return this;
             }
 
-            public Eq(other: Rational) {
+            public eq(other: Rational) {
                 return this.denominator * other.numerator === this.numerator * other.denominator;
             }
 
-            public Gt(other: Rational) {
+            public gt(other: Rational) {
                 return this.numerator * other.denominator > this.denominator * other.numerator;
             }
-            public Ge(other: Rational) {
+            public ge(other: Rational) {
                 return this.numerator * other.denominator >= this.denominator * other.numerator;
             }
 
@@ -62,19 +62,19 @@ module JMusicScore {
 
         export class AbsoluteTime extends Rational {
             static startTime = new AbsoluteTime(0);
-            static Infinity = new AbsoluteTime(1, 0);
+            static infinity = new AbsoluteTime(1, 0);
 
-            public Diff(other: AbsoluteTime): TimeSpan {
-                return new TimeSpan(this.numerator * other.denominator - other.numerator * this.denominator, this.denominator * other.denominator).Reduce();
+            public diff(other: AbsoluteTime): TimeSpan {
+                return new TimeSpan(this.numerator * other.denominator - other.numerator * this.denominator, this.denominator * other.denominator).reduce();
             }
-            public Sub(other: TimeSpan): AbsoluteTime {
-                return new AbsoluteTime(this.numerator * other.denominator - other.numerator * this.denominator, this.denominator * other.denominator).Reduce();
+            public sub(other: TimeSpan): AbsoluteTime {
+                return new AbsoluteTime(this.numerator * other.denominator - other.numerator * this.denominator, this.denominator * other.denominator).reduce();
             }
-            public Add(other: TimeSpan): AbsoluteTime {
-                return new AbsoluteTime(this.numerator * other.denominator + other.numerator * this.denominator, this.denominator * other.denominator).Reduce();
+            public add(other: TimeSpan): AbsoluteTime {
+                return new AbsoluteTime(this.numerator * other.denominator + other.numerator * this.denominator, this.denominator * other.denominator).reduce();
             }
-            public Reduce(): AbsoluteTime {
-                return <AbsoluteTime>super.Reduce();
+            public reduce(): AbsoluteTime {
+                return <AbsoluteTime>super.reduce();
             }
             static createFromMemento(def: any): AbsoluteTime {
                 return new AbsoluteTime(def.num, def.den);
@@ -88,34 +88,34 @@ module JMusicScore {
             static wholeNote = new TimeSpan(1, 1);
             static infiniteNote = new TimeSpan(1, 0);
 
-            public Sub(other: TimeSpan): TimeSpan {
-                return new TimeSpan(this.numerator * other.denominator - other.numerator * this.denominator, this.denominator * other.denominator).Reduce();
+            public sub(other: TimeSpan): TimeSpan {
+                return new TimeSpan(this.numerator * other.denominator - other.numerator * this.denominator, this.denominator * other.denominator).reduce();
             }
-            public Add(other: TimeSpan): TimeSpan {
-                return new TimeSpan(this.numerator * other.denominator + other.numerator * this.denominator, this.denominator * other.denominator).Reduce();
+            public add(other: TimeSpan): TimeSpan {
+                return new TimeSpan(this.numerator * other.denominator + other.numerator * this.denominator, this.denominator * other.denominator).reduce();
             }
-            public Reduce(): TimeSpan {
-                return <TimeSpan>super.Reduce();
+            public reduce(): TimeSpan {
+                return <TimeSpan>super.reduce();
             }
-            public Divide(other: TimeSpan): number {
+            public divide(other: TimeSpan): number {
                 return (this.numerator * other.denominator) / (this.denominator * other.numerator);
             }
-            public Modulo(other: TimeSpan): TimeSpan {
+            public modulo(other: TimeSpan): TimeSpan {
                 var x = this.numerator * other.denominator;
                 var y = this.denominator * other.numerator;
                 if (x < 0) {
                     x += Math.ceil(-x / y) * y;
                 }
-                return new TimeSpan(x % y, this.denominator * other.denominator).Reduce();
+                return new TimeSpan(x % y, this.denominator * other.denominator).reduce();
             }
-            public DivideScalar(scalar: number): TimeSpan {
-                return new TimeSpan(this.numerator, this.denominator * scalar).Reduce();
+            public divideScalar(scalar: number): TimeSpan {
+                return new TimeSpan(this.numerator, this.denominator * scalar).reduce();
             }
-            public MultiplyScalar(scalar: number): TimeSpan {
-                return new TimeSpan(scalar * this.numerator, this.denominator).Reduce();
+            public multiplyScalar(scalar: number): TimeSpan {
+                return new TimeSpan(scalar * this.numerator, this.denominator).reduce();
             }
-            public MultiplyRational(fraction: Rational): TimeSpan {
-                return new TimeSpan(fraction.numerator * this.numerator, fraction.denominator * this.denominator).Reduce();
+            public multiplyRational(fraction: Rational): TimeSpan {
+                return new TimeSpan(fraction.numerator * this.numerator, fraction.denominator * this.denominator).reduce();
             }
             static createFromMemento(def: any): TimeSpan {
                 return new TimeSpan(def.num, def.den);
@@ -126,12 +126,12 @@ module JMusicScore {
             constructor(public absTime: AbsoluteTime, public sortOrder: number, public graceNo: number = 0, public beforeAfter = 0) { }
             
             public static compareEvents(a: HorizPosition, b: HorizPosition): number {
-                if (!a.absTime.Eq(b.absTime)) return (a.absTime.Diff(b.absTime).ToNumber());
+                if (!a.absTime.eq(b.absTime)) return (a.absTime.diff(b.absTime).toNumber());
                 if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
                 return a.graceNo - b.graceNo;
             }
-            public Eq(comp: HorizPosition): boolean {
-                return this.absTime.Eq(comp.absTime) && this.sortOrder === comp.sortOrder && this.graceNo === comp.graceNo;
+            public eq(comp: HorizPosition): boolean {
+                return this.absTime.eq(comp.absTime) && this.sortOrder === comp.sortOrder && this.graceNo === comp.graceNo;
             }
             public clone(beforeAfter: number): HorizPosition {
                 return new HorizPosition(this.absTime, this.sortOrder, this.graceNo, beforeAfter);
@@ -165,28 +165,28 @@ module JMusicScore {
             remove(): void;
             setProperty(name: string, value: any): void;
             getProperty(name: string): any;
-            VisitAll(visitor: IVisitorIterator): void;
+            visitAll(visitor: IVisitorIterator): void;
             getMemento(withChildren?: boolean): IMemento;
         }
 
 
         export class IdSequence {
-            static _id: number = 1;
-            static Next(): string { return '' + this._id++; }
+            static id: number = 1;
+            static next(): string { return '' + IdSequence.id++; }
         }
 
-        export class MusicElement<SpacingInfo extends ISpacingInfo> {
+        export class MusicElement<TSpacingInfo extends ISpacingInfo> {
             constructor(public parent: IMusicElement) {
                 //this.parent = parent;
             }
 
-            private _spacingInfo: SpacingInfo;
-            public id = IdSequence.Next();
+            private _spacingInfo: TSpacingInfo;
+            public id = IdSequence.next();
 
-            public get spacingInfo(): SpacingInfo {
+            public get spacingInfo(): TSpacingInfo {
                 return this._spacingInfo;
             }
-            public setSpacingInfo(info: SpacingInfo): SpacingInfo {
+            public setSpacingInfo(info: TSpacingInfo): TSpacingInfo {
                 return this._spacingInfo = info;
             }
             public inviteVisitor(spacer: IVisitor) {
@@ -301,11 +301,11 @@ module JMusicScore {
                 }
                 return memento;
             }
-            public VisitAll(visitor: IVisitorIterator) {
+            public visitAll(visitor: IVisitorIterator) {
                 var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
                 for (var i = 0; i < this.childLists.length; i++) {
                     for (var j = 0; j < this.childLists[i].length; j++) {
-                        this.childLists[i][j].VisitAll(visitor);
+                        this.childLists[i][j].visitAll(visitor);
                     }
                 }
                 if (postFun) {
@@ -466,12 +466,12 @@ module JMusicScore {
             
             public findBar(absTime: AbsoluteTime): IBar {
                 this.withBars((bar: IBar) => {
-                    if (bar.absTime.Eq(absTime)) return bar;
+                    if (bar.absTime.eq(absTime)) return bar;
                 });
                 return null;
             }
 
-            public static PlaceInOrder(score: IScore, staff: IStaff, index: number) {
+            public static placeInOrder(score: IScore, staff: IStaff, index: number) {
                 // Insert staff at index position
                 if (score.staffElements[index] !== staff) {
                     var oldIndex = score.staffElements.indexOf(staff);
@@ -549,7 +549,7 @@ module JMusicScore {
             public setMeter(meter: IMeterDefinition, absTime: AbsoluteTime) {
                 if (!absTime) absTime = AbsoluteTime.startTime;
                 for (var i = 0; i < this.meterElements.length; i++) {
-                    if (this.meterElements[i].absTime.Eq(absTime)) {
+                    if (this.meterElements[i].absTime.eq(absTime)) {
                         //this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: this.meterElements[i] });
                         this.meterElements[i].remove();
                         this.meterElements.splice(i, 1);
@@ -579,10 +579,10 @@ module JMusicScore {
             }
 
             public equals(staffContext: StaffContext): boolean {
-                return this.clef.definition.Eq(staffContext.clef.definition)
-                    && this.key.definition.Eq(staffContext.key.definition)
-                    && this.meter.definition.Eq(staffContext.meter.definition)
-                    && this.barNo === staffContext.barNo && this.timeInBar.Eq(staffContext.timeInBar);
+                return this.clef.definition.eq(staffContext.clef.definition)
+                    && this.key.definition.eq(staffContext.key.definition)
+                    && this.meter.definition.eq(staffContext.meter.definition)
+                    && this.barNo === staffContext.barNo && this.timeInBar.eq(staffContext.timeInBar);
             }
         }
 
@@ -687,14 +687,14 @@ module JMusicScore {
                 var clef: IClef;
                 this.clefElements.sort(Music.compareEvents);
                 for (var i = 0; i < this.clefElements.length; i++) {
-                    if (this.clefElements[i].absTime.Gt(absTime)) break;
+                    if (this.clefElements[i].absTime.gt(absTime)) break;
                     clef = this.clefElements[i];
                 }
                 var key: IKey;
                 //var keys = this.keyElements.length ? this.keyElements : this.parent.keyElements;
                 this.keyElements.sort(Music.compareEvents);
                 for (var i = 0; i < this.keyElements.length; i++) {
-                    if (this.keyElements[i].absTime.Gt(absTime)) break;
+                    if (this.keyElements[i].absTime.gt(absTime)) break;
                     key = this.keyElements[i];
                 }
                 var meter: IMeter;
@@ -705,19 +705,19 @@ module JMusicScore {
                 var oldTime = AbsoluteTime.startTime;
                 var oldMeasureTime = new TimeSpan(1);
                 for (var i = 0; i < meters.length; i++) {
-                    if (meters[i].absTime.Gt(absTime)) {
+                    if (meters[i].absTime.gt(absTime)) {
                         break;
                     }
-                    var meterTime: TimeSpan = meters[i].absTime.Diff(oldTime);
-                    var deltaBars = i ? meterTime.Divide(oldMeasureTime) : 0;
+                    var meterTime: TimeSpan = meters[i].absTime.diff(oldTime);
+                    var deltaBars = i ? meterTime.divide(oldMeasureTime) : 0;
                     barNo += deltaBars;
                     oldTime = meters[i].absTime;
                     oldMeasureTime = meters[i].getMeasureTime();
                     meter = meters[i];
                 }
-                var deltaBars = Math.floor((absTime.Diff(oldTime)).Divide(oldMeasureTime));
+                var deltaBars = Math.floor((absTime.diff(oldTime)).divide(oldMeasureTime));
                 barNo += deltaBars;
-                timeInBar = absTime.Diff(oldTime).Sub(oldMeasureTime.MultiplyScalar(deltaBars));
+                timeInBar = absTime.diff(oldTime).sub(oldMeasureTime.multiplyScalar(deltaBars));
                 return new StaffContext(clef, key, meter, barNo, timeInBar);
             }
             public getMeterElements(): IMeter[] {
@@ -729,14 +729,14 @@ module JMusicScore {
             public getEvents(fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
                 var events: ITimedEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
-                if (!toTime) toTime = AbsoluteTime.Infinity;
+                if (!toTime) toTime = AbsoluteTime.infinity;
 
                 this.withVoices((voice: IVoice, index: number) => {
                     events = events.concat(voice.getEvents(fromTime, toTime));
                 });
 
                 var f = (elm: ITimedEvent, index: number) => {
-                    if (elm.absTime.Ge(fromTime) && toTime.Gt(elm.absTime)) events.push(elm);
+                    if (elm.absTime.ge(fromTime) && toTime.gt(elm.absTime)) events.push(elm);
                 }
 
                 this.withTimedEvents(f);
@@ -753,7 +753,7 @@ module JMusicScore {
             public setMeter(meter: IMeterDefinition, absTime: AbsoluteTime) {
                 if (!absTime) absTime = AbsoluteTime.startTime;
                 for (var i = 0; i < this.meterElements.length; i++) {
-                    if (this.meterElements[i].absTime.Eq(absTime)) {
+                    if (this.meterElements[i].absTime.eq(absTime)) {
                         //this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: this.meterElements[i] });
                         this.meterElements[i].remove();
                         this.meterElements.splice(i, 1);
@@ -776,16 +776,16 @@ module JMusicScore {
                 var prevClef: IClef;
                 for (var i = 0; i < this.clefElements.length; i++) {
                     var clef = this.clefElements[i];
-                    if (absTime.Gt(clef.absTime) && (!prevClef || clef.absTime.Gt(prevClef.absTime))) {
+                    if (absTime.gt(clef.absTime) && (!prevClef || clef.absTime.gt(prevClef.absTime))) {
                         prevClef = clef;
                     }
-                    if (clef.absTime.Eq(absTime)) {
+                    if (clef.absTime.eq(absTime)) {
                         //this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: this.clefElements[i] });
                         clef.remove();
                         this.clefElements.splice(i, 1);
                     }
                 }
-                if (prevClef && prevClef.definition.Eq(type)) {
+                if (prevClef && prevClef.definition.eq(type)) {
                     // no change
                     return;
                 }
@@ -795,7 +795,7 @@ module JMusicScore {
             }
             public setKey(key: IKeyDefinition, absTime: AbsoluteTime) {
                 for (var i = 0; i < this.keyElements.length; i++) {
-                    if (this.keyElements[i].absTime.Eq(absTime)) {
+                    if (this.keyElements[i].absTime.eq(absTime)) {
                         //this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: this.keyElements[i] });
                         this.keyElements[i].remove();
                         this.keyElements.splice(i, 1);
@@ -886,7 +886,7 @@ module JMusicScore {
             }
 
             public noteElements: INote[] = [];
-            private stemDirection: StemDirectionType = StemDirectionType.stemFree;
+            private stemDirection: StemDirectionType = StemDirectionType.StemFree;
 
             public withNotes(f: (note: INote, index: number) => void) {
                 for (var i = 0; i < this.noteElements.length; i++) {
@@ -905,9 +905,9 @@ module JMusicScore {
             public getEvents(fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
                 var events: ITimedEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
-                if (!toTime) toTime = AbsoluteTime.Infinity;
+                if (!toTime) toTime = AbsoluteTime.infinity;
                 this.withNotes((note: INote, index: number) => {
-                    if (!fromTime.Gt(note.absTime) && toTime.Gt(note.absTime)) {
+                    if (!fromTime.gt(note.absTime) && toTime.gt(note.absTime)) {
                         events.push(note);
                     }
                 });
@@ -918,58 +918,58 @@ module JMusicScore {
             public getEndTime(): AbsoluteTime {
                 if (this.noteElements.length) {
                     var lastNote = this.noteElements[this.noteElements.length - 1];
-                    return lastNote.absTime.Add(lastNote.getTimeVal());
+                    return lastNote.absTime.add(lastNote.getTimeVal());
                 }
                 else return AbsoluteTime.startTime;
             }
         }
 
-        export enum ClefType { clefNone, clefG, clefC, clefF, clefPercussion, clefTab };
+        export enum ClefType { ClefNone, ClefG, ClefC, ClefF, ClefPercussion, ClefTab };
 
         export class ClefDefinition {
             constructor(public clefCode: ClefType, public clefLine: number, public transposition: number = 0) { // clefline: top line is 1
             }
 
-            static clefG = new ClefDefinition(Model.ClefType.clefG, 4);
-            static clefGTenor = new ClefDefinition(Model.ClefType.clefG, 4, -7);
-            static clefF = new ClefDefinition(Model.ClefType.clefF, 2);
-            static clefCAlto = new ClefDefinition(Model.ClefType.clefC, 3);
-            static clefPerc = new ClefDefinition(Model.ClefType.clefPercussion, 0);
+            static clefG = new ClefDefinition(Model.ClefType.ClefG, 4);
+            static clefGTenor = new ClefDefinition(Model.ClefType.ClefG, 4, -7);
+            static clefF = new ClefDefinition(Model.ClefType.ClefF, 2);
+            static clefCAlto = new ClefDefinition(Model.ClefType.ClefC, 3);
+            static clefPerc = new ClefDefinition(Model.ClefType.ClefPercussion, 0);
 
             public clefDef(): number {
                 switch (this.clefCode) {
-                    case ClefType.clefG: return 2;
-                    case ClefType.clefC: return -2;
-                    case ClefType.clefF: return -6;
-                    case ClefType.clefNone: return -2;
-                    case ClefType.clefPercussion: return -2;
-                    case ClefType.clefTab: return -2;
+                    case ClefType.ClefG: return 2;
+                    case ClefType.ClefC: return -2;
+                    case ClefType.ClefF: return -6;
+                    case ClefType.ClefNone: return -2;
+                    case ClefType.ClefPercussion: return -2;
+                    case ClefType.ClefTab: return -2;
                 }
             }
 
             public clefName(): string {
                 switch (this.clefCode) {
-                    case ClefType.clefG: return "g";
-                    case ClefType.clefC: return "c";
-                    case ClefType.clefF: return "f";
-                    case ClefType.clefNone: return "n";
-                    case ClefType.clefPercussion: return "p";
-                    case ClefType.clefTab: return "t";
+                    case ClefType.ClefG: return "g";
+                    case ClefType.ClefC: return "c";
+                    case ClefType.ClefF: return "f";
+                    case ClefType.ClefNone: return "n";
+                    case ClefType.ClefPercussion: return "p";
+                    case ClefType.ClefTab: return "t";
                 }
             }
 
-            public static ClefNameToType(name: string): ClefType {
+            public static clefNameToType(name: string): ClefType {
                 switch (name.toLowerCase()) {
-                    case "g": return ClefType.clefG;
-                    case "c": return ClefType.clefC;
-                    case "f": return ClefType.clefF;
-                    case "n": return ClefType.clefNone;
-                    case "p": return ClefType.clefPercussion;
-                    case "t": return ClefType.clefTab;
+                    case "g": return ClefType.ClefG;
+                    case "c": return ClefType.ClefC;
+                    case "f": return ClefType.ClefF;
+                    case "n": return ClefType.ClefNone;
+                    case "p": return ClefType.ClefPercussion;
+                    case "t": return ClefType.ClefTab;
                 }
             }
 
-            public PitchOffset(): number {
+            public pitchOffset(): number {
                 return this.clefDef() + this.transposition + 2 * this.clefLine;
                 /*
                 g4 = 10
@@ -980,14 +980,14 @@ module JMusicScore {
             }
 
             public pitchToStaffLine(pitch: Pitch): number {
-                return -pitch.pitch + this.PitchOffset();
+                return -pitch.pitch + this.pitchOffset();
             }
 
             public staffLineToPitch(line: number): Pitch {
-                return new Pitch(-line + this.PitchOffset(), "");
+                return new Pitch(-line + this.pitchOffset(), "");
             }
 
-            public Eq(other: ClefDefinition): boolean {
+            public eq(other: ClefDefinition): boolean {
                 return this.clefCode === other.clefCode && this.clefLine === other.clefLine && this.transposition === other.transposition;
             }
 
@@ -1060,7 +1060,7 @@ module JMusicScore {
         export interface IKeyDefinition {
             debug(): string
             getFixedAlteration(pitch: number): string;
-            Eq(other: IKeyDefinition): boolean;
+            eq(other: IKeyDefinition): boolean;
             enumerateKeys(): Array<PitchClass>;
             getTonic(): PitchClass;
             getMemento(): any;
@@ -1103,7 +1103,7 @@ module JMusicScore {
                 return res;
             }
 
-            public Eq(other: IKeyDefinition): boolean {
+            public eq(other: IKeyDefinition): boolean {
                 return this.debug() === other.debug();
             }
 
@@ -1135,11 +1135,11 @@ module JMusicScore {
                 "Regular": RegularKeyDefinition,
             }
 
-            public static Register(key: string, cls: IKeyDefCreator) {
+            public static register(key: string, cls: IKeyDefCreator) {
                 this.keyClasses[key] = cls;
             }
 
-            public static CreateKeyDefinition(memento: any): IKeyDefinition {
+            public static createKeyDefinition(memento: any): IKeyDefinition {
                 if (memento.t) {
                     var m = this.keyClasses[memento.t];
                     if (m) return m.createFromMemento(memento);
@@ -1165,7 +1165,7 @@ module JMusicScore {
                 visitor.visitKey(this, this.spacingInfo);
             }
             static createFromMemento(parent: IStaff, memento: IMemento): IKey {
-                var def = KeyDefinitionFactory.CreateKeyDefinition(memento.def.def);
+                var def = KeyDefinitionFactory.createKeyDefinition(memento.def.def);
                 var absTime: AbsoluteTime;
                 if (memento.def.abs) {
                     absTime = AbsoluteTime.createFromMemento(memento.def.abs);
@@ -1210,7 +1210,7 @@ module JMusicScore {
             getMeasureTime(): TimeSpan;
             nextBoundary(abstime: AbsoluteTime, meterTime: AbsoluteTime): AbsoluteTime;
             nextBar(abstime: AbsoluteTime, meterTime: AbsoluteTime): AbsoluteTime;
-            Eq(other: IMeterDefinition): boolean;
+            eq(other: IMeterDefinition): boolean;
             display(addFraction: (num: string, den: string) => any, addFull: (full: string) => any): any[];
             getMemento(): any;
         }
@@ -1244,9 +1244,9 @@ module JMusicScore {
                   a/b mod c/d:
                   a*d/b*d mod c*b/b*d = (a*d mod c*b)/(b*d)
                 */
-                var boundaryTime = (abstime.Diff(meterTime)).Modulo(this.boundaryInterval);
+                var boundaryTime = (abstime.diff(meterTime)).modulo(this.boundaryInterval);
                 if (boundaryTime.numerator) { // % 64
-                    return abstime.Sub(boundaryTime).Add(this.boundaryInterval);
+                    return abstime.sub(boundaryTime).add(this.boundaryInterval);
                 }
                 else {
                     return abstime;
@@ -1256,18 +1256,18 @@ module JMusicScore {
             public nextBar(abstime: AbsoluteTime, meterTime: AbsoluteTime): AbsoluteTime {
                 // todo: calculation
                 var mtime = this.getMeasureTime();
-                var barTime = (abstime.Diff(meterTime)).Modulo(mtime);
+                var barTime = (abstime.diff(meterTime)).modulo(mtime);
                 if (barTime.numerator) {
                     //if ((abstime - this.absTime) % mtime) {
                     //return abstime - (abstime - this.absTime) % mtime + mtime
-                    return abstime.Sub(barTime).Add(mtime);
+                    return abstime.sub(barTime).add(mtime);
                 }
                 else {
-                    return abstime.Add(mtime);
+                    return abstime.add(mtime);
                 }
             }
 
-            public Eq(other: IMeterDefinition): boolean {
+            public eq(other: IMeterDefinition): boolean {
                 return this.debug() === other.debug();
             }
 
@@ -1302,11 +1302,11 @@ module JMusicScore {
             }
 
             public nextBoundary(abstime: AbsoluteTime, meterTime: AbsoluteTime): AbsoluteTime {
-                return super.nextBoundary(abstime.Sub(this.offset), meterTime).Add(this.offset);
+                return super.nextBoundary(abstime.sub(this.offset), meterTime).add(this.offset);
             }
 
             public nextBar(abstime: AbsoluteTime, meterTime: AbsoluteTime): AbsoluteTime {
-                return super.nextBar(abstime.Sub(this.offset), meterTime).Add(this.offset);
+                return super.nextBar(abstime.sub(this.offset), meterTime).add(this.offset);
             }
             static createFromMemento(memento: any): IMeterDefinition {
                 var offset = TimeSpan.createFromMemento(memento.offs)
@@ -1332,11 +1332,11 @@ module JMusicScore {
                 "OffsetRegular": OffsetMeterDefinition,
             }
 
-            public static Register(key: string, cls: IMeterDefCreator) {
+            public static register(key: string, cls: IMeterDefCreator) {
                 this.meterClasses[key] = cls;
             }
 
-            public static CreateMeterDefinition(memento: any): IMeterDefinition {
+            public static createMeterDefinition(memento: any): IMeterDefinition {
                 if (memento.t) {
                     var m = this.meterClasses[memento.t];
                     if (m) return m.createFromMemento(memento);
@@ -1365,7 +1365,7 @@ module JMusicScore {
             }
             static createFromMemento(parent: IMeterOwner, memento: IMemento): IMeter {
                 if (!memento.def) return null;
-                var def = MeterDefinitionFactory.CreateMeterDefinition(memento.def.def);
+                var def = MeterDefinitionFactory.createMeterDefinition(memento.def.def);
                     //new RegularMeterDefinition(memento.def.num, memento.def.den); // todo: factory
                 var absTime = AbsoluteTime.createFromMemento(memento.def.abs);
                 var meter: IMeter = new MeterElement(parent, def, absTime);// todo: add to parent
@@ -1410,8 +1410,8 @@ module JMusicScore {
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
         }
 
-        export enum NoteType { note, rest, placeholder };
-        export enum StemDirectionType { stemFree, stemUp, stemDown };
+        export enum NoteType { Note, Rest, Placeholder };
+        export enum StemDirectionType { StemFree, StemUp, StemDown };
 
         export class PitchClass {
             // 0 = c, 1 = g, -1 = f etc.
@@ -1419,9 +1419,9 @@ module JMusicScore {
                 this.pitchClass = pitchClass;
             }
 
-            static Create(pitch: Pitch) {
+            static create(pitch: Pitch) {
                 var p1 = pitch.pitch % 7;
-                return new PitchClass(PitchClass.pitchToPC[p1] + 7 * Pitch.strToInt(pitch.alteration));
+                return new PitchClass(PitchClass.pitchToPc[p1] + 7 * Pitch.strToInt(pitch.alteration));
             }
 
             public noteNameLilypond(): string {
@@ -1433,7 +1433,7 @@ module JMusicScore {
 
             static noteNames = ['f', 'c', 'g', 'd', 'a', 'e', 'b'];
             static suffices = ['eses', 'es', '', 'is', 'isis'];
-            static pitchToPC = [0, 2, 4, -1, 1, 3, 5];
+            static pitchToPc = [0, 2, 4, -1, 1, 3, 5];
         }
 
         export class Pitch {
@@ -1475,7 +1475,7 @@ module JMusicScore {
                 else if (this.alteration === 'b')
                     res = new Pitch(this.pitch - 1, '');
                 else {
-                    var pc = PitchClass.Create(this);
+                    var pc = PitchClass.create(this);
                     if (!n) {
                         n = 0;
                     }
@@ -1581,10 +1581,10 @@ module JMusicScore {
         */
         export class TupletDef {
             constructor(public fullTime: TimeSpan, public fraction: Rational) { }
-            public Eq(other: TupletDef): boolean {
+            public eq(other: TupletDef): boolean {
                 if (!this.fullTime && !other.fullTime) return true;
                 if (!this.fullTime || !other.fullTime) return false;
-                return this.fullTime.Eq(other.fullTime) && this.fraction.Eq(other.fraction);
+                return this.fullTime.eq(other.fullTime) && this.fraction.eq(other.fraction);
             }
         }
 
@@ -1615,9 +1615,9 @@ module JMusicScore {
                 //if (memento.def.hidden) { note.noteId = "hidden"; }
                 // todo: beams
                 if (parent) {//parent.addChild(parent.noteElements, note); // todo: at index
-                    var noteType: NoteType = memento.def.hidden ? NoteType.placeholder : memento.def.rest ? NoteType.rest : NoteType.note;
+                    var noteType: NoteType = memento.def.hidden ? NoteType.Placeholder : memento.def.rest ? NoteType.Rest : NoteType.Note;
                     var beforeNote: INote = null;
-                    var note = Music.AddNote(parent, noteType, AbsoluteTime.createFromMemento(memento.def.abs), memento.def.noteId,
+                    var note = Music.addNote(parent, noteType, AbsoluteTime.createFromMemento(memento.def.abs), memento.def.noteId,
                         TimeSpan.createFromMemento(memento.def.time), beforeNote, true, memento.def.dots, tupletDef);
                     if (memento.def.grace) { note.graceType = memento.def.grace; }
                     if (memento.def.stem) { note.setStemDirection(memento.def.stem); }
@@ -1687,7 +1687,7 @@ module JMusicScore {
             rest = false;
             public graceType: string;
             private beams: IBeam[] = [];
-            private stemDirection = StemDirectionType.stemFree;
+            private stemDirection = StemDirectionType.StemFree;
 
             get Beams() { return this.beams; }
 
@@ -1827,11 +1827,11 @@ module JMusicScore {
             getTimeVal(): TimeSpan {
                 if (this.graceType) return new TimeSpan(0);
                 var timeVal = this.timeVal;
-                if (this.dotNo > 0) timeVal = timeVal.Add(this.timeVal.DivideScalar(2));
-                if (this.dotNo > 1) timeVal = timeVal.Add(this.timeVal.DivideScalar(4));
-                if (this.dotNo > 2) timeVal = timeVal.Add(this.timeVal.DivideScalar(8));
+                if (this.dotNo > 0) timeVal = timeVal.add(this.timeVal.divideScalar(2));
+                if (this.dotNo > 1) timeVal = timeVal.add(this.timeVal.divideScalar(4));
+                if (this.dotNo > 2) timeVal = timeVal.add(this.timeVal.divideScalar(8));
                 if (this.tupletDef) {
-                    timeVal = timeVal.MultiplyRational(this.tupletDef.fraction);
+                    timeVal = timeVal.multiplyRational(this.tupletDef.fraction);
                 }
                 return timeVal;
             }
@@ -1919,14 +1919,14 @@ module JMusicScore {
 
         /** Kinds of Note decorations. */
         export enum NoteDecorationKind {
-            accN = 0, accX, accB, accXX, accBB,
-            fermata = 5, shortFermata, longFermata, veryLongFermata,
-            thumb = 9, sforzato, espr, staccato, staccatissimo, tenuto, portato, marcato,
-            open = 17, stopped, upbow, downbow, reverseturn, turn, trill, pedalheel, pedaltoe,
-            flageolet = 26, rcomma, prall, mordent, prallprall, prallmordent,
-            upprall = 32, upmordent, pralldown, downprall, downmordent, prallup, lineprall,
-            caesura = 39, lcomma, rvarcomma, lvarcomma,
-            arpeggio = 43, arpeggioDown, nonArpeggio
+            AccN = 0, AccX, AccB, AccXx, AccBb,
+            Fermata = 5, ShortFermata, LongFermata, VeryLongFermata,
+            Thumb = 9, Sforzato, Espr, Staccato, Staccatissimo, Tenuto, Portato, Marcato,
+            Open = 17, Stopped, Upbow, Downbow, Reverseturn, Turn, Trill, Pedalheel, Pedaltoe,
+            Flageolet = 26, Rcomma, Prall, Mordent, Prallprall, Prallmordent,
+            Upprall = 32, Upmordent, Pralldown, Downprall, Downmordent, Prallup, Lineprall,
+            Caesura = 39, Lcomma, Rvarcomma, Lvarcomma,
+            Arpeggio = 43, ArpeggioDown, NonArpeggio
         };
 
 
@@ -1975,14 +1975,14 @@ module JMusicScore {
         }
 
         /** Long note decoration type, e.g. hairpin, trill extension and slur */
-        export enum LongDecorationType { trillExt, cresc, decresc, slur, bracket, tuplet, ottava };
+        export enum LongDecorationType { TrillExt, Cresc, Decresc, Slur, Bracket, Tuplet, Ottava };
 
         /** Long note decoration interface, e.g. hairpin, trill extension and slur */
         export interface ILongDecorationElement extends IMusicElement {
             parent: INote;
             placement: string;
             spacingInfo: ILongDecorationSpacingInfo;
-            EndEvent: ITimedEvent;
+            endEvent: ITimedEvent;
             type: LongDecorationType;
         }
 
@@ -2012,12 +2012,12 @@ module JMusicScore {
             }
             public placement: string;
 
-            public get EndEvent(): ITimedEvent {
+            public get endEvent(): ITimedEvent {
                 var note = this.parent;
-                var endTime = note.absTime.Add(this.duration);
+                var endTime = note.absTime.add(this.duration);
                 while (note) {
                     var newNote = Music.nextNote(note);
-                    if (newNote && endTime.Gt(note.absTime)) {
+                    if (newNote && endTime.gt(note.absTime)) {
                         note = newNote;
                     }
                     else return note;
@@ -2224,7 +2224,7 @@ module JMusicScore {
                 };
             }*/
             public static calcNoteId(timeVal: TimeSpan): string {
-                timeVal.Reduce();
+                timeVal.reduce();
 
                 // check tuplets:
                 var denom = timeVal.denominator;
@@ -2232,10 +2232,10 @@ module JMusicScore {
                 if (denom !== 1) return null;
 
                 if (timeVal.numerator === 3) {
-                    timeVal = timeVal.MultiplyRational(new Rational(2, 3));
+                    timeVal = timeVal.multiplyRational(new Rational(2, 3));
                 }
                 if (timeVal.numerator === 7) {
-                    timeVal = timeVal.MultiplyRational(new Rational(4, 7));
+                    timeVal = timeVal.multiplyRational(new Rational(4, 7));
                 }
 
                 if ((timeVal.numerator === 2 && timeVal.denominator === 1) || timeVal.numerator === 1) {
@@ -2243,16 +2243,16 @@ module JMusicScore {
                 }
                 return null;
             }
-            static FindNote(voice: IVoice, absTime: AbsoluteTime): INote {
+            static findNote(voice: IVoice, absTime: AbsoluteTime): INote {
                 var res: INote;
                 for (var i = 0; i < voice.noteElements.length; i++) {
                     var note = voice.noteElements[i];
-                    if (note.absTime.Add(note.getTimeVal()).Gt(absTime)) {
+                    if (note.absTime.add(note.getTimeVal()).gt(absTime)) {
                         return note;
                     }
                 }
                 voice.withNotes((note: INote) => {
-                    if (absTime.Ge(note.absTime) && note.absTime.Add(note.timeVal).Gt(absTime)) {
+                    if (absTime.ge(note.absTime) && note.absTime.add(note.timeVal).gt(absTime)) {
                         res = note;
                     }
                 });
@@ -2260,23 +2260,23 @@ module JMusicScore {
             }
 
             /** Check if absTime is in an area with unfinished tuplets and return the current tuplet fraction at this absTime */
-            static InTupletArea(voice: IVoice, absTime: AbsoluteTime): Rational {
+            static inTupletArea(voice: IVoice, absTime: AbsoluteTime): Rational {
                 // Find first note in the bar
                 // todo: maybe add support for tuplets crossing bar lines
                 var staffContext = voice.parent.getStaffContext(absTime);
-                var barBegin: AbsoluteTime = absTime.Sub(staffContext.timeInBar);
-                var firstNoteInBar: INote = this.FindNote(voice, barBegin);
+                var barBegin: AbsoluteTime = absTime.sub(staffContext.timeInBar);
+                var firstNoteInBar: INote = Music.findNote(voice, barBegin);
                 if (firstNoteInBar) {
                     var tupletFraction: Rational = null;
                     var note = firstNoteInBar;
-                    while (note && !note.absTime.Ge(absTime)) {
+                    while (note && !note.absTime.ge(absTime)) {
                         if (note.tupletDef) { // todo: nested tuplets
                             if (note.tupletDef.fullTime) {
-                                var endTime = note.absTime.Add(note.tupletDef.fullTime);
-                                if (endTime.Gt(absTime)) {
+                                var endTime = note.absTime.add(note.tupletDef.fullTime);
+                                if (endTime.gt(absTime)) {
                                     return note.tupletDef.fraction;
                                 }
-                                while (note && !note.absTime.Ge(endTime)) {
+                                while (note && !note.absTime.ge(endTime)) {
                                     note = this.nextNote(note);
                                 }
                             }
@@ -2289,47 +2289,47 @@ module JMusicScore {
             }
 
             /** Add a note to voice at a specified absTime */
-            static AddNote(voice: IVoice, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): INote {
+            static addNote(voice: IVoice, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): INote {
                 var note = new NoteElement(voice, noteId, timeVal);
                 note.absTime = absTime;
 
                 note.tupletDef = tuplet;
 
-                var fraction = this.InTupletArea(voice, absTime);
+                var fraction = Music.inTupletArea(voice, absTime);
                 if (fraction) {
                     note.tupletDef = new TupletDef(null, fraction);
                 }
                 var voiceTime = voice.getEndTime();
-                if (absTime.Gt(voiceTime)) {
+                if (absTime.gt(voiceTime)) {
                     // add placeholders between voiceTime and absTime
-                    var restNote = new NoteElement(null, 'hidden', absTime.Diff(voiceTime));
+                    var restNote = new NoteElement(null, 'hidden', absTime.diff(voiceTime));
                     restNote.setParent(voice);
                     restNote.setRest(true);
                     restNote.absTime = Model.AbsoluteTime.startTime;
                     voice.addChild(voice.noteElements, restNote, null, false);
                 }
                 var oldNote: INote = beforeNote;
-                if (!oldNote && voiceTime.Gt(absTime)) {
+                if (!oldNote && voiceTime.gt(absTime)) {
                     // find note at absTime
-                    oldNote = this.FindNote(voice, absTime);
+                    oldNote = Music.findNote(voice, absTime);
                     // if placeholder shorten it
                     if (oldNote) { // todo: shorten placeholder
                         if (oldNote.NoteId === "hidden") {
                             var oldTime = oldNote.getTimeVal();
-                            if (oldTime.Gt(timeVal)) {
-                                oldNote.timeVal = oldTime.Sub(timeVal);
+                            if (oldTime.gt(timeVal)) {
+                                oldNote.timeVal = oldTime.sub(timeVal);
                             }
-                            else if (oldTime.Eq(timeVal)) {
+                            else if (oldTime.eq(timeVal)) {
                             }
                         }
                     }
                 }
                 note.dotNo = dots;
                 voice.addChild(voice.noteElements, note, oldNote);
-                if (noteType === NoteType.rest) {
+                if (noteType === NoteType.Rest) {
                     note.setRest(true);
                 }
-                else if (noteType === NoteType.placeholder) {
+                else if (noteType === NoteType.Placeholder) {
                     note.setRest(true);
                 }
                 else {
@@ -2423,7 +2423,7 @@ module JMusicScore {
             static register(key: string, creator: IMusicElementCreator) {
                 this.mementoCreators[key] = creator;
             }
-            public static RecreateElement(parent: IMusicElement, memento: IMemento): IMusicElement {
+            public static recreateElement(parent: IMusicElement, memento: IMemento): IMusicElement {
                 var res: IMusicElement;
                 var creator = this.mementoCreators[memento.t];
                 if (creator) {
@@ -2432,7 +2432,7 @@ module JMusicScore {
                     if (children) {
                         for (var i = 0; i < children.length; i++) {
                             var child = children[i];
-                            var elm = this.RecreateElement(res, child);
+                            var elm = MusicElementFactory.recreateElement(res, child);
                         }
                     }
                 }

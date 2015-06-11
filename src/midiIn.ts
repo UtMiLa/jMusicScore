@@ -6,10 +6,10 @@
 
             private trigger(eventtype: string, event: Application.IMessage) {
                 //var eventtype: string = event.type;
-                this.eventReceiver.ProcessEvent(eventtype.toLowerCase(), event);
+                this.eventReceiver.processEvent(eventtype.toLowerCase(), event);
             }
 
-            private _midiProc(t: number, a: number, b: number, c: number) {
+            private midiProc(t: number, a: number, b: number, c: number) {
                 this.trigger("rawMidiIn",
                     {
                         param1: a,
@@ -87,7 +87,7 @@
                 }
             }
 
-            private Jazz: any;
+            private jazz: any;
             private midiInVars: {
                 current_in: any;
                 midiKeysPressed: number[];
@@ -95,7 +95,7 @@
             };
 
             public midiOpen(newMidiIn: any): any {
-                if (!this.Jazz) {
+                if (!this.jazz) {
                     var r = $('<object>')
                         .attr('classid', "CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90")
                         .addClass("hidden");
@@ -105,31 +105,31 @@
                     s.append('<p style="visibility:visible;">This page requires <a href="http://jazz-soft.net/">Jazz-Plugin</a> ...</p>');
                     r.append(s);
                     $('#MidiInStuff').append(r);
-                    this.Jazz = r[0];
-                    if (!this.Jazz || !this.Jazz.isJazz) this.Jazz = s[0];
+                    this.jazz = r[0];
+                    if (!this.jazz || !this.jazz.isJazz) this.jazz = s[0];
                 }
                 this.midiInVars = {
-                    current_in: this.Jazz.MidiInOpen(newMidiIn,(t: number, a: number, b: number, c: number) => {
-                        this._midiProc(t, a, b, c);
+                    current_in: this.jazz.MidiInOpen(newMidiIn,(t: number, a: number, b: number, c: number) => {
+                        this.midiProc(t, a, b, c);
                     }),
                     midiKeysPressed: new Array(),
                     currentChord: new Array()
                 };
                 //this.current_in = this.Jazz.MidiInOpen(newMidiIn, _midiProc);
-                return this.Jazz;
+                return this.jazz;
             }
 
             midiSend(arg2: { code: number; a1: number; a2: number; }) {
-                this.Jazz.MidiOut(arg2.code, arg2.a1, arg2.a2);
+                this.jazz.MidiOut(arg2.code, arg2.a1, arg2.a2);
             }
 
             midiClose(): void {
-                this.Jazz.MidiInClose();
+                this.jazz.MidiInClose();
                 this.midiInVars.current_in = '';
             }
 
             midiInList(): string[] {
-                return this.Jazz.MidiInList();
+                return this.jazz.MidiInList();
             }
 
             releaseKey(arg: number) {
@@ -151,19 +151,19 @@
                 this.midiInVars.midiKeysPressed.push(arg);
             }
 
-            get CurrentIn(): string {
+            get currentIn(): string {
                 return this.midiInVars.current_in;
             }
-            get KeysPressed(): number[] {
+            get keysPressed(): number[] {
                 return this.midiInVars.midiKeysPressed.sort();
             }
         }
 
 
-        export class MidiInputPlugin implements ScoreApplication.ScorePlugin {
+        export class MidiInputPlugin implements ScoreApplication.IScorePlugin {
             private static _midiHelper: MidiHelper;
 
-            public static GetMidiHelper(app: Application.IEventReceiver): MidiHelper {
+            public static getMidiHelper(app: Application.IEventReceiver): MidiHelper {
                 if (!this._midiHelper) this._midiHelper = new MidiHelper(app);
                 return this._midiHelper;
             }
@@ -171,15 +171,15 @@
             private midiChannel: string;
             private midiHelper: MidiHelper;
 
-            public SetMidiChannel(val: string) {
+            public setMidiChannel(val: string) {
                 if (this.midiChannel !== val) {
                 }
                 this.midiChannel = val;
             }
 
-            public init(app: ScoreApplication.ScoreApplication) {
+            public init(app: ScoreApplication.IScoreApplication) {
                 var activeElement: Element;
-                this.midiHelper = MidiInputPlugin.GetMidiHelper(app);
+                this.midiHelper = MidiInputPlugin.getMidiHelper(app);
                 var me = this;
 
                 function connectMidiIn() {
@@ -202,7 +202,7 @@
                     () => {
                         try {
                             me.midiHelper.midiOpen(0);
-                            app.AddPlugin(new MidiMenuPlugin(me.midiHelper));
+                            app.addPlugin(new MidiMenuPlugin(me.midiHelper));
                         }
                         catch (err) {
                             // Jazz Midi In not supported
@@ -234,8 +234,8 @@
             public getId(): string { return 'MidiInputPlugin'; }
         }
 
-        class MidiSettingsDialog extends UI.ScoreDialog {
-            constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication, private helper: MidiHelper) {
+        class MidiSettingsDialog extends JMusicScore.Ui.ScoreDialog {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication, private helper: MidiHelper) {
                 super(idPrefix, app);
                 this.dialogId = "MidiDialog";
                 this.dialogTitle = "MIDI Setup";
@@ -244,7 +244,7 @@
                 this.createControls();
             }
 
-            private midiInCtl: UI.DropdownWidget;
+            private midiInCtl: JMusicScore.Ui.DropdownWidget;
 
             setHelper(helper: MidiHelper): MidiSettingsDialog {
                 this.helper = helper;
@@ -262,8 +262,8 @@
                         values[list[i]] = list[i];
                     }
 
-                    this.addWidget(this.midiInCtl = new UI.DropdownWidget(values), "midiIn", "Midi in");
-                    this.midiInCtl.Value = this.helper.CurrentIn;
+                    this.addWidget(this.midiInCtl = new JMusicScore.Ui.DropdownWidget(values), "midiIn", "Midi in");
+                    this.midiInCtl.value = this.helper.currentIn;
                 }
                 catch (err) {
                     alert("error4");
@@ -272,7 +272,7 @@
 
             public onOk(): boolean {
                 // Vælg Midi-kanal
-                var midiChannel = this.midiInCtl.Value;
+                var midiChannel = this.midiInCtl.value;
                 
                 try {
                     if (midiChannel) {
@@ -292,17 +292,17 @@
 
 
         // ****************** Midi ******************* //
-        class MidiMenuPlugin extends UI.MenuPlugin {
+        class MidiMenuPlugin extends JMusicScore.Ui.MenuPlugin {
             constructor(private helper: MidiHelper) { super(); }
 
-            getMenuObj(app: ScoreApplication.ScoreApplication): UI.IMenuDef {
+            getMenuObj(app: ScoreApplication.IScoreApplication): JMusicScore.Ui.IMenuDef {
                 // ****************** staves ******************* //
                 var me = this;
                 return {
-                    Id: "MidiMenu",
-                    Caption: "MIDI Setup",
+                    id: "MidiMenu",
+                    caption: "MIDI Setup",
                     action: () => {
-                        new MidiSettingsDialog('menu', app, me.helper).Show();
+                        new MidiSettingsDialog('menu', app, me.helper).show();
                     },
                 };
             }

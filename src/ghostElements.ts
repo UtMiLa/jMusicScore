@@ -39,7 +39,7 @@
 
         //export class GhostVoiceElement { }
 
-        export class GhostsValidator implements Model.ScoreValidator {
+        export class GhostsValidator implements Model.IScoreValidator {
             private addGhostMeter(staff: Model.IStaff, meter: Model.IMeter) {
                 // tjek om der er ghostMeter til denne kombination af meter og staff
                 var ghostMeter = new GhostMeterElement(staff, meter);
@@ -47,7 +47,7 @@
                 staff.addChild(staff.meterElements, ghostMeter);
             }
 
-            public validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.IScoreApplication) {
 
                 app.document.withStaves((staff: Model.IStaff, index: number): void => {
 
@@ -64,7 +64,7 @@
                         var found = false;
                         staff.withMeters((staffMeter: Model.IMeter, index: number) => {
                             //if ((<any>staffMeter).originElement && (<any>staffMeter).originElement === scoreMeter) {
-                            if (staffMeter.absTime.Eq(scoreMeter.absTime)) {
+                            if (staffMeter.absTime.eq(scoreMeter.absTime)) {
                                 found = true;
                             }
                         });

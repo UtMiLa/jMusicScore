@@ -3,13 +3,13 @@ module JMusicScore {
     export module Application {
 
         /** Every external plugin to application must implement this interface */
-        export interface IPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            init(app: Application<DocumentType, StatusManager, ContainerType>): void;
+        export interface IPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
+            init(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
             getId(): string;
         }
 
         /** Interface for file readers (in varying formats) */
-        export interface IReaderPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> extends IPlugIn<DocumentType, StatusManager, ContainerType> {
+        export interface IReaderPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> extends IPlugIn<TDocumentType, TStatusManager, TContainerType> {
             //Init(app: Application): void;
             supports(type: string): boolean;
             getExtension(type: string): string;
@@ -19,7 +19,7 @@ module JMusicScore {
         }
 
         /** Interface for file writers */
-        export interface IWriterPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> extends IPlugIn<DocumentType, StatusManager, ContainerType> {
+        export interface IWriterPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> extends IPlugIn<TDocumentType, TStatusManager, TContainerType> {
             //Init(app: Application): void;
             supports(type: string): boolean;
             getExtension(type: string): string;
@@ -29,41 +29,41 @@ module JMusicScore {
         }
 
         /** Interface for commands. Every user action that changes data in the model must use Command objects. */
-        export interface ICommand<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Execute(app: Application<DocumentType, StatusManager, ContainerType>): void;
-            Undo?(app: Application<DocumentType, StatusManager, ContainerType>): void;
+        export interface ICommand<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
+            execute(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            undo?(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
         }
 
         /** Interface for objects that check and refines the model after every change (like beam calculation) */
-        export interface IValidator<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
+        export interface IValidator<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
+            validate(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
         }
 
         /** Interface for objects that check and refines the user interface after every model change (like spacing and drawing) */
-        export interface IDesigner<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
+        export interface IDesigner<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
+            validate(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
         }
 
         /** Interface for pluggable event processors that can handle events */
-        export interface IEventProcessor<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            init(app: Application<DocumentType, StatusManager, ContainerType>): void;
-            exit(app: Application<DocumentType, StatusManager, ContainerType>): void;
+        export interface IEventProcessor<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
+            init(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            exit(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
 
-            midinoteoff? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
-            keypressed? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
-            keyup? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
-            keydown? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
+            midinoteoff? (app: Application<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
+            keypressed? (app: Application<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
+            keyup? (app: Application<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
+            keydown? (app: Application<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
         }
 
         /** Interface for file managers that can load and save files in various file systems (remote or local) */
-        export interface IFileManager<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
-            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void;
+        export interface IFileManager<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
+            init(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            exit(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
 
             getFileList(handler: (data: string[]) => void): void;
             loadFile(name: string, handler: (data: string, name: string) => void): void;
             saveFile(name: string, data: string, handler: (res: string) => void): void;
-            GetId(): string;
+            getId(): string;
         }
 
         export interface IDesktopArea { }
@@ -126,7 +126,7 @@ module JMusicScore {
         }
 
         export interface IEventReceiver {
-            ProcessEvent(name: string, message: IMessage): boolean;
+            processEvent(name: string, message: IMessage): boolean;
         }
 
         export interface IAppDoc {
@@ -134,60 +134,60 @@ module JMusicScore {
         }
 
         /** Application object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
-        export class Application<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            constructor(public container: ContainerType, score: DocumentType, status: StatusManager) {
+        export class Application<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
+            constructor(public container: TContainerType, score: TDocumentType, status: TStatusManager) {
                 this.document = score;
                 this.status = status;
                 this.status.setFeedbackManager(this.feedbackManager);
             }
 
-            public document: DocumentType;
-            private plugins: IPlugIn<DocumentType, StatusManager, ContainerType>[] = [];
-            private readers: IReaderPlugIn<DocumentType, StatusManager, ContainerType>[] = [];
-            private writers: IWriterPlugIn<DocumentType, StatusManager, ContainerType>[] = [];
-            private fileManagers: IFileManager<DocumentType, StatusManager, ContainerType>[] = [];
-            private validators: IValidator<DocumentType, StatusManager, ContainerType>[] = [];
-            private designers: IDesigner<DocumentType, StatusManager, ContainerType>[] = [];
-            private editors: IDesigner<DocumentType, StatusManager, ContainerType>[] = [];
+            public document: TDocumentType;
+            private plugins: IPlugIn<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private readers: IReaderPlugIn<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private writers: IWriterPlugIn<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private fileManagers: IFileManager<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private validators: IValidator<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private designers: IDesigner<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private editors: IDesigner<TDocumentType, TStatusManager, TContainerType>[] = [];
             private feedbackManager: IFeedbackManager = new FeedbackManager();
-            private status: StatusManager;
+            private status: TStatusManager;
 
-            public get Status(): StatusManager {
+            public get Status(): TStatusManager {
                 return this.status;
             }
             public get FeedbackManager(): IFeedbackManager { return this.feedbackManager; }
 
-            public AddPlugin(plugin: IPlugIn<DocumentType, StatusManager, ContainerType>) {
+            public addPlugin(plugin: IPlugIn<TDocumentType, TStatusManager, TContainerType>) {
                 this.plugins.push(plugin);
                 plugin.init(this);
             }
 
-            public AddReader(reader: IReaderPlugIn<DocumentType, StatusManager, ContainerType>) {
+            public addReader(reader: IReaderPlugIn<TDocumentType, TStatusManager, TContainerType>) {
                 this.readers.push(reader);
                 reader.init(this);
             }
 
-            public AddWriter(writer: IWriterPlugIn<DocumentType, StatusManager, ContainerType>) {
+            public addWriter(writer: IWriterPlugIn<TDocumentType, TStatusManager, TContainerType>) {
                 this.writers.push(writer);
                 writer.init(this);
             }
 
-            public AddFileManager(fileManager: IFileManager<DocumentType, StatusManager, ContainerType>) {
+            public addFileManager(fileManager: IFileManager<TDocumentType, TStatusManager, TContainerType>) {
                 this.fileManagers.push(fileManager);
-                fileManager.Init(this);
+                fileManager.init(this);
             }
 
-            public AddValidator(validator: IValidator<DocumentType, StatusManager, ContainerType>) {
+            public addValidator(validator: IValidator<TDocumentType, TStatusManager, TContainerType>) {
                 this.validators.push(validator);
                 validator.validate(this);
             }
 
-            public AddDesigner(designer: IDesigner<DocumentType, StatusManager, ContainerType>) {
+            public addDesigner(designer: IDesigner<TDocumentType, TStatusManager, TContainerType>) {
                 this.designers.push(designer);
                 designer.validate(this);
             }
 
-            public GetFileOpenTypes(): string[] {
+            public getFileOpenTypes(): string[] {
                 var res: string[] = [];
                 for (var i = 0; i < this.readers.length; i++) {
                     res.concat(this.readers[i].getFormats());
@@ -195,7 +195,7 @@ module JMusicScore {
                 return res;
             }
 
-            public GetFileSaveTypes(): string[]{
+            public getFileSaveTypes(): string[]{
                 var res: string[] = [];
                 for (var i = 0; i < this.writers.length; i++) {
                     res = res.concat(this.writers[i].getFormats());
@@ -203,23 +203,23 @@ module JMusicScore {
                 return res;
             }
 
-            public GetFileManagerIds(): string[] {
+            public getFileManagerIds(): string[] {
                 var res: string[] = [];
                 for (var i = 0; i < this.fileManagers.length; i++) {
-                    res.push(this.fileManagers[i].GetId());
+                    res.push(this.fileManagers[i].getId());
                 }
                 return res;
             }
 
-            public GetFileList(fileManager:string, handler: (data: string[]) => void) {
+            public getFileList(fileManager:string, handler: (data: string[]) => void) {
                 for (var i = 0; i < this.fileManagers.length; i++) {
-                    if (this.fileManagers[i].GetId() === fileManager) {
+                    if (this.fileManagers[i].getId() === fileManager) {
                         this.fileManagers[i].getFileList(handler);
                     }
                 }
             }
 
-            public SetExtension(name: string, type: string) {
+            public setExtension(name: string, type: string) {
                 for (var i = 0; i < this.writers.length; i++) {
                     if (this.writers[i].supports(type)) {
                         var writer = this.writers[i];
@@ -233,21 +233,21 @@ module JMusicScore {
                 throw "Output format not supported: " + type;
             }
 
-            public SaveUsing(name: string, fileManager: string, type: string) {
+            public saveUsing(name: string, fileManager: string, type: string) {
                 for (var i = 0; i < this.fileManagers.length; i++) {
-                    if (this.fileManagers[i].GetId() === fileManager) {
-                        this.Save(name, this.fileManagers[i], type);
+                    if (this.fileManagers[i].getId() === fileManager) {
+                        this.save(name, this.fileManagers[i], type);
                         return;
                     }
                 }
                 throw "File manager not found: " + fileManager;
             }
 
-            public Save(name: string, fileManager: IFileManager<DocumentType, StatusManager, ContainerType>, type: string) {
-                fileManager.saveFile(name, this.SaveToString(type), function (res: string) { });
+            public save(name: string, fileManager: IFileManager<TDocumentType, TStatusManager, TContainerType>, type: string) {
+                fileManager.saveFile(name, this.saveToString(type), function (res: string) { });
             }
 
-            public SaveToString(type: string): string {
+            public saveToString(type: string): string {
                 for (var i = 0; i < this.writers.length; i++) {
                     if (this.writers[i].supports(type)) {
                         var writer = this.writers[i];
@@ -257,20 +257,20 @@ module JMusicScore {
                 throw "Output format not supported: " + type;
             }
 
-            public LoadUsing(name: string, fileManager: string, type: string) {
+            public loadUsing(name: string, fileManager: string, type: string) {
                 for (
                     var i = 0; i < this.fileManagers.length; i++) {
-                    if (this.fileManagers[i].GetId() === fileManager) {
-                        this.Load(name, this.fileManagers[i], type);
+                    if (this.fileManagers[i].getId() === fileManager) {
+                        this.load(name, this.fileManagers[i], type);
                         return;
                     }
                 }
                 throw "File manager not found: " + fileManager;
             }
 
-            public Load(name: string, fileManager: IFileManager<DocumentType, StatusManager, ContainerType>, type: string) {
+            public load(name: string, fileManager: IFileManager<TDocumentType, TStatusManager, TContainerType>, type: string) {
                 var app = this;
-                this.ProcessEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
+                this.processEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
                 var me = this;
                 for (var i = 0; i < this.readers.length; i++) {
                     if (this.readers[i].supports(type) || (type === '*' && name.match(this.readers[i].getExtension(type) + "$"))) {
@@ -280,11 +280,11 @@ module JMusicScore {
                             score.clear();
 
                             var a = reader.load(data);
-                            me._undoStack = [];
-                            me._redoStack = [];
-                            app.FixModel();
-                            app.FixDesign();
-                            app.FixEditors();
+                            me.undoStack = [];
+                            me.redoStack = [];
+                            app.fixModel();
+                            app.fixDesign();
+                            app.fixEditors();
                             return a;
                         });
                         return;
@@ -293,79 +293,79 @@ module JMusicScore {
                 throw "Input format not supported: " + type;
             }
 
-            public LoadFromString(data: any, type: string) {
-                this.ProcessEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
+            public loadFromString(data: any, type: string) {
+                this.processEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
                 for (var i = 0; i < this.readers.length; i++) {
                     if (this.readers[i].supports(type)) {
                         var score = this.document;
                         score.clear();
 
                         var a = this.readers[i].load(data);
-                        this._undoStack = [];
-                        this._redoStack = [];
-                        this.FixModel();
-                        this.FixDesign();
-                        this.FixEditors();
+                        this.undoStack = [];
+                        this.redoStack = [];
+                        this.fixModel();
+                        this.fixDesign();
+                        this.fixEditors();
                         return a;
                     }
                 }
                 throw "Input format not supported: " + type;
             }
 
-            public GetPlugin(id: string): IPlugIn<DocumentType, StatusManager, ContainerType> {
+            public getPlugin(id: string): IPlugIn<TDocumentType, TStatusManager, TContainerType> {
                 for (var i = 0; i < this.plugins.length; i++) {
                     if (this.plugins[i].getId() === id) return this.plugins[i];
                 }
                 return null;
             }
 
-            private _undoStack: ICommand<DocumentType, StatusManager, ContainerType>[] = [];
-            private _redoStack: ICommand<DocumentType, StatusManager, ContainerType>[] = [];
+            private undoStack: ICommand<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private redoStack: ICommand<TDocumentType, TStatusManager, TContainerType>[] = [];
 
-            public ExecuteCommand(command: ICommand<DocumentType, StatusManager, ContainerType>) {
-                command.Execute(this);
-                if (command.Undo) {
-                    this._undoStack.push(command);
+            public executeCommand(command: ICommand<TDocumentType, TStatusManager, TContainerType>) {
+                command.execute(this);
+                if (command.undo) {
+                    this.undoStack.push(command);
                 }
                 else {
-                    this._undoStack = [];
+                    this.undoStack = [];
                 }
-                this._redoStack = [];
+                this.redoStack = [];
                 
-                this.FixModel();
-                this.FixDesign();
-                this.FixEditors();
+                this.fixModel();
+                this.fixDesign();
+                this.fixEditors();
             }
 
             public canUndo(): boolean {
-                return (this._undoStack.length) > 0;
+                return (this.undoStack.length) > 0;
             }
 
             public canRedo(): boolean {
-                return this._redoStack.length > 0;
+                return this.redoStack.length > 0;
             }
 
-            public Undo() {
-                var cmd = this._undoStack.pop();
-                cmd.Undo(this);
-                this._redoStack.push(cmd);
+            public undo() {
+                var cmd = this.undoStack.pop();
+                cmd.undo(this);
+                this.redoStack.push(cmd);
                 
-                this.FixModel();
-                this.FixDesign();
-                this.FixEditors();
+                this.fixModel();
+                this.fixDesign();
+                this.fixEditors();
             }
 
-            public Redo() {
-                var cmd = this._redoStack.pop();
-                cmd.Execute(this);
-                this._undoStack.push(cmd);
+            public redo() {
+                var cmd = this.redoStack.pop();
+                cmd.execute(this);
+                this.undoStack.push(cmd);
                 
-                this.FixModel();
-                this.FixDesign();
-                this.FixEditors();
+                this.fixModel();
+                this.fixDesign();
+                this.fixEditors();
             }
 
-            private FixModel() {
+            private fixModel() {
                 for (var i = 0; i < this.validators.length; i++) {
                     var t = Date.now();
                     this.validators[i].validate(this);
@@ -373,7 +373,7 @@ module JMusicScore {
                 }
             }
 
-            private FixDesign() {
+            private fixDesign() {
                 for (var i = 0; i < this.designers.length; i++) {
                     var t = Date.now();
                     this.designers[i].validate(this);
@@ -381,7 +381,7 @@ module JMusicScore {
                 }
             }
 
-            private FixEditors() {
+            private fixEditors() {
                 for (var i = 0; i < this.editors.length; i++) {
                     var t = Date.now();
                     this.editors[i].validate(this);
@@ -389,14 +389,14 @@ module JMusicScore {
                 }
             }
 
-            private eventProcessors: IEventProcessor<DocumentType, StatusManager, ContainerType>[] = [];
+            private eventProcessors: IEventProcessor<TDocumentType, TStatusManager, TContainerType>[] = [];
 
-            public RegisterEventProcessor(eventProc: IEventProcessor<DocumentType, StatusManager, ContainerType>) {
+            public registerEventProcessor(eventProc: IEventProcessor<TDocumentType, TStatusManager, TContainerType>) {
                 this.eventProcessors.push(eventProc);
                 eventProc.init(this);
             }
 
-            public UnregisterEventProcessor(eventProc: IEventProcessor<DocumentType, StatusManager, ContainerType>) {
+            public unregisterEventProcessor(eventProc: IEventProcessor<TDocumentType, TStatusManager, TContainerType>) {
                 var i = this.eventProcessors.indexOf(eventProc);
                 if (i >= 0) {
                     this.eventProcessors.splice(i, 1);
@@ -404,7 +404,7 @@ module JMusicScore {
                 }
             }
 
-            public ProcessEvent(name: string, message: IMessage): boolean {
+            public processEvent(name: string, message: IMessage): boolean {
                 for (var i = 0; i < this.eventProcessors.length; i++) {
                     var evPro: any = this.eventProcessors[i];
                     if (evPro[name]) {
