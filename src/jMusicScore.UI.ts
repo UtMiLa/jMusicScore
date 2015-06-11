@@ -263,7 +263,7 @@ module jMusicScore {
 
             public SetOptions(items: Array<any>) {
                 this.$ctl.empty();
-                $.each(items, (i, e) => {
+                $.each(items, (i: number, e: {label: string; val:string;}) => {
                     $('<option>').text(e.label).attr('value', e.val).appendTo(this.$ctl);
                 });
             }
@@ -1325,7 +1325,7 @@ module jMusicScore {
         Change voice
         Change staff
         */
-        interface IToolBtnDef {
+        export interface IToolBtnDef {
             id: string;
             label: string;
             glyph: string;
@@ -1334,14 +1334,14 @@ module jMusicScore {
             validate?: (app: ScoreApplication.ScoreApplication) => boolean;
         }
 
-        interface IToolDef {
+        export interface IToolDef {
             type: string;
             name?: string;
             id: string;
             buttons?: IToolBtnDef[];
         }
 
-        class JToolbar {
+        export class JToolbar {
             constructor(private app: ScoreApplication.ScoreApplication) {
                 this.makeMenu('#notetools1', JToolbar.menuDef);
 
