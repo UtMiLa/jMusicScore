@@ -1,4 +1,4 @@
-module jMusicScore {
+module JMusicScore {
     /** logical music definition classes and classes for music concepts */
     export module Model {
 
@@ -139,7 +139,7 @@ module jMusicScore {
         }
 
         export interface IVisitorIterator {
-            VisitPre(element: IMusicElement): (element: IMusicElement) => void;
+            visitPre(element: IMusicElement): (element: IMusicElement) => void;
         }
 
         export interface IMemento {
@@ -157,7 +157,7 @@ module jMusicScore {
             parent: IMusicElement;
             spacingInfo: ISpacingInfo;
             setSpacingInfo(info: ISpacingInfo): void;
-            InviteVisitor(spacer: IVisitor): void;
+            inviteVisitor(spacer: IVisitor): void;
             getElementName(): string;
             addChild(list: IMusicElement[], theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void;
             removeChild(theChild: IMusicElement, list?: IMusicElement[]): void;
@@ -189,8 +189,8 @@ module jMusicScore {
             public setSpacingInfo(info: SpacingInfo): SpacingInfo {
                 return this._spacingInfo = info;
             }
-            public InviteVisitor(spacer: IVisitor) {
-                spacer.VisitDefault(this, this._spacingInfo);
+            public inviteVisitor(spacer: IVisitor) {
+                spacer.visitDefault(this, this._spacingInfo);
             }
 
             public changed() { }
@@ -302,14 +302,14 @@ module jMusicScore {
                 return memento;
             }
             public VisitAll(visitor: IVisitorIterator) {
-                var PostFun: (element: IMusicElement) => void = visitor.VisitPre(this);
+                var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
                 for (var i = 0; i < this.childLists.length; i++) {
                     for (var j = 0; j < this.childLists[i].length; j++) {
                         this.childLists[i][j].VisitAll(visitor);
                     }
                 }
-                if (PostFun) {
-                    PostFun(this);
+                if (postFun) {
+                    postFun(this);
                 }
 
             }
@@ -377,8 +377,8 @@ module jMusicScore {
             getStaff(): IStaff { return null; }
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
 
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitBar(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitBar(this, this.spacingInfo);
             }
         }
 
@@ -422,8 +422,8 @@ module jMusicScore {
             public subTitle: string;
             public metadata = {};
 
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitScore(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitScore(this, this.spacingInfo);
             }
 
             static createFromMemento(parent: IMusicElement, memento: IMemento): IScore {
@@ -640,8 +640,8 @@ module jMusicScore {
             }
 
 
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitStaff(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitStaff(this, this.spacingInfo);
             }
 
             public withVoices(f: (voice: IVoice, index: number) => void) {
@@ -826,8 +826,8 @@ module jMusicScore {
             getStaff(): IStaff { return this.parent; }
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
 
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitStaffExpression(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitStaffExpression(this, this.spacingInfo);
             }
             static createFromMemento(parent: IStaff, memento: IMemento): IStaffExpression {
                 var absTime = AbsoluteTime.createFromMemento(memento.def.abs);
@@ -881,8 +881,8 @@ module jMusicScore {
                 return val;
             }
 
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitVoice(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitVoice(this, this.spacingInfo);
             }
 
             public noteElements: INote[] = [];
@@ -1009,8 +1009,8 @@ module jMusicScore {
                 super(parent);
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
             }
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitClef(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitClef(this, this.spacingInfo);
             }
             static createFromMemento(parent: IStaff, memento: IMemento): IClef {
                 var def = new ClefDefinition(memento.def.clef, memento.def.lin, memento.def.tr);
@@ -1161,8 +1161,8 @@ module jMusicScore {
                 super(parent);
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
             }
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitKey(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitKey(this, this.spacingInfo);
             }
             static createFromMemento(parent: IStaff, memento: IMemento): IKey {
                 var def = KeyDefinitionFactory.CreateKeyDefinition(memento.def.def);
@@ -1360,8 +1360,8 @@ module jMusicScore {
             constructor(public parent: IMeterOwner, public definition: IMeterDefinition, public absTime: AbsoluteTime) {
                 super(parent);
             }
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitMeter(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitMeter(this, this.spacingInfo);
             }
             static createFromMemento(parent: IMeterOwner, memento: IMemento): IMeter {
                 if (!memento.def) return null;
@@ -1491,7 +1491,7 @@ module jMusicScore {
             }
             static alterationInts = ['bb', 'b', '', 'x', 'xx'];
             static noteNames = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
-            static alterations: { [Index: string]: string } = { 'bb': 'eses', 'b': 'es', 'n': '', 'x': 'is', 'xx': 'isis', '': '' };
+            static alterations: { [index: string]: string } = { 'bb': 'eses', 'b': 'es', 'n': '', 'x': 'is', 'xx': 'isis', '': '' };
             static octaves = [',,,,,', ',,,,', ',,,', ',,', ',', '', "'", "''", "'''", "''''", "'''''", "''''''"];
             public debug(): string {
                 var noteName = Pitch.noteNames[(this.pitch + 98) % 7];
@@ -1511,7 +1511,7 @@ module jMusicScore {
             index: number;
             spacingInfo: IBeamSpacingInfo;
             setSpacingInfo(spacingInfo: IBeamSpacingInfo): void;
-            InviteVisitor(spacer: IVisitor): void;
+            inviteVisitor(spacer: IVisitor): void;
             remove(): void;
         }
 
@@ -1519,8 +1519,8 @@ module jMusicScore {
             constructor(public parent: INote, public toNote: INote, public index: number) {
                 super(parent);
             }
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitBeam(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitBeam(this, this.spacingInfo);
             }
             public remove(): void {
                 var note: INote = this.parent;
@@ -1534,7 +1534,7 @@ module jMusicScore {
 
         export interface INote extends ITimedEvent {
             parent: IVoice;
-            noteId: string;
+            NoteId: string;
             timeVal: TimeSpan;
             noteheadElements: INotehead[];
             decorationElements: INoteDecorationElement[];
@@ -1588,11 +1588,11 @@ module jMusicScore {
             }
         }
 
-        class NoteElement extends MusicElement<INoteSpacingInfo> implements ITimedEvent {
-            constructor(public parent: IVoice, private _noteId: string, public timeVal: TimeSpan) {
+        class NoteElement extends MusicElement<INoteSpacingInfo> implements INote {
+            constructor(public parent: IVoice, private noteId: string, public timeVal: TimeSpan) {
                 super(parent);
-                if (!_noteId && timeVal) {
-                    this._noteId = Music.calcNoteId(timeVal);
+                if (!noteId && timeVal) {
+                    this.noteId = Music.calcNoteId(timeVal);
 //                    if (!this.noteId) this.noteId = "hidden";
                 }
             }
@@ -1629,7 +1629,7 @@ module jMusicScore {
                 var val: any = {
                     time: this.timeVal.getMemento(),
                     abs: this.absTime.getMemento(),
-                    noteId: this._noteId                    
+                    noteId: this.noteId                    
                 };
                 if (this.dotNo) { val.dots = this.dotNo; }
                 if (this.tupletDef) {
@@ -1663,14 +1663,14 @@ module jMusicScore {
             getHorizPosition(): HorizPosition {
                 return new HorizPosition(this.absTime, this.getSortOrder()); // todo: grace note position
             }
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitNote(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitNote(this, this.spacingInfo);
             }
 
-            public get noteId(): string { return this._noteId; }
-            public set noteId(v: string) {
-                if (this._noteId !== v) {
-                    this._noteId = v;
+            public get NoteId(): string { return this.noteId; }
+            public set NoteId(v: string) {
+                if (this.noteId !== v) {
+                    this.noteId = v;
                     this.spacingInfo = undefined;
                 }
             }
@@ -1873,8 +1873,8 @@ module jMusicScore {
             public forceAccidental: boolean = false;
             public showAccidental: boolean = true;
 
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitNoteHead(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitNoteHead(this, this.spacingInfo);
             }
 
             getElementName() {
@@ -1941,8 +1941,8 @@ module jMusicScore {
             constructor(public parent: INote, private notedecorationId: NoteDecorationKind) {
                 super(parent);
             }
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitNoteDecoration(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitNoteDecoration(this, this.spacingInfo);
             }
 
             static createFromMemento(parent: INote, memento: IMemento): INoteDecorationElement {
@@ -1991,8 +1991,8 @@ module jMusicScore {
             constructor(public parent: INote, private duration: TimeSpan, public type: LongDecorationType) {
                 super(parent);
             }
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitLongDecoration(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitLongDecoration(this, this.spacingInfo);
             }
 
             static createFromMemento(parent: INote, memento: IMemento): ILongDecorationElement {
@@ -2030,17 +2030,17 @@ module jMusicScore {
 
         export interface ITextSyllableElement extends IMusicElement {
             placement: string;
-            text: string;
+            Text: string;
             parent: INote;
         }
 
         /** Text syllable from lyrics, shown under or over a note */
         export class TextSyllableElement extends MusicElement<ITextSyllableSpacingInfo> implements ITextSyllableElement {
-            constructor(public parent: INote, private _text: string) {
+            constructor(public parent: INote, private text: string) {
                 super(parent);
             }
-            public InviteVisitor(visitor: IVisitor) {
-                visitor.VisitTextSyllable(this, this.spacingInfo);
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitTextSyllable(this, this.spacingInfo);
             }
 
             static createFromMemento(parent: INote, memento: IMemento): ITextSyllableElement {
@@ -2059,12 +2059,12 @@ module jMusicScore {
 
 
             public placement: string;
-            public get text(): string {
-                return this._text;
+            public get Text(): string {
+                return this.text;
             }
-            public set text(id: string) {
-                if (this._text !== id) {
-                    this._text = id
+            public set Text(id: string) {
+                if (this.text !== id) {
+                    this.text = id
                     this.changed();
                 }
             }
@@ -2088,22 +2088,22 @@ module jMusicScore {
         }
 
         export interface IVisitor {
-            VisitNoteHead(head: Model.INotehead, spacing: INoteHeadSpacingInfo): void;
-            VisitNote(note: Model.INote, spacing: INoteSpacingInfo): void;
-            VisitNoteDecoration(deco: Model.INoteDecorationElement, spacing: INoteDecorationSpacingInfo): void;
-            VisitLongDecoration(deco: Model.ILongDecorationElement, spacing: ILongDecorationSpacingInfo): void;
-            VisitVoice(voice: Model.IVoice, spacing: IVoiceSpacingInfo): void;
-            VisitClef(clef: Model.IClef, spacing: IClefSpacingInfo): void;
-            VisitMeter(meter: Model.IMeter, spacing: IMeterSpacingInfo): void;
-            VisitKey(key: Model.IKey, spacing: IKeySpacingInfo): void;
-            VisitStaff(staff: Model.IStaff, spacing: IStaffSpacingInfo): void;
-            VisitScore(score: Model.IScore, spacing: IScoreSpacingInfo): void;
-            VisitTextSyllable(text: Model.ITextSyllableElement, spacing: ITextSyllableSpacingInfo): void;
-            VisitBar(bar: Model.IBar, spacing: IBarSpacingInfo): void;
-            VisitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo): void;
-            VisitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void;
+            visitNoteHead(head: Model.INotehead, spacing: INoteHeadSpacingInfo): void;
+            visitNote(note: Model.INote, spacing: INoteSpacingInfo): void;
+            visitNoteDecoration(deco: Model.INoteDecorationElement, spacing: INoteDecorationSpacingInfo): void;
+            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: ILongDecorationSpacingInfo): void;
+            visitVoice(voice: Model.IVoice, spacing: IVoiceSpacingInfo): void;
+            visitClef(clef: Model.IClef, spacing: IClefSpacingInfo): void;
+            visitMeter(meter: Model.IMeter, spacing: IMeterSpacingInfo): void;
+            visitKey(key: Model.IKey, spacing: IKeySpacingInfo): void;
+            visitStaff(staff: Model.IStaff, spacing: IStaffSpacingInfo): void;
+            visitScore(score: Model.IScore, spacing: IScoreSpacingInfo): void;
+            visitTextSyllable(text: Model.ITextSyllableElement, spacing: ITextSyllableSpacingInfo): void;
+            visitBar(bar: Model.IBar, spacing: IBarSpacingInfo): void;
+            visitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo): void;
+            visitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void;
 
-            VisitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void;
+            visitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void;
         }
 
 
@@ -2314,7 +2314,7 @@ module jMusicScore {
                     oldNote = this.FindNote(voice, absTime);
                     // if placeholder shorten it
                     if (oldNote) { // todo: shorten placeholder
-                        if (oldNote.noteId === "hidden") {
+                        if (oldNote.NoteId === "hidden") {
                             var oldTime = oldNote.getTimeVal();
                             if (oldTime.Gt(timeVal)) {
                                 oldNote.timeVal = oldTime.Sub(timeVal);
@@ -2342,7 +2342,7 @@ module jMusicScore {
                     var txt = "";
                     voice.withNotes((note: INote) => {
                         if (note.syllableElements.length)
-                            txt += note.syllableElements[0].text + ' ';
+                            txt += note.syllableElements[0].Text + ' ';
                         else
                             txt += ' ';
                     });

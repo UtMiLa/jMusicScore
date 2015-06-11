@@ -1,8 +1,8 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     export module FinaleUI {
 
         class FillEmptySpaceValidator implements Model.ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.ScoreApplication) {
                 var scoreDuration: Model.AbsoluteTime;
                 if (app.document.bars.length) {
                     var lastBar = app.document.bars[app.document.bars.length - 1];
@@ -28,7 +28,7 @@
         }
 
         export class FinaleSmartEditPlugin implements ScoreApplication.ScorePlugin {
-            Init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.ScoreApplication) {
                 app.FeedbackManager.registerClient(this.smartEdit);
                 app.RegisterEventProcessor(this.smartEdit);
                 app.AddValidator(new FillEmptySpaceValidator);
@@ -36,12 +36,12 @@
 
             private smartEdit: FinaleSmartEdit = new FinaleSmartEdit();
 
-            GetId(): string { return "FinaleSmartEditPlugin"; }        
+            getId(): string { return "FinaleSmartEditPlugin"; }        
         }
 
 
         export class FinaleSpeedyEntry implements ScoreApplication.ScoreEventProcessor {
-            private noteVals: { [Index: string]: { noteId: string; timeVal: Model.TimeSpan; } } = {
+            private noteVals: { [index: string]: { noteId: string; timeVal: Model.TimeSpan; } } = {
                 '1': { noteId: 'n1_64', timeVal: new Model.TimeSpan(1, 64) },
                 '2': { noteId: 'n1_32', timeVal: new Model.TimeSpan(1, 32) },
                 '3': { noteId: 'n1_16', timeVal: new Model.TimeSpan(1, 16) },
@@ -52,7 +52,7 @@
                 '8': { noteId: 'n2_1', timeVal: new Model.TimeSpan(2, 1) },
             };
 
-            public Init(app: ScoreApplication.ScoreApplication) {
+            public init(app: ScoreApplication.ScoreApplication) {
                 $('#toolitem40').on('mousedown touchstart', function (ev) {
                     ev.key = "RIGHT";
                     app.ProcessEvent("keypress", { key: "RIGHT" });
@@ -85,7 +85,7 @@
                 });
             }
 
-            public Exit(app: ScoreApplication.ScoreApplication) {
+            public exit(app: ScoreApplication.ScoreApplication) {
             }
             /*
             public keydown(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
@@ -284,7 +284,7 @@
                                 tuplet.fullTime = noteType.timeVal.MultiplyScalar(tuplet.fraction.numerator);
                             }
                         }
-                        if (app.Status.currentNote.noteId === 'hidden') {
+                        if (app.Status.currentNote.NoteId === 'hidden') {
                             var pitches: Model.Pitch[] = [];
                             if (app.Status.notesPressed.length) {
                                 // pressed chord
@@ -471,8 +471,8 @@ Restore all pitch keys to normal register K (with Caps Lock)
                 }
             }
 
-            Init(app: ScoreApplication.ScoreApplication): void { }
-            Exit(app: ScoreApplication.ScoreApplication): void { }
+            init(app: ScoreApplication.ScoreApplication): void { }
+            exit(app: ScoreApplication.ScoreApplication): void { }
 
             /*public clicknote(app: ScoreApplication.ScoreApplication, event: JQueryEventObject): boolean {
                 var note = <Model.INote>event.data.note;

@@ -1,4 +1,4 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     var app = <ScoreApplication.ScoreApplication>new Application.Application<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(
         $("#appContainer"),
         new Model.ScoreElement(null),
@@ -205,7 +205,7 @@
                     var staffContext = staff.getStaffContext(note.absTime);
                     if (note.syllableElements.length) {
                         var text = note.syllableElements[0];
-                        text.text = staffContext.barNo + ':' + staffContext.timeInBar.ToString();
+                        text.Text = staffContext.barNo + ':' + staffContext.timeInBar.ToString();
                     }
                 });
             });

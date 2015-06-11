@@ -1,4 +1,4 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     export module MusicXml {
 
 
@@ -22,7 +22,7 @@
         */
 
         class MusicXmlHelper {
-            static noteTypes: { [Index: string]: string } = {
+            static noteTypes: { [index: string]: string } = {
                 "1024th": "1_1024",
                 "512th": "1_512",
                 "256th": "1_256",
@@ -38,7 +38,7 @@
                 "long": "4_1",
                 "maxima": "8_1"
             };
-            static noteTimes: { [Index: string]: Model.TimeSpan } = {
+            static noteTimes: { [index: string]: Model.TimeSpan } = {
                 "1_1024": new Model.TimeSpan(1, 1024), 
                 "1_512": new Model.TimeSpan(1, 512), 
                 "1_256": new Model.TimeSpan(1, 256), 
@@ -55,10 +55,10 @@
                 "8_1": new Model.TimeSpan(8, 1)
             };
 
-            static NoteTypeToName(type: string): string {
+            static noteTypeToName(type: string): string {
                 return this.noteTypes[type];
             }
-            static NoteNameToType(name: string): string {
+            static noteNameToType(name: string): string {
                 for (var type in this.noteTypes) {
                     if ("n" + this.noteTypes[type] === name) {
                         return type;
@@ -66,7 +66,7 @@
                 }
                 return null;
             }
-            static NoteNameToDuration(name: string): Model.TimeSpan {
+            static noteNameToDuration(name: string): Model.TimeSpan {
                 return this.noteTimes[name];
             }
         }
@@ -124,25 +124,25 @@
         class MusicXmlReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             private app: ScoreApplication.ScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
             }
 
-            GetId(): string {
+            getId(): string {
                 return "MusicXMLReader";
             }
 
-            GetFormats(): string[]{
+            getFormats(): string[]{
                 return [
                     "MusicXML"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "MusicXML";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "xml";
             }
 
@@ -168,7 +168,7 @@
 
             private slurs: { note: Model.INote; placement: string; }[] = [];
 
-            private ImportNote(elm: Element, context: ImportContext): void {
+            private importNote(elm: Element, context: ImportContext): void {
                 var voiceNo = parseInt(MusicXmlReader.getChildValue(elm, "voice", "1")) - 1;
 
                 var staffNo = parseInt(MusicXmlReader.getChildValue(elm, "staff", "1"));
@@ -199,11 +199,11 @@
                 });
                 //var dots = elm.getElementsByTagName("dot").length;
 
-                var noteName = MusicXmlHelper.NoteTypeToName(MusicXmlReader.getChildValue(elm, "type", "whole"));
+                var noteName = MusicXmlHelper.noteTypeToName(MusicXmlReader.getChildValue(elm, "type", "whole"));
                 if (noteName == undefined) {
                     alert("");
                 }
-                var noteTime = MusicXmlHelper.NoteNameToDuration(noteName);
+                var noteTime = MusicXmlHelper.noteNameToDuration(noteName);
 
                 if (rest) {
                     var restElm = <Element>elm.getElementsByTagName("rest")[0];
@@ -267,7 +267,7 @@
                 var notations = elm.getElementsByTagName("notations"); // todo: to checkNotations
                 if (notations.length) {
                     var notation = <Element>notations[0];
-                    this.ImportSlurs(notation, note);
+                    this.importSlurs(notation, note);
                 }
 
                 if (!chord) {
@@ -415,7 +415,7 @@
                 return res;
             }
 
-            private ImportSlurs(notation: Element, note: Model.INote) {
+            private importSlurs(notation: Element, note: Model.INote) {
                 if (notation) {
                     var slurElements = notation.getElementsByTagName("slur");
                     for (var i = 0; i < slurElements.length; i++) {
@@ -446,7 +446,7 @@
                 }
             }
 
-            private ImportPartwise(doc: XMLDocument) {
+            private importPartwise(doc: XMLDocument) {
                 var parts = doc.getElementsByTagName("part");
                 var context = new ImportContext();
                 for (var i = 0; i < parts.length; i++) {
@@ -573,7 +573,7 @@
                                     context.forward(new Model.TimeSpan(duration, 4 * context.divisions), duration);
                                     break;
                                 case "note":
-                                    this.ImportNote(elm, context);
+                                    this.importNote(elm, context);
                                     break;
                                 case "directions":
                                     // todo: score expressions
@@ -614,14 +614,14 @@
                 }
             }
 
-            public Load(data: any) {
+            public load(data: any) {
                 if (typeof (data) === "string") {
                     data = jQuery.parseXML(data);
                 }
 
                 // parse
                 if (data.documentElement.tagName === "score-partwise") {
-                    this.ImportPartwise(<XMLDocument>data);
+                    this.importPartwise(<XMLDocument>data);
                 }
                 else if (data.documentElement.tagName === "score-partwise") {
                 }
@@ -639,27 +639,27 @@
             private doc: XMLDocument;
             private app: ScoreApplication.ScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
+            init(app: ScoreApplication.ScoreApplication) { this.app = app; }
 
-            GetId(): string {
+            getId(): string {
                 return "XMLWriter";
             }
 
-            GetFormats(): string[] {
+            getFormats(): string[] {
                 return [
                     "MusicXML"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "MusicXML";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "xml";
             }
 
-            public Save() {
+            public save() {
                 return this.getAsXml();
             }
 
@@ -869,7 +869,7 @@
                 }
                 this.addChildElement(noteXml, 'duration', "" + note.getTimeVal().MultiplyScalar(this.smallestDivision).numerator*4); // * this.smallestDivision / 64);
                     
-                var noteType = MusicXmlHelper.NoteNameToType(note.noteId);
+                var noteType = MusicXmlHelper.noteNameToType(note.NoteId);
                 if (noteType) {
                     this.addChildElement(noteXml, 'type', noteType);
                 }                    
@@ -913,7 +913,7 @@
                 // lyric
                 if (note.syllableElements.length && !chord) {
                     var lyricXml = this.addChildElement(noteXml, 'lyric');
-                    this.addChildElement(lyricXml, 'text', note.syllableElements[0].text);
+                    this.addChildElement(lyricXml, 'text', note.syllableElements[0].Text);
                 }
 
                 // notations
@@ -1015,12 +1015,12 @@
             constructor() {
             }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
+            public init(app: ScoreApplication.ScoreApplication) {
                 app.AddReader(new MusicXmlReader());
                 app.AddWriter(new MusicXmlWriter());
             }
 
-            GetId() {
+            getId() {
                 return "MusicXml";
             }
         }

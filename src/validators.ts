@@ -1,9 +1,9 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     export module Model {
         export interface ScoreValidator extends Application.IValidator<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
 
         export class UpdateBarsValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.ScoreApplication) {
                 var score = app.document;
                 var maxTime = AbsoluteTime.startTime;
 
@@ -51,7 +51,7 @@
         }
 
         export class CreateTimelineValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.ScoreApplication) {
                 var score = app.document;
                 //score.updateBars();
                 var events: ITimedEvent[] = [];
@@ -87,7 +87,7 @@
         }
 
         export class UpdateAccidentalsValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.ScoreApplication) {
                 var currentKey: IKey = null;
                 var pitchChanges: string[] = [];
                 var pitchClassChanges: string[] = [];
@@ -165,7 +165,7 @@
         }
 
         export class JoinNotesValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.ScoreApplication) {
                 app.document.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices((voice: IVoice, index: number): void => {
                         voice.withNotes((note: INote, index: number): void => {
@@ -196,7 +196,7 @@
                                     note.withHeads((head: Model.INotehead, index: number) => {
                                         head.tie = head.getProperty("tiedTo").tie;
                                     });
-                                    note.noteId = Music.calcNoteId(note.timeVal);
+                                    note.NoteId = Music.calcNoteId(note.timeVal);
                                     note.setSpacingInfo(undefined);
                                     voice.removeChild(nextNote);
                                 }
@@ -235,7 +235,7 @@
                 return [runningTime].concat(this.BestNoteValues(time.Sub(runningTime)));
             }
 
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.ScoreApplication) {
                 app.document.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices((voice: IVoice, index: number): void => {
                         voice.withNotes((note: INote, index: number): void => {
@@ -246,7 +246,7 @@
                                     // split note in 2 or more
                                     var timeFirstNotes: TimeSpan[];
                                     var timeLastNotes: TimeSpan[];
-                                    if (note.noteId === 'hidden') {
+                                    if (note.NoteId === 'hidden') {
                                         timeFirstNotes = [nextAbsTime.Diff(note.absTime)];
                                         timeLastNotes = [note.absTime.Add(note.getTimeVal()).Diff(nextAbsTime)];
                                     }
@@ -260,8 +260,8 @@
                                     var absTime = note.absTime;
                                     var nextNote = Model.Music.nextNote(note);
                                     note.timeVal = notes[0];
-                                    if (note.noteId !== 'hidden')
-                                        note.noteId = Music.calcNoteId(note.timeVal);
+                                    if (note.NoteId !== 'hidden')
+                                        note.NoteId = Music.calcNoteId(note.timeVal);
                                     var alreadyAutojoin = note.getProperty('autojoin');
                                     note.setProperty('autojoin', true);
                                     note.dotNo = 0;
@@ -271,8 +271,8 @@
                                     for (var i = 1; i < notes.length; i++) {
                                         absTime = absTime.Add(notes[i-1]);
                                         var newNote = Music.AddNote(note.parent,
-                                            note.noteId === 'hidden' ? NoteType.placeholder : note.rest ? NoteType.rest : NoteType.note,
-                                            absTime, note.noteId, notes[i]);
+                                            note.NoteId === 'hidden' ? NoteType.placeholder : note.rest ? NoteType.rest : NoteType.note,
+                                            absTime, note.NoteId, notes[i]);
 
                                         // copy heads but not expressions and text
                                         var join = alreadyAutojoin || i < notes.length - 1;
@@ -293,7 +293,7 @@
         }
 
         export class BeamValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.ScoreApplication) {
                 app.document.withStaves((staff: Model.IStaff) => {
                     staff.withVoices((voice: Model.IVoice) => {
                         this.ValidateVoice(voice);
@@ -489,7 +489,7 @@
 
 
         export class TieValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.ScoreApplication) {
                 app.document.withVoices((voice: IVoice, index: number) => {
                     this.ValidateVoice(voice);
                 });

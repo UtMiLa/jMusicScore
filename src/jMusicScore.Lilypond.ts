@@ -1,4 +1,4 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
 
     /*
     Eksport: format
@@ -33,7 +33,7 @@
     export module Lilypond {
 
         class LilypondHelper {
-            static noteTypes: { [Index: string]: string } = {
+            static noteTypes: { [index: string]: string } = {
                 "1024": "1_1024",
                 "512": "1_512",
                 "256": "1_256",
@@ -49,7 +49,7 @@
                 "\\longa": "4_1",
                 "\\maxima": "8_1"
             };
-            static noteTimes: { [Index: string]: Model.TimeSpan } = {
+            static noteTimes: { [index: string]: Model.TimeSpan } = {
                 "1_1024": new Model.TimeSpan(1, 1024), 
                 "1_512": new Model.TimeSpan(1, 512), 
                 "1_256": new Model.TimeSpan(1, 256), 
@@ -66,10 +66,10 @@
                 "8_1": new Model.TimeSpan(8, 1)
             };
 
-            static NoteTypeToName(type: string): string {
+            static noteTypeToName(type: string): string {
                 return this.noteTypes[type];
             }
-            static NoteNameToType(name: string): string {
+            static noteNameToType(name: string): string {
                 for (var type in this.noteTypes) {
                     if ("n" + this.noteTypes[type] === name) {
                         return type;
@@ -77,10 +77,10 @@
                 }
                 return null;
             }
-            static NoteNameToDuration(name: string): Model.TimeSpan {
+            static noteNameToDuration(name: string): Model.TimeSpan {
                 return this.noteTimes[name];
             }
-            static NoteDurationToType(dur: Model.TimeSpan): string {
+            static noteDurationToType(dur: Model.TimeSpan): string {
                 if (dur.numerator === 1) {
                     return "" + dur.denominator;
         }
@@ -99,29 +99,29 @@
         class LilypondReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             private app: ScoreApplication.ScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
             }
 
-            GetId(): string {
+            getId(): string {
                 return "LilypondReader";
             }
 
-            GetFormats(): string[]{
+            getFormats(): string[]{
                 return [
                     "Lilypond"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "Lilypond";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "ly";
             }
 
-            public Load(data: any) {
+            public load(data: any) {
                 // parse data
             }
         }
@@ -135,27 +135,27 @@
             //private doc;
             private app: ScoreApplication.ScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
+            init(app: ScoreApplication.ScoreApplication) { this.app = app; }
 
-            GetId(): string {
+            getId(): string {
                 return "LilypondWriter";
             }
 
-            GetFormats(): string[] {
+            getFormats(): string[] {
                 return [
                     "Lilypond"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "Lilypond";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "ly";
             }
 
-            public Save() {
+            public save() {
                 return this.getAsLilypond();
             }
 
@@ -249,7 +249,7 @@
             private getNoteAsLilypond(note: Model.INote): string {
                 var res = "";
                 if (note.graceType) res += '\\grace ';
-                if (note.noteId === "hidden") {
+                if (note.NoteId === "hidden") {
                     res += "s";
                 }
                 else if (note.rest) {
@@ -269,7 +269,7 @@
                         res += ">";
                     }
                 //res += LilypondHelper.NoteNameToType(note.noteId);
-                res += LilypondHelper.NoteDurationToType(note.timeVal);
+                res += LilypondHelper.noteDurationToType(note.timeVal);
                 for (var i = 0; i < note.dotNo; i++) res += ".";
                 res += " ";
                 return res;
@@ -289,12 +289,12 @@
             constructor() {
             }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
+            public init(app: ScoreApplication.ScoreApplication) {
                 app.AddReader(new LilypondReader());
                 app.AddWriter(new LilypondWriter());
             }
 
-            GetId() {
+            getId() {
                 return "Lilypond";
             }
         }

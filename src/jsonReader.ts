@@ -1,32 +1,32 @@
-module jMusicScore {
+module JMusicScore {
     export module Model {
 
-        class JSONReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            Init(app: ScoreApplication.ScoreApplication) {
+        class JsonReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+            init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
             }
 
             private app: ScoreApplication.ScoreApplication;
 
-            GetFormats(): string[] {
+            getFormats(): string[] {
                 return [
                     "JSON"
                 ]
             }
 
-            GetId(): string {
+            getId(): string {
                 return "JSONReader";
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "JSON";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "json";
             }
 
-            public Load(data: any) {
+            public load(data: any) {
                 if (typeof (data) === "string") {
                     data = JSON.parse(data);
                 }
@@ -43,41 +43,41 @@ module jMusicScore {
             constructor() {
             }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
-                app.AddReader(new JSONReader());
-                app.AddWriter(new JSONWriter())
+            public init(app: ScoreApplication.ScoreApplication) {
+                app.AddReader(new JsonReader());
+                app.AddWriter(new JsonWriter())
             }
 
-            GetId() {
+            getId() {
                 return "JsonPlugin";
             }
         }
 
-        class JSONWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        class JsonWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             private app: ScoreApplication.ScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
+            init(app: ScoreApplication.ScoreApplication) { this.app = app; }
 
-            GetId(): string {
+            getId(): string {
                 return "JSONReader";
             }
 
 
-            GetFormats(): string[] {
+            getFormats(): string[] {
                 return [
                     "JSON"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "JSON";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "json";
             }
 
-            public Save() {
+            public save() {
                 var seen: any[] = [];
                 var text = JSON.stringify(this.app.document.getMemento());
                 return text;

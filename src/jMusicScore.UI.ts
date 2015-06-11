@@ -1,14 +1,14 @@
-module jMusicScore {
+module JMusicScore {
     export module UI {
 
         /* Abstract toolkit */
 
         export interface IWidget {
-            AddTo(parent: JQuery, id: string, label: string): JQuery;
+            addTo(parent: JQuery, id: string, label: string): JQuery;
         }
 
         export interface IContainer {
-            AddWidget(widget: IWidget, id: string, label: string): IWidget;
+            addWidget(widget: IWidget, id: string, label: string): IWidget;
             $container: JQuery;
         }
 
@@ -18,8 +18,8 @@ module jMusicScore {
 
             public $container: JQuery; // todo: ContainerType;
 
-            public AddWidget(widget: IWidget, id: string, label: string): IWidget {
-                widget.AddTo(this.$container, this.idPrefix + id, label);
+            public addWidget(widget: IWidget, id: string, label: string): IWidget {
+                widget.addTo(this.$container, this.idPrefix + id, label);
                 return widget;
             }
         }
@@ -41,19 +41,19 @@ module jMusicScore {
         /* tools using JQuery */
 
         export class MenuPlugin implements ScoreApplication.ScorePlugin {
-            Init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.ScoreApplication) {
                 this.app = app;
-                var obj = this.GetMenuObj(app);
+                var obj = this.getMenuObj(app);
                 this.menu_addItem(obj/*, 0*/);
             }
 
             private app: ScoreApplication.ScoreApplication;
 
-            GetId(): string {
+            getId(): string {
                 return "Menu";
             }
 
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 return null;
             }
 
@@ -164,10 +164,10 @@ module jMusicScore {
             public CreateDialogElement() {
                 this.$dialog = $("<div>").attr("id", this.idPrefix + this.dialogId).attr("title", this.dialogTitle).addClass("Dialog");
                 $('body').append(this.$dialog);
-                this.CreateBodyElements(this.$dialog);
+                this.createBodyElements(this.$dialog);
             }
 
-            public CreateBodyElements($element: JQuery) {
+            public createBodyElements($element: JQuery) {
             }
 
             public Open() {
@@ -235,7 +235,7 @@ module jMusicScore {
                 return this.$check.prop("checked");
             }
 
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+            public addTo(parent: JQuery, id: string, label: string): JQuery {
                 var $div = $("<div>");
                 $("<label>").attr("for", id).text(label).appendTo($div);
                 this.$check = $("<input>").attr("type", "checkbox").attr("id", id).attr("name", id).appendTo($div);
@@ -246,7 +246,7 @@ module jMusicScore {
 
 
         export class DropdownWidget implements IWidget {
-            constructor(public values: { [Index: string]: string} ) {
+            constructor(public values: { [index: string]: string} ) {
                 //this.values = values;
             }
 
@@ -272,7 +272,7 @@ module jMusicScore {
                 this.$ctl.change(f);
             }
 
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+            public addTo(parent: JQuery, id: string, label: string): JQuery {
                 var $div = $("<div>");
                 $("<label>").attr("for", id).text(label).appendTo($div);
                 this.$ctl = $("<select>").attr("id", id).attr("name", id).appendTo($div);
@@ -299,7 +299,7 @@ module jMusicScore {
                 return this.$ctl.text();
             }
 
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+            public addTo(parent: JQuery, id: string, label: string): JQuery {
                 this.$ctl = $("<div>");
                 parent.append(this.$ctl);
                 return this.$ctl;
@@ -332,7 +332,7 @@ module jMusicScore {
                 });
             }
 
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+            public addTo(parent: JQuery, id: string, label: string): JQuery {
                 this.$ctl = $("<div>").attr('id', id);
                 parent.append(this.$ctl);
                 this.$ctl
@@ -366,7 +366,7 @@ module jMusicScore {
                 return this.$spinner.spinner("value");
             }
 
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+            public addTo(parent: JQuery, id: string, label: string): JQuery {
                 var $div = $("<div>");
                 $("<label>").attr("for", id).text(label).appendTo($div);
                 this.$spinner = $("<input>").attr("id", id).val("1").attr("name", id).appendTo($div).spinner();
@@ -386,7 +386,7 @@ module jMusicScore {
                 return this.$textEdit.val();
             }
 
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+            public addTo(parent: JQuery, id: string, label: string): JQuery {
                 var $div = $("<div>");
                 $("<label>").attr("for", id).text(label).appendTo($div);
                 this.$textEdit = $("<input>").attr({ "id": id }).attr("name", id).appendTo($div);
@@ -400,15 +400,15 @@ module jMusicScore {
         class FileListWidget implements UI.IWidget {
             private $list: JQuery;
 
-            public Clear() {
+            public clear() {
                 this.$list.empty();
             }
 
-            public set Value(value: string) {
+            public set value(value: string) {
                 this.$list.data("filename", value);
             }
 
-            public get Value(): string {
+            public get value(): string {
                 return this.$list.data("filename");
             }
 
@@ -418,7 +418,7 @@ module jMusicScore {
                 return this.$list.children("li[value='" + name + "']").length > 0;
             }
 
-            public UpdateFileList(data: string[]) {
+            public updateFileList(data: string[]) {
                 var $list = this.$list;
                 $list.empty();
 
@@ -442,7 +442,7 @@ module jMusicScore {
                 });
             }
 
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+            public addTo(parent: JQuery, id: string, label: string): JQuery {
                 var $div = $("<div>");
                 $("<label>").attr("for", id).text(label).appendTo($div);
                 this.$list = $("<ul>").attr('id', id).appendTo($div);
@@ -474,7 +474,7 @@ module jMusicScore {
                 var me = this;
                 var updateFileList = function (source: string) {
                     me.app.GetFileList(source, function (data: string[]) {
-                        me.fileListWidget.UpdateFileList(data);
+                        me.fileListWidget.updateFileList(data);
                     });
                 }
                 this.sourceWidget.change(function () {
@@ -485,7 +485,7 @@ module jMusicScore {
             }
 
             public get filename(): string {
-                return this.fileListWidget.Value;
+                return this.fileListWidget.value;
             }
 
             public get source(): string {
@@ -501,15 +501,15 @@ module jMusicScore {
                 return this.fileListWidget.existsInFileList(name);
             }
 
-            public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.sourceWidget = new UI.DropdownWidget({ 0: 'Local', 1: 'Server' }), "fileSource", "File source");
-                this.AddWidget(this.fileListWidget = new FileListWidget(), "FileList", "Select file"); // todo: class 
-                this.AddWidget(this.fileTypeWidget = new UI.DropdownWidget({}), "fileTypes", "Select file type");
+            public createBodyElements($element: JQuery) {
+                this.addWidget(this.sourceWidget = new UI.DropdownWidget({ 0: 'Local', 1: 'Server' }), "fileSource", "File source");
+                this.addWidget(this.fileListWidget = new FileListWidget(), "FileList", "Select file"); // todo: class 
+                this.addWidget(this.fileTypeWidget = new UI.DropdownWidget({}), "fileTypes", "Select file type");
             }
         }
 
-        class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+        class OpenFileDialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends FileDialog<TDocumentType, TStatusManager, TContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "OpenFileDialog";
                 this.dialogTitle = "Open file";
@@ -527,8 +527,8 @@ module jMusicScore {
             }
         }
 
-        class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<DocumentType, StatusManager, ContainerType>) {
+        class SaveFileDialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends FileDialog<TDocumentType, TStatusManager, TContainerType> {
+            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "SaveFileDialog";
                 this.dialogTitle = "Save file";
@@ -555,7 +555,7 @@ module jMusicScore {
                         name = this.app.SetExtension(name, format);
                         this.filename = name;
                     }
-                    catch (Exception) {
+                    catch (exception) {
                         alert("Illegal name");
                         name = "";
                     }
@@ -583,9 +583,9 @@ module jMusicScore {
                 this.fileNameWidget.Value = name;
             }
 
-            public CreateBodyElements($element: JQuery) {
-                super.CreateBodyElements($element);
-                this.AddWidget(this.fileNameWidget = new UI.TextEditWidget(), "fileName", "Enter file name");
+            public createBodyElements($element: JQuery) {
+                super.createBodyElements($element);
+                this.addWidget(this.fileNameWidget = new UI.TextEditWidget(), "fileName", "Enter file name");
             }
         }
 
@@ -593,7 +593,7 @@ module jMusicScore {
             constructor() {
                 super();
             }
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 return {
                     Id: "FileMenu",
                     Caption: "File",
@@ -630,7 +630,7 @@ module jMusicScore {
         export class KeyWidget implements IWidget {
             constructor() {
             }
-            private values: { [Index: string]: string } = {
+            private values: { [index: string]: string } = {
                     "0": "C/a",
                     "1x": "G/e",
                     "2x": "D/h",
@@ -665,7 +665,7 @@ module jMusicScore {
                 return this.val;
             }
 
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+            public addTo(parent: JQuery, id: string, label: string): JQuery {
                 var $div = $("<div>");
                 $("<label>").attr("for", id).text(label).appendTo($div);
                 this.$button = $('<button>').attr('id', id).appendTo($div);
@@ -721,7 +721,7 @@ module jMusicScore {
                 return this.$spinner.spinner("value");
             }
 
-            public AddTo(parent: JQuery, id: string, label: string): JQuery {
+            public addTo(parent: JQuery, id: string, label: string): JQuery {
                 var $div = $("<div>");
                 $("<label>").attr("for", id).text(label).appendTo($div);
                 this.$spinner = $("<input>").attr("id", id).val("4").attr("name", id).appendTo($div).spinner({
@@ -791,10 +791,10 @@ module jMusicScore {
                 return this;
             }
             
-            public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.numCtl = new SpinnerWidget(), "spinner_num", "Numerator");
-                this.AddWidget(this.denCtl = new TimeWidget(), "spinner_den", "Denominator");
-                this.AddWidget(this.upbCtl = new CheckboxWidget(), "check_upbeat", "Upbeat");
+            public createBodyElements($element: JQuery) {
+                this.addWidget(this.numCtl = new SpinnerWidget(), "spinner_num", "Numerator");
+                this.addWidget(this.denCtl = new TimeWidget(), "spinner_den", "Denominator");
+                this.addWidget(this.upbCtl = new CheckboxWidget(), "check_upbeat", "Upbeat");
             }
         }
 
@@ -829,8 +829,8 @@ module jMusicScore {
                 return this;
             }
 
-            public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.keyCtl = new KeyWidget(), "key", "Key");                
+            public createBodyElements($element: JQuery) {
+                this.addWidget(this.keyCtl = new KeyWidget(), "key", "Key");                
             }
         }
 
@@ -876,10 +876,10 @@ module jMusicScore {
                 return this;
             }
 
-            public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.clefWidget = new DropdownWidget({1: 'G', 2: 'C', 3: 'F', 4: 'Percussion'}), "clef", "Clef");
-                this.AddWidget(this.lineWidget = new SpinnerWidget(), "line", "Line");
-                this.AddWidget(this.transposeWidget = new SpinnerWidget(), "transpose", "Transpose");
+            public createBodyElements($element: JQuery) {
+                this.addWidget(this.clefWidget = new DropdownWidget({1: 'G', 2: 'C', 3: 'F', 4: 'Percussion'}), "clef", "Clef");
+                this.addWidget(this.lineWidget = new SpinnerWidget(), "line", "Line");
+                this.addWidget(this.transposeWidget = new SpinnerWidget(), "transpose", "Transpose");
                 this.transposeWidget.Value = 0;
             }
         }
@@ -938,8 +938,8 @@ module jMusicScore {
             private stemDirCtl: DropdownWidget;
             private note: Model.INote;
 
-            public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.stemDirCtl = new DropdownWidget({
+            public createBodyElements($element: JQuery) {
+                this.addWidget(this.stemDirCtl = new DropdownWidget({
                     "0": "Free",
                     "1": "Up",
                     "2": "Down"
@@ -975,8 +975,8 @@ module jMusicScore {
             private stemDirCtl: DropdownWidget;
             private voice: Model.IVoice;
 
-            public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.stemDirCtl = new DropdownWidget({
+            public createBodyElements($element: JQuery) {
+                this.addWidget(this.stemDirCtl = new DropdownWidget({
                     "0": "Free",
                     "1": "Up",
                     "2": "Down"
@@ -1060,8 +1060,8 @@ module jMusicScore {
             }
             private textDivCtl: DisplayTextWidget;
 
-            public CreateBodyElements($element: JQuery) {
-                this.AddWidget(this.textDivCtl = new DisplayTextWidget(), "ShowTextDialogTextDiv", "Text");
+            public createBodyElements($element: JQuery) {
+                this.addWidget(this.textDivCtl = new DisplayTextWidget(), "ShowTextDialogTextDiv", "Text");
             }
 
             public setText(text: string): ShowTextDialog {
@@ -1075,7 +1075,7 @@ module jMusicScore {
 
         }
 
-        class StaffContainer extends UI.UIContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        class StaffContainer extends UI.UIContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> implements IContainer {
             constructor(public idPrefix: string, public app: ScoreApplication.ScoreApplication, staff: Model.IStaff, index: number) {
                 super(idPrefix, app);
 
@@ -1089,7 +1089,7 @@ module jMusicScore {
 
                 this.staff = staff;
                 this.$container = $staffItem;
-                this.CreateBodyElements();
+                this.createBodyElements();
 
                 // todo: generalize via this.titleWidget:
                 this.$staffDetails.find('#stafftitle') //Title: 
@@ -1105,16 +1105,16 @@ module jMusicScore {
             private transposeWidget: UI.SpinnerWidget;
             public staff: Model.IStaff;
 
-            public AddWidget(widget: UI.IWidget, id: string, label: string): UI.IWidget {
-                widget.AddTo(this.$staffDetails, this.idPrefix + id, label);
+            public addWidget(widget: UI.IWidget, id: string, label: string): UI.IWidget {
+                widget.addTo(this.$staffDetails, this.idPrefix + id, label);
                 return widget;
             }
 
-            public CreateBodyElements() {
-                this.AddWidget(this.titleWidget = new UI.TextEditWidget(), 'title', 'Title');
-                this.AddWidget(this.clefWidget = new UI.DropdownWidget({ 1: 'G', 2: 'C', 3: 'F', 4: 'Percussion' }), "clef", "Clef");
-                this.AddWidget(this.lineWidget = new UI.SpinnerWidget(), "line", "Line");
-                this.AddWidget(this.transposeWidget = new UI.SpinnerWidget(), "transpose", "Transpose");
+            public createBodyElements() {
+                this.addWidget(this.titleWidget = new UI.TextEditWidget(), 'title', 'Title');
+                this.addWidget(this.clefWidget = new UI.DropdownWidget({ 1: 'G', 2: 'C', 3: 'F', 4: 'Percussion' }), "clef", "Clef");
+                this.addWidget(this.lineWidget = new UI.SpinnerWidget(), "line", "Line");
+                this.addWidget(this.transposeWidget = new UI.SpinnerWidget(), "transpose", "Transpose");
                 this.transposeWidget.Value = 0;
             }
         }
@@ -1197,9 +1197,9 @@ module jMusicScore {
                 this.Open();
             }
 
-            public CreateBodyElements($element: JQuery) {
+            public createBodyElements($element: JQuery) {
                 var me = this;
-                this.AddWidget(this.stavesWidget = new UI.CollectionWidget(), "staves", "Staves");
+                this.addWidget(this.stavesWidget = new UI.CollectionWidget(), "staves", "Staves");
             }
         }
 
@@ -1208,7 +1208,7 @@ module jMusicScore {
                 super();
             }
 
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 // ****************** Custom action ******************* //
                 var menuItem = {
                     Id: this.id,
@@ -1245,7 +1245,7 @@ module jMusicScore {
             constructor() {
                 super();
             }
-            GetMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.ScoreApplication): IMenuDef {
                 return {
                     Id: "ExportMenu",
                     Caption: "Export",
@@ -1311,10 +1311,10 @@ module jMusicScore {
             checkEnabled(): void {
             }
 
-            private _mode = new FinaleUI.FinaleSpeedyEntry();
+            private mode = new FinaleUI.FinaleSpeedyEntry();
 
             getMode(): ScoreApplication.ScoreEventProcessor {
-                return this._mode;
+                return this.mode;
             }
         }
 
@@ -1643,7 +1643,7 @@ module jMusicScore {
         }
 
         class CheckButtons implements ScoreApplication.ScoreDesigner {
-            Validate(app: ScoreApplication.ScoreApplication) {
+            validate(app: ScoreApplication.ScoreApplication) {
                 var $buttons = $('.note-icon');
                 $buttons.each((i: number, e: Element) => {
                     var btnDef = $(e).data('notedata');
@@ -1669,18 +1669,18 @@ module jMusicScore {
                 return this.toolbar;
             }
 
-            Init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.ScoreApplication) {
                 this.toolbar = new JToolbar(app);
                 app.AddDesigner(new CheckButtons());
             }
 
-            GetId(): string {
+            getId(): string {
                 return "Toolbar";
             }
         }
 
         export class PianoPlugIn implements ScoreApplication.ScorePlugin, Application.IFeedbackClient { // todo: change sizing of clientArea etc.
-            Init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.ScoreApplication) {
                 var $root = (<any>$('<div>').addClass('piano').appendTo('#footer'));
                 this.createPianoKeyboard($root, { tgWidth: 40 }, app);
                 app.FeedbackManager.registerClient(this);
@@ -1758,7 +1758,7 @@ module jMusicScore {
             }
 
 
-            GetId(): string {
+            getId(): string {
                 return "PianoPlugin";
             }
         }

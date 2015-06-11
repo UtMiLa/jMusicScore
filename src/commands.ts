@@ -1,4 +1,4 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     export module Model {
 
         export interface ScoreCommand extends Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
@@ -195,12 +195,12 @@
                 var note = this.args.note;
                 this.oldDuration = {
                     note: note,
-                    noteId: note.noteId,
+                    noteId: note.NoteId,
                     timeVal: note.timeVal,
                     dots: note.dotNo,
                     tuplet: note.tupletDef
                 }
-                note.noteId = this.args.noteId;
+                note.NoteId = this.args.noteId;
                 note.timeVal = this.args.timeVal;
                 note.tupletDef = this.args.tuplet;
                 note.dotNo = this.args.dots;
@@ -209,7 +209,7 @@
 
             public Undo(app: ScoreApplication.ScoreApplication) {
                 var note = this.args.note;
-                note.noteId = this.oldDuration.noteId;
+                note.NoteId = this.oldDuration.noteId;
                 note.timeVal = this.oldDuration.timeVal;
                 note.tupletDef = this.oldDuration.tuplet;
                 note.dotNo = this.oldDuration.dots;

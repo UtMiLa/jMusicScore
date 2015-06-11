@@ -1,4 +1,4 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     export module GhostElements {
         
         export class GhostMeterElement extends Model.MusicElement<Model.IMeterSpacingInfo> implements Model.IMeter {
@@ -29,8 +29,8 @@
             public nextBar(abstime: Model.AbsoluteTime): Model.AbsoluteTime {
                 return this.originElement.nextBar(abstime);
             }
-            public InviteVisitor(spacer: Model.IVisitor) {
-                spacer.VisitMeter(this, this.spacingInfo);
+            public inviteVisitor(spacer: Model.IVisitor) {
+                spacer.visitMeter(this, this.spacingInfo);
             }
             getHorizPosition(): Model.HorizPosition { return this.originElement.getHorizPosition(); }
             getVoice(): Model.IVoice { return null; }
@@ -47,7 +47,7 @@
                 staff.addChild(staff.meterElements, ghostMeter);
             }
 
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.ScoreApplication) {
 
                 app.document.withStaves((staff: Model.IStaff, index: number): void => {
 

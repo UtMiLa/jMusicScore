@@ -1,31 +1,31 @@
-module jMusicScore {
+module JMusicScore {
 
     export module Application {
 
         /** Every external plugin to application must implement this interface */
         export interface IPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
-            GetId(): string;
+            init(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            getId(): string;
         }
 
         /** Interface for file readers (in varying formats) */
         export interface IReaderPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> extends IPlugIn<DocumentType, StatusManager, ContainerType> {
             //Init(app: Application): void;
-            Supports(type: string): boolean;
-            GetExtension(type: string): string;
-            Load(data: any): void;
-            GetId(): string;
-            GetFormats(): string[];
+            supports(type: string): boolean;
+            getExtension(type: string): string;
+            load(data: any): void;
+            getId(): string;
+            getFormats(): string[];
         }
 
         /** Interface for file writers */
         export interface IWriterPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> extends IPlugIn<DocumentType, StatusManager, ContainerType> {
             //Init(app: Application): void;
-            Supports(type: string): boolean;
-            GetExtension(type: string): string;
-            Save(): string;
-            GetId(): string;
-            GetFormats(): string[];
+            supports(type: string): boolean;
+            getExtension(type: string): string;
+            save(): string;
+            getId(): string;
+            getFormats(): string[];
         }
 
         /** Interface for commands. Every user action that changes data in the model must use Command objects. */
@@ -36,18 +36,18 @@ module jMusicScore {
 
         /** Interface for objects that check and refines the model after every change (like beam calculation) */
         export interface IValidator<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
         }
 
         /** Interface for objects that check and refines the user interface after every model change (like spacing and drawing) */
         export interface IDesigner<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
         }
 
         /** Interface for pluggable event processors that can handle events */
         export interface IEventProcessor<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
-            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            init(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            exit(app: Application<DocumentType, StatusManager, ContainerType>): void;
 
             midinoteoff? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
             keypressed? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
@@ -74,9 +74,9 @@ module jMusicScore {
             removeArea(area: IDesktopArea): void;
         }
 
-        class HTMLDesktopManager implements IDesktopManager { // todo: move away from this module
+        class HtmlDesktopManager implements IDesktopManager { // todo: move away from this module
             constructor(private rootElement: Element) { }
-            private _areas: IDesktopArea[] = [];
+            private areas: IDesktopArea[] = [];
             addArea(area: IDesktopArea, placement: string) {
                 // Add div to rootElement
                 // Set new position for clientarea
@@ -104,19 +104,19 @@ module jMusicScore {
         class FeedbackManager implements IFeedbackManager {
             constructor() {
             }
-            private _clients: IFeedbackClient[] = [];
+            private clients: IFeedbackClient[] = [];
             public changed(status: IStatusManager, key: string, val: any) {
-                for (var i = 0; i < this._clients.length; i++) {
-                    this._clients[i].changed(status, key, val);
+                for (var i = 0; i < this.clients.length; i++) {
+                    this.clients[i].changed(status, key, val);
                 }
             }
             public registerClient(client: IFeedbackClient) {
-                this._clients.push(client);
+                this.clients.push(client);
             }
             public removeClient(client: IFeedbackClient) {
-                var n = this._clients.indexOf(client);
+                var n = this.clients.indexOf(client);
                 if (n >= 0) {
-                    this._clients.splice(n, 1);
+                    this.clients.splice(n, 1);
                 }
             }
         }
@@ -159,17 +159,17 @@ module jMusicScore {
 
             public AddPlugin(plugin: IPlugIn<DocumentType, StatusManager, ContainerType>) {
                 this.plugins.push(plugin);
-                plugin.Init(this);
+                plugin.init(this);
             }
 
             public AddReader(reader: IReaderPlugIn<DocumentType, StatusManager, ContainerType>) {
                 this.readers.push(reader);
-                reader.Init(this);
+                reader.init(this);
             }
 
             public AddWriter(writer: IWriterPlugIn<DocumentType, StatusManager, ContainerType>) {
                 this.writers.push(writer);
-                writer.Init(this);
+                writer.init(this);
             }
 
             public AddFileManager(fileManager: IFileManager<DocumentType, StatusManager, ContainerType>) {
@@ -179,18 +179,18 @@ module jMusicScore {
 
             public AddValidator(validator: IValidator<DocumentType, StatusManager, ContainerType>) {
                 this.validators.push(validator);
-                validator.Validate(this);
+                validator.validate(this);
             }
 
             public AddDesigner(designer: IDesigner<DocumentType, StatusManager, ContainerType>) {
                 this.designers.push(designer);
-                designer.Validate(this);
+                designer.validate(this);
             }
 
             public GetFileOpenTypes(): string[] {
                 var res: string[] = [];
                 for (var i = 0; i < this.readers.length; i++) {
-                    res.concat(this.readers[i].GetFormats());
+                    res.concat(this.readers[i].getFormats());
                 }
                 return res;
             }
@@ -198,7 +198,7 @@ module jMusicScore {
             public GetFileSaveTypes(): string[]{
                 var res: string[] = [];
                 for (var i = 0; i < this.writers.length; i++) {
-                    res = res.concat(this.writers[i].GetFormats());
+                    res = res.concat(this.writers[i].getFormats());
                 }
                 return res;
             }
@@ -221,9 +221,9 @@ module jMusicScore {
 
             public SetExtension(name: string, type: string) {
                 for (var i = 0; i < this.writers.length; i++) {
-                    if (this.writers[i].Supports(type)) {
+                    if (this.writers[i].supports(type)) {
                         var writer = this.writers[i];
-                        var extension = writer.GetExtension(type);
+                        var extension = writer.getExtension(type);
                         if (name.substr(name.length - extension.length - 1) != '.' + extension) {
                             name += '.' + extension;
                         }
@@ -249,9 +249,9 @@ module jMusicScore {
 
             public SaveToString(type: string): string {
                 for (var i = 0; i < this.writers.length; i++) {
-                    if (this.writers[i].Supports(type)) {
+                    if (this.writers[i].supports(type)) {
                         var writer = this.writers[i];
-                        return writer.Save();
+                        return writer.save();
                     }
                 }
                 throw "Output format not supported: " + type;
@@ -271,16 +271,17 @@ module jMusicScore {
             public Load(name: string, fileManager: IFileManager<DocumentType, StatusManager, ContainerType>, type: string) {
                 var app = this;
                 this.ProcessEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
+                var me = this;
                 for (var i = 0; i < this.readers.length; i++) {
-                    if (this.readers[i].Supports(type) || (type === '*' && name.match(this.readers[i].GetExtension(type) + "$"))) {
+                    if (this.readers[i].supports(type) || (type === '*' && name.match(this.readers[i].getExtension(type) + "$"))) {
                         var reader = this.readers[i];
                         var data = fileManager.loadFile(name, function (data: string, name: string) {
                             var score = app.document;
                             score.clear();
 
-                            var a = reader.Load(data);
-                            this._undoStack = [];
-                            this._redoStack = [];
+                            var a = reader.load(data);
+                            me._undoStack = [];
+                            me._redoStack = [];
                             app.FixModel();
                             app.FixDesign();
                             app.FixEditors();
@@ -295,11 +296,11 @@ module jMusicScore {
             public LoadFromString(data: any, type: string) {
                 this.ProcessEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
                 for (var i = 0; i < this.readers.length; i++) {
-                    if (this.readers[i].Supports(type)) {
+                    if (this.readers[i].supports(type)) {
                         var score = this.document;
                         score.clear();
 
-                        var a = this.readers[i].Load(data);
+                        var a = this.readers[i].load(data);
                         this._undoStack = [];
                         this._redoStack = [];
                         this.FixModel();
@@ -313,7 +314,7 @@ module jMusicScore {
 
             public GetPlugin(id: string): IPlugIn<DocumentType, StatusManager, ContainerType> {
                 for (var i = 0; i < this.plugins.length; i++) {
-                    if (this.plugins[i].GetId() === id) return this.plugins[i];
+                    if (this.plugins[i].getId() === id) return this.plugins[i];
                 }
                 return null;
             }
@@ -367,7 +368,7 @@ module jMusicScore {
             private FixModel() {
                 for (var i = 0; i < this.validators.length; i++) {
                     var t = Date.now();
-                    this.validators[i].Validate(this);
+                    this.validators[i].validate(this);
                     //console.log((Date.now()-t) + " " + i);
                 }
             }
@@ -375,7 +376,7 @@ module jMusicScore {
             private FixDesign() {
                 for (var i = 0; i < this.designers.length; i++) {
                     var t = Date.now();
-                    this.designers[i].Validate(this);
+                    this.designers[i].validate(this);
                     //console.log((Date.now() - t) + " " + i);
                 }
             }
@@ -383,7 +384,7 @@ module jMusicScore {
             private FixEditors() {
                 for (var i = 0; i < this.editors.length; i++) {
                     var t = Date.now();
-                    this.editors[i].Validate(this);
+                    this.editors[i].validate(this);
                     //console.log((Date.now() - t) + " " + i);
                 }
             }
@@ -392,14 +393,14 @@ module jMusicScore {
 
             public RegisterEventProcessor(eventProc: IEventProcessor<DocumentType, StatusManager, ContainerType>) {
                 this.eventProcessors.push(eventProc);
-                eventProc.Init(this);
+                eventProc.init(this);
             }
 
             public UnregisterEventProcessor(eventProc: IEventProcessor<DocumentType, StatusManager, ContainerType>) {
                 var i = this.eventProcessors.indexOf(eventProc);
                 if (i >= 0) {
                     this.eventProcessors.splice(i, 1);
-                    eventProc.Exit(this);
+                    eventProc.exit(this);
                 }
             }
 

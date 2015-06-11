@@ -1,4 +1,4 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     export module Editors {
 
         export class MidiHelper {
@@ -89,7 +89,7 @@
 
             private Jazz: any;
             private midiInVars: {
-                current_in: any;
+                currentIn: any;
                 midiKeysPressed: number[];
                 currentChord: number[];
             };
@@ -109,7 +109,7 @@
                     if (!this.Jazz || !this.Jazz.isJazz) this.Jazz = s[0];
                 }
                 this.midiInVars = {
-                    current_in: this.Jazz.MidiInOpen(newMidiIn,(t: number, a: number, b: number, c: number) => {
+                    currentIn: this.Jazz.MidiInOpen(newMidiIn,(t: number, a: number, b: number, c: number) => {
                         this._midiProc(t, a, b, c);
                     }),
                     midiKeysPressed: new Array(),
@@ -125,7 +125,7 @@
 
             midiClose(): void {
                 this.Jazz.MidiInClose();
-                this.midiInVars.current_in = '';
+                this.midiInVars.currentIn = '';
             }
 
             midiInList(): string[] {
@@ -152,7 +152,7 @@
             }
 
             get CurrentIn(): string {
-                return this.midiInVars.current_in;
+                return this.midiInVars.currentIn;
             }
             get KeysPressed(): number[] {
                 return this.midiInVars.midiKeysPressed.sort();
@@ -177,8 +177,8 @@
                 this.midiChannel = val;
             }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
-                var active_element: Element;
+            public init(app: ScoreApplication.ScoreApplication) {
+                var activeElement: Element;
                 this.midiHelper = MidiInputPlugin.GetMidiHelper(app);
                 var me = this;
 
@@ -190,12 +190,12 @@
 
                 }
 
-                function onFocusIE() {
+                function onFocusIe() {
                     this.active_element = document.activeElement;
                     connectMidiIn();
                 }
-                function onBlurIE() {
-                    if (this.active_element != document.activeElement) { active_element = document.activeElement; return; }
+                function onBlurIe() {
+                    if (this.active_element != document.activeElement) { activeElement = document.activeElement; return; }
                     disconnectMidiIn();
                 }
                 setTimeout(
@@ -223,7 +223,7 @@
                             app.ProcessEvent("midichordreleased", e);
                         });*/
 
-                        if (navigator.appName == 'Microsoft Internet Explorer') { document.onfocusin = onFocusIE; document.onfocusout = onBlurIE; }
+                        if (navigator.appName == 'Microsoft Internet Explorer') { document.onfocusin = onFocusIe; document.onfocusout = onBlurIe; }
                         else { window.onfocus = connectMidiIn; window.onblur = disconnectMidiIn; }
                     }
                     , 100); // Safari initializes new window from the "new window" button faster than old plugin disconnects.
@@ -231,7 +231,7 @@
 
             }
 
-            public GetId(): string { return 'MidiInputPlugin'; }
+            public getId(): string { return 'MidiInputPlugin'; }
         }
 
         class MidiSettingsDialog extends UI.ScoreDialog {
@@ -241,7 +241,7 @@
                 this.dialogTitle = "MIDI Setup";
                 this.height = 500;
                 this.width = 750;
-                this.CreateControls();
+                this.createControls();
             }
 
             private midiInCtl: UI.DropdownWidget;
@@ -251,7 +251,7 @@
                 return this;
             }
 
-            public CreateControls() {
+            public createControls() {
                 var values: { [index: string]: string } = {
                     "": ' Not connected ',
                 };
@@ -262,7 +262,7 @@
                         values[list[i]] = list[i];
                     }
 
-                    this.AddWidget(this.midiInCtl = new UI.DropdownWidget(values), "midiIn", "Midi in");
+                    this.addWidget(this.midiInCtl = new UI.DropdownWidget(values), "midiIn", "Midi in");
                     this.midiInCtl.Value = this.helper.CurrentIn;
                 }
                 catch (err) {
@@ -295,7 +295,7 @@
         class MidiMenuPlugin extends UI.MenuPlugin {
             constructor(private helper: MidiHelper) { super(); }
 
-            GetMenuObj(app: ScoreApplication.ScoreApplication): UI.IMenuDef {
+            getMenuObj(app: ScoreApplication.ScoreApplication): UI.IMenuDef {
                 // ****************** staves ******************* //
                 var me = this;
                 return {

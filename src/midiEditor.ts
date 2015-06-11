@@ -1,11 +1,11 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     export module Editors {
         //declare var $: any;
 
         export class MidiEditor implements ScoreApplication.ScoreEventProcessor {
-            public Init(app: ScoreApplication.ScoreApplication) {
+            public init(app: ScoreApplication.ScoreApplication) {
             }
-            public Exit(app: ScoreApplication.ScoreApplication) {
+            public exit(app: ScoreApplication.ScoreApplication) {
             }
             private noCtrl = 0;
             public midicontrol(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
@@ -115,16 +115,16 @@
 
     }
     export module Players {
-        interface MidiEvent {
+        interface IMidiEvent {
             time: Model.AbsoluteTime;
             midi: number;
             on: boolean;
             velo: number;
         }
-        interface ConcurrentEvent {
+        interface IConcurrentEvent {
             time: Model.AbsoluteTime;
-            onEvents: MidiEvent[];
-            offEvents: MidiEvent[];
+            onEvents: IMidiEvent[];
+            offEvents: IMidiEvent[];
         }
         export class MidiPlayer {
             /*GetMenuObj(app: ScoreApplication.ScoreApplication): any {
@@ -149,7 +149,7 @@
                 var events = app.document.getEvents();
                 //events.sort(Model.Music.compareEvents);
                 this.midiHelper = Editors.MidiInputPlugin.GetMidiHelper(app);
-                var allEvents: MidiEvent[] = [];
+                var allEvents: IMidiEvent[] = [];
                 for (var i = 0; i < events.length; i++) {
                     var event = events[i];
                     if (event.getElementName() === "Note") {
@@ -164,8 +164,8 @@
                     if (a.time.Eq(b.time)) return 0;
                     return a.time.Gt(b.time) ? 1 : -1;
                 });
-                var concurrentOnEvents: MidiEvent[] = [];
-                var concurrentOffEvents: MidiEvent[] = [];
+                var concurrentOnEvents: IMidiEvent[] = [];
+                var concurrentOffEvents: IMidiEvent[] = [];
                 var absTime = Model.AbsoluteTime.startTime;
                 while (allEvents.length) {
                     var theEvent = allEvents.shift();
@@ -186,7 +186,7 @@
                 this.PlayNextNote();
             }
 
-            private _midiEvents: ConcurrentEvent[] = [];
+            private _midiEvents: IConcurrentEvent[] = [];
 
             private PlayNextNote() {
                 var nextEvents = this._midiEvents.shift();
