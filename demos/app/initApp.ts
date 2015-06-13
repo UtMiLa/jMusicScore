@@ -219,6 +219,25 @@
                 execute: (app: ScoreApplication.IScoreApplication) => { }
             });
         }));
+
+        app.addPlugin(new Ui.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", function () {
+            
+            var cache = [];
+            alert(JSON.stringify((<any>app).undoStack, function(key, value) {
+                if (typeof value === 'object' && value !== null) {
+                    if (cache.indexOf(value) !== -1) {
+                        // Circular reference found, discard key
+                        return;
+                    }
+                    // Store value in our collection
+                    cache.push(value);
+                }
+                return value;
+            }));
+            cache = null; 
+                        
+            
+        }));
         app.addPlugin(new Ui.PianoPlugIn());
 
         app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
