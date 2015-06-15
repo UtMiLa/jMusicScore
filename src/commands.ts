@@ -3,6 +3,11 @@
 
         export interface IScoreCommand extends Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
 
+        export interface IMacroCommand {
+            commandName: string;
+            args: {};
+        }
+        
         export class BundleCommand implements IScoreCommand {
             constructor() { }
 
@@ -81,6 +86,24 @@
             undo(app: ScoreApplication.IScoreApplication) {
                 var voice = this.note.parent;
                 voice.removeChild(this.note);
+            }
+            
+            macro(): IMacroCommand {
+                return {
+                    commandName: "AddNote",
+                    args: {
+                        noteName: this.args.noteName,
+                        noteTime: this.args.noteTime.toString(),
+                        rest: '',
+                        dots: '',
+                        grace: '',
+                        pitches: '',
+                        voice: '',
+                        absTime: this.args.absTime.toString(),
+                        beforeNote: '',
+                        tuplet: ''
+                    }  
+                };
             }
         }
 

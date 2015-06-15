@@ -221,9 +221,15 @@
         }));
 
         app.addPlugin(new Ui.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", function () {
-            
+            var res = [];
+            $.each((<any>app).undoStack, function(i,e) {
+                if (e.macro) res.push([e.macro().commandName, 'Command()'].join(''));
+                else   
+                res.push("null");
+            });
+            alert(res.join("\n"));
             //var cache: any = [];
-            alert(((<any>app).undoStack).toSource());
+            //alert(((<any>app).undoStack).toSource());
             /*alert(JSON.stringify((<any>app).undoStack, function(key, value) {
                 if (typeof value === 'object' && value !== null) {
                     if (cache.indexOf(value) !== -1) {
