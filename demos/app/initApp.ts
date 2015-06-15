@@ -222,8 +222,9 @@
 
         app.addPlugin(new Ui.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", function () {
             
-            var cache: any = [];
-            alert(JSON.stringify((<any>app).undoStack, function(key, value) {
+            //var cache: any = [];
+            alert(((<any>app).undoStack).toSource());
+            /*alert(JSON.stringify((<any>app).undoStack, function(key, value) {
                 if (typeof value === 'object' && value !== null) {
                     if (cache.indexOf(value) !== -1) {
                         // Circular reference found, discard key
@@ -233,8 +234,8 @@
                     cache.push(value);
                 }
                 return value;
-            }));
-            cache = null; 
+            }));*/
+            //cache = null; 
                         
             
         }));
