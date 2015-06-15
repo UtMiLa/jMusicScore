@@ -222,7 +222,7 @@
 
         app.addPlugin(new Ui.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", function () {
             
-            var cache = [];
+            var cache: any = [];
             alert(JSON.stringify((<any>app).undoStack, function(key, value) {
                 if (typeof value === 'object' && value !== null) {
                     if (cache.indexOf(value) !== -1) {

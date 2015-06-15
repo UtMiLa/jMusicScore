@@ -436,7 +436,7 @@
                         else if (slurType === 'stop') {
                             var fromSlur = this.slurs[slurNumber];
                             if (fromSlur) { // todo: slurs kan godt gå fra en senere defineret stemme til denne node
-                                var fromNote = <Model.INote>fromSlur.note;
+                                var fromNote = fromSlur.note;
                                 var nd = new Model.NoteLongDecorationElement(fromNote, note.absTime.diff(fromNote.absTime), Model.LongDecorationType.Slur);
                                 nd.placement = fromSlur.placement;
                                 fromNote.addChild(fromNote.longDecorationElements, nd);

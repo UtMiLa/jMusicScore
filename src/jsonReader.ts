@@ -1,7 +1,7 @@
 module JMusicScore {
     export module Model {
 
-        class JsonReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        class JsonReader implements Application.IReaderPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
@@ -34,7 +34,7 @@ module JMusicScore {
                 while (score.staffElements.length)
                     score.removeChild(score.staffElements[0], score.staffElements);
                 
-                this.app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, data); // memento format                
+                this.app.document = <IScore>MusicElementFactory.recreateElement(null, data); // memento format                
             }
         }
 
@@ -53,7 +53,7 @@ module JMusicScore {
             }
         }
 
-        class JsonWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        class JsonWriter implements Application.IWriterPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             private app: ScoreApplication.IScoreApplication;
 
             init(app: ScoreApplication.IScoreApplication) { this.app = app; }

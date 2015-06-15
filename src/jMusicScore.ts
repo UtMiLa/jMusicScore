@@ -930,11 +930,11 @@ module JMusicScore {
             constructor(public clefCode: ClefType, public clefLine: number, public transposition: number = 0) { // clefline: top line is 1
             }
 
-            static clefG = new ClefDefinition(Model.ClefType.ClefG, 4);
-            static clefGTenor = new ClefDefinition(Model.ClefType.ClefG, 4, -7);
-            static clefF = new ClefDefinition(Model.ClefType.ClefF, 2);
-            static clefCAlto = new ClefDefinition(Model.ClefType.ClefC, 3);
-            static clefPerc = new ClefDefinition(Model.ClefType.ClefPercussion, 0);
+            static clefG = new ClefDefinition(ClefType.ClefG, 4);
+            static clefGTenor = new ClefDefinition(ClefType.ClefG, 4, -7);
+            static clefF = new ClefDefinition(ClefType.ClefF, 2);
+            static clefCAlto = new ClefDefinition(ClefType.ClefC, 3);
+            static clefPerc = new ClefDefinition(ClefType.ClefPercussion, 0);
 
             public clefDef(): number {
                 switch (this.clefCode) {
@@ -2088,22 +2088,22 @@ module JMusicScore {
         }
 
         export interface IVisitor {
-            visitNoteHead(head: Model.INotehead, spacing: INoteHeadSpacingInfo): void;
-            visitNote(note: Model.INote, spacing: INoteSpacingInfo): void;
-            visitNoteDecoration(deco: Model.INoteDecorationElement, spacing: INoteDecorationSpacingInfo): void;
-            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: ILongDecorationSpacingInfo): void;
-            visitVoice(voice: Model.IVoice, spacing: IVoiceSpacingInfo): void;
-            visitClef(clef: Model.IClef, spacing: IClefSpacingInfo): void;
-            visitMeter(meter: Model.IMeter, spacing: IMeterSpacingInfo): void;
-            visitKey(key: Model.IKey, spacing: IKeySpacingInfo): void;
-            visitStaff(staff: Model.IStaff, spacing: IStaffSpacingInfo): void;
-            visitScore(score: Model.IScore, spacing: IScoreSpacingInfo): void;
-            visitTextSyllable(text: Model.ITextSyllableElement, spacing: ITextSyllableSpacingInfo): void;
-            visitBar(bar: Model.IBar, spacing: IBarSpacingInfo): void;
-            visitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo): void;
-            visitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void;
+            visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo): void;
+            visitNote(note: INote, spacing: INoteSpacingInfo): void;
+            visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo): void;
+            visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo): void;
+            visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo): void;
+            visitClef(clef: IClef, spacing: IClefSpacingInfo): void;
+            visitMeter(meter: IMeter, spacing: IMeterSpacingInfo): void;
+            visitKey(key: IKey, spacing: IKeySpacingInfo): void;
+            visitStaff(staff: IStaff, spacing: IStaffSpacingInfo): void;
+            visitScore(score: IScore, spacing: IScoreSpacingInfo): void;
+            visitTextSyllable(text: ITextSyllableElement, spacing: ITextSyllableSpacingInfo): void;
+            visitBar(bar: IBar, spacing: IBarSpacingInfo): void;
+            visitBeam(beam: IBeam, spacing: IBeamSpacingInfo): void;
+            visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void;
 
-            visitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void;
+            visitDefault(element: IMusicElement, spacing: ISpacingInfo): void;
         }
 
 
@@ -2112,7 +2112,7 @@ module JMusicScore {
             dots: Point;
             dotWidth: number;
             displacement: boolean;
-            displace: Model.Point;
+            displace: Point;
             headGlyph: string;
             reversed: boolean;
             tieStart: Point;
@@ -2121,17 +2121,17 @@ module JMusicScore {
             graceScale: number;
             accidentalStep: number;
         }
-        export interface IBeamSpacingInfo extends Model.ISpacingInfo {
-            start: Model.Point;
-            end: Model.Point;
+        export interface IBeamSpacingInfo extends ISpacingInfo {
+            start: Point;
+            end: Point;
             beamDist: number;
             beamCount: number;
         }
         export class LedgerLineSpacingInfo {
             constructor(public xStart: number, public xEnd: number, public y: number) { }
         }
-        export interface INoteSpacingInfo extends Model.ISpacingInfo {
-            dots: Model.Point;
+        export interface INoteSpacingInfo extends ISpacingInfo {
+            dots: Point;
             rev: boolean;
             flagNo: number;
             ledgerLinesUnder: LedgerLineSpacingInfo[];
@@ -2175,7 +2175,7 @@ module JMusicScore {
         }
         export interface IBarSpacingInfo extends ISpacingInfo {
             barStyle: string;
-            end: Model.Point;
+            end: Point;
             extraXOffset: number;
         }
         export interface IScoreSpacingInfo extends ISpacingInfo { }
@@ -2305,7 +2305,7 @@ module JMusicScore {
                     var restNote = new NoteElement(null, 'hidden', absTime.diff(voiceTime));
                     restNote.setParent(voice);
                     restNote.setRest(true);
-                    restNote.absTime = Model.AbsoluteTime.startTime;
+                    restNote.absTime = AbsoluteTime.startTime;
                     voice.addChild(voice.noteElements, restNote, null, false);
                 }
                 var oldNote: INote = beforeNote;

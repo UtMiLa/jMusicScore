@@ -427,7 +427,7 @@
                 spacing.graceScale = head.parent.spacingInfo.graceScale;
 
                 spacing.offset.y = head.parent.rest ? 
-                Metrics.restY : MusicSpacing.NoteSpacer.pitchToStaffLine(head.pitch, head.parent) * Metrics.pitchYFactor;
+                Metrics.restY : NoteSpacer.pitchToStaffLine(head.pitch, head.parent) * Metrics.pitchYFactor;
 
 
                 if (head.tie) {
@@ -543,6 +543,7 @@
                         case Model.ClefType.ClefTab: return "e_clefs.tab";
                     }
                 }
+                return null;
             }
             public static longDecoCalculations(deco: Model.ILongDecorationElement) {
                 var noteSpacing = deco.parent.spacingInfo;
@@ -1038,7 +1039,7 @@
                 var lowPitch = 99;
                 var highPitch = -99;
                 note.withHeads((head: Model.INotehead) => {
-                    var thePitch = MusicSpacing.NoteSpacer.pitchToStaffLine(head.getPitch(), note);
+                    var thePitch = NoteSpacer.pitchToStaffLine(head.getPitch(), note);
                     if (thePitch < lowPitch) {
                         lowPitch = thePitch;
                     }
@@ -1218,7 +1219,7 @@
                 else {
                     spacingInfo.offset.x = spacingInfo.displacement ? Metrics.pitchXDisplacement : Metrics.pitchXNoDisplacement;
                 }
-                spacingInfo.offset.y = headElm.parent.rest ? Metrics.restY : MusicSpacing.NoteSpacer.pitchToStaffLine(headElm.pitch, headElm.parent) * Metrics.pitchYFactor;
+                spacingInfo.offset.y = headElm.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, headElm.parent) * Metrics.pitchYFactor;
                 //if (displayData.ref) displayData.ref.setAttribute("transform", "translate(" + spacingInfo.center.x + "," + spacingInfo.center.y + ")");                
             }
         }

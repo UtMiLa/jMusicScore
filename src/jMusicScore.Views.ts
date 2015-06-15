@@ -233,7 +233,7 @@ module JMusicScore {
                 'x': [7, 6, 7, 6, 6, 6, 7]
             }
 
-            public static addKeyXy(id: string, graphic: Views.IGraphicsEngine, keyDefinition: Model.IKeyDefinition, clefDefinition: Model.ClefDefinition, x: number, y: number) {
+            public static addKeyXy(id: string, graphic: IGraphicsEngine, keyDefinition: Model.IKeyDefinition, clefDefinition: Model.ClefDefinition, x: number, y: number) {
                 //var staffContext = key.parent.getStaffContext(key.absTime);
                 var clefOffset = clefDefinition.pitchOffset();
                 var pitchClasses = keyDefinition.enumerateKeys();
@@ -266,7 +266,7 @@ module JMusicScore {
                 'e_zero', 'e_one', 'e_two', 'e_three', 'e_four', 'e_five', 'e_six', 'e_seven', 'e_eight', 'e_nine'
             ];
 
-            public static addNumberXy(id: string, graphic: Views.IGraphicsEngine, meterChar: string, x: number, y: number) {
+            public static addNumberXy(id: string, graphic: IGraphicsEngine, meterChar: string, x: number, y: number) {
                 var symbol: string;
                 switch (meterChar) {
                     case 'c': symbol = 'e_timesig.C44';
@@ -281,7 +281,7 @@ module JMusicScore {
                 graphic.createMusicObject(id, symbol, x, y, 1);
             }
 
-            public static addStringXy(id: string, graphic: Views.IGraphicsEngine, meterString: string, x: number, y: number, maxLen: number) {
+            public static addStringXy(id: string, graphic: IGraphicsEngine, meterString: string, x: number, y: number, maxLen: number) {
                 var deltaX = 0;
                 if (meterString.length < maxLen) {
                     deltaX = (maxLen - meterString.length) * 4;
@@ -292,7 +292,7 @@ module JMusicScore {
                 }
             }
 
-            public static addMeterXy(id: string, graphic: Views.IGraphicsEngine, meterDefinition: Model.IMeterDefinition, x: number, y: number) {
+            public static addMeterXy(id: string, graphic: IGraphicsEngine, meterDefinition: Model.IMeterDefinition, x: number, y: number) {
                 var fracFunc = (num: string, den: string): any => {
                     var len = Math.max(num.length, den.length);
                     MeterDrawer.addStringXy(id + '_1', graphic, num, MusicSpacing.Metrics.meterX + x, MusicSpacing.Metrics.meterY0 + y, len);
@@ -488,7 +488,7 @@ module JMusicScore {
 
         /** Responsible for making event handlers on DOM (SVG/HTML) sensors */
         export class DomCheckSensorsVisitor implements Model.IVisitor { // todo: remove event handlers when inactive
-            constructor(public sensorEngine: Views.ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: Application.IEventReceiver) {
+            constructor(public sensorEngine: ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: Application.IEventReceiver) {
             }
 
             visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
@@ -805,7 +805,7 @@ module JMusicScore {
 
 
         export class RedrawVisitor implements Model.IVisitor {
-            constructor(private graphEngine: Views.IGraphicsEngine) { }
+            constructor(private graphEngine: IGraphicsEngine) { }
 
             static getTie(spacing: Model.INoteHeadSpacingInfo): string {
                 if (spacing.tieStart) {
@@ -958,11 +958,11 @@ module JMusicScore {
             }
             visitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
                 if (!spacing) { meter.setSpacingInfo(spacing = new MusicSpacing.MeterSpacingInfo(meter)); }
-                Views.MeterDrawer.addMeterXy(null, this.graphEngine, meter.definition, 0, 0);
+                MeterDrawer.addMeterXy(null, this.graphEngine, meter.definition, 0, 0);
             }
             visitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
                 var staffContext = key.parent.getStaffContext(key.absTime);
-                Views.KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef.definition, 0, 0);
+                KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef.definition, 0, 0);
             }
             visitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
                 for (var i = 0; i < 5; i++) {
@@ -988,7 +988,7 @@ module JMusicScore {
         }
 
         export class PrefixVisitor implements Model.IVisitorIterator {
-            constructor(private visitor: Model.IVisitor, private cge: Views.IBaseGraphicsEngine, private prefix = '') {
+            constructor(private visitor: Model.IVisitor, private cge: IBaseGraphicsEngine, private prefix = '') {
             }
             public visitPre(element: Model.IMusicElement): (element: Model.IMusicElement) => void {
                 var spacing = element.spacingInfo;
@@ -1443,7 +1443,7 @@ module JMusicScore {
                     this.TransformElement(this.currentGroup, x, y, scale);
                 }
                 else*/ {
-                    var newGrp = <Element>document.createElementNS(SvgHelper.xmlns, "g");
+                    var newGrp = document.createElementNS(SvgHelper.xmlns, "g");
                     this.transformElement(newGrp, x, y, scale);
                     newGrp.setAttributeNS(null, "id", id);
                     newGrp.setAttributeNS(null, "class", className);
@@ -1466,7 +1466,7 @@ module JMusicScore {
 
 
                 var curr = this.currentGroup.getElementsByTagNameNS(SvgHelper.xmlns, "use");
-                var useElm: Element;
+                var useElm: Element = undefined;
                 for (var i = 0; i < curr.length; i++) {
                     if (curr[i].attributes.getNamedItem("id").value === id) {
                         useElm = <Element>curr[i];
@@ -1556,11 +1556,11 @@ module JMusicScore {
             public get EditGraphicsHelper(): Views.ISensorGraphicsEngine { return this.editGraphicsHelper; }
 
             public createRectElement(): SVGRectElement {
-                return <SVGRectElement>(<Document>this.svgDocument).createElementNS(SvgHelper.xmlns, "rect");
+                return <SVGRectElement>(this.svgDocument).createElementNS(SvgHelper.xmlns, "rect");
             }
 
             public createGroupElement(): SVGGElement {
-                return <SVGGElement>(<Document>this.svgDocument).createElementNS(SvgHelper.xmlns, "g");
+                return <SVGGElement>(this.svgDocument).createElementNS(SvgHelper.xmlns, "g");
             }
         }
 
@@ -1652,13 +1652,13 @@ module JMusicScore {
                     p.x -= scrollLeft;
                     if (p.x < 150 && p.x > left) { newKey = key; left = p.x; }
                 });
-                var left = -Infinity;
+                left = -Infinity;
                 this.staff.withClefs((clef: Model.IClef, i: number) => {
                     var p = MusicSpacing.absolutePos(clef, 0, 0);
                     p.x -= scrollLeft;
                     if (p.x < 150 && p.x > left) { newClef = clef; left = p.x; }
                 });
-                var left = -Infinity;
+                left = -Infinity;
                 this.staff.withMeters((meter: Model.IMeter, i: number) => {
                     var p = MusicSpacing.absolutePos(meter, 0, 0);
                     p.x -= scrollLeft;
@@ -2032,166 +2032,166 @@ module JMusicScore {
                 '#': Model.NoteDecorationKind.AccX,
                 'b': Model.NoteDecorationKind.AccB,
                 't': Model.NoteDecorationKind.Trill,
-                '§': Model.NoteDecorationKind.Turn,
+                '§': Model.NoteDecorationKind.Turn
             };
 
             private static getDef(id: Model.NoteDecorationKind): { u: string; d: string; } {
                 switch (id) {
                     case Model.NoteDecorationKind.AccX: return {
                         u: 'e_accidentals.2',
-                        d: 'e_accidentals.2',
+                        d: 'e_accidentals.2'
                     };
                     case Model.NoteDecorationKind.AccXx: return {
                         u: 'e_accidentals.4',
-                        d: 'e_accidentals.4',
+                        d: 'e_accidentals.4'
                     };
                     case Model.NoteDecorationKind.AccB: return {
                         u: 'e_accidentals.M2',
-                        d: 'e_accidentals.M2',
+                        d: 'e_accidentals.M2'
                     };
                     case Model.NoteDecorationKind.AccBb: return {
                         u: 'e_accidentals.M4',
-                        d: 'e_accidentals.M4',
+                        d: 'e_accidentals.M4'
                     };
                     case Model.NoteDecorationKind.Fermata: return {
                         u: 'e_scripts.ufermata',
-                        d: 'e_scripts.dfermata',
+                        d: 'e_scripts.dfermata'
                     };
                     case Model.NoteDecorationKind.ShortFermata: return {
                         u: 'e_scripts.ushortfermata',
-                        d: 'e_scripts.dshortfermata',
+                        d: 'e_scripts.dshortfermata'
                     };
                     case Model.NoteDecorationKind.LongFermata: return {
                         u: 'e_scripts.ulongfermata',
-                        d: 'e_scripts.dlongfermata',
+                        d: 'e_scripts.dlongfermata'
                     };
                     case Model.NoteDecorationKind.VeryLongFermata: return {
                         u: 'e_scripts.uverylongfermata',
-                        d: 'e_scripts.dverylongfermata',
+                        d: 'e_scripts.dverylongfermata'
                     };
                     case Model.NoteDecorationKind.Thumb: return {
                         u: 'e_scripts.thumb',
-                        d: 'e_scripts.thumb',
+                        d: 'e_scripts.thumb'
                     };
                     case Model.NoteDecorationKind.Sforzato: return {
                         u: 'e_scripts.sforzato',
-                        d: 'e_scripts.sforzato',
+                        d: 'e_scripts.sforzato'
                     };
                     case Model.NoteDecorationKind.Espr: return {
                         u: 'e_scripts.espr',
-                        d: 'e_scripts.espr',
+                        d: 'e_scripts.espr'
                     };
                     case Model.NoteDecorationKind.Staccato: return {
                         u: 'e_scripts.staccato',
-                        d: 'e_scripts.staccato',
+                        d: 'e_scripts.staccato'
                     };
                     case Model.NoteDecorationKind.Staccatissimo: return {
                         u: 'e_scripts.ustaccatissimo',
-                        d: 'e_scripts.dstaccatissimo',
+                        d: 'e_scripts.dstaccatissimo'
                     };
                     case Model.NoteDecorationKind.Tenuto: return {
                         u: 'e_scripts.tenuto',
-                        d: 'e_scripts.tenuto',
+                        d: 'e_scripts.tenuto'
                     };
                     case Model.NoteDecorationKind.Portato: return {
                         u: 'e_scripts.uportato',
-                        d: 'e_scripts.dportato',
+                        d: 'e_scripts.dportato'
                     };
                     case Model.NoteDecorationKind.Marcato: return {
                         u: 'e_scripts.umarcato',
-                        d: 'e_scripts.dmarcato',
+                        d: 'e_scripts.dmarcato'
                     };
                     case Model.NoteDecorationKind.Open: return {
                         u: 'e_scripts.open',
-                        d: 'e_scripts.open',
+                        d: 'e_scripts.open'
                     };
                     case Model.NoteDecorationKind.Stopped: return {
                         u: 'e_scripts.stopped',
-                        d: 'e_scripts.stopped',
+                        d: 'e_scripts.stopped'
                     };
                     case Model.NoteDecorationKind.Upbow: return {
                         u: 'e_scripts.upbow',
-                        d: 'e_scripts.upbow',
+                        d: 'e_scripts.upbow'
                     };
                     case Model.NoteDecorationKind.Downbow: return {
                         u: 'e_scripts.downbow',
-                        d: 'e_scripts.downbow',
+                        d: 'e_scripts.downbow'
                     };
                     case Model.NoteDecorationKind.Reverseturn: return {
                         u: 'e_scripts.reverseturn',
-                        d: 'e_scripts.reverseturn',
+                        d: 'e_scripts.reverseturn'
                     };
                     case Model.NoteDecorationKind.Turn: return {
                         u: 'e_scripts.turn',
-                        d: 'e_scripts.turn',
+                        d: 'e_scripts.turn'
                     };
                     case Model.NoteDecorationKind.Trill: return {
                         u: 'e_scripts.trill',
-                        d: 'e_scripts.trill',
+                        d: 'e_scripts.trill'
                     };
                     case Model.NoteDecorationKind.Pedalheel: return {
                         u: 'e_scripts.upedalheel',
-                        d: 'e_scripts.dpedalheel',
+                        d: 'e_scripts.dpedalheel'
                     };
                     case Model.NoteDecorationKind.Pedaltoe: return {
                         u: 'e_scripts.upedaltoe',
-                        d: 'e_scripts.dpedaltoe',
+                        d: 'e_scripts.dpedaltoe'
                     };
                     case Model.NoteDecorationKind.Flageolet: return {
                         u: 'e_scripts.flageolet',
-                        d: 'e_scripts.flageolet',
+                        d: 'e_scripts.flageolet'
                     };
                     case Model.NoteDecorationKind.Rcomma: return {
                         u: 'e_scripts.rcomma',
-                        d: 'e_scripts.rcomma',
+                        d: 'e_scripts.rcomma'
                     };
                     case Model.NoteDecorationKind.Prall: return {
                         u: 'e_scripts.prall',
-                        d: 'e_scripts.prall',
+                        d: 'e_scripts.prall'
                     };
                     case Model.NoteDecorationKind.Mordent: return {
                         u: 'e_scripts.mordent',
-                        d: 'e_scripts.mordent',
+                        d: 'e_scripts.mordent'
                     };
                     case Model.NoteDecorationKind.Prallprall: return {
                         u: 'e_scripts.prallprall',
-                        d: 'e_scripts.prallprall',
+                        d: 'e_scripts.prallprall'
                     };
                     case Model.NoteDecorationKind.Prallmordent: return {
                         u: 'e_scripts.prallmordent',
-                        d: 'e_scripts.prallmordent',
+                        d: 'e_scripts.prallmordent'
                     };
                     case Model.NoteDecorationKind.Upprall: return {
                         u: 'e_scripts.upprall',
-                        d: 'e_scripts.upprall',
+                        d: 'e_scripts.upprall'
                     };
                     case Model.NoteDecorationKind.Upmordent: return {
                         u: 'e_scripts.upmordent',
-                        d: 'e_scripts.upmordent',
+                        d: 'e_scripts.upmordent'
                     };
                     case Model.NoteDecorationKind.Pralldown: return {
                         u: 'e_scripts.pralldown',
-                        d: 'e_scripts.pralldown',
+                        d: 'e_scripts.pralldown'
                     };
                     case Model.NoteDecorationKind.Downprall: return {
                         u: 'e_scripts.downprall',
-                        d: 'e_scripts.downprall',
+                        d: 'e_scripts.downprall'
                     };
                     case Model.NoteDecorationKind.Downmordent: return {
                         u: 'e_scripts.downmordent',
-                        d: 'e_scripts.downmordent',
+                        d: 'e_scripts.downmordent'
                     };
                     case Model.NoteDecorationKind.Prallup: return {
                         u: 'e_scripts.prallup',
-                        d: 'e_scripts.prallup',
+                        d: 'e_scripts.prallup'
                     };
                     case Model.NoteDecorationKind.Lineprall: return {
                         u: 'e_scripts.lineprall',
-                        d: 'e_scripts.lineprall',
+                        d: 'e_scripts.lineprall'
                     };
                     case Model.NoteDecorationKind.Caesura: return {
                         u: 'e_scripts.caesura',
-                        d: 'e_scripts.caesura',
+                        d: 'e_scripts.caesura'
                     };
                 }
                 return null;
@@ -2236,7 +2236,7 @@ module JMusicScore {
             private cursorElement: SVGUseElement = null;
 
             public mouseovernote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 app.Status.currentNote = note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(note, true);
@@ -2245,14 +2245,14 @@ module JMusicScore {
                 return true;
             }
             public mousemovenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition(), event.data.pitch);*/
                 // todo: note cursor
                 return false;
             }
             public mouseoutnote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 app.Status.currentNote = undefined;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(note, false);*/
@@ -2262,7 +2262,7 @@ module JMusicScore {
             }
 
             public mouseoverafternote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(1), event.data.pitch);*/
                 // todo: note cursor
@@ -2271,7 +2271,7 @@ module JMusicScore {
             }
 
             public mousemoveafternote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(1), event.data.pitch);*/
                 // todo: note cursor
@@ -2279,7 +2279,7 @@ module JMusicScore {
             }
 
             public mouseoutafternote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.HideNoteCursor();*/
                 if (app.Status.mouseOverElement === note) app.Status.mouseOverElement = null;
@@ -2287,7 +2287,7 @@ module JMusicScore {
             }
 
             public mousemovebeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(-1), event.data.pitch);*/
                 // todo: note cursor
@@ -2295,7 +2295,7 @@ module JMusicScore {
             }
 
             public mouseoverbeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 app.Status.currentNote = undefined;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(-1), event.data.pitch);*/
@@ -2304,14 +2304,14 @@ module JMusicScore {
             }
 
             public mouseoutbeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.HideNoteCursor();*/
                 if (app.Status.mouseOverElement === note) app.Status.mouseOverElement = null;
                 return true;
             }
             public mouseoverhead(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var head = <Model.INotehead>event.head;
+                var head = event.head;
                 app.Status.currentNotehead = head;
                 app.Status.currentNote = head.parent;
 
@@ -2321,7 +2321,7 @@ module JMusicScore {
                 return false;
             }
             public mouseouthead(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var head = <Model.INotehead>event.head;
+                var head = event.head;
                 app.Status.currentNotehead = undefined;
                 app.Status.currentNote = undefined;
 
@@ -2435,14 +2435,14 @@ module JMusicScore {
             public clickafternote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutafternote(app, event);
 
-                var voice = <Model.IVoice>event.voice;
+                var voice = event.voice;
 
                 var absTime = Model.AbsoluteTime.startTime;
                 if (voice.noteElements.length) {
                     var lastNote = voice.noteElements[voice.noteElements.length - 1];
                     absTime = lastNote.absTime.add(lastNote.timeVal);
                 }
-                var pitch = <Model.Pitch>event.pitch; 
+                var pitch = event.pitch; 
                 
                 var rest = app.Status.rest;
                 var dots = app.Status.dots;
@@ -2467,7 +2467,7 @@ module JMusicScore {
             public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutnote(app, event);
 
-                var note = <Model.INote>event.note;
+                var note = event.note;
 
                 var absTime = Model.AbsoluteTime.startTime;
                 if (note.parent.noteElements.length) {
@@ -2475,7 +2475,7 @@ module JMusicScore {
                     absTime = lastNote.absTime.add(lastNote.timeVal);
                 }
                 
-                var pitch = <Model.Pitch>event.pitch; 
+                var pitch = event.pitch; 
                 if (note.matchesPitch(pitch, true)) {
                     if (!note.matchesOnePitch(pitch, true)) {
                         for (var i = 0; i < note.noteheadElements.length; i++) {
@@ -2503,14 +2503,14 @@ module JMusicScore {
             public clickbeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutbeforenote(app, event);
 
-                var note = <Model.INote>event.note;
+                var note = event.note;
 
                 var absTime = Model.AbsoluteTime.startTime;
                 if (note.parent.noteElements.length) {
                     var lastNote = note.parent.noteElements[note.parent.noteElements.length - 1];
                     absTime = lastNote.absTime.add(lastNote.timeVal);
                 }
-                var pitch = <Model.Pitch>event.pitch; 
+                var pitch = event.pitch; 
 
                 var rest = app.Status.rest;
                 var dots = app.Status.dots;
@@ -2654,7 +2654,7 @@ module JMusicScore {
 
             public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutnote(app, event);
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 var text = '';
                 if (note.syllableElements.length) {
                     // Edit first syllable
@@ -2686,7 +2686,7 @@ module JMusicScore {
         export class DeleteNoteEditor extends NoteEditor {
             public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutnote(app, event);
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 app.executeCommand(new Model.DeleteNoteCommand({
                     note: note
                 }));
@@ -2695,7 +2695,7 @@ module JMusicScore {
 
             public clickhead(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseouthead(app, event);
-                var head = <Model.INotehead>event.head;
+                var head = event.head;
                 // todo: slet eneste head bør gøre note til pause
                 if (head.parent.matchesOnePitch(head.getPitch(), true) || head.parent.rest) {
                     app.executeCommand(new Model.DeleteNoteCommand({
@@ -2724,7 +2724,7 @@ module JMusicScore {
 
 
             public clickbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+                var bar = event.bar;
 
                 var dlg = new Ui.MeterDialog("click", app);
                 dlg.setTime(bar.absTime).show();
@@ -2733,7 +2733,7 @@ module JMusicScore {
             }
 
             public clickmeter(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var meter = <Model.IMeter>event.meter;
+                var meter = event.meter;
 
                 var dlg = new Ui.MeterDialog("click", app);
                 dlg.setTime(meter.absTime).setMeter(meter.definition).show();
@@ -2742,28 +2742,28 @@ module JMusicScore {
             }
 
             public mouseoverbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+                var bar = event.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, true);*/
                 app.Status.mouseOverElement = bar;
                 return true;
             }
             public mouseoutbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+                var bar = event.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, false);*/
                 if (app.Status.mouseOverElement === bar) app.Status.mouseOverElement = null;
                 return true;
             }
             public mouseovermeter(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var meter = <Model.IMeter>event.meter;
+                var meter = event.meter;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(meter, true);*/
                 app.Status.mouseOverElement = meter;
                 return true;
             }
             public mouseoutmeter(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var meter = <Model.IMeter>event.meter;
+                var meter = event.meter;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(meter, false);*/
                 if (app.Status.mouseOverElement === meter) app.Status.mouseOverElement = null;
@@ -2783,7 +2783,7 @@ module JMusicScore {
 
 
             public clickbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+                var bar = event.bar;
 
                 var dlg = new Ui.KeyDialog("click", app);
                 dlg.setTime(bar.absTime).show();
@@ -2792,7 +2792,7 @@ module JMusicScore {
             }
 
             public clickkey(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var key = <Model.IKey>event.keySig;
+                var key = event.keySig;
 
                 var dlg = new Ui.KeyDialog("click", app);
                 dlg.setTime(key.absTime).setKey(key).show();
@@ -2800,28 +2800,28 @@ module JMusicScore {
                 return false;
             }
             public mouseoverbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+                var bar = event.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, true);*/
                 app.Status.mouseOverElement = bar;
                 return true;
             }
             public mouseoutbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+                var bar = event.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, false);*/
                 if (app.Status.mouseOverElement === bar) app.Status.mouseOverElement = null;
                 return true;
             }
             public mouseoverkey(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var key = <Model.IKey>event.keySig;
+                var key = event.keySig;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(key, true);*/
                 app.Status.mouseOverElement = key;
                 return true;
             }
             public mouseoutkey(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var key = <Model.IKey>event.keySig;
+                var key = event.keySig;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(key, false);*/
                 if (app.Status.mouseOverElement === key) app.Status.mouseOverElement = null;
@@ -2843,7 +2843,7 @@ module JMusicScore {
 
 
             public clickbeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+                var note = event.note;
 
                 var dlg = new JMusicScore.Ui.ClefDialog("click", app);
                 dlg.setTime(note.absTime).setStaff(note.parent.parent).show();
@@ -2852,7 +2852,7 @@ module JMusicScore {
             }
 
             public clickclef(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var clef = <Model.IClef>event.clef;
+                var clef = event.clef;
 
                 var dlg = new JMusicScore.Ui.ClefDialog("click", app);
                 dlg.setClef(clef).setTime(clef.absTime).setStaff(clef.parent).show();
@@ -2862,13 +2862,13 @@ module JMusicScore {
 
 
             public mouseoverclef(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var clef = <Model.IClef>event.clef;
+                var clef = event.clef;
                 //var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 //fb.MouseOverElement(clef, true);
                 return true;
             }
             public mouseoutclef(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var clef = <Model.IClef>event.clef;
+                var clef = event.clef;
                 //var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 //fb.MouseOverElement(clef, false);
                 return true;

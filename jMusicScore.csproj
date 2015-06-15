@@ -294,9 +294,6 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="demos\app\initApp.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jquery.ui.layout\jquery.ui.layout.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="src\application.ts" />
     <TypeScriptCompile Include="src\jMusicScore.BrowserFileSystem.ts" />
     <TypeScriptCompile Include="src\commands.ts" />
@@ -319,6 +316,11 @@
     <TypeScriptCompile Include="tests\SpecInit.ts" />
     <TypeScriptCompile Include="tests\spec\scoreSpec.ts" />
     <TypeScriptCompile Include="tests\spec\viewerSpec.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\typings\jquery.ui.layout\" />
+    <Folder Include="Scripts\typings\jqueryui\" />
+    <Folder Include="Scripts\typings\jquery\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

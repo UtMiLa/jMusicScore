@@ -38,7 +38,7 @@
 
             /* args:
             */
-            private memento: Model.IMemento;
+            private memento: IMemento;
 
             execute(app: ScoreApplication.IScoreApplication) {
                 this.memento = app.document.getMemento();
@@ -46,13 +46,13 @@
             }
 
             undo(app: ScoreApplication.IScoreApplication) {
-                app.document = <IScore>Model.MusicElementFactory.recreateElement(null, this.memento);
+                app.document = <IScore>MusicElementFactory.recreateElement(null, this.memento);
             }
         }
 
         export interface IAddNoteArgs {
             noteName: string; /* '1_4' */
-            noteTime: Model.TimeSpan;
+            noteTime: TimeSpan;
             rest: boolean;
             dots: number;
             grace: boolean;
@@ -90,8 +90,8 @@
         export class DeleteNoteCommand implements IScoreCommand {
             constructor(private args: IDeleteNoteArgs) { }
             
-            private memento: Model.IMemento;
-            private voice: Model.IVoice;
+            private memento: IMemento;
+            private voice: IVoice;
 
             execute(app: ScoreApplication.IScoreApplication) {
                 this.memento = this.args.note.getMemento();
@@ -100,7 +100,7 @@
             }
 
             public undo(app: ScoreApplication.IScoreApplication) {
-                var note = Model.MusicElementFactory.recreateElement(this.voice, this.memento);
+                var note = MusicElementFactory.recreateElement(this.voice, this.memento);
             }
 
         }
@@ -115,7 +115,7 @@
             private note: INote;
 
             execute(app: ScoreApplication.IScoreApplication) {
-                var head = <Model.INotehead>this.args.head;
+                var head = this.args.head;
                 this.note = head.parent;
                 this.memento = head.getMemento();
                 this.note.removeChild(head);
@@ -155,7 +155,7 @@
 
             public execute(app: ScoreApplication.IScoreApplication) {
                 var direction = this.args.direction;
-                var note = <INote>this.args.note;
+                var note = this.args.note;
 
                 this.oldDirection = note.getStemDirection();
 
@@ -163,18 +163,18 @@
                     note.setStemDirection(<Model.StemDirectionType>direction);
                 }
                 else if (direction === "UP") {
-                    note.setStemDirection(Model.StemDirectionType.StemUp);
+                    note.setStemDirection(StemDirectionType.StemUp);
                 }
                 else if (direction === "DOWN") {
-                    note.setStemDirection(Model.StemDirectionType.StemDown);
+                    note.setStemDirection(StemDirectionType.StemDown);
                 }
                 else {
-                    note.setStemDirection(Model.StemDirectionType.StemFree);
+                    note.setStemDirection(StemDirectionType.StemFree);
                 }
             }
 
             public undo(app: ScoreApplication.IScoreApplication) {
-                var note = <INote>this.args.note;
+                var note = this.args.note;
                 note.setStemDirection(this.oldDirection);
             }       
         }
@@ -218,7 +218,7 @@
         }
 
         export class AddNoteheadCommand implements IScoreCommand {
-            constructor(private args: { note: Model.INote; pitch: Model.Pitch; }) { }
+            constructor(private args: { note: INote; pitch: Pitch; }) { }
 
             //private noteMemento: IMemento;
 
@@ -247,7 +247,7 @@
         }
 
         export class RemoveNoteheadCommand implements IScoreCommand {
-            constructor(private args: { head: Model.INotehead; }) { }
+            constructor(private args: { head: INotehead; }) { }
 
             private head: INotehead;
             private note: INote;
@@ -328,7 +328,7 @@
 
             public execute(app: ScoreApplication.IScoreApplication) {
                 var note = this.args.note;
-                this.theDeco = new Model.NoteDecorationElement(note, this.args.expression);
+                this.theDeco = new NoteDecorationElement(note, this.args.expression);
                 this.theDeco.placement = this.args.placement;
                 note.addChild(note.decorationElements, this.theDeco);
             }
@@ -359,7 +359,7 @@
             */
             private oldIndex: number;
             private oldTitle: string;
-            private oldClef: Model.ClefDefinition;
+            private oldClef: ClefDefinition;
 
             public execute(app: ScoreApplication.IScoreApplication) {
                 var staff = this.args.staff;
