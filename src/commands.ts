@@ -1,6 +1,80 @@
 ﻿module JMusicScore {
     export module Model {
 
+        export class MacroExporter {
+            static makeMacro(cmd: { args: {} }): { commandName: string; args: {}} {
+                var cmdName = cmd.constructor.toString();
+
+                var funcNameRegex = /function (.{1,})\(/;
+                var results = (funcNameRegex).exec(cmdName);
+                cmdName = (results && results.length > 1) ? results[1] : "";
+
+                return {
+                    commandName: cmdName,
+                    args: MacroExporter.exportArgs(cmd.args)
+                };
+            }
+
+            static exportString(s: string): string {
+                return '"' + s + '"'; // todo: escape "
+            }
+            static exportPitch(pitch: Pitch): string {
+                return "new Model.Pitch(" + pitch.pitch + ",'" + pitch.alteration + "')";
+            }
+            static exportTimespan(timespan: TimeSpan): string {
+                return "new Model.TimeSpan(" + timespan.numerator + "," + timespan.denominator + ")";
+            }
+            static exportTime(time: AbsoluteTime): string {
+                return "new Model.AbsoluteTime(" + time.numerator + "," + time.denominator + ")";
+            }
+            static exportArgs(args: {}): {} {
+                var elms: { [key:string]:string; } = {};
+                $.each(args, function(key: string, val: string) {
+                    elms[key] = MacroExporter.exportArg(val);
+                });
+                return elms;
+            }
+            static exportArg(arg: any): string {
+                var typ = typeof (arg);
+                switch (typ) {
+                case "string":
+                    return this.exportString(arg);
+                case "number":
+                    return arg.toString();
+                case "boolean":
+                    return arg.toString();
+                case "object":
+                    if (Array.isArray(arg)) {
+                        var resArr: string[] = [];
+                        for (var i = 0; i < arg.length; i++) {
+                            resArr.push(this.exportArg(arg[i]));
+                        }
+                        return '[' + resArr.join(',') + ']';
+                    } else {
+                        if (arg.getElementName) {
+                            // MusicElement
+                            return "'" + arg.getElementName() + "'";
+                        } else {
+                            // non-musicElement object
+                            if (arg instanceof Pitch) return this.exportPitch(arg);
+                            if (arg instanceof TimeSpan) return this.exportTimespan(arg);
+                            if (arg instanceof AbsoluteTime) return this.exportTime(arg);
+                            return "OBJECT";
+                        }
+                    }
+                    break;
+                case "function":
+                    return "FUNCTION";
+                case "symbol":
+                    return "SYMBOL";
+                case "undefined":
+                    return undefined;
+                default:
+                }
+                return "UNKNOWN";
+            }
+        }
+
         export interface IScoreCommand extends Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
 
         export interface IMacroCommand {
@@ -90,19 +164,8 @@
             
             macro(): IMacroCommand {
                 return {
-                    commandName: "AddNote",
-                    args: {
-                        noteName: this.args.noteName,
-                        noteTime: this.args.noteTime.toString(),
-                        rest: '',
-                        dots: '',
-                        grace: '',
-                        pitches: '',
-                        voice: '',
-                        absTime: this.args.absTime.toString(),
-                        beforeNote: '',
-                        tuplet: ''
-                    }  
+                    commandName: this.constructor.toString(),//"AddNote",
+                    args: MacroExporter.exportArgs(this.args)
                 };
             }
         }

@@ -221,29 +221,21 @@
         }));
 
         app.addPlugin(new Ui.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", function () {
-            var res = [];
-            $.each((<any>app).undoStack, function(i,e) {
-                if (e.macro) res.push([e.macro().commandName, 'Command()'].join(''));
-                else   
-                res.push("null");
+            var res: string[] = [];
+            $.each((<any>app).undoStack, function(i:number, e: any) {
+                if (e.args) {
+                    var macroDef = Model.MacroExporter.makeMacro(e);//e.macro();
+                    //var keys = macroDef.args.keys();
+                    var keyValues: string[] = [];
+                    $.each(macroDef.args, function(key: string, val: any) {
+                        keyValues.push(key + ': ' + val);
+                    });
+                    res.push([macroDef.commandName, '({', keyValues.join(', '), '})'].join(''));
+                }
+                else  res.push("null");
             });
             alert(res.join("\n"));
-            //var cache: any = [];
-            //alert(((<any>app).undoStack).toSource());
-            /*alert(JSON.stringify((<any>app).undoStack, function(key, value) {
-                if (typeof value === 'object' && value !== null) {
-                    if (cache.indexOf(value) !== -1) {
-                        // Circular reference found, discard key
-                        return;
-                    }
-                    // Store value in our collection
-                    cache.push(value);
-                }
-                return value;
-            }));*/
-            //cache = null; 
-                        
-            
+
         }));
         app.addPlugin(new Ui.PianoPlugIn());
 
