@@ -161,13 +161,6 @@
                 var voice = this.note.parent;
                 voice.removeChild(this.note);
             }
-            
-            macro(): IMacroCommand {
-                return {
-                    commandName: this.constructor.toString(),//"AddNote",
-                    args: MacroExporter.exportArgs(this.args)
-                };
-            }
         }
 
         export interface IDeleteNoteArgs {
