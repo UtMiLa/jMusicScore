@@ -2,6 +2,10 @@
     export module Model {
 
         export class MacroExporter {
+            //todo: Tuplet, StemDirectionType, NoteDecorationKind, ClefDefinition, IMeterDefinition, IKeyDefinition
+            //todo: bundleCommand
+            //todo: Finale: Add a dot . (period); Show/hide any accidental; Add a note to a chord enter;
+            //todo: test menu: Recreate score; Debug to lyrics; 
             static makeMacro(cmd: { args: {} }): { commandName: string; args: {}} {
                 var cmdName = cmd.constructor.toString();
 
@@ -16,24 +20,51 @@
             }
 
             static exportString(s: string): string {
-                return '"' + s + '"'; // todo: escape "
+                return JSON.stringify(s); // `"${s}"`; // todo: escape "
             }
             static exportPitch(pitch: Pitch): string {
-                return "new Model.Pitch(" + pitch.pitch + ",'" + pitch.alteration + "')";
+                return `new Model.Pitch(${pitch.pitch},'${pitch.alteration}')`;
             }
             static exportTimespan(timespan: TimeSpan): string {
-                return "new Model.TimeSpan(" + timespan.numerator + "," + timespan.denominator + ")";
+                return `new Model.TimeSpan(${timespan.numerator},${timespan.denominator})`;
             }
             static exportTime(time: AbsoluteTime): string {
-                return "new Model.AbsoluteTime(" + time.numerator + "," + time.denominator + ")";
+                return `new Model.AbsoluteTime(${time.numerator},${time.denominator})`;
             }
             static exportArgs(args: {}): {} {
                 var elms: { [key:string]:string; } = {};
-                $.each(args, function(key: string, val: string) {
+                $.each(args, (key: string, val: string) => {
                     elms[key] = MacroExporter.exportArg(val);
                 });
                 return elms;
             }
+
+            static exportMusicElm(elm: Model.IMusicElement): string {
+                var elmName = elm.getElementName();
+                var index: number;
+                if (elmName === "Score") {
+                    return "app.document";
+                }
+                if (elmName === "Staff") {
+                    index = (<Model.IStaff>elm).parent.staffElements.indexOf(<IStaff>elm);
+                    return this.exportMusicElm(elm.parent) + '.staffElements[' + index + ']';
+                }
+                if (elmName === "Voice") {
+                    index = (<Model.IVoice>elm).parent.voiceElements.indexOf(<IVoice>elm);
+                    return this.exportMusicElm(elm.parent) + '.voiceElements[' + index + ']';
+                }
+                if (elmName === "Note") {
+                    index = (<Model.INote>elm).parent.noteElements.indexOf(<INote>elm);
+                    return this.exportMusicElm(elm.parent) + '.noteElements[' + index + ']';
+                }
+                if (elmName === "Notehead") {
+                    index = (<Model.INotehead>elm).parent.noteheadElements.indexOf(<INotehead>elm);
+                    return this.exportMusicElm(elm.parent) + '.noteheadElements[' + index + ']';
+                }
+                
+                return `null /*'${elmName}' */ `;
+            }
+
             static exportArg(arg: any): string {
                 var typ = typeof (arg);
                 switch (typ) {
@@ -49,11 +80,11 @@
                         for (var i = 0; i < arg.length; i++) {
                             resArr.push(this.exportArg(arg[i]));
                         }
-                        return '[' + resArr.join(',') + ']';
+                        return `[${resArr.join(',')}]`;
                     } else {
                         if (arg.getElementName) {
                             // MusicElement
-                            return "'" + arg.getElementName() + "'";
+                            return this.exportMusicElm(<IMusicElement>arg);
                         } else {
                             // non-musicElement object
                             if (arg instanceof Pitch) return this.exportPitch(arg);
@@ -100,9 +131,9 @@
                     canUndo = canUndo && !!this.commands[i].undo;
                 }
                 if (canUndo) {
-                    this.undo = (app: ScoreApplication.IScoreApplication) => {
+                    this.undo = (app1: ScoreApplication.IScoreApplication) => {
                         for (var i = this.commands.length - 1; i >= 0; i--) {
-                            this.commands[i].undo(app);
+                            this.commands[i].undo(app1);
                         }
                     };
                 }

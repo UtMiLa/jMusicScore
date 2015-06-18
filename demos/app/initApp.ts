@@ -92,14 +92,14 @@
     };
     app.loadFromString(mus, 'JSON');
 
-    $(function () {
+    $(function() {
         /* Menus */
         app.addPlugin(new CanvasView.CanvasViewer($('#svgArea')));
         //app.AddPlugin(new SvgView.SVGViewer($('#svgArea')));
         app.addPlugin(new SvgView.HintAreaPlugin());
 
         app.addPlugin(new Ui.ToolbarPlugin());
-        
+
         app.addPlugin(new Ui.FileMenuPlugin());
         app.addPlugin(new Ui.VoiceMenuPlugin(app));
         app.addPlugin(new Ui.ExportMenuPlugin());
@@ -112,24 +112,24 @@
 
         /** test **/
 
-        app.addPlugin(new Ui.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function () { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
-        app.addPlugin(new Ui.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function () { app.saveUsing('saved.xml', 'Server', 'JSON'); }));
-        app.addPlugin(new Ui.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function () {
+        app.addPlugin(new Ui.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
+        app.addPlugin(new Ui.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function() { app.saveUsing('saved.xml', 'Server', 'JSON'); }));
+        app.addPlugin(new Ui.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function() {
             app.executeCommand({
-                execute: (app: ScoreApplication.IScoreApplication) => { },
-                undo: (app: ScoreApplication.IScoreApplication) => { }
+                execute: (app: ScoreApplication.IScoreApplication) => {},
+                undo: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function () { $('.overlay').toggle(); }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function () {
+        app.addPlugin(new Ui.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function() { $('.overlay').toggle(); }));
+        app.addPlugin(new Ui.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function() {
             var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
             var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
             note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.diff(note1.absTime), Model.LongDecorationType.Slur));
             app.executeCommand({
-                execute: (app: ScoreApplication.IScoreApplication) => { }
+                execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function () {
+        app.addPlugin(new Ui.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function() {
             var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
             var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
             note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.diff(note1.absTime), Model.LongDecorationType.Cresc));
@@ -137,69 +137,69 @@
             var note4 = app.document.staffElements[0].voiceElements[0].noteElements[8];
             note3.addChild(note3.longDecorationElements, new Model.NoteLongDecorationElement(note3, note4.absTime.diff(note3.absTime), Model.LongDecorationType.Decresc));
             app.executeCommand({
-                execute: (app: ScoreApplication.IScoreApplication) => { }
+                execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function () {
+        app.addPlugin(new Ui.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function() {
             var staff1 = app.document.staffElements[0];
             staff1.setStaffExpression("Allegro", Model.AbsoluteTime.startTime);
             app.executeCommand({
-                execute: (app: ScoreApplication.IScoreApplication) => { }
+                execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function () {
+        app.addPlugin(new Ui.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function() {
             var cmd = new Model.AddNoteCommand(
-                {
-                    noteName: '1_4',
-                    noteTime: Model.TimeSpan.quarterNote,
-                    rest: false,
-                    dots: 0,
-                    grace: false,
-                    pitches: [new Model.Pitch(-10, '')],
-                    voice: app.document.staffElements[1].voiceElements[0],
-                    beforeNote: null,
-                    absTime: Model.AbsoluteTime.startTime,
-                    tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
-                });
+            {
+                noteName: '1_4',
+                noteTime: Model.TimeSpan.quarterNote,
+                rest: false,
+                dots: 0,
+                grace: false,
+                pitches: [new Model.Pitch(-10, '')],
+                voice: app.document.staffElements[1].voiceElements[0],
+                beforeNote: null,
+                absTime: Model.AbsoluteTime.startTime,
+                tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
+            });
             app.executeCommand(cmd);
             cmd = new Model.AddNoteCommand(
-                {
-                    noteName: '1_4',
-                    noteTime: Model.TimeSpan.quarterNote,
-                    rest: false,
-                    dots: 0,
-                    grace: false,
-                    pitches: [new Model.Pitch(-9, '')],
-                    voice: app.document.staffElements[1].voiceElements[0],
-                    beforeNote: null,
-                    absTime: Model.AbsoluteTime.startTime,
-                    tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
-                });
+            {
+                noteName: '1_4',
+                noteTime: Model.TimeSpan.quarterNote,
+                rest: false,
+                dots: 0,
+                grace: false,
+                pitches: [new Model.Pitch(-9, '')],
+                voice: app.document.staffElements[1].voiceElements[0],
+                beforeNote: null,
+                absTime: Model.AbsoluteTime.startTime,
+                tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
+            });
             app.executeCommand(cmd);
             cmd = new Model.AddNoteCommand(
-                {
-                    noteName: '1_4',
-                    noteTime: Model.TimeSpan.quarterNote,
-                    rest: false,
-                    dots: 0,
-                    grace: false,
-                    pitches: [new Model.Pitch(-8, '')],
-                    voice: app.document.staffElements[1].voiceElements[0],
-                    beforeNote: null,
-                    absTime: Model.AbsoluteTime.startTime,
-                    tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
-                });
+            {
+                noteName: '1_4',
+                noteTime: Model.TimeSpan.quarterNote,
+                rest: false,
+                dots: 0,
+                grace: false,
+                pitches: [new Model.Pitch(-8, '')],
+                voice: app.document.staffElements[1].voiceElements[0],
+                beforeNote: null,
+                absTime: Model.AbsoluteTime.startTime,
+                tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
+            });
             app.executeCommand(cmd);
         }));
 
-        app.addPlugin(new Ui.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function () {
+        app.addPlugin(new Ui.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function() {
             app.document.withBars((bar: Model.IBar, index: number) => { app.document.removeChild(bar); });
             app.executeCommand({
-                execute: (app: ScoreApplication.IScoreApplication) => { }
+                execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function () {
-            app.document.withVoices(function (voice, index) {
+        app.addPlugin(new Ui.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function() {
+            app.document.withVoices(function(voice, index) {
                 voice.withNotes((note: Model.INote) => {
                     var staff = voice.parent;
                     var staffContext = staff.getStaffContext(note.absTime);
@@ -210,36 +210,34 @@
                 });
             });
             app.executeCommand({
-                execute: (app: ScoreApplication.IScoreApplication) => { }
+                execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function () {
+        app.addPlugin(new Ui.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function() {
             app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, app.document.getMemento());
             app.executeCommand({
-                execute: (app: ScoreApplication.IScoreApplication) => { }
+                execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
 
-        app.addPlugin(new Ui.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", function () {
+        app.addPlugin(new Ui.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", () => {
             var res: string[] = [];
-            $.each((<any>app).undoStack, function(i:number, e: any) {
+            $.each((<any>app).undoStack, (i: number, e: any) => {
                 if (e.args) {
-                    var macroDef = Model.MacroExporter.makeMacro(e);//e.macro();
-                    //var keys = macroDef.args.keys();
+                    var macroDef = Model.MacroExporter.makeMacro(e); //e.macro();
                     var keyValues: string[] = [];
-                    $.each(macroDef.args, function(key: string, val: any) {
+                    $.each(macroDef.args, (key: string, val: any) => {
                         keyValues.push(key + ': ' + val);
                     });
-                    res.push([macroDef.commandName, '({', keyValues.join(', '), '})'].join(''));
-                }
-                else  res.push("null");
+                    res.push(['app.executeCommand(new Model.', macroDef.commandName, '({', keyValues.join(', '), '}));'].join(''));
+                } else res.push("null");
             });
-            alert(res.join("\n"));
-
+            new Ui.ShowTextDialog('menu', app).setText(res.join("\n")).show();
         }));
         app.addPlugin(new Ui.PianoPlugIn());
-
+        
         app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
         //app.AddPlugin(new Players.MidiPlayer());
+
     });
 } 
