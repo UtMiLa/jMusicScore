@@ -229,7 +229,7 @@
                     $.each(macroDef.args, (key: string, val: any) => {
                         keyValues.push(key + ': ' + val);
                     });
-                    res.push(['app.executeCommand(new Model.', macroDef.commandName, '({', keyValues.join(', '), '}));'].join(''));
+                    res.push(['app.executeCommand(new JMusicScore.Model.', macroDef.commandName, '({', keyValues.join(', '), '}));'].join(''));
                 } else res.push("null");
             });
             new Ui.ShowTextDialog('menu', app).setText(res.join("\n")).show();

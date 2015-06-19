@@ -887,9 +887,9 @@
                         }
                     }
                 });
-                score.withStaves((staff: Model.IStaff, index: number): void => {
-                    staff.withVoices((voice: Model.IVoice, index: number): void => {
-                        voice.withNotes((note: Model.INote, index: number): void => {
+                score.withStaves((staff: Model.IStaff): void => {
+                    staff.withVoices((voice: Model.IVoice): void => {
+                        voice.withNotes((note: Model.INote): void => {
                             for (var i = 0; i < note.Beams.length; i++) {
                                 var beam = note.Beams[i];
                                 if (beam) {

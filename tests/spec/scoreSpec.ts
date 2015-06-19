@@ -215,7 +215,7 @@ var initScore: any = { "id": "2", "t": "Score", "def": { "metadata": {} }, "chil
 
     });
 
-var initApp1 = { "id": "2", "t": "Score", "def": { "metadata": {} }, "children": [{ "id": "188", "t": "Bar", "def": { "abs": { "num": 1, "den": 1 } } }, { "id": "189", "t": "Bar", "def": { "abs": { "num": 7, "den": 4 } } }, { "id": "190", "t": "Bar", "def": { "abs": { "num": 5, "den": 2 } } }, { "id": "191", "t": "Bar", "def": { "abs": { "num": 13, "den": 4 } } }, { "id": "5", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }, { "id": "6", "t": "Meter", "def": { "abs": { "num": 1, "den": 1 }, "def": { "t": "Regular", "num": 3, "den": 4 } } }, { "id": "7", "t": "Staff", "children": [{ "id": "8", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, { "id": "9", "t": "Clef", "def": { "abs": { "num": 1, "den": 1 }, "clef": 2, "lin": 3, "tr": 0 } }, { "id": "10", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "11", "t": "Key", "def": { "abs": { "num": 1, "den": 1 }, "def": { "t": "Regular", "acci": "b", "no": 3 } } }, { "id": "12", "t": "Voice", "def": { "stem": 1 }, "children": [{ "id": "13", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 0, "den": 1 }, "noteId": "n1_8", "dots": 1, "rest": true } }, { "id": "14", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 3, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "15", "t": "Notehead", "def": { "p": 2, "a": "" } }, { "id": "16", "t": "TextSyllable", "def": { "text": "tænk " } }, { "id": "17", "t": "NoteLongDecoration", "def": { "type": 3, "dur": { "num": 5, "den": 16 } } }, { "id": "18", "t": "NoteLongDecoration", "def": { "type": 1, "dur": { "num": 5, "den": 16 } } }] }, { "id": "157", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "174", "t": "Notehead", "def": { "p": 3, "a": "x" } }] }, { "id": "161", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 2 }, "noteId": "n1_4" }, "children": [{ "id": "182", "t": "Notehead", "def": { "p": 4, "a": "n" } }] }, { "id": "169", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 3, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "187", "t": "Notehead", "def": { "p": 5, "a": "n" } }] }, { "id": "84", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 1, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "89", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 33, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "104", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 37, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "113", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 39, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "146", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 5, "den": 4 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "120", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 41, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "124", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 21, "den": 16 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "140", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 11, "den": 8 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "151", "t": "Note", "def": { "time": { "num": 3, "den": 32 }, "abs": { "num": 3, "den": 2 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "143", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 51, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "148", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 13, "den": 8 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "155", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 7, "den": 4 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "152", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 15, "den": 8 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "165", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 2, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "156", "t": "Note", "def": { "time": { "num": 3, "den": 16 }, "abs": { "num": 65, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "160", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 71, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "166", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 79, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "173", "t": "Note", "def": { "time": { "num": 7, "den": 32 }, "abs": { "num": 5, "den": 2 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "179", "t": "Note", "def": { "time": { "num": 17, "den": 32 }, "abs": { "num": 87, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }] }, { "id": "51", "t": "Voice", "def": { "stem": 2 }, "children": [{ "id": "52", "t": "Note", "def": { "time": { "num": 1, "den": 1 }, "abs": { "num": 0, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "53", "t": "Note", "def": { "time": { "num": 3, "den": 4 }, "abs": { "num": 1, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "167", "t": "Note", "def": { "time": { "num": 3, "den": 4 }, "abs": { "num": 7, "den": 4 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "180", "t": "Note", "def": { "time": { "num": 3, "den": 4 }, "abs": { "num": 5, "den": 2 }, "noteId": "hidden", "rest": true, "hidden": true } }] }, { "id": "54", "t": "StaffExpression", "def": { "text": "Allegro", "abs": { "num": 0, "den": 1 } } }, { "id": "72", "t": "Meter" }, { "id": "73", "t": "Meter" }] }, { "id": "55", "t": "Staff", "children": [{ "id": "56", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 3, "lin": 2, "tr": 0 } }, { "id": "57", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "58", "t": "Key", "def": { "abs": { "num": 1, "den": 1 }, "def": { "t": "Regular", "acci": "b", "no": 3 } } }, { "id": "59", "t": "Voice", "def": { "stem": 1 }, "children": [{ "id": "60", "t": "Note", "def": { "time": { "num": 1, "den": 1 }, "abs": { "num": 0, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "61", "t": "Note", "def": { "time": { "num": 3, "den": 4 }, "abs": { "num": 1, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "168", "t": "Note", "def": { "time": { "num": 3, "den": 4 }, "abs": { "num": 7, "den": 4 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "181", "t": "Note", "def": { "time": { "num": 3, "den": 4 }, "abs": { "num": 5, "den": 2 }, "noteId": "hidden", "rest": true, "hidden": true } }] }, { "id": "74", "t": "Meter" }, { "id": "75", "t": "Meter" }] }] };
+var initApp1 = { "id": "570", "t": "Score", "def": { "metadata": {} }, "children": [{ "id": "589", "t": "Bar", "def": { "abs": { "num": 1, "den": 1 } } }, { "id": "590", "t": "Bar", "def": { "abs": { "num": 2, "den": 1 } } }, { "id": "572", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }, { "id": "573", "t": "Staff", "children": [{ "id": "574", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, { "id": "575", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "576", "t": "Voice", "def": { "stem": 1 }, "children": [{ "id": "577", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 0, "den": 1 }, "noteId": "n1_8", "dots": 1, "rest": true } }, { "id": "578", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 3, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "579", "t": "Notehead", "def": { "p": 2, "a": "" } }, { "id": "580", "t": "TextSyllable", "def": { "text": "tænk" } }] }, { "id": "581", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "582", "t": "Notehead", "def": { "p": 3, "a": "x" } }] }, { "id": "583", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 2 }, "noteId": "n1_4" }, "children": [{ "id": "584", "t": "Notehead", "def": { "p": 4, "a": "n" } }] }, { "id": "585", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 3, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "586", "t": "Notehead", "def": { "p": 5, "a": "n" } }] }, { "id": "587", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 1, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "594", "t": "Note", "def": { "time": { "num": 31, "den": 32 }, "abs": { "num": 33, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }] }, { "id": "588", "t": "StaffExpression", "def": { "text": "Allegro", "abs": { "num": 0, "den": 1 } } }, { "id": "593", "t": "Meter" }] }] };
 describe("Beaming", function() {
     var app: JMusicScore.ScoreApplication.IScoreApplication;
     var score: JMusicScore.Model.IScore;
@@ -238,7 +238,7 @@ describe("Beaming", function() {
         voice = score.staffElements[0].voiceElements[0];
     });
 
-    it("should beam correctly after Undo", function() {
+    it("should beam correctly after split/Undo", function() {
         app.executeCommand(new Model.AddNoteCommand({
             noteName: "1_16",
             noteTime: new Model.TimeSpan(1, 16),
@@ -250,13 +250,60 @@ describe("Beaming", function() {
             beforeNote: app.document.staffElements[0].voiceElements[0].noteElements[3],
             absTime: new Model.AbsoluteTime(13, 4)
         }));
-        expect(voice.noteElements[5].noteheadElements[0].pitch.debug()).toEqual("a'");
-        expect(voice.noteElements[5].noteheadElements[0].tie).toEqual(true);
-        expect(voice.noteElements[6].noteheadElements[0].pitch.debug()).toEqual("a'");
+        var note1 = voice.noteElements[5], note2 = voice.noteElements[6], note3 = voice.noteElements[7];
+        expect(note1.noteheadElements[0].pitch.debug()).toEqual("a'");
+        expect(note1.noteheadElements[0].tie).toEqual(true);
+        expect(note1.timeVal.toString()).toEqual("1/16");
+        expect(note1.absTime.toString()).toEqual("13/16");
+        expect(note1.dotNo).toEqual(0);
+        expect(note2.noteheadElements[0].pitch.debug()).toEqual("a'");
+        expect(note2.timeVal.toString()).toEqual("1/8");
+        expect(note2.absTime.toString()).toEqual("7/8");
+        expect(note2.dotNo).toEqual(0);
+        expect(note3.timeVal.toString()).toEqual("1/16");
+        expect(note3.absTime.toString()).toEqual("1/1");
+        expect(note3.dotNo).toEqual(0);
+
+        expect(note1.Beams.length).toEqual(2);
+        expect(note1.Beams[0].parent).toEqual(note1);
+        expect(note1.Beams[0].toNote).toEqual(note2);
+        expect(note1.Beams[1].parent).toEqual(note1);
+        expect(note1.Beams[1].toNote).toBeFalsy();
+        expect(JMusicScore.MusicSpacing.NoteSpacer.hasFlag(note1)).toEqual(false);
+        expect(note2.Beams.length).toEqual(1);
+        expect(note2.Beams[0].parent).toEqual(note1);
+        expect(note2.Beams[0].toNote).toEqual(note2);
+        expect(JMusicScore.MusicSpacing.NoteSpacer.hasFlag(note2)).toEqual(false);
+        expect(note3.Beams.length).toEqual(2);
+        expect(JMusicScore.MusicSpacing.NoteSpacer.hasFlag(note3)).toEqual(true);
 
         app.undo();
-        expect(voice.noteElements[4].noteheadElements[0].pitch.debug()).toEqual("a'");
-        expect(voice.noteElements[4].noteheadElements[0].tie).toEqual(true);
-        expect(voice.noteElements[5].noteheadElements[0].pitch.debug()).toEqual("a'");
+        note1 = voice.noteElements[4];
+        note2 = voice.noteElements[5];
+        note3 = voice.noteElements[6];
+        expect(note1.noteheadElements[0].pitch.debug()).toEqual("a'");
+        expect(note1.noteheadElements[0].tie).toEqual(true);
+        expect(note1.timeVal.toString()).toEqual("1/16");
+        expect(note1.absTime.toString()).toEqual("3/4");
+        expect(note2.noteheadElements[0].pitch.debug()).toEqual("a'");
+        expect(note2.noteheadElements[0].tie).toEqual(true);
+        expect(note2.timeVal.toString()).toEqual("1/8");
+        expect(note2.absTime.toString()).toEqual("13/16");
+        expect(note2.dotNo).toEqual(0);
+        expect(note3.noteheadElements[0].tie).toEqual(false);
+        expect(note3.timeVal.toString()).toEqual("1/16");
+        expect(note3.absTime.toString()).toEqual("15/16");
+
+        expect(note1.Beams.length).toEqual(2);
+        expect(note1.Beams[0].parent).toEqual(note1);
+        //expect(note1.Beams[0].toNote).toEqual(note2);
+        expect(note1.Beams[0].toNote).toEqual(note3); // wrong
+        expect(note1.Beams[1].parent).toEqual(note1);
+        expect(note1.Beams[1].toNote).toBeFalsy();
+        expect(JMusicScore.MusicSpacing.NoteSpacer.hasFlag(note1)).toEqual(false);
+        expect(note2.Beams.length).toEqual(1);
+        expect(JMusicScore.MusicSpacing.NoteSpacer.hasFlag(note2)).toEqual(false);
+        expect(note3.Beams.length).toEqual(2);
+        expect(JMusicScore.MusicSpacing.NoteSpacer.hasFlag(note3)).toEqual(false);
     });
 });

@@ -2,7 +2,7 @@
     export module Model {
 
         export class MacroExporter {
-            //todo: Tuplet, StemDirectionType, NoteDecorationKind, ClefDefinition, IMeterDefinition, IKeyDefinition
+            //todo: StemDirectionType, NoteDecorationKind, ClefDefinition, IMeterDefinition, IKeyDefinition
             //todo: bundleCommand
             //todo: Finale: Add a dot . (period); Show/hide any accidental; Add a note to a chord enter;
             //todo: test menu: Recreate score; Debug to lyrics; 
@@ -23,14 +23,21 @@
                 return JSON.stringify(s); // `"${s}"`; // todo: escape "
             }
             static exportPitch(pitch: Pitch): string {
-                return `new Model.Pitch(${pitch.pitch},'${pitch.alteration}')`;
+                return `new JMusicScore.Model.Pitch(${pitch.pitch},'${pitch.alteration}')`;
             }
             static exportTimespan(timespan: TimeSpan): string {
-                return `new Model.TimeSpan(${timespan.numerator},${timespan.denominator})`;
+                return `new JMusicScore.Model.TimeSpan(${timespan.numerator},${timespan.denominator})`;
             }
             static exportTime(time: AbsoluteTime): string {
-                return `new Model.AbsoluteTime(${time.numerator},${time.denominator})`;
+                return `new JMusicScore.Model.AbsoluteTime(${time.numerator},${time.denominator})`;
             }
+            static exportRational(rat: Rational): string {
+                return `new JMusicScore.Model.Rational(${rat.numerator},${rat.denominator})`;
+            }
+            static exportTuplet(tupletDef: TupletDef): any {
+                return `new JMusicScore.Model.TupletDef(${this.exportTimespan(tupletDef.fullTime)}, ${this.exportRational(tupletDef.fraction)})`;
+            }
+
             static exportArgs(args: {}): {} {
                 var elms: { [key:string]:string; } = {};
                 $.each(args, (key: string, val: string) => {
@@ -75,6 +82,7 @@
                 case "boolean":
                     return arg.toString();
                 case "object":
+                    if (arg === null) return 'null';
                     if (Array.isArray(arg)) {
                         var resArr: string[] = [];
                         for (var i = 0; i < arg.length; i++) {
@@ -90,6 +98,8 @@
                             if (arg instanceof Pitch) return this.exportPitch(arg);
                             if (arg instanceof TimeSpan) return this.exportTimespan(arg);
                             if (arg instanceof AbsoluteTime) return this.exportTime(arg);
+                            if (arg instanceof TupletDef) return this.exportTuplet(arg);
+                            
                             return "OBJECT";
                         }
                     }
@@ -104,6 +114,7 @@
                 }
                 return "UNKNOWN";
             }
+
         }
 
         export interface IScoreCommand extends Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}

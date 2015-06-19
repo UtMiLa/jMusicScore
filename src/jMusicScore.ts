@@ -2,6 +2,18 @@ module JMusicScore {
     /** logical music definition classes and classes for music concepts */
     export module Model {
 
+        /*
+        Linked list i stedet for Array:
+
+        notehead -> nextHead, lastHead (?)
+        note -> nextNote, prevNote, nextEvent, prevEvent, firstHead, lastHead
+        bar -> nextBar, prevBar, nextEvent, prevEvent
+        voice -> firstNote, lastNote
+        staff -> firstVoice, lastVoice
+        score -> firstStaff, lastStaff, firstVoice, lastVoice, firstKey, firstMeter, firstClef, firstBar
+        notelink: LinkedList<INote>
+         */
+
         export class Rational {
             constructor(public numerator: number, public denominator: number = 1) {
                 if (denominator < 0) {
