@@ -188,7 +188,7 @@
                                     }
                                 });
                                 if (tiedNoteTotalDuration.eq(TimeSpan.infiniteNote)) return;
-                                if (tiedNoteTotalDuration.gt(note.timeVal) && (tiedNoteTotalDuration.numerator === 1 || tiedNoteTotalDuration.numerator === 3 || tiedNoteTotalDuration.numerator === 7)) {
+                                if (tiedNoteTotalDuration.gt(note.timeVal) && (tiedNoteTotalDuration.numerator === 1 /*|| tiedNoteTotalDuration.numerator === 3 || tiedNoteTotalDuration.numerator === 7*/)) {
                                     var notes = SplitNotesValidator.bestNoteValues(tiedNoteTotalDuration);
                                     // join notes!
                                     var nextNote = Music.nextNote(note);
