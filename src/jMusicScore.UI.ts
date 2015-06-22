@@ -604,7 +604,15 @@ module JMusicScore {
                             id: "NewMenu",
                             caption: "New",
                             action: () => {
-                                app.executeCommand(new Model.ClearScoreCommand({}));
+                                app.executeCommand(new Model.BundleCommand([
+                                        new Model.ClearScoreCommand({}),
+                                        new Model.NewStaffCommand({
+                                            index: 0,
+                                            title: 'new',
+                                            initClef: Model.ClefDefinition.clefG
+                                        })
+                                    ])
+                                );
                             }
                         },
                         {
@@ -1160,7 +1168,7 @@ module JMusicScore {
                         text: "Update staves",
                         click: function () {
                             // todo: DeleteStaffCommand
-                            var changeStavesCommand = new Model.BundleCommand();
+                            var changeStavesCommand = new Model.BundleCommand([]);
 
                             me.stavesWidget.withItems((item: StaffContainer, index: number) => {
                                 var staffItem = $(item.$container);

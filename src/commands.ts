@@ -125,7 +125,11 @@
         }
         
         export class BundleCommand implements IScoreCommand {
-            constructor() { }
+            constructor(commands: IScoreCommand[]) {
+                for (var i = 0; i < commands.length; i++) {
+                    this.add(commands[i]);
+                }
+            }
 
             /* args:
             */

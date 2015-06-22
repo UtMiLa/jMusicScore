@@ -166,18 +166,22 @@
 
         export class JoinNotesValidator implements IScoreValidator {
             public validate(app: ScoreApplication.IScoreApplication) {
-                app.document.withStaves((staff: IStaff, index: number): void => {
-                    staff.withVoices((voice: IVoice, index: number): void => {
-                        voice.withNotes((note: INote, index: number): void => {
+                app.document.withStaves((staff: IStaff): void => {
+                    staff.withVoices((voice: IVoice): void => {
+                        voice.withNotes((note: INote): void => {
                             if (note.getProperty('autojoin')) {
                                 var tiedNoteTotalDuration = TimeSpan.infiniteNote;
-                                note.withHeads((head: INotehead, index: number) => {
+                                var noNotes = 1;
+                                note.withHeads((head: INotehead) => {
                                     var tiedNoteheadTotalDuration = note.timeVal;
+                                    var noNotesTmp = 1;
                                     while (head.tie) { // todo: check om tie er automatisk
                                         var nextHead = head.getProperty("tiedTo");
-                                        if (nextHead) {
+                                        // make sure tied notes have no decorations/text
+                                        if (nextHead && !nextHead.parent.decorationElements.length && !nextHead.parent.syllableElements.length) {
                                             tiedNoteheadTotalDuration = tiedNoteheadTotalDuration.add(nextHead.parent.timeVal);
                                             head = nextHead;
+                                            noNotesTmp ++;
                                         }
                                         else {
                                             break;
@@ -185,15 +189,28 @@
                                     }
                                     if (!tiedNoteheadTotalDuration.gt(tiedNoteTotalDuration)) {
                                         tiedNoteTotalDuration = tiedNoteheadTotalDuration;
+                                        noNotes = noNotesTmp;
                                     }
                                 });
-                                if (tiedNoteTotalDuration.eq(TimeSpan.infiniteNote)) return;
+                                if (tiedNoteTotalDuration.eq(TimeSpan.infiniteNote) || noNotes === 1) return;
                                 if (tiedNoteTotalDuration.gt(note.timeVal) && (tiedNoteTotalDuration.numerator === 1 /*|| tiedNoteTotalDuration.numerator === 3 || tiedNoteTotalDuration.numerator === 7*/)) {
-                                    var notes = SplitNotesValidator.bestNoteValues(tiedNoteTotalDuration);
+                                    var bestNotes = SplitNotesValidator.bestNoteValues(tiedNoteTotalDuration);
+                                    var getNotes: INote[] = [];
+                                    var next = note;
+                                    var matches = true;
+                                    for (var i = 0; i < noNotes; i++) {
+                                        getNotes.push(next);
+                                        if (bestNotes.length <= i || !next.timeVal.eq(bestNotes[i])) matches = false;
+                                        next = Music.nextNote(next);
+                                    }
+                                    // if bestNotes matches actual note values, break
+                                    if (matches) return;
+                                    // else remove original notes and add bestNotes
+
                                     // join notes!
                                     var nextNote = Music.nextNote(note);
                                     note.timeVal = note.timeVal.add(nextNote.timeVal);
-                                    note.withHeads((head: INotehead, index: number) => {
+                                    note.withHeads((head: INotehead) => {
                                         head.tie = head.getProperty("tiedTo").tie;
                                     });
                                     note.NoteId = Music.calcNoteId(note.timeVal);
