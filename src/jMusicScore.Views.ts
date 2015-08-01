@@ -2560,6 +2560,11 @@ module JMusicScore {
                     return '';
                 }
             }
+
+            private static getNoteRect(note: Model.INote): ClientRect {
+                return $('#edit_' + note.id + ', #htmlSensor_edit_' + note.id)[0].getBoundingClientRect(); // todo: more portable!
+            }
+
             // todo: backspace
             // todo: '-' tilføjes til den foregående node - bør aktiveres i keyup eller keypressed
             // todo: fjern editor når der skiftes voice eller tool
@@ -2599,7 +2604,7 @@ module JMusicScore {
                         var nextNote = Model.Music.nextNote(note);
                         while (nextNote && nextNote.rest) nextNote = Model.Music.nextNote(nextNote);
                         if (nextNote) {
-                            var rect = $('#edit_' + nextNote.id)[0].getBoundingClientRect();
+                            var rect = EditNoteTextEditor.getNoteRect(nextNote);// $('#edit_' + nextNote.id)[0].getBoundingClientRect();
                             var val = $(editor).val();
                             if (val) {
                                 controller.updateNoteText(note, val);
@@ -2626,7 +2631,7 @@ module JMusicScore {
                         var prevNote = Model.Music.prevNote(note);
                         while (prevNote && prevNote.rest) prevNote = Model.Music.prevNote(prevNote);
                         if (prevNote) {
-                            var rect = $('#edit_' + prevNote.id)[0].getBoundingClientRect();
+                            var rect = EditNoteTextEditor.getNoteRect(prevNote); //$('#edit_' + prevNote.id)[0].getBoundingClientRect();
                             var val = $(editor).val();
                             if (val) {
                                 controller.updateNoteText(note, val);
@@ -2641,7 +2646,7 @@ module JMusicScore {
                         var nextNote = Model.Music.nextNote(note);
                         while (nextNote && nextNote.rest) nextNote = Model.Music.nextNote(nextNote);
                         if (nextNote) {
-                            var rect = $('#edit_' + nextNote.id)[0].getBoundingClientRect();
+                            var rect = EditNoteTextEditor.getNoteRect(nextNote);// $('#edit_' + nextNote.id)[0].getBoundingClientRect();
                             var val = $(editor).val();
                             if (val) {
                                 controller.updateNoteText(note, val);
@@ -2661,7 +2666,7 @@ module JMusicScore {
                     if (note.syllableElements[0]) text = note.syllableElements[0].Text;
                 }
                 // Show editor                    
-                var rect = $('#edit_' + note.id)[0].getBoundingClientRect();
+                var rect = EditNoteTextEditor.getNoteRect(note);// $('#edit_' + note.id+ ', #htmlSensor_edit_' + note.id)[0].getBoundingClientRect();
 
                 $(this.editor)
                     .css({
@@ -3045,6 +3050,7 @@ module JMusicScore {
             }
             public createRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any {
                 // todo: canvas rect
+                var x1 = x + 1;
             }
             public drawText(id: string, text: string, x: number, y: number, justify: string): any {
                 /*this.context.fillStyle = "black";*/
