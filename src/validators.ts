@@ -208,14 +208,16 @@
                                     // else remove original notes and add bestNotes
 
                                     // join notes!
-                                    var nextNote = Music.nextNote(note);
+                                    Music.mergeNoteWithNext(note);
+                                    /*var nextNote = Music.nextNote(note);
+                                    Music.changeNoteDuration(note, timeVal, timeVal);
                                     note.timeVal = note.timeVal.add(nextNote.timeVal);
                                     note.withHeads((head: INotehead) => {
                                         head.tie = head.getProperty("tiedTo").tie;
                                     });
                                     note.NoteId = Music.calcNoteId(note.timeVal);
                                     note.setSpacingInfo(undefined);
-                                    voice.removeChild(nextNote);
+                                    voice.removeChild(nextNote);*/
                                 }
                             }
                         });

@@ -2220,21 +2220,61 @@ module JMusicScore {
                 }
                 return null;
             }
-            /*static getTypeMapping(): { [Index: string]: any } { // remove when JSON load uses Mementos
-                return {
-                    "clefElements": ClefElement,// IClef
-                    "meterElements": MeterElement,// IMeter
-                    "keyElements": KeyElement,//IKey
-                    "noteElements": NoteElement,// INote
-                    "decorationElements": NoteDecorationElement,// INoteDecorationElement - export
-                    "longDecorationElements": NoteLongDecorationElement,//ILongDecorationElement - export
-                    "syllableElements": TextSyllableElement,//ITextSyllableElement -export
-                    "noteheadElements": NoteheadElement,//INotehead
-                    "bars": BarElement,//IBar
-                    "staffElements": StaffElement,// IStaff
-                    "voiceElements": VoiceElement//IVoice
-                };
-            }*/
+
+            public static changeNoteDuration(note: INote, nominalDuration: TimeSpan, actualDuration: TimeSpan): INote {
+                if (note.getTimeVal().eq(actualDuration) && note.timeVal.eq(nominalDuration)) return; // no change
+
+                //note.timeVal = nominalDuration;
+                //note.NoteId = Music.calcNoteId(note.timeVal);
+                //note.setSpacingInfo(undefined);
+
+                var noteId = Music.calcNoteId(actualDuration);
+
+                var dots = 0;
+                if (actualDuration.numerator === 3) {
+                    dots = 1;
+                    nominalDuration = actualDuration.multiplyRational(new Rational(2, 3));
+                }
+                if (actualDuration.numerator === 7) {
+                    dots = 2;
+                    nominalDuration = actualDuration.multiplyRational(new Rational(4, 7));
+                }
+
+                var note1 = Music.addNote(note.parent, note.rest ? NoteType.Rest : NoteType.Note, note.absTime, noteId, nominalDuration,
+                    note, true, dots, note.tupletDef);
+                note1.graceType = note.graceType;
+
+                note.withDecorations((decoration: INoteDecorationElement) => {
+                    note1.addChild(note1.decorationElements, decoration);
+                });
+                
+                note.withSyllables((syl: ITextSyllableElement) => {
+                    note1.addChild(note1.syllableElements, syl);
+                });                
+
+                note.withHeads((head: INotehead) => {
+                    var head1 = note1.setPitch(head.pitch);
+                    head1.tie = head.tie;
+                    head1.forceAccidental = head.forceAccidental;
+                    head1.setProperty("tiedTo", head.getProperty("tiedTo"));
+                });
+
+                note.parent.removeChild(note);
+                return note1;
+            }
+
+            public static mergeNoteWithNext(note: INote): INote {
+                var nextNote = Music.nextNote(note);
+                var time = note.timeVal.add(nextNote.timeVal);
+                note = Music.changeNoteDuration(note, time, time);
+                note.withHeads((head: INotehead) => {
+                    head.tie = head.getProperty("tiedTo").tie;
+                    head.setProperty("tiedTo", head.getProperty("tiedTo").getProperty("tiedTo"));
+                });
+                note.parent.removeChild(nextNote);
+                return note;
+            }
+
             public static calcNoteId(timeVal: TimeSpan): string {
                 timeVal.reduce();
 
