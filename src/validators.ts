@@ -173,13 +173,13 @@
                                 var tiedNoteTotalDuration = TimeSpan.infiniteNote;
                                 var noNotes = 1;
                                 note.withHeads((head: INotehead) => {
-                                    var tiedNoteheadTotalDuration = note.timeVal;
+                                    var tiedNoteheadTotalDuration = note.getTimeVal();
                                     var noNotesTmp = 1;
                                     while (head.tie) { // todo: check om tie er automatisk
                                         var nextHead = head.getProperty("tiedTo");
                                         // make sure tied notes have no decorations/text
                                         if (nextHead && !nextHead.parent.decorationElements.length && !nextHead.parent.syllableElements.length) {
-                                            tiedNoteheadTotalDuration = tiedNoteheadTotalDuration.add(nextHead.parent.timeVal);
+                                            tiedNoteheadTotalDuration = tiedNoteheadTotalDuration.add(nextHead.parent.getTimeVal());
                                             head = nextHead;
                                             noNotesTmp ++;
                                         }
@@ -193,31 +193,48 @@
                                     }
                                 });
                                 if (tiedNoteTotalDuration.eq(TimeSpan.infiniteNote) || noNotes === 1) return;
-                                if (tiedNoteTotalDuration.gt(note.timeVal) && (tiedNoteTotalDuration.numerator === 1 /*|| tiedNoteTotalDuration.numerator === 3 || tiedNoteTotalDuration.numerator === 7*/)) {
-                                    var bestNotes = SplitNotesValidator.bestNoteValues(tiedNoteTotalDuration);
-                                    var getNotes: INote[] = [];
-                                    var next = note;
-                                    var matches = true;
-                                    for (var i = 0; i < noNotes; i++) {
-                                        getNotes.push(next);
-                                        if (bestNotes.length <= i || !next.timeVal.eq(bestNotes[i])) matches = false;
-                                        next = Music.nextNote(next);
-                                    }
-                                    // if bestNotes matches actual note values, break
-                                    if (matches) return;
-                                    // else remove original notes and add bestNotes
+                                if (tiedNoteTotalDuration.gt(note.timeVal) && (tiedNoteTotalDuration.numerator === 1 || tiedNoteTotalDuration.numerator === 3 || tiedNoteTotalDuration.numerator === 7)) {
+                                    var bestNotes: TimeSpan[];
+                                    var staffContext = staff.getStaffContext(note.absTime);
+                                    if (staffContext.meter) {
+                                        var nextAbsTime = staffContext.meter.nextBar(note.absTime);
+                                        var beforeSplit = noNotes;
+                                        var afterSplit = 0;
+                                        if (note.absTime.add(tiedNoteTotalDuration).gt(nextAbsTime)) {
+                                            // timeVal for first note = nextAbsTime - absTime
+                                            var timeFirstNotes = SplitNotesValidator.bestNoteValues(nextAbsTime.diff(note.absTime)).reverse();
+                                            // timeVal for second note = timeVal - nextAbsTime + absTime
+                                            var timeLastNotes = SplitNotesValidator.bestNoteValues(note.absTime.add(tiedNoteTotalDuration).diff(nextAbsTime));
+                                            beforeSplit = timeFirstNotes.length;
+                                            afterSplit = timeLastNotes.length;
+                                            bestNotes = timeFirstNotes.concat(timeLastNotes);
+                                        }
+                                        else {
+                                            bestNotes = SplitNotesValidator.bestNoteValues(tiedNoteTotalDuration);
+                                        }
 
-                                    // join notes!
-                                    Music.mergeNoteWithNext(note);
-                                    /*var nextNote = Music.nextNote(note);
-                                    Music.changeNoteDuration(note, timeVal, timeVal);
-                                    note.timeVal = note.timeVal.add(nextNote.timeVal);
-                                    note.withHeads((head: INotehead) => {
-                                        head.tie = head.getProperty("tiedTo").tie;
-                                    });
-                                    note.NoteId = Music.calcNoteId(note.timeVal);
-                                    note.setSpacingInfo(undefined);
-                                    voice.removeChild(nextNote);*/
+                                        var getNotes: INote[] = [];
+                                        var next = note;
+                                        var matches = true;
+                                        for (var i = 0; i < noNotes; i++) {
+                                            getNotes.push(next);
+                                            if (bestNotes.length <= i || !next.getTimeVal().eq(bestNotes[i])) matches = false;
+                                            next = Music.nextNote(next);
+                                        }
+                                        // if bestNotes matches actual note values, break
+                                        if (matches) return;
+                                        // else remove original notes and add bestNotes
+
+                                        // We have noNotes notes who shall be merged to the values in bestNotes
+                                        // Best to merge to 1 first and then split
+
+                                        // join notes!
+                                        note = Music.mergeNoteWithNext(note, noNotes - 1);
+
+                                        if (bestNotes.length > 0) {
+                                            Music.splitNote(note, bestNotes);
+                                        }
+                                    }
                                 }
                             }
                         });
@@ -269,7 +286,8 @@
                     timeLastNotes = SplitNotesValidator.bestNoteValues(note.absTime.add(note.getTimeVal()).diff(nextAbsTime));
                 }
                 var notes = timeFirstNotes.concat(timeLastNotes);
-                var absTime = note.absTime;
+                Music.splitNote(note, notes);
+                /*var absTime = note.absTime;
                 var nextNote = Music.nextNote(note);
                 note.timeVal = notes[0];
                 if (note.NoteId !== 'hidden')
@@ -295,7 +313,7 @@
                         newHead.tie = join;
                         newHead.setProperty('autojoin', join);
                     });
-                }
+                }*/
             }
             
             public validate(app: ScoreApplication.IScoreApplication) {

@@ -11,8 +11,8 @@
 
     app.addValidator(new Model.UpdateBarsValidator());
     app.addValidator(new Model.CreateTimelineValidator());
-    app.addValidator(new Model.SplitNotesValidator());
     app.addValidator(new Model.JoinNotesValidator());
+    app.addValidator(new Model.SplitNotesValidator());
     app.addValidator(new Model.BeamValidator());
     app.addValidator(new Model.TieValidator());
     app.addValidator(new Model.UpdateAccidentalsValidator());

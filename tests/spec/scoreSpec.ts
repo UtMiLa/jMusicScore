@@ -229,8 +229,8 @@ describe("Beaming", function() {
         app.addPlugin(new JMusicScore.Model.JsonPlugin());
         app.addValidator(new Model.UpdateBarsValidator());
         app.addValidator(new Model.CreateTimelineValidator());
-        app.addValidator(new Model.SplitNotesValidator());
         app.addValidator(new Model.JoinNotesValidator());
+        app.addValidator(new Model.SplitNotesValidator());
         app.addValidator(new Model.BeamValidator());
         
         app.loadFromString(initApp1, 'JSON');

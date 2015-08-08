@@ -2228,7 +2228,8 @@ module JMusicScore {
                 //note.NoteId = Music.calcNoteId(note.timeVal);
                 //note.setSpacingInfo(undefined);
 
-                var noteId = Music.calcNoteId(actualDuration);
+                var noteId = note.NoteId === 'hidden' ? 'hidden' : Music.calcNoteId(actualDuration);
+                var noteType = note.NoteId === 'hidden' ? NoteType.Placeholder : note.rest ? NoteType.Rest : NoteType.Note;
 
                 var dots = 0;
                 if (actualDuration.numerator === 3) {
@@ -2240,9 +2241,14 @@ module JMusicScore {
                     nominalDuration = actualDuration.multiplyRational(new Rational(4, 7));
                 }
 
-                var note1 = Music.addNote(note.parent, note.rest ? NoteType.Rest : NoteType.Note, note.absTime, noteId, nominalDuration,
+                var note1 = Music.addNote(note.parent, noteType, note.absTime, noteId, nominalDuration,
                     note, true, dots, note.tupletDef);
                 note1.graceType = note.graceType;
+
+                var a = note.getProperty('autojoin');
+                if (a) {
+                    note1.setProperty('autojoin', a);
+                }
 
                 note.withDecorations((decoration: INoteDecorationElement) => {
                     note1.addChild(note1.decorationElements, decoration);
@@ -2263,15 +2269,57 @@ module JMusicScore {
                 return note1;
             }
 
-            public static mergeNoteWithNext(note: INote): INote {
+            public static splitNote(note: INote, notes: TimeSpan[]): void {
+                if (notes.length <= 1) return;
+                var absTime = note.absTime;
                 var nextNote = Music.nextNote(note);
-                var time = note.timeVal.add(nextNote.timeVal);
+                note = Music.changeNoteDuration(note, notes[0], notes[0]);
+                var alreadyAutojoin = note.getProperty('autojoin');
+                note.setProperty('autojoin', note.absTime);
+                note.withHeads((head: INotehead, index: number) => {
+                    head.tie = true;
+                });
+                for (var i = 1; i < notes.length; i++) {
+                    absTime = absTime.add(notes[i - 1]);
+                    var newNote = Music.addNote(note.parent,
+                        note.NoteId === 'hidden' ? NoteType.Placeholder : note.rest ? NoteType.Rest : NoteType.Note,
+                        absTime, note.NoteId, notes[i]);
+
+                    // copy heads but not expressions and text
+                    var join = /*alreadyAutojoin ||*/ i < notes.length - 1;
+                    newNote.setProperty('autojoin', join);
+                    note.withHeads((head: INotehead, index: number) => {
+                        var newHead = newNote.setPitch(head.pitch);
+                        // tie heads
+                        newHead.tie = join;
+                        newHead.setProperty('autojoin', join);
+                    });
+                }
+
+            }
+
+            public static mergeNoteWithNext(note: INote, no: number = 1): INote {
+                var nextNotes: INote[] = [];
+                var nextNote = Music.nextNote(note);
+                var time = note.getTimeVal();
+                for (var i = 0; i < no; i++) {                    
+                    time = time.add(nextNote.getTimeVal());
+                    nextNotes.push(nextNote);
+                    nextNote = Music.nextNote(nextNote);
+                }
                 note = Music.changeNoteDuration(note, time, time);
                 note.withHeads((head: INotehead) => {
-                    head.tie = head.getProperty("tiedTo").tie;
-                    head.setProperty("tiedTo", head.getProperty("tiedTo").getProperty("tiedTo"));
+                    var tie = head;
+                    for (var i = 0; i < no; i++) {
+                        tie = tie.getProperty("tiedTo");
+                    }
+                    head.tie = tie.tie;
+                    head.setProperty("tiedTo", tie.getProperty("tiedTo"));
                 });
-                note.parent.removeChild(nextNote);
+                
+                for (var i = 0; i < nextNotes.length; i++) {
+                    note.parent.removeChild(nextNotes[i]);
+                }
                 return note;
             }
 
