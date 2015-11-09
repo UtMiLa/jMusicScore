@@ -26,10 +26,10 @@ module JMusicScore {
                     //if (document.activeElement && document.activeElement !== document.body && document.activeElement.tagName !== 'svg') return; // todo: svg element also gets focus
                     if (e.ctrlKey || e.altKey) {
                         var key = e.key;
-                        if (event.ctrlKey || event.altKey) {
-                            if (event.altKey) key = 'ALT-' + key;
-                            if (event.shiftKey) key = 'SHIFT-' + key;
-                            if (event.ctrlKey) key = 'CTRL-' + key;
+                        if (e.ctrlKey || e.altKey) {
+                            if (e.altKey) key = 'ALT-' + key;
+                            if (e.shiftKey) key = 'SHIFT-' + key;
+                            if (e.ctrlKey) key = 'CTRL-' + key;
                         }
                         if (!app.processEvent("keymessage", { key: key })) {
                             e.preventDefault();

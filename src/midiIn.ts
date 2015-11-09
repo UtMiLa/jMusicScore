@@ -223,7 +223,7 @@
                             app.ProcessEvent("midichordreleased", e);
                         });*/
 
-                        if (navigator.appName == 'Microsoft Internet Explorer') { document.onfocusin = onFocusIe; document.onfocusout = onBlurIe; }
+                        if (navigator.appName == 'Microsoft Internet Explorer') { (<any>document).onfocusin = onFocusIe; (<any>document).onfocusout = onBlurIe; }
                         else { window.onfocus = connectMidiIn; window.onblur = disconnectMidiIn; }
                     }
                     , 100); // Safari initializes new window from the "new window" button faster than old plugin disconnects.
