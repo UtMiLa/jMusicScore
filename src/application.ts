@@ -32,6 +32,7 @@ module JMusicScore {
         export interface ICommand<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
             execute(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
             undo?(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            [param: string]: any;
         }
 
         /** Interface for objects that check and refines the model after every change (like beam calculation) */
@@ -123,6 +124,7 @@ module JMusicScore {
 
         export interface IMessage {
             key?: string;
+            [param: string]: any;
         }
 
         export interface IEventReceiver {

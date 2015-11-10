@@ -735,10 +735,10 @@ module JMusicScore {
                 var $div = $("<div>");
                 $("<label>").attr("for", id).text(label).appendTo($div);
                 this.$spinner = $("<input>").attr("id", id).val("4").attr("name", id).appendTo($div).spinner({
-                    spin: function (event: Event, ui: { value: number; }) {
+                    spin: function (event: Event, ui: { value: number; }): void {
                         if (ui.value < 1) {
                             $(this).spinner("value", 1);
-                            return false;
+                            return /*false*/;
                         }
                         else {
                             var currentVal = $(this).spinner("value");
@@ -749,7 +749,7 @@ module JMusicScore {
                                 $(this).spinner("value", currentVal * 2);
                             }
                             else { }
-                            return false;
+                            return /*false*/;
                         }
                     }
                 });
@@ -1624,8 +1624,8 @@ module JMusicScore {
                                 .data('parent', this)
                                 .data('app', this.app)
                                 .click(function () {
-                                var notedata = $(this).data('notedata');
-                                var parent = $(this).data('parent');
+                                var notedata = <IToolBtnDef>$(this).data('notedata');
+                                var parent = <JToolbar>$(this).data('parent');
                                 var app = <ScoreApplication.IScoreApplication>$(this).data('app');
 
                                 if (notedata.mode) {
@@ -1656,7 +1656,7 @@ module JMusicScore {
             validate(app: ScoreApplication.IScoreApplication) {
                 var $buttons = $('.note-icon');
                 $buttons.each((i: number, e: Element) => {
-                    var btnDef = $(e).data('notedata');
+                    var btnDef = <IToolBtnDef>$(e).data('notedata');
                     if (btnDef && btnDef.validate) {
                         if (btnDef.validate(app)) {
                             $(e).button('enable');

@@ -2642,7 +2642,7 @@ module JMusicScore {
                 }
                 else if (event.key === 'Right') {
                     if (editor.selectionStart === editor.value.length) {
-                        var note = <Model.INote>$(editor).data('note');
+                        var note = <Model.INote><any>($(editor).data('note'));
                         var nextNote = Model.Music.nextNote(note);
                         while (nextNote && nextNote.rest) nextNote = Model.Music.nextNote(nextNote);
                         if (nextNote) {
