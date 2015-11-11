@@ -2909,11 +2909,23 @@ module JMusicScore {
             public endDraw() {
             }
             public createMusicObject(id: string, item: string, x: number, y: number, scale: number): any {
-                this.setTranslation(x, y);
-                this.context.scale(scale, scale);
-                this.drawPath(JMusicScore.emmentalerNotes[item], 'black', null);
-                this.context.scale(1 / scale, 1 / scale);
-                this.setTranslation(-x, -y);
+                var useMusicFonts = true;
+                if (!useMusicFonts) {
+                    this.setTranslation(x, y);
+                    this.context.scale(scale, scale);
+                    this.drawPath(JMusicScore.emmentalerNotes[item], 'black', null);
+                    this.context.scale(1 / scale, 1 / scale);
+                    this.setTranslation(-x, -y);
+                }
+                else {
+                    var char: string = emmentalerCode[item.substr(2)];
+                    if (char === undefined) {
+                        char = 'u';
+                    }
+                    var fontsize = Math.round(24 * scale);
+                    this.context.font = fontsize + "px Emmentaler";
+                    this.context.fillText(char, x, y);
+                }
             }
             private drawPath(path: string, fillStyle: string, strokeStyle: string): any {
                 function move(stack: number[], context: CanvasRenderingContext2D, current: Model.Point, relative: boolean): boolean {

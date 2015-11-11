@@ -267,6 +267,7 @@
     <Content Include="demos\app\css\jMusicScore.less" />
     <Content Include="Handler.ashx" />
     <Content Include="Handler.php" />
+    <Content Include="demos\app\css\Emmentaler-20.woff" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
@@ -295,6 +296,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="demos\app\initApp.ts" />
     <TypeScriptCompile Include="src\application.ts" />
+    <TypeScriptCompile Include="src\emmentaler_code.ts" />
     <TypeScriptCompile Include="src\jMusicScore.BrowserFileSystem.ts" />
     <TypeScriptCompile Include="src\commands.ts" />
     <TypeScriptCompile Include="src\jMusicScore.UI.ts" />
