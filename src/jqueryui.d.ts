@@ -359,6 +359,7 @@ declare module JQueryUI {
         zIndex?: number;
 
         close?: DialogEvent;
+        open?: DialogEvent;
     }
 
     interface DialogUIParams {
@@ -712,6 +713,7 @@ declare module JQueryUI {
     }
 
     interface SpinnerUIParams {
+        value?: number;
     }
 
     interface SpinnerEvent {
@@ -1674,7 +1676,7 @@ interface JQuery {
     spinner(methodName: 'value', value: number): void;
     spinner(methodName: 'widget'): JQuery;
     spinner(methodName: string): JQuery;
-    spinner(options: JQueryUI.SpinnerOptions): JQuery;
+    spinner(options: JQueryUI.SpinnerOptions | JQueryUI.SpinnerEvents): JQuery;
     spinner(optionLiteral: string, optionName: string): any;
     spinner(optionLiteral: string, options: JQueryUI.SpinnerOptions): any;
     spinner(optionLiteral: string, optionName: string, optionValue: any): JQuery;
