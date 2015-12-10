@@ -1,7 +1,15 @@
+/// <reference path="jMusicScore.ts"/>
+/// <reference path="application.ts"/>
+/// <reference path="jMusicScore.UI.ts"/>
+/// <reference path="jMusicScore.Spacing.ts"/>
+/// <reference path="emmentaler.ts"/>
+/// <reference path="commands.ts"/>
+/// <reference path="jquery.d.ts"/>
+
 module jMusicScore {
 
     export module ScoreApplication {
-        export interface ScoreApplication extends Application.Application<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface ScoreApplication extends Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> { }
         export interface ScorePlugin extends Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> { }
         export interface ScoreEventProcessor extends Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> { }
         export interface ScoreDesigner extends Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> { }
@@ -58,7 +66,7 @@ module jMusicScore {
                         this.currentNote.withHeads((head: Model.INotehead) => {
                             if (head.pitch.pitch === v.pitch) {
                                 this.currentNotehead = head;
-                                return;
+
                             }
                         });
                     }
@@ -77,7 +85,7 @@ module jMusicScore {
                         v.withHeads((head: Model.INotehead) => {
                             if (head.pitch.pitch === this.currentPitch.pitch) {
                                 this.currentNotehead = head;
-                                return;
+
                             }
                         });
                     }
@@ -231,7 +239,7 @@ module jMusicScore {
             private static clefMagicNo = {
                 'b': [8, 6, 7, 8, 9, 10, 7],
                 'x': [7, 6, 7, 6, 6, 6, 7]
-            }
+            };
 
             public static addKeyXY(id: string, graphic: Views.IGraphicsEngine, keyDefinition: Model.IKeyDefinition, clefDefinition: Model.ClefDefinition, x: number, y: number) {
                 //var staffContext = key.parent.getStaffContext(key.absTime);
@@ -948,7 +956,7 @@ module jMusicScore {
                         this.graphEngine.CreateMusicObject(null, ref, 0, 0, 1);
                     }
                     else {
-                        alert(decoId);
+                        alert("Error: " + decoId);
                     }
                 }
             }
@@ -1047,8 +1055,7 @@ module jMusicScore {
             beamCount?: number;
             flag_suffix?: string;
             rest?: boolean;
-        };
-
+        }
         //todo: still some spacing
         class SVGClefOutput {
             public static RefId(def: Model.ClefDefinition, change: boolean): string {//todo: væk
@@ -1568,13 +1575,13 @@ module jMusicScore {
 
         /************************* Designers ********************************/
 
-        interface IHintArea {
+        export interface IHintArea {
             Staff: Model.IStaff;
             checkVoiceButtons(app: ScoreApplication.ScoreApplication, staff: Model.IStaff): void;
             release(): void;
         }
 
-        interface IHintAreaCreator {
+        export interface IHintAreaCreator {
             addStaffButton(y: number, staff: Model.IStaff): IHintArea;
         }
 
@@ -2032,166 +2039,166 @@ module jMusicScore {
                 '#': Model.NoteDecorationKind.accX,
                 'b': Model.NoteDecorationKind.accB,
                 't': Model.NoteDecorationKind.trill,
-                '§': Model.NoteDecorationKind.turn,
+                '§': Model.NoteDecorationKind.turn
             };
 
             private static getDef(id: Model.NoteDecorationKind): { u: string; d: string; } {
                 switch (id) {
                     case Model.NoteDecorationKind.accX: return {
                         u: 'e_accidentals.2',
-                        d: 'e_accidentals.2',
+                        d: 'e_accidentals.2'
                     };
                     case Model.NoteDecorationKind.accXX: return {
                         u: 'e_accidentals.4',
-                        d: 'e_accidentals.4',
+                        d: 'e_accidentals.4'
                     };
                     case Model.NoteDecorationKind.accB: return {
                         u: 'e_accidentals.M2',
-                        d: 'e_accidentals.M2',
+                        d: 'e_accidentals.M2'
                     };
                     case Model.NoteDecorationKind.accBB: return {
                         u: 'e_accidentals.M4',
-                        d: 'e_accidentals.M4',
+                        d: 'e_accidentals.M4'
                     };
                     case Model.NoteDecorationKind.fermata: return {
                         u: 'e_scripts.ufermata',
-                        d: 'e_scripts.dfermata',
+                        d: 'e_scripts.dfermata'
                     };
                     case Model.NoteDecorationKind.shortFermata: return {
                         u: 'e_scripts.ushortfermata',
-                        d: 'e_scripts.dshortfermata',
+                        d: 'e_scripts.dshortfermata'
                     };
                     case Model.NoteDecorationKind.longFermata: return {
                         u: 'e_scripts.ulongfermata',
-                        d: 'e_scripts.dlongfermata',
+                        d: 'e_scripts.dlongfermata'
                     };
                     case Model.NoteDecorationKind.veryLongFermata: return {
                         u: 'e_scripts.uverylongfermata',
-                        d: 'e_scripts.dverylongfermata',
+                        d: 'e_scripts.dverylongfermata'
                     };
                     case Model.NoteDecorationKind.thumb: return {
                         u: 'e_scripts.thumb',
-                        d: 'e_scripts.thumb',
+                        d: 'e_scripts.thumb'
                     };
                     case Model.NoteDecorationKind.sforzato: return {
                         u: 'e_scripts.sforzato',
-                        d: 'e_scripts.sforzato',
+                        d: 'e_scripts.sforzato'
                     };
                     case Model.NoteDecorationKind.espr: return {
                         u: 'e_scripts.espr',
-                        d: 'e_scripts.espr',
+                        d: 'e_scripts.espr'
                     };
                     case Model.NoteDecorationKind.staccato: return {
                         u: 'e_scripts.staccato',
-                        d: 'e_scripts.staccato',
+                        d: 'e_scripts.staccato'
                     };
                     case Model.NoteDecorationKind.staccatissimo: return {
                         u: 'e_scripts.ustaccatissimo',
-                        d: 'e_scripts.dstaccatissimo',
+                        d: 'e_scripts.dstaccatissimo'
                     };
                     case Model.NoteDecorationKind.tenuto: return {
                         u: 'e_scripts.tenuto',
-                        d: 'e_scripts.tenuto',
+                        d: 'e_scripts.tenuto'
                     };
                     case Model.NoteDecorationKind.portato: return {
                         u: 'e_scripts.uportato',
-                        d: 'e_scripts.dportato',
+                        d: 'e_scripts.dportato'
                     };
                     case Model.NoteDecorationKind.marcato: return {
                         u: 'e_scripts.umarcato',
-                        d: 'e_scripts.dmarcato',
+                        d: 'e_scripts.dmarcato'
                     };
                     case Model.NoteDecorationKind.open: return {
                         u: 'e_scripts.open',
-                        d: 'e_scripts.open',
+                        d: 'e_scripts.open'
                     };
                     case Model.NoteDecorationKind.stopped: return {
                         u: 'e_scripts.stopped',
-                        d: 'e_scripts.stopped',
+                        d: 'e_scripts.stopped'
                     };
                     case Model.NoteDecorationKind.upbow: return {
                         u: 'e_scripts.upbow',
-                        d: 'e_scripts.upbow',
+                        d: 'e_scripts.upbow'
                     };
                     case Model.NoteDecorationKind.downbow: return {
                         u: 'e_scripts.downbow',
-                        d: 'e_scripts.downbow',
+                        d: 'e_scripts.downbow'
                     };
                     case Model.NoteDecorationKind.reverseturn: return {
                         u: 'e_scripts.reverseturn',
-                        d: 'e_scripts.reverseturn',
+                        d: 'e_scripts.reverseturn'
                     };
                     case Model.NoteDecorationKind.turn: return {
                         u: 'e_scripts.turn',
-                        d: 'e_scripts.turn',
+                        d: 'e_scripts.turn'
                     };
                     case Model.NoteDecorationKind.trill: return {
                         u: 'e_scripts.trill',
-                        d: 'e_scripts.trill',
+                        d: 'e_scripts.trill'
                     };
                     case Model.NoteDecorationKind.pedalheel: return {
                         u: 'e_scripts.upedalheel',
-                        d: 'e_scripts.dpedalheel',
+                        d: 'e_scripts.dpedalheel'
                     };
                     case Model.NoteDecorationKind.pedaltoe: return {
                         u: 'e_scripts.upedaltoe',
-                        d: 'e_scripts.dpedaltoe',
+                        d: 'e_scripts.dpedaltoe'
                     };
                     case Model.NoteDecorationKind.flageolet: return {
                         u: 'e_scripts.flageolet',
-                        d: 'e_scripts.flageolet',
+                        d: 'e_scripts.flageolet'
                     };
                     case Model.NoteDecorationKind.rcomma: return {
                         u: 'e_scripts.rcomma',
-                        d: 'e_scripts.rcomma',
+                        d: 'e_scripts.rcomma'
                     };
                     case Model.NoteDecorationKind.prall: return {
                         u: 'e_scripts.prall',
-                        d: 'e_scripts.prall',
+                        d: 'e_scripts.prall'
                     };
                     case Model.NoteDecorationKind.mordent: return {
                         u: 'e_scripts.mordent',
-                        d: 'e_scripts.mordent',
+                        d: 'e_scripts.mordent'
                     };
                     case Model.NoteDecorationKind.prallprall: return {
                         u: 'e_scripts.prallprall',
-                        d: 'e_scripts.prallprall',
+                        d: 'e_scripts.prallprall'
                     };
                     case Model.NoteDecorationKind.prallmordent: return {
                         u: 'e_scripts.prallmordent',
-                        d: 'e_scripts.prallmordent',
+                        d: 'e_scripts.prallmordent'
                     };
                     case Model.NoteDecorationKind.upprall: return {
                         u: 'e_scripts.upprall',
-                        d: 'e_scripts.upprall',
+                        d: 'e_scripts.upprall'
                     };
                     case Model.NoteDecorationKind.upmordent: return {
                         u: 'e_scripts.upmordent',
-                        d: 'e_scripts.upmordent',
+                        d: 'e_scripts.upmordent'
                     };
                     case Model.NoteDecorationKind.pralldown: return {
                         u: 'e_scripts.pralldown',
-                        d: 'e_scripts.pralldown',
+                        d: 'e_scripts.pralldown'
                     };
                     case Model.NoteDecorationKind.downprall: return {
                         u: 'e_scripts.downprall',
-                        d: 'e_scripts.downprall',
+                        d: 'e_scripts.downprall'
                     };
                     case Model.NoteDecorationKind.downmordent: return {
                         u: 'e_scripts.downmordent',
-                        d: 'e_scripts.downmordent',
+                        d: 'e_scripts.downmordent'
                     };
                     case Model.NoteDecorationKind.prallup: return {
                         u: 'e_scripts.prallup',
-                        d: 'e_scripts.prallup',
+                        d: 'e_scripts.prallup'
                     };
                     case Model.NoteDecorationKind.lineprall: return {
                         u: 'e_scripts.lineprall',
-                        d: 'e_scripts.lineprall',
+                        d: 'e_scripts.lineprall'
                     };
                     case Model.NoteDecorationKind.caesura: return {
                         u: 'e_scripts.caesura',
-                        d: 'e_scripts.caesura',
+                        d: 'e_scripts.caesura'
                     };
                 }
                 return null;
@@ -2494,7 +2501,7 @@ module jMusicScore {
                     app.ExecuteCommand(new Model.AddNoteheadCommand(
                         {
                             note: note,
-                            pitch: pitch,
+                            pitch: pitch
                         }));
                 }
                 return false;
@@ -2983,7 +2990,7 @@ module jMusicScore {
                     'V': vert,
                     'v': vert,
                     'z': close
-                }
+                };
 
                 var tokens = path.split(' ');
                 var operation: (stack: number[], context: CanvasRenderingContext2D, current: Model.Point, relative: boolean) => boolean = move;
@@ -3114,7 +3121,7 @@ module jMusicScore {
                 }
                 $insertPoint.css({
                     top: y,
-                    left: x,
+                    left: x
                 }).appendTo('#htmlSensor_ed_' + id);
             }
             HideInsertionPoint(): void {

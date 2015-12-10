@@ -1,3 +1,9 @@
+/// <reference path="jMusicScore.ts"/>
+/// <reference path="jMusicScore.Views.ts"/>
+/// <reference path="midiEditor.ts"/>
+/// <reference path="FinaleEmulator.ts"/>
+/// <reference path="jquery.d.ts"/>
+
 module jMusicScore {
     export module Editors {
         export class KeybordInputPlugin implements ScoreApplication.ScorePlugin {
@@ -18,6 +24,7 @@ module jMusicScore {
                                 event.preventDefault();
                                 event.stopPropagation();
                             }
+                            break;
                         }
                     }
                     //return true;

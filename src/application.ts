@@ -1,16 +1,17 @@
+/// <reference path="jMusicScore.ts"/>
 module jMusicScore {
 
     export module Application {
 
         /** Every external plugin to application must implement this interface */
         export interface IPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            Init(app: AbstractApplication<DocumentType, StatusManager, ContainerType>): void;
             GetId(): string;
         }
 
         /** Interface for file readers (in varying formats) */
         export interface IReaderPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> extends IPlugIn<DocumentType, StatusManager, ContainerType> {
-            //Init(app: Application): void;
+            //Init(app: AbstractApplication): void;
             Supports(type: string): boolean;
             GetExtension(type: string): string;
             Load(data: any): void;
@@ -20,7 +21,7 @@ module jMusicScore {
 
         /** Interface for file writers */
         export interface IWriterPlugIn<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> extends IPlugIn<DocumentType, StatusManager, ContainerType> {
-            //Init(app: Application): void;
+            //Init(app: AbstractApplication): void;
             Supports(type: string): boolean;
             GetExtension(type: string): string;
             Save(): string;
@@ -30,35 +31,35 @@ module jMusicScore {
 
         /** Interface for commands. Every user action that changes data in the model must use Command objects. */
         export interface ICommand<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Execute(app: Application<DocumentType, StatusManager, ContainerType>): void;
-            Undo?(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            Execute(app: AbstractApplication<DocumentType, StatusManager, ContainerType>): void;
+            Undo?(app: AbstractApplication<DocumentType, StatusManager, ContainerType>): void;
         }
 
         /** Interface for objects that check and refines the model after every change (like beam calculation) */
         export interface IValidator<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            Validate(app: AbstractApplication<DocumentType, StatusManager, ContainerType>): void;
         }
 
         /** Interface for objects that check and refines the user interface after every model change (like spacing and drawing) */
         export interface IDesigner<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Validate(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            Validate(app: AbstractApplication<DocumentType, StatusManager, ContainerType>): void;
         }
 
         /** Interface for pluggable event processors that can handle events */
         export interface IEventProcessor<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
-            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            Init(app: AbstractApplication<DocumentType, StatusManager, ContainerType>): void;
+            Exit(app: AbstractApplication<DocumentType, StatusManager, ContainerType>): void;
 
-            midinoteoff? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
-            keypressed? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
-            keyup? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
-            keydown? (app: Application<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
+            midinoteoff? (app: AbstractApplication<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
+            keypressed? (app: AbstractApplication<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
+            keyup? (app: AbstractApplication<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
+            keydown? (app: AbstractApplication<DocumentType, StatusManager, ContainerType>, event: IMessage): boolean;
         }
 
         /** Interface for file managers that can load and save files in various file systems (remote or local) */
         export interface IFileManager<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
-            Init(app: Application<DocumentType, StatusManager, ContainerType>): void;
-            Exit(app: Application<DocumentType, StatusManager, ContainerType>): void;
+            Init(app: AbstractApplication<DocumentType, StatusManager, ContainerType>): void;
+            Exit(app: AbstractApplication<DocumentType, StatusManager, ContainerType>): void;
 
             getFileList(handler: (data: string[]) => void): void;
             loadFile(name: string, handler: (data: string, name: string) => void): void;
@@ -89,14 +90,14 @@ module jMusicScore {
             changed(status: IStatusManager, key: string, val: any): void;
         }
 
-        /** Feedback manager - receives status changes from Status manager and dispatches them to clients. An Application has one Feedback manager. Should possibly be merged with StatusManager. */
+        /** Feedback manager - receives status changes from Status manager and dispatches them to clients. An AbstractApplication has one Feedback manager. Should possibly be merged with StatusManager. */
         export interface IFeedbackManager {
             changed(status: IStatusManager, key: string, val: any): void;
             registerClient(client: IFeedbackClient): void;
             removeClient(client: IFeedbackClient): void;
         }
 
-        /** Status manager registers input status (pressed keys, selected buttons etc) and informs Feedback manager about changes. An Application has one Status manager. */
+        /** Status manager registers input status (pressed keys, selected buttons etc) and informs Feedback manager about changes. An AbstractApplication has one Status manager. */
         export interface IStatusManager {
             setFeedbackManager(f: IFeedbackManager): void;
         }
@@ -133,8 +134,8 @@ module jMusicScore {
             clear(): void;
         }
 
-        /** Application object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
-        export class Application<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
+        /** AbstractApplication object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
+        export class AbstractApplication<DocumentType extends IAppDoc, StatusManager extends IStatusManager, ContainerType> {
             constructor(public container: ContainerType, score: DocumentType, status: StatusManager) {
                 this.document = score;
                 this.status = status;
@@ -418,7 +419,7 @@ module jMusicScore {
 
         /** Debug event processor: writes event info in #msg */
         /*export class DummyEventProcessor implements IEventProcessor {
-            public keydown(app: Application, event: Event): boolean {
+            public keydown(app: AbstractApplication, event: Event): boolean {
                 $('#msg').text((<KeyboardEvent>event).char);
                 return false;
             }

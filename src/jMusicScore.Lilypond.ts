@@ -1,4 +1,10 @@
-﻿module jMusicScore {
+﻿/// <reference path="jMusicScore.ts"/>
+/// <reference path="application.ts"/>
+/// <reference path="jMusicScore.UI.ts"/>
+/// <reference path="jMusicScore.Spacing.ts"/>
+/// <reference path="emmentaler.ts"/>
+/// <reference path="commands.ts"/>
+module jMusicScore {
 
     /*
     Eksport: format
@@ -181,32 +187,7 @@
                         clef = staff.clefElements[0];
                     }
                     if (clef && (clef.absTime.numerator === 0)) {
-                        var def = clef.definition;
-                        var c = def.clefName() + def.clefLine;
-                        var clefName = "unknown";
-                        switch (c) {
-                            case "g4": clefName = 'treble'; break; //    return this.clefName() + this.clefLine + (this.transposition ? ("/" + this.transposition) : "");
-                            case "g4/8": clefName = 'treble_8'; break;
-                            case "g5": clefName = 'french'; break;
-
-                            case "f1": clefName = 'subbass'; break;
-                            case "f2": clefName = 'bass'; break;
-                            case "f3": clefName = 'varbaritone'; break;
-
-                            case "c1": clefName = 'baritone'; break;
-                            case "c2": clefName = 'tenor'; break;
-                            case "c3": clefName = 'alto'; break;
-                            case "c4": clefName = 'mezzosoprano'; break;
-                            case "c5": clefName = 'soprano'; break;
-                            //default: alert(c);
-                        }
-                        if (def.transposition > 0) {
-                            clefName += '^' + (def.transposition + 1)
-                        }
-                        else if (def.transposition < 0) {
-                            clefName += '_' + (-def.transposition + 1)
-                        }
-                        res += '\t\\clef "' + clefName + '" \n';
+                        res += this.getClefAsLilypond(clef);
                     }
 
                     // add Meter?
@@ -230,9 +211,37 @@
                 return res;
             }
 
+            private getClefAsLilypond(clef: Model.IClef): string {
+                var def = clef.definition;
+                var c = def.clefName() + def.clefLine;
+                var clefName = "unknown";
+                switch (c) {
+                    case "g4": clefName = 'treble'; break;
+                    case "g5": clefName = 'french'; break;
+
+                    case "f1": clefName = 'subbass'; break;
+                    case "f2": clefName = 'bass'; break;
+                    case "f3": clefName = 'varbaritone'; break;
+
+                    case "c1": clefName = 'baritone'; break;
+                    case "c2": clefName = 'tenor'; break;
+                    case "c3": clefName = 'alto'; break;
+                    case "c4": clefName = 'mezzosoprano'; break;
+                    case "c5": clefName = 'soprano'; break;
+                    //default: alert(c);
+                }
+                if (def.transposition > 0) {
+                    clefName += '^' + (def.transposition + 1)
+                }
+                else if (def.transposition < 0) {
+                    clefName += '_' + (-def.transposition + 1)
+                }
+                return '\t\\clef "' + clefName + '" \n';
+            }
+
             private getEventsAsLilypond(voice: Model.IVoice): string {
                 var res = "";
-                var events = voice.getEvents();
+                var events = voice.getEvents(); // + staff.keys, .meters, .clefs, + score.bars
                 for (var i = 0; i < events.length; i++) {
                     var ev = events[i];
                     if (ev.getElementName() === "Note") {
@@ -275,11 +284,6 @@
                 return res;
             }
 
-            private getClefAsLilypond(clef: Model.IClef): string {
-                var res = "\\clef g";
-                    res += " ";
-                return res;
-            }
 
         }
 

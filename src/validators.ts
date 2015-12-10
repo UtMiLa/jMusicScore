@@ -1,4 +1,8 @@
-﻿module jMusicScore {
+﻿/// <reference path="jMusicScore.ts"/>
+/// <reference path="application.ts"/>
+/// <reference path="jMusicScore.Views.ts"/>
+/// <reference path="jMusicScore.Spacing.ts"/>
+module jMusicScore {
     export module Model {
         export interface ScoreValidator extends Application.IValidator<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
 

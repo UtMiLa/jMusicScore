@@ -1,4 +1,7 @@
-﻿module jMusicScore {
+﻿/// <reference path="jMusicScore.ts"/>
+/// <reference path="midiIn.ts"/>
+
+module jMusicScore {
     export module Editors {
         //declare var $: any;
 
