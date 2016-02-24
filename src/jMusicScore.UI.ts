@@ -4,9 +4,6 @@
 /// <reference path="FinaleEmulator.ts"/>
 /// <reference path="validators.ts"/>
 
-/// <reference path="jquery.d.ts"/>
-/// <reference path="jquery-ui.d.ts"/>
-
 module jMusicScore {
     export module UI {
 

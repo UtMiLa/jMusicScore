@@ -4,7 +4,6 @@
 /// <reference path="jMusicScore.Spacing.ts"/>
 /// <reference path="emmentaler.ts"/>
 /// <reference path="commands.ts"/>
-/// <reference path="jquery.d.ts"/>
 
 module jMusicScore {
 

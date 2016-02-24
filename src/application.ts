@@ -124,6 +124,7 @@ module jMusicScore {
 
         export interface IMessage {
             key?: string;
+            [others: string]: any;
         }
 
         export interface IEventReceiver {
