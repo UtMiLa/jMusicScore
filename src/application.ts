@@ -322,7 +322,7 @@ module jMusicScore {
             private _undoStack: ICommand<DocumentType, StatusManager, ContainerType>[] = [];
             private _redoStack: ICommand<DocumentType, StatusManager, ContainerType>[] = [];
 
-            public ExecuteCommand(command: ICommand<DocumentType, StatusManager, ContainerType>) {
+            public ExecuteCommand(command: ICommand<DocumentType, StatusManager, ContainerType> & { [key: string]: any; }) {
                 command.Execute(this);
                 if (command.Undo) {
                     this._undoStack.push(command);

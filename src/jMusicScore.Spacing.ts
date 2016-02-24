@@ -40,6 +40,7 @@
             noteStem: string;
             beamCount: number;
             noteStemRev: string;
+            flag_suffix?: string;
         }
 
         export class NoteHeadSpacingInfo extends BaseSpacingInfo implements Model.INoteHeadSpacingInfo {
