@@ -1464,7 +1464,7 @@ module jMusicScore {
                 this.alteration = Pitch.intToStr(Pitch.strToInt(this.alteration) + n);
             }
             public getEnharmonicPitch(n?: number): Pitch {
-                var res = this;
+                var res: Pitch = this;
                 if (this.alteration === 'x')
                     res = new Pitch(this.pitch + 1, '');
                 else if (this.alteration === 'b')

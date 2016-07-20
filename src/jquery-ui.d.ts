@@ -3,7 +3,7 @@
 // Definitions by: Boris Yankov <https://github.com/borisyankov/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 // / <reference path="jquery.d.ts"/>
-
+/*
 declare module JQueryUI {
     // Accordion //////////////////////////////////////////////////
 
@@ -1079,4 +1079,4 @@ interface JQueryStatic {
     datepicker: JQueryUI.Datepicker;
     widget: JQueryUI.Widget;
     Widget: JQueryUI.Widget;
-}
+}*/

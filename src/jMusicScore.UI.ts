@@ -4,9 +4,6 @@
 /// <reference path="FinaleEmulator.ts"/>
 /// <reference path="validators.ts"/>
 
-/// <reference path="jquery.d.ts"/>
-/// <reference path="jquery-ui.d.ts"/>
-
 module jMusicScore {
     export module UI {
 
@@ -82,7 +79,7 @@ module jMusicScore {
                             );
                         $('#' + e.Id + "Button")
                             .button({
-                            text: true,
+                                showLabel: true,
                         })
                             .click(function () {
                             var menu = $(this).next().show().position({
@@ -116,7 +113,7 @@ module jMusicScore {
                             .text(e.Caption)
                             .addClass("ui-widget-header").addClass("ui-corner-all")
                             .button({
-                            text: true,
+                                showLabel: true,
                         })
                             .click(e.action)
                         );
@@ -337,7 +334,7 @@ module jMusicScore {
 
             public withItems(f: (item: IContainer, index: number) => boolean): void {
                 this.$ctl.children().each(function (i: number, e: Element) {
-                    return f($(e).data('owner'), i);
+                    return f(<IContainer><any>($(e).data('owner')), i);
                 });
             }
 
@@ -661,12 +658,13 @@ module jMusicScore {
 
             public set Value(value: string) {
                 this.val = value;
-                this.$button.button({
-                    text: false,
-                    icons: {
+                this.$button.addClass("ui-icon-triangle-1-s").button({
+                    showLabel: false,
+                    icon: "note-icon icon-key-" + value,
+                    /*icons: {
                         primary: "note-icon icon-key-" + value,
                         secondary: "ui-icon-triangle-1-s"
-                    }
+                    }*/
                 });
             }
 
@@ -693,13 +691,14 @@ module jMusicScore {
                         });
                 }
                 parent.append($div);
-                this.$button.button(
+                this.$button.append("<span class='ui-icon-triangle-1-s'>").button(
                     {
-                        text: false,
-                        icons: {
+                        showLabel: false,
+                        icon: "note-icon icon-key",
+                        /*icons: {
                             primary: "note-icon icon-key",
                             secondary: "ui-icon-triangle-1-s"
-                        }
+                        }*/
                     })
                     .click(function () {
                         var menu = $ul.show().position({
@@ -1360,10 +1359,10 @@ module jMusicScore {
 
                 $("#clefs").button(
                     {
-                        icons:
-                        {
-                            secondary: "ui-icon-triangle-1-s"
-                        }
+                     
+                            icon: "ui-icon-triangle-1-s",
+                            iconPosition: "end"
+                     
                     }).click(function () {
                     var menu = $(this).next().show().position({
                         my: "left top",
@@ -1608,42 +1607,70 @@ module jMusicScore {
                                     .appendTo(grp);
                             }
 
-                            if (item.type !== 'Buttongroup') {
+                            if (item.type === 'Buttongroup') {
+                                btn.button({
+                                    showLabel: true,
+                                    icon: btnDef.glyph
+                                })
+                                    .data('notedata', btnDef)
+                                    .data('parent', this)
+                                    .data('app', this.app)
+                                    .click(function () {
+                                        var notedata = $(this).data('notedata');
+                                        var parent = $(this).data('parent');
+                                        var app = <ScoreApplication.ScoreApplication>$(this).data('app');
+
+                                        if (notedata.mode) {
+                                            parent.unregisterModes();
+                                            app.RegisterEventProcessor(notedata.mode);
+                                        }
+                                        /*if (notedata.createMode) {
+                                            parent.currentNoteMode = notedata.createMode(score);
+                                            parent.currentNoteMode.currentVoice = parent.currentVoice;
+                                            parent.currentNoteMode.actionSelected();
+                                        }*/
+                                        if (notedata.onChecked) {
+                                            notedata.onChecked(this, app);
+                                        }
+                                    });/**/
+
+                            }
+                            else {
                                 var label = (<any>$('<label/>').attr('for', btnDef.id)
                                     .attr("title", btnDef.label))
                                     .appendTo(grp);
-                            }
-                            else {
+
                                 //btn.attr('src','');
+                                btn.checkboxradio({
+                                    classes: {
+                                        "ui-checkboxradio-icon": btnDef.glyph
+                                    }
+                                    //showLabel: true,
+                                    //icon: btnDef.glyph
+                                })
+                                    .data('notedata', btnDef)
+                                    .data('parent', this)
+                                    .data('app', this.app)
+                                    .click(function () {
+                                        var notedata = $(this).data('notedata');
+                                        var parent = $(this).data('parent');
+                                        var app = <ScoreApplication.ScoreApplication>$(this).data('app');
+
+                                        if (notedata.mode) {
+                                            parent.unregisterModes();
+                                            app.RegisterEventProcessor(notedata.mode);
+                                        }
+                                        /*if (notedata.createMode) {
+                                            parent.currentNoteMode = notedata.createMode(score);
+                                            parent.currentNoteMode.currentVoice = parent.currentVoice;
+                                            parent.currentNoteMode.actionSelected();
+                                        }*/
+                                        if (notedata.onChecked) {
+                                            notedata.onChecked(this, app);
+                                        }
+                                    });/**/
                             }
 
-                            btn.button({
-                                text: true,
-                                icons: {
-                                    primary: btnDef.glyph
-                                },
-                            })
-                                .data('notedata', btnDef)
-                                .data('parent', this)
-                                .data('app', this.app)
-                                .click(function () {
-                                var notedata = $(this).data('notedata');
-                                var parent = $(this).data('parent');
-                                var app = <ScoreApplication.ScoreApplication>$(this).data('app');
-
-                                if (notedata.mode) {
-                                    parent.unregisterModes();
-                                    app.RegisterEventProcessor(notedata.mode);
-                                }
-                                /*if (notedata.createMode) {
-                                    parent.currentNoteMode = notedata.createMode(score);
-                                    parent.currentNoteMode.currentVoice = parent.currentVoice;
-                                    parent.currentNoteMode.actionSelected();
-                                }*/
-                                if (notedata.onChecked) {
-                                    notedata.onChecked(this, app);
-                                }
-                            });/**/
                         }
                         grp.buttonset();
 

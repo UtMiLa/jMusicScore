@@ -1,5 +1,4 @@
 ﻿/// <reference path="jMusicScore.ts"/>
-/// <reference path="jquery.d.ts"/>
 module jMusicScore {
     export module Editors {
 
@@ -225,7 +224,7 @@ module jMusicScore {
                             app.ProcessEvent("midichordreleased", e);
                         });*/
 
-                        if (navigator.appName == 'Microsoft Internet Explorer') { document.onfocusin = onFocusIE; document.onfocusout = onBlurIE; }
+                        if (navigator.appName == 'Microsoft Internet Explorer') { (<any>document).onfocusin = onFocusIE; (<any>document).onfocusout = onBlurIE; }
                         else { window.onfocus = connectMidiIn; window.onblur = disconnectMidiIn; }
                     }
                     , 100); // Safari initializes new window from the "new window" button faster than old plugin disconnects.
