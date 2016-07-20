@@ -1672,7 +1672,7 @@ module jMusicScore {
                             }
 
                         }
-                        grp.buttonset();
+                        grp.controlgroup();
 
                         grp.find('span.ui-button-text')
                             .css('padding', '2px');

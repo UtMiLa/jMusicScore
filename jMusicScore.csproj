@@ -307,6 +307,7 @@
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="src\application.ts" />
+    <TypeScriptCompile Include="src\Japps.ui.ts" />
     <TypeScriptCompile Include="src\jMusicScore.BrowserFileSystem.ts" />
     <TypeScriptCompile Include="src\commands.ts" />
     <TypeScriptCompile Include="src\jMusicScore.UI.ts" />

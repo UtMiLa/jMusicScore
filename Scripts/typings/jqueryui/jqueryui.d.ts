@@ -1096,6 +1096,8 @@ interface JQuery {
     buttonset(optionLiteral: string, options: JQueryUI.ButtonOptions): any;
     buttonset(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 
+    controlgroup(): JQuery;
+
     /**
      * Initialize a datepicker
      */
