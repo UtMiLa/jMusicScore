@@ -1,7 +1,7 @@
 module JMusicScore {
 
     export module ScoreApplication {
-        export interface IScoreApplication extends Application.Application<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScoreApplication extends Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> { }
         export interface IScorePlugin extends Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> { }
         export interface IScoreEventProcessor extends Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> { }
         export interface IScoreDesigner extends Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> { }
@@ -58,7 +58,7 @@ module JMusicScore {
                         this.currentNote.withHeads((head: Model.INotehead) => {
                             if (head.pitch.pitch === v.pitch) {
                                 this.currentNotehead = head;
-                                return;
+
                             }
                         });
                     }
@@ -77,7 +77,7 @@ module JMusicScore {
                         v.withHeads((head: Model.INotehead) => {
                             if (head.pitch.pitch === this.currentPitch.pitch) {
                                 this.currentNotehead = head;
-                                return;
+
                             }
                         });
                     }
@@ -231,7 +231,7 @@ module JMusicScore {
             private static clefMagicNo = {
                 'b': [8, 6, 7, 8, 9, 10, 7],
                 'x': [7, 6, 7, 6, 6, 6, 7]
-            }
+            };
 
             public static addKeyXy(id: string, graphic: IGraphicsEngine, keyDefinition: Model.IKeyDefinition, clefDefinition: Model.ClefDefinition, x: number, y: number) {
                 //var staffContext = key.parent.getStaffContext(key.absTime);
@@ -948,7 +948,7 @@ module JMusicScore {
                         this.graphEngine.createMusicObject(null, ref, 0, 0, 1);
                     }
                     else {
-                        alert(decoId);
+                        alert("Error: " + decoId);
                     }
                 }
             }
@@ -1047,8 +1047,7 @@ module JMusicScore {
             beamCount?: number;
             flagSuffix?: string;
             rest?: boolean;
-        };
-
+        }
         //todo: still some spacing
         class SvgClefOutput {
             public static refId(def: Model.ClefDefinition, change: boolean): string {//todo: væk
@@ -2494,7 +2493,7 @@ module JMusicScore {
                     app.executeCommand(new Model.AddNoteheadCommand(
                         {
                             note: note,
-                            pitch: pitch,
+                            pitch: pitch
                         }));
                 }
                 return false;
@@ -2912,9 +2911,9 @@ module JMusicScore {
                 var useMusicFonts = true;
                 if (!useMusicFonts) {
                     this.setTranslation(x, y);
-                    this.context.scale(scale, scale);
+                this.context.scale(scale, scale);
                     this.drawPath(JMusicScore.emmentalerNotes[item], 'black', null);
-                    this.context.scale(1 / scale, 1 / scale);
+                this.context.scale(1 / scale, 1 / scale);
                     this.setTranslation(-x, -y);
                 }
                 else {
@@ -3000,7 +2999,7 @@ module JMusicScore {
                     'V': vert,
                     'v': vert,
                     'z': close
-                }
+                };
 
                 var tokens = path.split(' ');
                 var operation: (stack: number[], context: CanvasRenderingContext2D, current: Model.Point, relative: boolean) => boolean = move;
@@ -3132,7 +3131,7 @@ module JMusicScore {
                 }
                 $insertPoint.css({
                     top: y,
-                    left: x,
+                    left: x
                 }).appendTo('#htmlSensor_ed_' + id);
             }
             hideInsertionPoint(): void {

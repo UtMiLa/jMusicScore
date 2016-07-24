@@ -18,6 +18,7 @@ module JMusicScore {
                                 event.preventDefault();
                                 event.stopPropagation();
                             }
+                            break;
                         }
                     }
                     //return true;

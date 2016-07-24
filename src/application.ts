@@ -4,7 +4,7 @@ module JMusicScore {
 
         /** Every external plugin to application must implement this interface */
         export interface IPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            init(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
             getId(): string;
         }
 
@@ -30,36 +30,36 @@ module JMusicScore {
 
         /** Interface for commands. Every user action that changes data in the model must use Command objects. */
         export interface ICommand<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            execute(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
-            undo?(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            execute(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+            undo?(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
             [param: string]: any;
         }
 
         /** Interface for objects that check and refines the model after every change (like beam calculation) */
         export interface IValidator<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            validate(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            validate(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
         }
 
         /** Interface for objects that check and refines the user interface after every model change (like spacing and drawing) */
         export interface IDesigner<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            validate(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            validate(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
         }
 
         /** Interface for pluggable event processors that can handle events */
         export interface IEventProcessor<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            init(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
-            exit(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
 
-            midinoteoff? (app: Application<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
-            keypressed? (app: Application<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
-            keyup? (app: Application<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
-            keydown? (app: Application<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
+            midinoteoff? (app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
+            keypressed? (app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
+            keyup? (app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
+            keydown? (app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
         }
 
         /** Interface for file managers that can load and save files in various file systems (remote or local) */
         export interface IFileManager<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            init(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
-            exit(app: Application<TDocumentType, TStatusManager, TContainerType>): void;
+            init(app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+            exit(app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
 
             getFileList(handler: (data: string[]) => void): void;
             loadFile(name: string, handler: (data: string, name: string) => void): void;
@@ -90,14 +90,14 @@ module JMusicScore {
             changed(status: IStatusManager, key: string, val: any): void;
         }
 
-        /** Feedback manager - receives status changes from Status manager and dispatches them to clients. An Application has one Feedback manager. Should possibly be merged with StatusManager. */
+        /** Feedback manager - receives status changes from Status manager and dispatches them to clients. An AbstractApplication has one Feedback manager. Should possibly be merged with StatusManager. */
         export interface IFeedbackManager {
             changed(status: IStatusManager, key: string, val: any): void;
             registerClient(client: IFeedbackClient): void;
             removeClient(client: IFeedbackClient): void;
         }
 
-        /** Status manager registers input status (pressed keys, selected buttons etc) and informs Feedback manager about changes. An Application has one Status manager. */
+        /** Status manager registers input status (pressed keys, selected buttons etc) and informs Feedback manager about changes. An AbstractApplication has one Status manager. */
         export interface IStatusManager {
             setFeedbackManager(f: IFeedbackManager): void;
         }
@@ -124,7 +124,7 @@ module JMusicScore {
 
         export interface IMessage {
             key?: string;
-            [param: string]: any;
+            [others: string]: any;
         }
 
         export interface IEventReceiver {
@@ -136,7 +136,7 @@ module JMusicScore {
         }
 
         /** Application object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
-        export class Application<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
+        export class AbstractApplication<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
             constructor(public container: TContainerType, score: TDocumentType, status: TStatusManager) {
                 this.document = score;
                 this.status = status;
@@ -421,7 +421,7 @@ module JMusicScore {
 
         /** Debug event processor: writes event info in #msg */
         /*export class DummyEventProcessor implements IEventProcessor {
-            public keydown(app: Application, event: Event): boolean {
+            public keydown(app: AbstractApplication, event: Event): boolean {
                 $('#msg').text((<KeyboardEvent>event).char);
                 return false;
             }

@@ -49,7 +49,7 @@
                 '5': { noteId: 'n1_4', timeVal: Model.TimeSpan.quarterNote },
                 '6': { noteId: 'n1_2', timeVal: Model.TimeSpan.halfNote },
                 '7': { noteId: 'n1_1', timeVal: Model.TimeSpan.wholeNote },
-                '8': { noteId: 'n2_1', timeVal: new Model.TimeSpan(2, 1) },
+                '8': { noteId: 'n2_1', timeVal: new Model.TimeSpan(2, 1) }
             };
 
             public init(app: ScoreApplication.IScoreApplication) {
@@ -88,7 +88,7 @@
             public exit(app: ScoreApplication.IScoreApplication) {
             }
             /*
-            public keydown(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
+            public keydown(app: ScoreApplication.ScoreApplication, event: AbstractApplication.IMessage): boolean {
                 var theKeyCode = event.keyCode || event.which;
                 var keyDefs = <any>$.ui.keyCode;
                 for (var key in keyDefs) {
@@ -104,7 +104,7 @@
                 return true;
             }
 
-            public keypress(app: ScoreApplication.ScoreApplication, event: Application.IMessage): boolean {
+            public keypress(app: ScoreApplication.ScoreApplication, event: AbstractApplication.IMessage): boolean {
                 var key = <string>event.key;
                 if (event.ctrlKey || event.altKey) {
                     if (event.altKey) key = 'ALT-' + key;
@@ -274,7 +274,7 @@
                 
 
                 else if (key >= '1' && key <= '8') {//Add or change note (64th–double whole note) 1–8
-                    var noteType = this.noteVals[key]
+                    var noteType = this.noteVals[key];
                     if (app.Status.currentNote) {
                         var tuplet = app.Status.currentTuplet;
                         if (tuplet) {

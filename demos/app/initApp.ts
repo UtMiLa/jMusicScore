@@ -1,5 +1,5 @@
 ﻿module JMusicScore {
-    var app = <ScoreApplication.IScoreApplication>new Application.Application<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(
+    var app = <ScoreApplication.IScoreApplication>new Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(
         $("#appContainer"),
         new Model.ScoreElement(null),
         new ScoreApplication.ScoreStatusManager());
@@ -19,9 +19,9 @@
 
     app.addValidator(new GhostElements.GhostsValidator());
     
-    app.addFileManager(new Application.ServerFileManager("/Handler.ashx", "Server (ashx)"));
-    app.addFileManager(new Application.ServerFileManager("/Handler.php", "Server (PHP)"));
-    app.addFileManager(new Application.LocalStorageFileManager("Local"));
+    app.addFileManager(new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
+    app.addFileManager(new IO.ServerFileManager("/Handler.php", "Server (PHP)"));
+    app.addFileManager(new IO.LocalStorageFileManager("Local"));
     //UtMiLa.application.LoadUsing("Esajas40.xml", "Server", "MusicXML");
 
     var mus = {
@@ -99,7 +99,7 @@
         app.addPlugin(new SvgView.HintAreaPlugin());
 
         app.addPlugin(new Ui.ToolbarPlugin());
-
+        
         app.addPlugin(new Ui.FileMenuPlugin());
         app.addPlugin(new Ui.VoiceMenuPlugin(app));
         app.addPlugin(new Ui.ExportMenuPlugin());
@@ -149,46 +149,46 @@
         }));
         app.addPlugin(new Ui.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function() {
             var cmd = new Model.AddNoteCommand(
-            {
-                noteName: '1_4',
-                noteTime: Model.TimeSpan.quarterNote,
-                rest: false,
-                dots: 0,
-                grace: false,
-                pitches: [new Model.Pitch(-10, '')],
-                voice: app.document.staffElements[1].voiceElements[0],
-                beforeNote: null,
-                absTime: Model.AbsoluteTime.startTime,
-                tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
-            });
+                {
+                    noteName: '1_4',
+                    noteTime: Model.TimeSpan.quarterNote,
+                    rest: false,
+                    dots: 0,
+                    grace: false,
+                    pitches: [new Model.Pitch(-10, '')],
+                    voice: app.document.staffElements[1].voiceElements[0],
+                    beforeNote: null,
+                    absTime: Model.AbsoluteTime.startTime,
+                    tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
+                });
             app.executeCommand(cmd);
             cmd = new Model.AddNoteCommand(
-            {
-                noteName: '1_4',
-                noteTime: Model.TimeSpan.quarterNote,
-                rest: false,
-                dots: 0,
-                grace: false,
-                pitches: [new Model.Pitch(-9, '')],
-                voice: app.document.staffElements[1].voiceElements[0],
-                beforeNote: null,
-                absTime: Model.AbsoluteTime.startTime,
-                tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
-            });
+                {
+                    noteName: '1_4',
+                    noteTime: Model.TimeSpan.quarterNote,
+                    rest: false,
+                    dots: 0,
+                    grace: false,
+                    pitches: [new Model.Pitch(-9, '')],
+                    voice: app.document.staffElements[1].voiceElements[0],
+                    beforeNote: null,
+                    absTime: Model.AbsoluteTime.startTime,
+                    tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
+                });
             app.executeCommand(cmd);
             cmd = new Model.AddNoteCommand(
-            {
-                noteName: '1_4',
-                noteTime: Model.TimeSpan.quarterNote,
-                rest: false,
-                dots: 0,
-                grace: false,
-                pitches: [new Model.Pitch(-8, '')],
-                voice: app.document.staffElements[1].voiceElements[0],
-                beforeNote: null,
-                absTime: Model.AbsoluteTime.startTime,
-                tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
-            });
+                {
+                    noteName: '1_4',
+                    noteTime: Model.TimeSpan.quarterNote,
+                    rest: false,
+                    dots: 0,
+                    grace: false,
+                    pitches: [new Model.Pitch(-8, '')],
+                    voice: app.document.staffElements[1].voiceElements[0],
+                    beforeNote: null,
+                    absTime: Model.AbsoluteTime.startTime,
+                    tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
+                });
             app.executeCommand(cmd);
         }));
 
@@ -235,7 +235,7 @@
             new Ui.ShowTextDialog('menu', app).setText(res.join("\n")).show();
         }));
         app.addPlugin(new Ui.PianoPlugIn());
-        
+
         app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
         //app.AddPlugin(new Players.MidiPlayer());
 

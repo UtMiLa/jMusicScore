@@ -273,7 +273,7 @@ module JMusicScore {
                 return string;
             }
 
-            public remove() {
+            public remove(): void {
                 for (var i = 0; i < this.childLists.length; i++) {
                     for (var j = 0; j < this.childLists[i].length; j++) {
                         this.childLists[i][j].remove();
@@ -500,9 +500,6 @@ module JMusicScore {
                     this.withStaves((staff: IStaff) => {
                         events = events.concat(staff.getEvents());
                     });
-                    /*for (var i = 0; i < this.getChildren().length; i++) {
-                        events = events.concat(this.getChild(i).getEvents());
-                    }*/
                 }
                 events = events.concat(this.bars);
                 events = events.concat(this.meterElements);
@@ -1133,7 +1130,7 @@ module JMusicScore {
                 return {
                     t: "Regular",
                     acci: this.acci,
-                    no: this.number,
+                    no: this.number
                 }
             }
         }
@@ -1144,8 +1141,8 @@ module JMusicScore {
 
         export class KeyDefinitionFactory {
             private static keyClasses: { [i: string]: IKeyDefCreator } = {
-                "Regular": RegularKeyDefinition,
-            }
+                "Regular": RegularKeyDefinition
+            };
 
             public static register(key: string, cls: IKeyDefCreator) {
                 this.keyClasses[key] = cls;
@@ -1303,7 +1300,7 @@ module JMusicScore {
                 return {
                     t: "Regular",
                     num: this.numerator,
-                    den: this.denominator,
+                    den: this.denominator
                 }
             }
         }
@@ -1321,7 +1318,7 @@ module JMusicScore {
                 return super.nextBar(abstime.sub(this.offset), meterTime).add(this.offset);
             }
             static createFromMemento(memento: any): IMeterDefinition {
-                var offset = TimeSpan.createFromMemento(memento.offs)
+                var offset = TimeSpan.createFromMemento(memento.offs);
                 return new OffsetMeterDefinition(memento.num, memento.den, offset);
             }
             public getMemento(): any {
@@ -1341,8 +1338,8 @@ module JMusicScore {
         export class MeterDefinitionFactory {
             private static meterClasses: { [i: string]: IMeterDefCreator } = {
                 "Regular": RegularMeterDefinition,
-                "OffsetRegular": OffsetMeterDefinition,
-            }
+                "OffsetRegular": OffsetMeterDefinition
+            };
 
             public static register(key: string, cls: IMeterDefCreator) {
                 this.meterClasses[key] = cls;
@@ -1481,7 +1478,7 @@ module JMusicScore {
                 this.alteration = Pitch.intToStr(Pitch.strToInt(this.alteration) + n);
             }
             public getEnharmonicPitch(n?: number): Pitch {
-                var res = this;
+                var res: Pitch = this;
                 if (this.alteration === 'x')
                     res = new Pitch(this.pitch + 1, '');
                 else if (this.alteration === 'b')
@@ -2519,7 +2516,7 @@ module JMusicScore {
                 "TextSyllable": TextSyllableElement,
                 "Bar": BarElement,
                 "StaffExpression": StaffExpression
-            }
+            };
             static register(key: string, creator: IMusicElementCreator) {
                 this.mementoCreators[key] = creator;
             }

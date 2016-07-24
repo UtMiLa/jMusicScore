@@ -228,13 +228,13 @@
                                         // We have noNotes notes who shall be merged to the values in bestNotes
                                         // Best to merge to 1 first and then split
 
-                                        // join notes!
+                                    // join notes!
                                         note = Music.mergeNoteWithNext(note, noNotes - 1);
 
                                         if (bestNotes.length > 0) {
                                             Music.splitNote(note, bestNotes);
-                                        }
-                                    }
+                                }
+                            }
                                 }
                             }
                         });
@@ -270,51 +270,51 @@
 
                 return [runningTime].concat(SplitNotesValidator.bestNoteValues(time.sub(runningTime)));
             }
-            
+
             private splitNote(note: INote, nextAbsTime: AbsoluteTime): void {
-                // split note in 2 or more
-                var timeFirstNotes: TimeSpan[];
-                var timeLastNotes: TimeSpan[];
+                                    // split note in 2 or more
+                                    var timeFirstNotes: TimeSpan[];
+                                    var timeLastNotes: TimeSpan[];
                 if (note.NoteId === 'hidden') {
                     timeFirstNotes = [nextAbsTime.diff(note.absTime)];
                     timeLastNotes = [note.absTime.add(note.getTimeVal()).diff(nextAbsTime)];
-                }
-                else {
-                    // timeVal for first note = nextAbsTime - absTime
+                                    }
+                                    else {
+                                        // timeVal for first note = nextAbsTime - absTime
                     timeFirstNotes = SplitNotesValidator.bestNoteValues(nextAbsTime.diff(note.absTime)).reverse();
-                    // timeVal for second note = timeVal - nextAbsTime + absTime
+                                        // timeVal for second note = timeVal - nextAbsTime + absTime
                     timeLastNotes = SplitNotesValidator.bestNoteValues(note.absTime.add(note.getTimeVal()).diff(nextAbsTime));
-                }
-                var notes = timeFirstNotes.concat(timeLastNotes);
+                                    }
+                                    var notes = timeFirstNotes.concat(timeLastNotes);
                 Music.splitNote(note, notes);
                 /*var absTime = note.absTime;
                 var nextNote = Music.nextNote(note);
-                note.timeVal = notes[0];
+                                    note.timeVal = notes[0];
                 if (note.NoteId !== 'hidden')
                     note.NoteId = Music.calcNoteId(note.timeVal);
-                var alreadyAutojoin = note.getProperty('autojoin');
+                                    var alreadyAutojoin = note.getProperty('autojoin');
                 note.setProperty('autojoin', note.absTime);
-                note.dotNo = 0;
+                                    note.dotNo = 0;
                 note.withHeads((head: INotehead, index: number) => {
-                    head.tie = true;
-                });
-                for (var i = 1; i < notes.length; i++) {
+                                        head.tie = true;
+                                    });
+                                    for (var i = 1; i < notes.length; i++) {
                     absTime = absTime.add(notes[i-1]);
                     var newNote = Music.addNote(note.parent,
                         note.NoteId === 'hidden' ? NoteType.Placeholder : note.rest ? NoteType.Rest : NoteType.Note,
                         absTime, note.NoteId, notes[i]);
 
-                    // copy heads but not expressions and text
-                    var join = alreadyAutojoin || i < notes.length - 1;
-                    newNote.setProperty('autojoin', join);
+                                        // copy heads but not expressions and text
+                                        var join = alreadyAutojoin || i < notes.length - 1;
+                                        newNote.setProperty('autojoin', join);
                     note.withHeads((head: INotehead, index: number) => {
-                        var newHead = newNote.setPitch(head.pitch);
-                        // tie heads
-                        newHead.tie = join;
-                        newHead.setProperty('autojoin', join);
-                    });
+                                            var newHead = newNote.setPitch(head.pitch);
+                                            // tie heads
+                                            newHead.tie = join;
+                                            newHead.setProperty('autojoin', join);
+                                        });
                 }*/
-            }
+                                    }
             
             public validate(app: ScoreApplication.IScoreApplication) {
                 app.document.withStaves((staff: IStaff, index: number): void => {

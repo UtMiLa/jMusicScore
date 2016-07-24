@@ -1,5 +1,3 @@
-/// <reference path="jquery.d.ts"/>
-/// <reference path="jqueryui.d.ts"/>
 module JMusicScore {
     export module Ui {
 
@@ -15,7 +13,7 @@ module JMusicScore {
         }
 
         export class UiContainer<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
             }
 
             public $container: JQuery; // todo: ContainerType;
@@ -75,7 +73,7 @@ module JMusicScore {
                             );
                         $('#' + e.id + "Button")
                             .button({
-                            text: true,
+                                showLabel: true,
                         })
                             .click(function () {
                             var menu = $(this).next().show().position({
@@ -109,7 +107,7 @@ module JMusicScore {
                             .text(e.caption)
                             .addClass("ui-widget-header").addClass("ui-corner-all")
                             .button({
-                            text: true,
+                                showLabel: true,
                         })
                             .click(e.action)
                         );
@@ -145,7 +143,7 @@ module JMusicScore {
         }
 
         export class Dialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends UiContainer<TDocumentType, TStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
                 this.createDialogElement();
             }
@@ -330,7 +328,7 @@ module JMusicScore {
 
             public withItems(f: (item: IContainer, index: number) => boolean): void {
                 this.$ctl.children().each(function (i: number, e: Element) {
-                    return f($(e).data('owner'), i);
+                    return f(<IContainer><any>($(e).data('owner')), i);
                 });
             }
 
@@ -454,7 +452,7 @@ module JMusicScore {
         }
 
         export class FileDialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends Dialog<TDocumentType, TStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
@@ -478,7 +476,7 @@ module JMusicScore {
                     me.app.getFileList(source, function (data: string[]) {
                         me.fileListWidget.updateFileList(data);
                     });
-                }
+                };
                 this.sourceWidget.change(function () {
                     var item = $(this).val();
                     updateFileList(item);
@@ -511,7 +509,7 @@ module JMusicScore {
         }
 
         class OpenFileDialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends FileDialog<TDocumentType, TStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "OpenFileDialog";
                 this.dialogTitle = "Open file";
@@ -530,7 +528,7 @@ module JMusicScore {
         }
 
         class SaveFileDialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends FileDialog<TDocumentType, TStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: Application.Application<TDocumentType, TStatusManager, TContainerType>) {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "SaveFileDialog";
                 this.dialogTitle = "Save file";
@@ -662,12 +660,13 @@ module JMusicScore {
 
             public set value(value: string) {
                 this.val = value;
-                this.$button.button({
-                    text: false,
-                    icons: {
+                this.$button.addClass("ui-icon-triangle-1-s").button({
+                    showLabel: false,
+                    icon: "note-icon icon-key-" + value,
+                    /*icons: {
                         primary: "note-icon icon-key-" + value,
                         secondary: "ui-icon-triangle-1-s"
-                    }
+                    }*/
                 });
             }
 
@@ -694,13 +693,14 @@ module JMusicScore {
                         });
                 }
                 parent.append($div);
-                this.$button.button(
+                this.$button.append("<span class='ui-icon-triangle-1-s'>").button(
                     {
-                        text: false,
-                        icons: {
+                        showLabel: false,
+                        icon: "note-icon icon-key",
+                        /*icons: {
                             primary: "note-icon icon-key",
                             secondary: "ui-icon-triangle-1-s"
-                        }
+                        }*/
                     })
                     .click(function () {
                         var menu = $ul.show().position({
@@ -760,7 +760,11 @@ module JMusicScore {
 
         // ************************* Music dialogs ************************ //
 
-        export class ScoreDialog extends Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
+        export class ScoreDialog extends Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+            constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
+                super(idPrefix, app);
+            }
+        }
 
         export class MeterDialog extends ScoreDialog {
             constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
@@ -1357,10 +1361,10 @@ module JMusicScore {
 
                 $("#clefs").button(
                     {
-                        icons:
-                        {
-                            secondary: "ui-icon-triangle-1-s"
-                        }
+                     
+                            icon: "ui-icon-triangle-1-s",
+                            iconPosition: "end"
+                     
                     }).click(function () {
                     var menu = $(this).next().show().position({
                         my: "left top",
@@ -1605,20 +1609,46 @@ module JMusicScore {
                                     .appendTo(grp);
                             }
 
-                            if (item.type !== 'Buttongroup') {
+                            if (item.type === 'Buttongroup') {
+                                btn.button({
+                                    showLabel: true,
+                                    icon: btnDef.glyph
+                                })
+                                    .data('notedata', btnDef)
+                                    .data('parent', this)
+                                    .data('app', this.app)
+                                    .click(function () {
+                                        var notedata = $(this).data('notedata');
+                                        var parent = $(this).data('parent');
+                                        var app = <ScoreApplication.IScoreApplication>$(this).data('app');
+
+                                        if (notedata.mode) {
+                                            parent.unregisterModes();
+                                            app.registerEventProcessor(notedata.mode);
+                                        }
+                                        /*if (notedata.createMode) {
+                                            parent.currentNoteMode = notedata.createMode(score);
+                                            parent.currentNoteMode.currentVoice = parent.currentVoice;
+                                            parent.currentNoteMode.actionSelected();
+                                        }*/
+                                        if (notedata.onChecked) {
+                                            notedata.onChecked(this, app);
+                                        }
+                                    });/**/
+
+                            }
+                            else {
                                 var label = (<any>$('<label/>').attr('for', btnDef.id)
                                     .attr("title", btnDef.label))
                                     .appendTo(grp);
-                            }
-                            else {
-                                //btn.attr('src','');
-                            }
 
-                            btn.button({
-                                text: true,
-                                icons: {
-                                    primary: btnDef.glyph
-                                },
+                                //btn.attr('src','');
+                                btn.checkboxradio({
+                                    classes: {
+                                        "ui-checkboxradio-icon": btnDef.glyph
+                            }
+                                    //showLabel: true,
+                                    //icon: btnDef.glyph
                             })
                                 .data('notedata', btnDef)
                                 .data('parent', this)
@@ -1642,7 +1672,9 @@ module JMusicScore {
                                 }
                             });/**/
                         }
-                        grp.buttonset();
+
+                        }
+                        grp.controlgroup();
 
                         grp.find('span.ui-button-text')
                             .css('padding', '2px');

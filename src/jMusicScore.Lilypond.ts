@@ -212,30 +212,30 @@ module JMusicScore {
             }
 
             private getClefAsLilypond(clef: Model.IClef): string {
-                var def = clef.definition;
-                var c = def.clefName() + def.clefLine;
-                var clefName = "unknown";
-                switch (c) {
+                        var def = clef.definition;
+                        var c = def.clefName() + def.clefLine;
+                        var clefName = "unknown";
+                        switch (c) {
                     case "g4": clefName = 'treble'; break;
-                    case "g5": clefName = 'french'; break;
+                            case "g5": clefName = 'french'; break;
 
-                    case "f1": clefName = 'subbass'; break;
-                    case "f2": clefName = 'bass'; break;
-                    case "f3": clefName = 'varbaritone'; break;
+                            case "f1": clefName = 'subbass'; break;
+                            case "f2": clefName = 'bass'; break;
+                            case "f3": clefName = 'varbaritone'; break;
 
-                    case "c1": clefName = 'baritone'; break;
-                    case "c2": clefName = 'tenor'; break;
-                    case "c3": clefName = 'alto'; break;
-                    case "c4": clefName = 'mezzosoprano'; break;
-                    case "c5": clefName = 'soprano'; break;
-                    //default: alert(c);
-                }
-                if (def.transposition > 0) {
-                    clefName += '^' + (def.transposition + 1)
-                }
-                else if (def.transposition < 0) {
-                    clefName += '_' + (-def.transposition + 1)
-                }
+                            case "c1": clefName = 'baritone'; break;
+                            case "c2": clefName = 'tenor'; break;
+                            case "c3": clefName = 'alto'; break;
+                            case "c4": clefName = 'mezzosoprano'; break;
+                            case "c5": clefName = 'soprano'; break;
+                            //default: alert(c);
+                        }
+                        if (def.transposition > 0) {
+                            clefName += '^' + (def.transposition + 1)
+                        }
+                        else if (def.transposition < 0) {
+                            clefName += '_' + (-def.transposition + 1)
+                        }
                 return '\t\\clef "' + clefName + '" \n';
             }
 
