@@ -303,7 +303,6 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="demos\app\initApp.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jquery.ui.layout\jquery.ui.layout.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="src\application.ts" />
