@@ -104,7 +104,7 @@
                 var $link = $('<a class="ui-menu-item-wrapper" role="menuitem" tabindex="-1">').text(subCaption).appendTo($item);
                 if (action) {
                     (function (action: Action, $link: JQuery) {
-                        $link.click(function () { action.action(); return false; });
+                        $link.click(function () { var command = action.action(); /* todo: app.ExecuteCommand(command); */ return false; });
                     })(action, $link)
                 };
             }
@@ -156,7 +156,7 @@
     var jMusicActions: ActionCollection = {
         FileLoad: { caption: "Load", action: () => { }, type: ActionType.execute },
         FileSaveAs: { caption: "SaveAs", action: () => { alert("save"); }, type: ActionType.execute },
-        FileNew: { caption: "New", action: () => { alert("new");}, type: ActionType.execute },
+        FileNew: { caption: "New", action: () => { return new jMusicScore.Model.ClearScoreCommand({}); }, type: ActionType.execute },
         Voice: { caption: "Voice", action: () => { }, type: ActionType.execute },
         ExportSVG: { caption: "SVG", action: () => { }, type: ActionType.execute },
         ExportJSON: { caption: "JSON", action: () => { }, type: ActionType.execute },
