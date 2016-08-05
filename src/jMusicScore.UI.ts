@@ -514,7 +514,7 @@ module jMusicScore {
             }
         }
 
-        class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+        export class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
             constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "OpenFileDialog";
@@ -533,7 +533,7 @@ module jMusicScore {
             }
         }
 
-        class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+        export class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
             constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "SaveFileDialog";

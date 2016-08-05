@@ -1,8 +1,8 @@
 ﻿module JApps.UI {
 
-    enum ActionType { execute, check, radio }
+    export enum ActionType { execute, check, radio }
 
-    interface Action {
+    export interface Action {
         caption: string;
         helpText?: string;
         icon?: string;
@@ -12,43 +12,43 @@
         type: ActionType;
     }
     
-    interface RadioGroup {
+    export interface RadioGroup {
 
     }
 
-    interface ActionCollection {
+    export interface ActionCollection {
         [name: string]: Action;
     }
 
-    interface ToolbarDef {
+    export interface ToolbarDef {
     }
 
-    interface ToolGroupDef {
+    export interface ToolGroupDef {
     }
 
-    interface ActionMenuItemDef {
+    export interface ActionMenuItemDef {
         action: string;
     }
 
-    interface ParentMenuItemDef {
+    export interface ParentMenuItemDef {
         action?: string;
         subItems: MenuItemDef[];
         caption: string;
     }
 
-    type MenuItemDef = ActionMenuItemDef | ParentMenuItemDef;
+    export type MenuItemDef = ActionMenuItemDef | ParentMenuItemDef;
 
-    interface MenuDef {
+    export interface MenuDef {
         items: MenuItemDef[];
     }
 
-    interface Toolbar {
+    export interface Toolbar {
     }
 
-    interface ActionManager {
+    export interface ActionManager {
     }
 
-    class MenuManager implements ActionManager {
+    export class MenuManager implements ActionManager {
         constructor() { }
         _actions: ActionCollection = {};
 
@@ -58,8 +58,10 @@
 
         setMenu(menuDef: MenuDef): void {
         }
+
+        updateMenuItems(): void { }
     }
-    class ToolbarManager implements ActionManager {
+    export class ToolbarManager implements ActionManager {
         _actions: ActionCollection = {};
         /*addToolbar(toolbarDef: ToolbarDef): Toolbar;
         removeToolbar(toolbar: Toolbar): void;*/
@@ -68,11 +70,11 @@
         }
 
     }
-    class CommandLineManager implements ActionManager {
+    export class CommandLineManager implements ActionManager {
     }
 
 
-    class JQUIMenuManager extends MenuManager {
+    export class JQUIMenuManager extends MenuManager {
         constructor(private element: string) {
             super();
         }
@@ -104,7 +106,7 @@
                 var $link = $('<a class="ui-menu-item-wrapper" role="menuitem" tabindex="-1">').text(subCaption).appendTo($item);
                 if (action) {
                     (function (action: Action, $link: JQuery) {
-                        $link.click(function () { var command = action.action(); /* todo: app.ExecuteCommand(command); */ return false; });
+                        $link.click(function () { action.action(); return false; });
                     })(action, $link)
                 };
             }
@@ -142,86 +144,37 @@
                         $element.append($radioLabel);
                         $element.append($radioInput);
                     }
+                    else if (type === ActionType.execute) {
+                        var $btn = $('<button class="ui-widget-header ui-corner-all ui-button ui-widget">').text(caption).click(action.action);
+                        $btn.data("action", action);
+                        $element.append($("<span>").append($btn.button()));
+                        /*if ((action && action.enabled && !action.enabled()) || !action) {
+                            $btn.button("option", "disabled", true);
+                        }*/
+                    }
                 }
             }
             $element.controlgroup();
+            $element.click(() => {
+                this.updateMenuItems();
+            });
         }
 
+        updateMenuItems() {
+            var $elements = $(this.element).find('button');
+            $elements.each(function (i, e) {
+                let $elm = $(e);
+                let action = $elm.data("action");
+                if (action && action.enabled) {
+                        $elm.button("option", "disabled", !action.enabled());
+                }
+            });
+        }
     }
-    class JQUIToolbarManager extends ToolbarManager {
+    export class JQUIToolbarManager extends ToolbarManager {
     }
-    class JQCommandLineManager extends CommandLineManager {
+    export class JQCommandLineManager extends CommandLineManager {
     }
 
-    var jMusicActions: ActionCollection = {
-        FileLoad: { caption: "Load", action: () => { }, type: ActionType.execute },
-        FileSaveAs: { caption: "SaveAs", action: () => { alert("save"); }, type: ActionType.execute },
-        FileNew: { caption: "New", action: () => { return new jMusicScore.Model.ClearScoreCommand({}); }, type: ActionType.execute },
-        Voice: { caption: "Voice", action: () => { }, type: ActionType.execute },
-        ExportSVG: { caption: "SVG", action: () => { }, type: ActionType.execute },
-        ExportJSON: { caption: "JSON", action: () => { }, type: ActionType.execute },
-        ExportLilypond: { caption: "Lilypond", action: () => { }, type: ActionType.execute },
-        ExportMusicXml: { caption: "MusicXml", action: () => { }, type: ActionType.execute },
-        Staves: { caption: "Staves", action: () => { }, type: ActionType.execute },
-        TestLoadSaved: { caption: "LoadSaved", action: () => { }, type: ActionType.execute },
-        TestSaveSaved: { caption: "SaveSaved", action: () => { }, type: ActionType.execute },
-    };
-    var jMusicMenuDef: MenuDef = {
-        items: [
-            {
-                caption: "File",
-                subItems: [
-                    {
-                        action: "FileLoad",
-                    },
-                    {
-                        action: "FileSaveAs",
-                    },
-                    {
-                        action: "FileNew",
-                    }
-                ]
-            },
-            {
-                action: "Voice",
-            },
-            {
-                caption: "Export",
-                subItems: [
-                    {
-                        action: "ExportSVG",
-                    },
-                    {
-                        action: "ExportJSON",
-                    },
-                    {
-                        action: "ExportLilypond",
-                    },
-                    {
-                        action: "ExportMusicXml",
-                    }
-                ]
-            },
-            {
-                action: "Staves",
-            },
-            {
-                caption: "Test",
-                subItems: [
-                    {
-                        action: "TestLoadSaved",
-                    },
-                    {
-                        action: "TestSaveSaved",
-                    },
-                ]
-            },
-        ],
-    };
 
-    $(function () {
-        var menuman = new JQUIMenuManager('#notetools5');
-        menuman.addActions(jMusicActions);
-        menuman.setMenu(jMusicMenuDef);
-    });
 }

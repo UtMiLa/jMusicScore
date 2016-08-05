@@ -232,5 +232,87 @@ module jMusicScore {
 
         app.AddPlugin(new FinaleUI.FinaleSmartEditPlugin());
         //app.AddPlugin(new Players.MidiPlayer());
+
+
+        var jMusicActions: JApps.UI.ActionCollection = {
+            FileNew: { caption: "New", action: () => { app.ExecuteCommand(new jMusicScore.Model.ClearScoreCommand({})); }, type: JApps.UI.ActionType.execute },
+            FileLoad: { caption: "Load", action: () => { new UI.OpenFileDialog('open', app).Show(); }, type: JApps.UI.ActionType.execute },
+            FileSaveAs: { caption: "SaveAs", action: () => { new UI.SaveFileDialog('save', app).Show(); }, type: JApps.UI.ActionType.execute },
+            Voice: {
+                caption: "Voice",
+                action: () => {
+                    new UI.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).Show();
+                },
+                type: JApps.UI.ActionType.execute,
+                enabled: () => { return app.Status.currentVoice != undefined; }
+            },
+            ExportSVG: { caption: "SVG", action: () => { new UI.ShowTextDialog('menu', app).setText(app.SaveToString('SVG')).Show(); }, type: JApps.UI.ActionType.execute },
+            ExportJSON: { caption: "JSON", action: () => { new UI.ShowTextDialog('menu', app).setText(app.SaveToString('JSON')).Show(); }, type: JApps.UI.ActionType.execute },
+            ExportLilypond: { caption: "Lilypond", action: () => { new UI.ShowTextDialog('menu', app).setText(app.SaveToString('Lilypond')).Show(); }, type: JApps.UI.ActionType.execute },
+            ExportMusicXml: { caption: "MusicXml", action: () => { new UI.ShowTextDialog('menu', app).setText(app.SaveToString('MusicXML')).Show(); }, type: JApps.UI.ActionType.execute },
+            Staves: { caption: "Staves", action: () => { new UI.StavesDialog('menu', app).Show(); }, type: JApps.UI.ActionType.execute },
+            TestLoadSaved: { caption: "LoadSaved", action: () => { app.LoadUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute },
+            TestSaveSaved: { caption: "SaveSaved", action: () => { app.SaveUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute },
+        };
+        var jMusicMenuDef: JApps.UI.MenuDef = {
+            items: [
+                {
+                    caption: "File",
+                    subItems: [
+                        {
+                            action: "FileLoad",
+                        },
+                        {
+                            action: "FileSaveAs",
+                        },
+                        {
+                            action: "FileNew",
+                        }
+                    ]
+                },
+                {
+                    action: "Voice",
+                },
+                {
+                    caption: "Export",
+                    subItems: [
+                        {
+                            action: "ExportSVG",
+                        },
+                        {
+                            action: "ExportJSON",
+                        },
+                        {
+                            action: "ExportLilypond",
+                        },
+                        {
+                            action: "ExportMusicXml",
+                        }
+                    ]
+                },
+                {
+                    action: "Staves",
+                },
+                {
+                    caption: "Test",
+                    subItems: [
+                        {
+                            action: "TestLoadSaved",
+                        },
+                        {
+                            action: "TestSaveSaved",
+                        },
+                    ]
+                },
+            ],
+        };
+
+       
+        var menuman = new JApps.UI.JQUIMenuManager('#notetools5');
+        menuman.addActions(jMusicActions);
+        menuman.setMenu(jMusicMenuDef);
+        
+
+
     });
 } 
