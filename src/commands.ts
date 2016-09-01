@@ -1,58 +1,183 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     export module Model {
 
-        export interface ScoreCommand extends Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
+        export class MacroExporter {
+            //todo: StemDirectionType, NoteDecorationKind, ClefDefinition, IMeterDefinition, IKeyDefinition
+            //todo: bundleCommand
+            //todo: Finale: Add a dot . (period); Show/hide any accidental; Add a note to a chord enter;
+            //todo: test menu: Recreate score; Debug to lyrics; 
+            static makeMacro(cmd: { args: {} }): { commandName: string; args: {}} {
+                var cmdName = cmd.constructor.toString();
 
-        export class BundleCommand implements ScoreCommand {
-            constructor() { }
+                var funcNameRegex = /function (.{1,})\(/;
+                var results = (funcNameRegex).exec(cmdName);
+                cmdName = (results && results.length > 1) ? results[1] : "";
+
+                return {
+                    commandName: cmdName,
+                    args: MacroExporter.exportArgs(cmd.args)
+                };
+            }
+
+            static exportString(s: string): string {
+                return JSON.stringify(s); // `"${s}"`; // todo: escape "
+            }
+            static exportPitch(pitch: Pitch): string {
+                return `new JMusicScore.Model.Pitch(${pitch.pitch},'${pitch.alteration}')`;
+            }
+            static exportTimespan(timespan: TimeSpan): string {
+                return `new JMusicScore.Model.TimeSpan(${timespan.numerator},${timespan.denominator})`;
+            }
+            static exportTime(time: AbsoluteTime): string {
+                return `new JMusicScore.Model.AbsoluteTime(${time.numerator},${time.denominator})`;
+            }
+            static exportRational(rat: Rational): string {
+                return `new JMusicScore.Model.Rational(${rat.numerator},${rat.denominator})`;
+            }
+            static exportTuplet(tupletDef: TupletDef): any {
+                return `new JMusicScore.Model.TupletDef(${this.exportTimespan(tupletDef.fullTime)}, ${this.exportRational(tupletDef.fraction)})`;
+            }
+
+            static exportArgs(args: {}): {} {
+                var elms: { [key:string]:string; } = {};
+                $.each(args, (key: string, val: string) => {
+                    elms[key] = MacroExporter.exportArg(val);
+                });
+                return elms;
+            }
+
+            static exportMusicElm(elm: Model.IMusicElement): string {
+                var elmName = elm.getElementName();
+                var index: number;
+                if (elmName === "Score") {
+                    return "app.document";
+                }
+                if (elmName === "Staff") {
+                    index = (<Model.IStaff>elm).parent.staffElements.indexOf(<IStaff>elm);
+                    return this.exportMusicElm(elm.parent) + '.staffElements[' + index + ']';
+                }
+                if (elmName === "Voice") {
+                    index = (<Model.IVoice>elm).parent.voiceElements.indexOf(<IVoice>elm);
+                    return this.exportMusicElm(elm.parent) + '.voiceElements[' + index + ']';
+                }
+                if (elmName === "Note") {
+                    index = (<Model.INote>elm).parent.noteElements.indexOf(<INote>elm);
+                    return this.exportMusicElm(elm.parent) + '.noteElements[' + index + ']';
+                }
+                if (elmName === "Notehead") {
+                    index = (<Model.INotehead>elm).parent.noteheadElements.indexOf(<INotehead>elm);
+                    return this.exportMusicElm(elm.parent) + '.noteheadElements[' + index + ']';
+                }
+                
+                return `null /*'${elmName}' */ `;
+            }
+
+            static exportArg(arg: any): string {
+                var typ = typeof (arg);
+                switch (typ) {
+                case "string":
+                    return this.exportString(arg);
+                case "number":
+                    return arg.toString();
+                case "boolean":
+                    return arg.toString();
+                case "object":
+                    if (arg === null) return 'null';
+                    if (Array.isArray(arg)) {
+                        var resArr: string[] = [];
+                        for (var i = 0; i < arg.length; i++) {
+                            resArr.push(this.exportArg(arg[i]));
+                        }
+                        return `[${resArr.join(',')}]`;
+                    } else {
+                        if (arg.getElementName) {
+                            // MusicElement
+                            return this.exportMusicElm(<IMusicElement>arg);
+                        } else {
+                            // non-musicElement object
+                            if (arg instanceof Pitch) return this.exportPitch(arg);
+                            if (arg instanceof TimeSpan) return this.exportTimespan(arg);
+                            if (arg instanceof AbsoluteTime) return this.exportTime(arg);
+                            if (arg instanceof TupletDef) return this.exportTuplet(arg);
+                            
+                            return "OBJECT";
+                        }
+                    }
+                    break;
+                case "function":
+                    return "FUNCTION";
+                case "symbol":
+                    return "SYMBOL";
+                case "undefined":
+                    return undefined;
+                default:
+                }
+                return "UNKNOWN";
+            }
+
+        }
+
+        export interface IScoreCommand extends Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
+
+        export interface IMacroCommand {
+            commandName: string;
+            args: {};
+        }
+        
+        export class BundleCommand implements IScoreCommand {
+            constructor(commands: IScoreCommand[]) {
+                for (var i = 0; i < commands.length; i++) {
+                    this.add(commands[i]);
+                }
+            }
 
             /* args:
             */
-            private _commands: ScoreCommand[] = [];
+            private commands: IScoreCommand[] = [];
 
-            public Add(cmd: ScoreCommand) {
-                this._commands.push(cmd);
+            public add(cmd: IScoreCommand) {
+                this.commands.push(cmd);
             }
 
-            Execute(app: ScoreApplication.ScoreApplication) {
+            execute(app: ScoreApplication.IScoreApplication) {
                 var canUndo = true;
-                for (var i = 0; i < this._commands.length; i++) {
-                    this._commands[i].Execute(app);
-                    canUndo = canUndo && !!this._commands[i].Undo;
+                for (var i = 0; i < this.commands.length; i++) {
+                    this.commands[i].execute(app);
+                    canUndo = canUndo && !!this.commands[i].undo;
                 }
                 if (canUndo) {
-                    this.Undo = (app: ScoreApplication.ScoreApplication) => {
-                        for (var i = this._commands.length - 1; i >= 0; i--) {
-                            this._commands[i].Undo(app);
+                    this.undo = (app1: ScoreApplication.IScoreApplication) => {
+                        for (var i = this.commands.length - 1; i >= 0; i--) {
+                            this.commands[i].undo(app1);
                         }
                     };
                 }
             }
 
-            public Undo: (app: ScoreApplication.ScoreApplication) => void;
+            public undo: (app: ScoreApplication.IScoreApplication) => void;
         }
 
 
-        export class ClearScoreCommand implements ScoreCommand {
+        export class ClearScoreCommand implements IScoreCommand {
             constructor(private args: any) { }
 
             /* args:
             */
-            private _memento: Model.IMemento;
+            private memento: IMemento;
 
-            Execute(app: ScoreApplication.ScoreApplication) {
-                this._memento = app.document.getMemento();
+            execute(app: ScoreApplication.IScoreApplication) {
+                this.memento = app.document.getMemento();
                 app.document.clear();
             }
 
-            Undo(app: ScoreApplication.ScoreApplication) {
-                app.document = <IScore>Model.MusicElementFactory.RecreateElement(null, this._memento);
+            undo(app: ScoreApplication.IScoreApplication) {
+                app.document = <IScore>MusicElementFactory.recreateElement(null, this.memento);
             }
         }
 
-        export interface AddNoteArgs {
+        export interface IAddNoteArgs {
             noteName: string; /* '1_4' */
-            noteTime: Model.TimeSpan;
+            noteTime: TimeSpan;
             rest: boolean;
             dots: number;
             grace: boolean;
@@ -62,154 +187,154 @@
             beforeNote?: INote;
             tuplet?: TupletDef;
         }
-        export class AddNoteCommand implements ScoreCommand {
-            constructor(private args: AddNoteArgs) { }
+        export class AddNoteCommand implements IScoreCommand {
+            constructor(private args: IAddNoteArgs) { }
 
             // todo: fjern absTime eller beforeNote
-            private _note: INote;
+            private note: INote;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
-                this._note = Music.AddNote(this.args.voice, this.args.rest ? NoteType.rest : NoteType.note, this.args.absTime, 'n' + this.args.noteName, this.args.noteTime,
+            public execute(app: ScoreApplication.IScoreApplication) {
+                this.note = Music.addNote(this.args.voice, this.args.rest ? NoteType.Rest : NoteType.Note, this.args.absTime, 'n' + this.args.noteName, this.args.noteTime,
                     this.args.beforeNote, true, this.args.dots, this.args.tuplet);
-                if (this.args.grace) this._note.graceType = "normal";
+                if (this.args.grace) this.note.graceType = "normal";
 
                 for (var i = 0; i < this.args.pitches.length; i++) {
-                    this._note.setPitch(this.args.pitches[i]);
+                    this.note.setPitch(this.args.pitches[i]);
                 }
             }
 
-            Undo(app: ScoreApplication.ScoreApplication) {
-                var voice = this._note.parent;
-                voice.removeChild(this._note);
+            undo(app: ScoreApplication.IScoreApplication) {
+                var voice = this.note.parent;
+                voice.removeChild(this.note);
             }
         }
 
         export interface IDeleteNoteArgs {
             note: INote;
         }
-        export class DeleteNoteCommand implements ScoreCommand {
+        export class DeleteNoteCommand implements IScoreCommand {
             constructor(private args: IDeleteNoteArgs) { }
             
-            private _memento: Model.IMemento;
-            private _voice: Model.IVoice;
+            private memento: IMemento;
+            private voice: IVoice;
 
-            Execute(app: ScoreApplication.ScoreApplication) {
-                this._memento = this.args.note.getMemento();
-                this._voice = this.args.note.parent;
-                this._voice.removeChild(this.args.note);
+            execute(app: ScoreApplication.IScoreApplication) {
+                this.memento = this.args.note.getMemento();
+                this.voice = this.args.note.parent;
+                this.voice.removeChild(this.args.note);
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
-                var note = Model.MusicElementFactory.RecreateElement(this._voice, this._memento);
+            public undo(app: ScoreApplication.IScoreApplication) {
+                var note = MusicElementFactory.recreateElement(this.voice, this.memento);
             }
 
         }
 
-        export class DeleteNoteheadCommand implements ScoreCommand {
+        export class DeleteNoteheadCommand implements IScoreCommand {
             constructor(private args: { head:INotehead }) { }
 
             /* args:
             head
             */
-            private _memento: IMemento;
-            private _note: INote;
+            private memento: IMemento;
+            private note: INote;
 
-            Execute(app: ScoreApplication.ScoreApplication) {
-                var head = <Model.INotehead>this.args.head;
-                this._note = head.parent;
-                this._memento = head.getMemento();
-                this._note.removeChild(head);
+            execute(app: ScoreApplication.IScoreApplication) {
+                var head = this.args.head;
+                this.note = head.parent;
+                this.memento = head.getMemento();
+                this.note.removeChild(head);
             }
 
-            Undo(app: ScoreApplication.ScoreApplication) {
-                MusicElementFactory.RecreateElement(this._note, this._memento);
+            undo(app: ScoreApplication.IScoreApplication) {
+                MusicElementFactory.recreateElement(this.note, this.memento);
             }
         }
 
-        export class SetVoiceStemDirectionCommand implements ScoreCommand {
+        export class SetVoiceStemDirectionCommand implements IScoreCommand {
             constructor(private args: { voice: IVoice; direction: StemDirectionType; }) { }
 
-            private _oldDirection: Model.StemDirectionType;
+            private oldDirection: Model.StemDirectionType;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var direction = this.args.direction;
                 var voice = this.args.voice;
-                this._oldDirection = voice.getStemDirection();
+                this.oldDirection = voice.getStemDirection();
                 voice.setStemDirection(direction);                
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
+            public undo(app: ScoreApplication.IScoreApplication) {
                 var voice = this.args.voice;
-                voice.setStemDirection(this._oldDirection);
+                voice.setStemDirection(this.oldDirection);
             }   
         }
 
-        export class SetNoteStemDirectionCommand implements ScoreCommand {
+        export class SetNoteStemDirectionCommand implements IScoreCommand {
             constructor(private args: { note: INote; direction: any; }) { }
 
             /* args:
             note
             direction ['UP','DOWN','FREE']
             */
-            private _oldDirection: Model.StemDirectionType;
+            private oldDirection: Model.StemDirectionType;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var direction = this.args.direction;
-                var note = <INote>this.args.note;
+                var note = this.args.note;
 
-                this._oldDirection = note.getStemDirection();
+                this.oldDirection = note.getStemDirection();
 
                 if (typeof (direction) === "number") {
                     note.setStemDirection(<Model.StemDirectionType>direction);
                 }
                 else if (direction === "UP") {
-                    note.setStemDirection(Model.StemDirectionType.stemUp);
+                    note.setStemDirection(StemDirectionType.StemUp);
                 }
                 else if (direction === "DOWN") {
-                    note.setStemDirection(Model.StemDirectionType.stemDown);
+                    note.setStemDirection(StemDirectionType.StemDown);
                 }
                 else {
-                    note.setStemDirection(Model.StemDirectionType.stemFree);
+                    note.setStemDirection(StemDirectionType.StemFree);
                 }
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
-                var note = <INote>this.args.note;
-                note.setStemDirection(this._oldDirection);
+            public undo(app: ScoreApplication.IScoreApplication) {
+                var note = this.args.note;
+                note.setStemDirection(this.oldDirection);
             }       
         }
 
-        export interface NoteDurationArgs {
+        export interface INoteDurationArgs {
             note: INote;
             noteId: string;
             timeVal: TimeSpan;
             dots: number;
             tuplet?: TupletDef;
         }
-        export class SetNoteDurationCommand implements ScoreCommand {
-            constructor(private args: NoteDurationArgs) { }
+        export class SetNoteDurationCommand implements IScoreCommand {
+            constructor(private args: INoteDurationArgs) { }
 
-            private oldDuration: NoteDurationArgs;
+            private oldDuration: INoteDurationArgs;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var note = this.args.note;
                 this.oldDuration = {
                     note: note,
-                    noteId: note.noteId,
+                    noteId: note.NoteId,
                     timeVal: note.timeVal,
                     dots: note.dotNo,
                     tuplet: note.tupletDef
-                };
-                note.noteId = this.args.noteId;
+                }
+                note.NoteId = this.args.noteId;
                 note.timeVal = this.args.timeVal;
                 note.tupletDef = this.args.tuplet;
                 note.dotNo = this.args.dots;
                 note.setSpacingInfo(undefined);
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
+            public undo(app: ScoreApplication.IScoreApplication) {
                 var note = this.args.note;
-                note.noteId = this.oldDuration.noteId;
+                note.NoteId = this.oldDuration.noteId;
                 note.timeVal = this.oldDuration.timeVal;
                 note.tupletDef = this.oldDuration.tuplet;
                 note.dotNo = this.oldDuration.dots;
@@ -217,12 +342,12 @@
             }
         }
 
-        export class AddNoteheadCommand implements ScoreCommand {
-            constructor(private args: { note: Model.INote; pitch: Model.Pitch; }) { }
+        export class AddNoteheadCommand implements IScoreCommand {
+            constructor(private args: { note: INote; pitch: Pitch; }) { }
 
             //private noteMemento: IMemento;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var pitch = this.args.pitch;
                 var note = this.args.note;
                 //this.noteMemento = note.getMemento();
@@ -230,7 +355,7 @@
                 note.setPitch(pitch);
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
+            public undo(app: ScoreApplication.IScoreApplication) {
                 var note = this.args.note;
                 var pitch = this.args.pitch;
                 /*note.parent.removeChild(note); // todo: what if other commands in undo stack refer to note?
@@ -246,13 +371,13 @@
             }
         }
 
-        export class RemoveNoteheadCommand implements ScoreCommand {
-            constructor(private args: { head: Model.INotehead; }) { }
+        export class RemoveNoteheadCommand implements IScoreCommand {
+            constructor(private args: { head: INotehead; }) { }
 
             private head: INotehead;
             private note: INote;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var head = this.args.head;
                 var note = head.parent;
                 var voice = note.parent;
@@ -265,7 +390,7 @@
                 }
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
+            public undo(app: ScoreApplication.IScoreApplication) {
                 if (this.head) {
                     this.note.addChild(this.note.noteheadElements, this.head);
                     this.note.setRest(this.note.noteheadElements.length === 0);
@@ -277,24 +402,24 @@
             head: INotehead;
             pitch: Pitch;
         }
-        export class SetPitchCommand implements ScoreCommand {
+        export class SetPitchCommand implements IScoreCommand {
             constructor(private args: ISetPitchCommand) { }
 
             private oldPitch: Pitch;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 this.oldPitch = this.args.head.pitch;
                 this.args.head.pitch.pitch = this.args.pitch.pitch;
                 this.args.head.pitch.alteration = this.args.pitch.alteration;
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {                 
+            public undo(app: ScoreApplication.IScoreApplication) {                 
                 this.args.head.pitch.pitch = this.oldPitch.pitch;
                 this.args.head.pitch.alteration = this.oldPitch.alteration;
             }
         }
 
-        export class RaisePitchAlterationCommand implements ScoreCommand {
+        export class RaisePitchAlterationCommand implements IScoreCommand {
             constructor(private args: { head: INotehead; absAlteration?: string; deltaAlteration?: number }) { }
 
             /* args:
@@ -304,7 +429,7 @@
             private oldAlteration: string;
 
             // execute
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var head = this.args.head;
                 this.oldAlteration = head.pitch.alteration;
                 if (this.args.deltaAlteration) {
@@ -315,32 +440,32 @@
                 }
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
+            public undo(app: ScoreApplication.IScoreApplication) {
                 var head = this.args.head;
                 head.pitch.alteration = this.oldAlteration;
             }
         }
 
-        export class AddNoteDecorationCommand implements ScoreCommand {
+        export class AddNoteDecorationCommand implements IScoreCommand {
             constructor(private args: { note: INote; expression: NoteDecorationKind; placement: string; }) { }
 
             private theDeco: INoteDecorationElement;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var note = this.args.note;
-                this.theDeco = new Model.NoteDecorationElement(note, this.args.expression);
+                this.theDeco = new NoteDecorationElement(note, this.args.expression);
                 this.theDeco.placement = this.args.placement;
                 note.addChild(note.decorationElements, this.theDeco);
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
+            public undo(app: ScoreApplication.IScoreApplication) {
                 var note = this.args.note;
                 note.removeChild(this.theDeco, note.decorationElements);
             }
         }
 
 
-        export class UpdateStaffCommand implements ScoreCommand {
+        export class UpdateStaffCommand implements IScoreCommand {
             constructor(
                 private args: {
                     staff: IStaff;
@@ -359,9 +484,9 @@
             */
             private oldIndex: number;
             private oldTitle: string;
-            private oldClef: Model.ClefDefinition;
+            private oldClef: ClefDefinition;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var staff = this.args.staff;
                 this.oldTitle = staff.title;
                 this.oldIndex = staff.parent.staffElements.indexOf(staff);
@@ -369,17 +494,17 @@
                     staff.title = this.args.title;
                 }
                 // staff order
-                ScoreElement.PlaceInOrder(app.document, staff, this.args.index);
+                ScoreElement.placeInOrder(app.document, staff, this.args.index);
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
+            public undo(app: ScoreApplication.IScoreApplication) {
                 var staff = this.args.staff;
                 staff.title = this.oldTitle;
-                ScoreElement.PlaceInOrder(app.document, staff, this.oldIndex);
+                ScoreElement.placeInOrder(app.document, staff, this.oldIndex);
             }
         }
 
-        export class NewStaffCommand implements ScoreCommand {
+        export class NewStaffCommand implements IScoreCommand {
             constructor(private args: {
                 index: number;
                 title: string;
@@ -395,21 +520,21 @@
 
             private theStaff: IStaff;
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var initClef = this.args.initClef;
                 this.theStaff = app.document.addStaff(initClef);
                 this.theStaff.title = this.args.title;
                 this.theStaff.addVoice();
-                ScoreElement.PlaceInOrder(app.document, this.theStaff, this.args.index);
+                ScoreElement.placeInOrder(app.document, this.theStaff, this.args.index);
             }
 
-            public Undo(app: ScoreApplication.ScoreApplication) {
+            public undo(app: ScoreApplication.IScoreApplication) {
                 this.theStaff.parent.removeChild(this.theStaff, this.theStaff.parent.staffElements);
             }
         }
 
 
-        export class TieNoteheadCommand implements ScoreCommand {
+        export class TieNoteheadCommand implements IScoreCommand {
             constructor(private args: {
                 head: INotehead;
                 forced?: boolean;
@@ -424,7 +549,7 @@
             toggle
             */
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var head = this.args.head;
                 var forced = this.args.forced || false;
                 var remove = this.args.remove || (this.args.toggle && head.tie);
@@ -441,7 +566,7 @@
             }
         }
 
-        export class TieNoteCommand implements ScoreCommand {
+        export class TieNoteCommand implements IScoreCommand {
             constructor(private args: {
                 note: INote;
                 forced?: boolean;
@@ -456,7 +581,7 @@
             toggle
             */
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var note = this.args.note;
                 var forced = this.args.forced || false;
                 note.withHeads((head: INotehead, index: number) => {
@@ -474,7 +599,7 @@
             }
         }
 
-        export class SetMeterCommand implements ScoreCommand {
+        export class SetMeterCommand implements IScoreCommand {
             constructor(private args: any) { }
 
             /* args:
@@ -483,7 +608,7 @@
             staff?
             */
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 var meter = <IMeterDefinition>this.args.meter;
                 var absTime = <AbsoluteTime>this.args.absTime;
                 var staff = <IStaff>this.args.staff;
@@ -498,7 +623,7 @@
             }
         }
 
-        export class SetKeyCommand implements ScoreCommand { // todo: KeyDefinition
+        export class SetKeyCommand implements IScoreCommand { // todo: KeyDefinition
             constructor(private args: {
                 key: IKeyDefinition;
                 absTime: AbsoluteTime;
@@ -511,7 +636,7 @@
             staff?
             */
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 if (this.args.staff) {
                     // staff key
                     this.args.staff.setKey(this.args.key, this.args.absTime);
@@ -523,7 +648,7 @@
             }
         }
 
-        export class SetClefCommand implements ScoreCommand {
+        export class SetClefCommand implements IScoreCommand {
             constructor(private args: {
                 clef: ClefDefinition;
                 absTime: AbsoluteTime;
@@ -536,7 +661,7 @@
             staff
             */
 
-            public Execute(app: ScoreApplication.ScoreApplication) {
+            public execute(app: ScoreApplication.IScoreApplication) {
                 this.args.staff.setClef(this.args.clef, this.args.absTime);
             }
         }

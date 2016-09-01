@@ -4,7 +4,7 @@
 /// <reference path="jMusicScore.Spacing.ts"/>
 /// <reference path="emmentaler.ts"/>
 /// <reference path="commands.ts"/>
-module jMusicScore {
+module JMusicScore {
 
     /*
     Eksport: format
@@ -103,31 +103,31 @@ module jMusicScore {
         }
 
         class LilypondReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
 
-            GetId(): string {
+            getId(): string {
                 return "LilypondReader";
             }
 
-            GetFormats(): string[]{
+            getFormats(): string[]{
                 return [
                     "Lilypond"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "Lilypond";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "ly";
             }
 
-            public Load(data: any) {
+            public load(data: any) {
                 // parse data
             }
         }
@@ -139,29 +139,29 @@ module jMusicScore {
             }
 
             //private doc;
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
+            init(app: ScoreApplication.IScoreApplication) { this.app = app; }
 
-            GetId(): string {
+            getId(): string {
                 return "LilypondWriter";
             }
 
-            GetFormats(): string[] {
+            getFormats(): string[] {
                 return [
                     "Lilypond"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "Lilypond";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "ly";
             }
 
-            public Save() {
+            public save() {
                 return this.getAsLilypond();
             }
 
@@ -212,30 +212,30 @@ module jMusicScore {
             }
 
             private getClefAsLilypond(clef: Model.IClef): string {
-                var def = clef.definition;
-                var c = def.clefName() + def.clefLine;
-                var clefName = "unknown";
-                switch (c) {
+                        var def = clef.definition;
+                        var c = def.clefName() + def.clefLine;
+                        var clefName = "unknown";
+                        switch (c) {
                     case "g4": clefName = 'treble'; break;
-                    case "g5": clefName = 'french'; break;
+                            case "g5": clefName = 'french'; break;
 
-                    case "f1": clefName = 'subbass'; break;
-                    case "f2": clefName = 'bass'; break;
-                    case "f3": clefName = 'varbaritone'; break;
+                            case "f1": clefName = 'subbass'; break;
+                            case "f2": clefName = 'bass'; break;
+                            case "f3": clefName = 'varbaritone'; break;
 
-                    case "c1": clefName = 'baritone'; break;
-                    case "c2": clefName = 'tenor'; break;
-                    case "c3": clefName = 'alto'; break;
-                    case "c4": clefName = 'mezzosoprano'; break;
-                    case "c5": clefName = 'soprano'; break;
-                    //default: alert(c);
-                }
-                if (def.transposition > 0) {
-                    clefName += '^' + (def.transposition + 1)
-                }
-                else if (def.transposition < 0) {
-                    clefName += '_' + (-def.transposition + 1)
-                }
+                            case "c1": clefName = 'baritone'; break;
+                            case "c2": clefName = 'tenor'; break;
+                            case "c3": clefName = 'alto'; break;
+                            case "c4": clefName = 'mezzosoprano'; break;
+                            case "c5": clefName = 'soprano'; break;
+                            //default: alert(c);
+                        }
+                        if (def.transposition > 0) {
+                            clefName += '^' + (def.transposition + 1)
+                        }
+                        else if (def.transposition < 0) {
+                            clefName += '_' + (-def.transposition + 1)
+                        }
                 return '\t\\clef "' + clefName + '" \n';
             }
 
@@ -258,7 +258,7 @@ module jMusicScore {
             private getNoteAsLilypond(note: Model.INote): string {
                 var res = "";
                 if (note.graceType) res += '\\grace ';
-                if (note.noteId === "hidden") {
+                if (note.NoteId === "hidden") {
                     res += "s";
                 }
                 else if (note.rest) {
@@ -289,16 +289,16 @@ module jMusicScore {
 
 
 
-        export class LilypondPlugin implements ScoreApplication.ScorePlugin {
+        export class LilypondPlugin implements ScoreApplication.IScorePlugin {
             constructor() {
             }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
-                app.AddReader(new LilypondReader());
-                app.AddWriter(new LilypondWriter());
+            public init(app: ScoreApplication.IScoreApplication) {
+                app.addReader(new LilypondReader());
+                app.addWriter(new LilypondWriter());
             }
 
-            GetId() {
+            getId() {
                 return "Lilypond";
             }
         }

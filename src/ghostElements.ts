@@ -1,6 +1,4 @@
-﻿/// <reference path="jMusicScore.ts"/>
-/// <reference path="jMusicScore.Views.ts"/>
-module jMusicScore {
+﻿module JMusicScore {
     export module GhostElements {
         
         export class GhostMeterElement extends Model.MusicElement<Model.IMeterSpacingInfo> implements Model.IMeter {
@@ -31,8 +29,8 @@ module jMusicScore {
             public nextBar(abstime: Model.AbsoluteTime): Model.AbsoluteTime {
                 return this.originElement.nextBar(abstime);
             }
-            public InviteVisitor(spacer: Model.IVisitor) {
-                spacer.VisitMeter(this, this.spacingInfo);
+            public inviteVisitor(spacer: Model.IVisitor) {
+                spacer.visitMeter(this, this.spacingInfo);
             }
             getHorizPosition(): Model.HorizPosition { return this.originElement.getHorizPosition(); }
             getVoice(): Model.IVoice { return null; }
@@ -41,7 +39,7 @@ module jMusicScore {
 
         //export class GhostVoiceElement { }
 
-        export class GhostsValidator implements Model.ScoreValidator {
+        export class GhostsValidator implements Model.IScoreValidator {
             private addGhostMeter(staff: Model.IStaff, meter: Model.IMeter) {
                 // tjek om der er ghostMeter til denne kombination af meter og staff
                 var ghostMeter = new GhostMeterElement(staff, meter);
@@ -49,7 +47,7 @@ module jMusicScore {
                 staff.addChild(staff.meterElements, ghostMeter);
             }
 
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.IScoreApplication) {
 
                 app.document.withStaves((staff: Model.IStaff, index: number): void => {
 
@@ -66,7 +64,7 @@ module jMusicScore {
                         var found = false;
                         staff.withMeters((staffMeter: Model.IMeter, index: number) => {
                             //if ((<any>staffMeter).originElement && (<any>staffMeter).originElement === scoreMeter) {
-                            if (staffMeter.absTime.Eq(scoreMeter.absTime)) {
+                            if (staffMeter.absTime.eq(scoreMeter.absTime)) {
                                 found = true;
                             }
                         });

@@ -1,10 +1,4 @@
-﻿/// <reference path="jMusicScore.ts"/>
-/// <reference path="application.ts"/>
-/// <reference path="jMusicScore.UI.ts"/>
-/// <reference path="jMusicScore.Spacing.ts"/>
-/// <reference path="emmentaler.ts"/>
-/// <reference path="commands.ts"/>
-module jMusicScore {
+﻿module JMusicScore {
     export module MusicXml {
 
 
@@ -28,7 +22,7 @@ module jMusicScore {
         */
 
         class MusicXmlHelper {
-            static noteTypes: { [Index: string]: string } = {
+            static noteTypes: { [index: string]: string } = {
                 "1024th": "1_1024",
                 "512th": "1_512",
                 "256th": "1_256",
@@ -44,7 +38,7 @@ module jMusicScore {
                 "long": "4_1",
                 "maxima": "8_1"
             };
-            static noteTimes: { [Index: string]: Model.TimeSpan } = {
+            static noteTimes: { [index: string]: Model.TimeSpan } = {
                 "1_1024": new Model.TimeSpan(1, 1024), 
                 "1_512": new Model.TimeSpan(1, 512), 
                 "1_256": new Model.TimeSpan(1, 256), 
@@ -61,10 +55,10 @@ module jMusicScore {
                 "8_1": new Model.TimeSpan(8, 1)
             };
 
-            static NoteTypeToName(type: string): string {
+            static noteTypeToName(type: string): string {
                 return this.noteTypes[type];
             }
-            static NoteNameToType(name: string): string {
+            static noteNameToType(name: string): string {
                 for (var type in this.noteTypes) {
                     if ("n" + this.noteTypes[type] === name) {
                         return type;
@@ -72,7 +66,7 @@ module jMusicScore {
                 }
                 return null;
             }
-            static NoteNameToDuration(name: string): Model.TimeSpan {
+            static noteNameToDuration(name: string): Model.TimeSpan {
                 return this.noteTimes[name];
             }
         }
@@ -99,18 +93,18 @@ module jMusicScore {
             forward(time: Model.TimeSpan, duration: number) {
                 if (duration) {
                     this.measureDuration += duration;
-                    if (new Model.TimeSpan(this.measureDuration, this.divisions*4).Eq(this.measureTime))
+                    if (new Model.TimeSpan(this.measureDuration, this.divisions*4).eq(this.measureTime))
                         return; // some implementations of tuplets inserts <forward> after tuplets with imprecise durations to synchronize time
                 }
                 if (time) {
-                    this.absTime = this.absTime.Add(time);
-                    this.measureTime = this.measureTime.Add(time);
+                    this.absTime = this.absTime.add(time);
+                    this.measureTime = this.measureTime.add(time);
                 }
             }
             backward(time: Model.TimeSpan, duration: number) {
                 if (time) {
-                    this.absTime = this.absTime.Sub(time);
-                    this.measureTime = this.measureTime.Sub(time);
+                    this.absTime = this.absTime.sub(time);
+                    this.measureTime = this.measureTime.sub(time);
                 }
                 if (duration) this.measureDuration -= duration;
             }
@@ -128,27 +122,27 @@ module jMusicScore {
         }
 
         class MusicXmlReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
 
-            GetId(): string {
+            getId(): string {
                 return "MusicXMLReader";
             }
 
-            GetFormats(): string[]{
+            getFormats(): string[]{
                 return [
                     "MusicXML"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "MusicXML";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "xml";
             }
 
@@ -174,7 +168,7 @@ module jMusicScore {
 
             private slurs: { note: Model.INote; placement: string; }[] = [];
 
-            private ImportNote(elm: Element, context: ImportContext): void {
+            private importNote(elm: Element, context: ImportContext): void {
                 var voiceNo = parseInt(MusicXmlReader.getChildValue(elm, "voice", "1")) - 1;
 
                 var staffNo = parseInt(MusicXmlReader.getChildValue(elm, "staff", "1"));
@@ -205,11 +199,11 @@ module jMusicScore {
                 });
                 //var dots = elm.getElementsByTagName("dot").length;
 
-                var noteName = MusicXmlHelper.NoteTypeToName(MusicXmlReader.getChildValue(elm, "type", "whole"));
+                var noteName = MusicXmlHelper.noteTypeToName(MusicXmlReader.getChildValue(elm, "type", "whole"));
                 if (noteName == undefined) {
                     alert("");
                 }
-                var noteTime = MusicXmlHelper.NoteNameToDuration(noteName);
+                var noteTime = MusicXmlHelper.noteNameToDuration(noteName);
 
                 if (rest) {
                     var restElm = <Element>elm.getElementsByTagName("rest")[0];
@@ -218,11 +212,11 @@ module jMusicScore {
                     if (measureRest) {
                         noteName = "1_1";
                     }
-                    noteTime = new Model.TimeSpan(duration, 4 * context.divisions).Reduce();
+                    noteTime = new Model.TimeSpan(duration, 4 * context.divisions).reduce();
                     switch (dots) {
-                        case 1: noteTime = noteTime.MultiplyRational(new Model.Rational(2, 3)); break;
-                        case 2: noteTime = noteTime.MultiplyRational(new Model.Rational(4, 9)); break;
-                        case 3: noteTime = noteTime.MultiplyRational(new Model.Rational(8, 27)); break;
+                        case 1: noteTime = noteTime.multiplyRational(new Model.Rational(2, 3)); break;
+                        case 2: noteTime = noteTime.multiplyRational(new Model.Rational(4, 9)); break;
+                        case 3: noteTime = noteTime.multiplyRational(new Model.Rational(8, 27)); break;
                     }
                 }
 
@@ -253,7 +247,7 @@ module jMusicScore {
                     note = voice.noteElements[voice.noteElements.length - 1];
                 }
                 else {
-                    note = Model.Music.AddNote(voice, rest ? Model.NoteType.rest : Model.NoteType.note, context.absTime, 'n' + noteName, noteTime, null, true, dots, tupletdef);
+                    note = Model.Music.addNote(voice, rest ? Model.NoteType.Rest : Model.NoteType.Note, context.absTime, 'n' + noteName, noteTime, null, true, dots, tupletdef);
                     /*new Model.NoteElement(null, 'n' + noteName, noteTime);
                     note.setParent(voice);
                     note.setRest(rest);
@@ -273,7 +267,7 @@ module jMusicScore {
                 var notations = elm.getElementsByTagName("notations"); // todo: to checkNotations
                 if (notations.length) {
                     var notation = <Element>notations[0];
-                    this.ImportSlurs(notation, note);
+                    this.importSlurs(notation, note);
                 }
 
                 if (!chord) {
@@ -291,8 +285,8 @@ module jMusicScore {
                     note.addChild(note.syllableElements, syllElm);
                 }
 
-                if (direction === "down") { note.setStemDirection(Model.StemDirectionType.stemDown); }
-                else if (direction === "up") { note.setStemDirection(Model.StemDirectionType.stemUp); }
+                if (direction === "down") { note.setStemDirection(Model.StemDirectionType.StemDown); }
+                else if (direction === "up") { note.setStemDirection(Model.StemDirectionType.StemUp); }
 
                 for (var i = 0; i < pitches.length; i++) {
                     var p = note.setPitch(pitches[i]);
@@ -326,30 +320,30 @@ module jMusicScore {
                                 if (note.tagName) {
                                     var decoDefs = <{ [index: string]: { type: string; code: Model.NoteDecorationKind } }>{
                                         //articulations 
-                                        'staccato': { type: 'short', code: Model.NoteDecorationKind.staccato },
-                                        'staccatissimo': { type: 'short', code: Model.NoteDecorationKind.staccatissimo },
-                                        'accent': { type: 'short', code: Model.NoteDecorationKind.marcato },
-                                        'strong-accent': { type: 'short', code: Model.NoteDecorationKind.sforzato }, // eller omvendt?
-                                        'tenuto': { type: 'short', code: Model.NoteDecorationKind.tenuto },
-                                        'detached-legato': { type: 'short', code: Model.NoteDecorationKind.portato },
+                                        'staccato': { type: 'short', code: Model.NoteDecorationKind.Staccato },
+                                        'staccatissimo': { type: 'short', code: Model.NoteDecorationKind.Staccatissimo },
+                                        'accent': { type: 'short', code: Model.NoteDecorationKind.Marcato },
+                                        'strong-accent': { type: 'short', code: Model.NoteDecorationKind.Sforzato }, // eller omvendt?
+                                        'tenuto': { type: 'short', code: Model.NoteDecorationKind.Tenuto },
+                                        'detached-legato': { type: 'short', code: Model.NoteDecorationKind.Portato },
                                         //'spiccato' 'scoop' 'plop' 'doit''falloff'
-                                        'breath-mark': { type: 'short', code: Model.NoteDecorationKind.rcomma }, //todo:?
-                                        'caesura': { type: 'short', code: Model.NoteDecorationKind.caesura },
+                                        'breath-mark': { type: 'short', code: Model.NoteDecorationKind.Rcomma }, //todo:?
+                                        'caesura': { type: 'short', code: Model.NoteDecorationKind.Caesura },
                                         /*'stress': { type: 'short', code: Model.NoteDecorationKind.staccatissimo },
                                         'unstress': { type: 'short', code: Model.NoteDecorationKind.staccatissimo },
                                         'other-articulation': { type: 'short', code: Model.NoteDecorationKind.staccatissimo },*/
 
                                         // technical: 
-                                        'up-bow': { type: 'short', code: Model.NoteDecorationKind.upbow },
-                                        'down-bow': { type: 'short', code: Model.NoteDecorationKind.downbow },
+                                        'up-bow': { type: 'short', code: Model.NoteDecorationKind.Upbow },
+                                        'down-bow': { type: 'short', code: Model.NoteDecorationKind.Downbow },
                                         //'harmonic': { type: 'short', code: Model.NoteDecorationKind. },
-                                        'open-string': { type: 'short', code: Model.NoteDecorationKind.open },
+                                        'open-string': { type: 'short', code: Model.NoteDecorationKind.Open },
                                         //'thumb-position': { type: 'short', code: Model.NoteDecorationKind.upbow },
                                         //'fingering': { type: 'short', code: Model.NoteDecorationKind.upbow },
                                         //'pluck': { type: 'short', code: Model.NoteDecorationKind.upbow },
                                         //  'double-tongue': { type: 'short', code: Model.NoteDecorationKind.upbow },
                                         //'triple-tongue': { type: 'short', code: Model.NoteDecorationKind.upbow },
-                                        'stopped': { type: 'short', code: Model.NoteDecorationKind.stopped },
+                                        'stopped': { type: 'short', code: Model.NoteDecorationKind.Stopped },
                                         //'snap-pizzicato': { type: 'short', code: Model.NoteDecorationKind. },
                                         //'fret': { type: 'short', code: Model.NoteDecorationKind.upbow },
                                         //'string': { type: 'short', code: Model.NoteDecorationKind.upbow },
@@ -357,8 +351,8 @@ module jMusicScore {
                                         //'pull-off': { type: 'short', code: Model.NoteDecorationKind.upbow },
                                         //'bend': { type: 'short', code: Model.NoteDecorationKind.upbow },
                                         //'tap': { type: 'short', code: Model.NoteDecorationKind.upbow },
-                                        'heel': { type: 'short', code: Model.NoteDecorationKind.pedalheel },
-                                        'toe': { type: 'short', code: Model.NoteDecorationKind.pedaltoe },
+                                        'heel': { type: 'short', code: Model.NoteDecorationKind.Pedalheel },
+                                        'toe': { type: 'short', code: Model.NoteDecorationKind.Pedaltoe },
                                         /*'fingernails': { type: 'short', code: Model.NoteDecorationKind.upbow },
                                     'hole': { type: 'short', code: Model.NoteDecorationKind.upbow },
                                         'arrow': { type: 'short', code: Model.NoteDecorationKind.upbow },
@@ -366,18 +360,18 @@ module jMusicScore {
                                         'other-technical': { type: 'short', code: Model.NoteDecorationKind.upbow },*/
 
                                         // ornaments:
-                                        'trill-mark': { type: 'short', code: Model.NoteDecorationKind.trill },
-                                        'turn': { type: 'short', code: Model.NoteDecorationKind.turn },
-                                        'delayed-turn': { type: 'short', code: Model.NoteDecorationKind.turn },// todo:
-                                        'inverted-turn': { type: 'short', code: Model.NoteDecorationKind.reverseturn },
-                                        'delayed-inverted-turn': { type: 'short', code: Model.NoteDecorationKind.reverseturn },// todo:
-                                        'vertical-turn': { type: 'short', code: Model.NoteDecorationKind.turn }, // todo:
-                                        'shake': { type: 'short', code: Model.NoteDecorationKind.turn },// todo:
-                                        'wavy-line': { type: 'short', code: Model.NoteDecorationKind.turn },//todo:
-                                        'mordent': { type: 'short', code: Model.NoteDecorationKind.mordent },
-                                        'inverted-mordent': { type: 'short', code: Model.NoteDecorationKind.prall },
-                                        'schleifer': { type: 'short', code: Model.NoteDecorationKind.turn }, //?
-                                        'tremolo': { type: 'short', code: Model.NoteDecorationKind.turn }, //?
+                                        'trill-mark': { type: 'short', code: Model.NoteDecorationKind.Trill },
+                                        'turn': { type: 'short', code: Model.NoteDecorationKind.Turn },
+                                        'delayed-turn': { type: 'short', code: Model.NoteDecorationKind.Turn },// todo:
+                                        'inverted-turn': { type: 'short', code: Model.NoteDecorationKind.Reverseturn },
+                                        'delayed-inverted-turn': { type: 'short', code: Model.NoteDecorationKind.Reverseturn },// todo:
+                                        'vertical-turn': { type: 'short', code: Model.NoteDecorationKind.Turn }, // todo:
+                                        'shake': { type: 'short', code: Model.NoteDecorationKind.Turn },// todo:
+                                        'wavy-line': { type: 'short', code: Model.NoteDecorationKind.Turn },//todo:
+                                        'mordent': { type: 'short', code: Model.NoteDecorationKind.Mordent },
+                                        'inverted-mordent': { type: 'short', code: Model.NoteDecorationKind.Prall },
+                                        'schleifer': { type: 'short', code: Model.NoteDecorationKind.Turn }, //?
+                                        'tremolo': { type: 'short', code: Model.NoteDecorationKind.Turn }, //?
 
                                     };
                                     var decoDef = decoDefs[note.tagName];
@@ -400,19 +394,19 @@ module jMusicScore {
                         else if (tag === 'arpeggiate') {
                             //var dir = def.attributes.getNamedItem('direction');
                             if (MusicXmlReader.getAttributeValue(def, 'direction') === "down")
-                                res.decos.push(Model.NoteDecorationKind.arpeggioDown);
+                                res.decos.push(Model.NoteDecorationKind.ArpeggioDown);
                             else
-                                res.decos.push(Model.NoteDecorationKind.arpeggio);
+                                res.decos.push(Model.NoteDecorationKind.Arpeggio);
                         }
                         else if (tag === 'non-arpeggiate') {
-                            res.decos.push(Model.NoteDecorationKind.nonArpeggio);
+                            res.decos.push(Model.NoteDecorationKind.NonArpeggio);
                         }
                         else if (tag === 'glissando') {
                         } else if (tag === 'slide') {
                         } else if (tag === 'dynamics') {
                         } else if (tag === 'fermata') {
                             var type = MusicXmlReader.getAttributeValue(def, 'type');
-                            res.decos.push(Model.NoteDecorationKind.fermata);
+                            res.decos.push(Model.NoteDecorationKind.Fermata);
                         } else if (tag === 'accidental-mark') {
                         }
                     }
@@ -421,7 +415,7 @@ module jMusicScore {
                 return res;
             }
 
-            private ImportSlurs(notation: Element, note: Model.INote) {
+            private importSlurs(notation: Element, note: Model.INote) {
                 if (notation) {
                     var slurElements = notation.getElementsByTagName("slur");
                     for (var i = 0; i < slurElements.length; i++) {
@@ -442,8 +436,8 @@ module jMusicScore {
                         else if (slurType === 'stop') {
                             var fromSlur = this.slurs[slurNumber];
                             if (fromSlur) { // todo: slurs kan godt gå fra en senere defineret stemme til denne node
-                                var fromNote = <Model.INote>fromSlur.note;
-                                var nd = new Model.NoteLongDecorationElement(fromNote, note.absTime.Diff(fromNote.absTime), Model.LongDecorationType.slur);
+                                var fromNote = fromSlur.note;
+                                var nd = new Model.NoteLongDecorationElement(fromNote, note.absTime.diff(fromNote.absTime), Model.LongDecorationType.Slur);
                                 nd.placement = fromSlur.placement;
                                 fromNote.addChild(fromNote.longDecorationElements, nd);
                             }
@@ -452,7 +446,7 @@ module jMusicScore {
                 }
             }
 
-            private ImportPartwise(doc: XMLDocument) {
+            private importPartwise(doc: XMLDocument) {
                 var parts = doc.getElementsByTagName("part");
                 var context = new ImportContext();
                 for (var i = 0; i < parts.length; i++) {
@@ -470,24 +464,24 @@ module jMusicScore {
                         context.newMeasure();
                         var measure = <Element>measures[j];
                         var measureNo = MusicXmlReader.getAttributeValue(measure, 'number');
-                        var lastBarTime = context.absTime.Diff(absTimeLastBar);
+                        var lastBarTime = context.absTime.diff(absTimeLastBar);
 
                         var staffContext = staff.getStaffContext(absTimeLastBar);
                         if (staffContext.meter && j > 0) {
                             // Check whether last bar time is equal to meter time
                             var nextBar = staffContext.meter.nextBar(absTimeLastBar);
-                            if (!nextBar.Eq(context.absTime)) {
+                            if (!nextBar.eq(context.absTime)) {
                                 if (j === 1) {
                                     // Create offset meter in last bar
                                     var defi = <Model.RegularMeterDefinition>staffContext.meter.definition;
-                                    this.app.document.setMeter(new Model.OffsetMeterDefinition(defi.numerator, defi.denominator, context.absTime.Diff(absTimeLastBar)), absTimeLastBar);
+                                    this.app.document.setMeter(new Model.OffsetMeterDefinition(defi.numerator, defi.denominator, context.absTime.diff(absTimeLastBar)), absTimeLastBar);
                                     staffContext = staff.getStaffContext(absTimeLastBar);
                                     nextBar = staffContext.meter.nextBar(absTimeLastBar);
                                 }
                                 else {
                                     context.absTime = nextBar;// todo: check
                                 }
-                                if (!nextBar.Eq(context.absTime)) {
+                                if (!nextBar.eq(context.absTime)) {
                                     alert("problem!");
                                 }
                             }
@@ -524,13 +518,13 @@ module jMusicScore {
                                         clefTransposition *= 7;
                                         var clefLine = 1;
                                         if (context.clef[iClef + 1].line) clefLine = 6 - context.clef[iClef + 1].line;
-                                        var clefDef = new Model.ClefDefinition(Model.ClefDefinition.ClefNameToType(clef), clefLine, clefTransposition);
+                                        var clefDef = new Model.ClefDefinition(Model.ClefDefinition.clefNameToType(clef), clefLine, clefTransposition);
                                         if (iClef >= context.partStaves.length) {
                                             context.partStaves.push(this.app.document.addStaff(clefDef));
                                         }
                                         else {
                                             var oldClef = context.partStaves[iClef].getStaffContext(context.absTime).clef;
-                                            if (!oldClef.definition.Eq(clefDef)) {
+                                            if (!oldClef.definition.eq(clefDef)) {
                                                 context.partStaves[iClef].setClef(clefDef, context.absTime);
                                             }
                                         }
@@ -579,7 +573,7 @@ module jMusicScore {
                                     context.forward(new Model.TimeSpan(duration, 4 * context.divisions), duration);
                                     break;
                                 case "note":
-                                    this.ImportNote(elm, context);
+                                    this.importNote(elm, context);
                                     break;
                                 case "directions":
                                     // todo: score expressions
@@ -620,14 +614,14 @@ module jMusicScore {
                 }
             }
 
-            public Load(data: any) {
+            public load(data: any) {
                 if (typeof (data) === "string") {
                     data = jQuery.parseXML(data);
                 }
 
                 // parse
                 if (data.documentElement.tagName === "score-partwise") {
-                    this.ImportPartwise(<XMLDocument>data);
+                    this.importPartwise(<XMLDocument>data);
                 }
                 else if (data.documentElement.tagName === "score-partwise") {
                 }
@@ -643,29 +637,29 @@ module jMusicScore {
             // todo: problems with attributes in bar 1 of Beethoven
             
             private doc: XMLDocument;
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
+            init(app: ScoreApplication.IScoreApplication) { this.app = app; }
 
-            GetId(): string {
+            getId(): string {
                 return "XMLWriter";
             }
 
-            GetFormats(): string[] {
+            getFormats(): string[] {
                 return [
                     "MusicXML"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "MusicXML";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "xml";
             }
 
-            public Save() {
+            public save() {
                 return this.getAsXml();
             }
 
@@ -732,7 +726,7 @@ module jMusicScore {
                     measure.setAttribute('number', "" + (i + 1));
 
                     var startTime = !i ? Model.AbsoluteTime.startTime : this.app.document.bars[i - 1].absTime;
-                    var endTime = i === this.app.document.bars.length - 1 ? Model.AbsoluteTime.Infinity : this.app.document.bars[i].absTime;
+                    var endTime = i === this.app.document.bars.length - 1 ? Model.AbsoluteTime.infinity : this.app.document.bars[i].absTime;
                     var events = staffElement.getEvents(startTime, endTime);
                     events.sort(Model.Music.compareEventsByVoice);
 
@@ -743,7 +737,7 @@ module jMusicScore {
                     for (var j = 0; j < events.length; j++) {
                         var event = events[j];
                         if (event.getElementName() === "Clef") {
-                            if (event.absTime.Eq(startTime)) {
+                            if (event.absTime.eq(startTime)) {
                                 updateClef = true;
                             }
                             else {
@@ -759,17 +753,17 @@ module jMusicScore {
                         }
                         else if (event.getElementName() === "Note") {
                             var note = <Model.INote>event;
-                            if (!note.absTime.Eq(absTime)) {
+                            if (!note.absTime.eq(absTime)) {
                                 // insert forward/back
-                                if (absTime.Gt(note.absTime)) {
+                                if (absTime.gt(note.absTime)) {
                                     var backupElm = this.addChildElement(measure, 'backup');
-                                    this.addChildElement(backupElm, 'duration', '' + (absTime.Diff(note.absTime)).MultiplyScalar(this.smallestDivision).numerator*4);// / 64);
+                                    this.addChildElement(backupElm, 'duration', '' + (absTime.diff(note.absTime)).multiplyScalar(this.smallestDivision).numerator*4);// / 64);
                                 }
                                 absTime = note.absTime;
                             }
 
                             this.addNote(measure, note);
-                            absTime = absTime.Add(note.getTimeVal());
+                            absTime = absTime.add(note.getTimeVal());
 
                             str += event.debug();
                         }
@@ -873,9 +867,9 @@ module jMusicScore {
                         tie = true;
                     }
                 }
-                this.addChildElement(noteXml, 'duration', "" + note.getTimeVal().MultiplyScalar(this.smallestDivision).numerator*4); // * this.smallestDivision / 64);
+                this.addChildElement(noteXml, 'duration', "" + note.getTimeVal().multiplyScalar(this.smallestDivision).numerator*4); // * this.smallestDivision / 64);
                     
-                var noteType = MusicXmlHelper.NoteNameToType(note.noteId);
+                var noteType = MusicXmlHelper.noteNameToType(note.NoteId);
                 if (noteType) {
                     this.addChildElement(noteXml, 'type', noteType);
                 }                    
@@ -894,11 +888,11 @@ module jMusicScore {
                 // stem         <stem>up</stem> down, up, none, or double
                 var stemDir = note.getStemDirection();
                 var stem: string = null;
-                if (stemDir === Model.StemDirectionType.stemUp)
+                if (stemDir === Model.StemDirectionType.StemUp)
                 {
                     stem = 'up';
                 }
-                else if (stemDir === Model.StemDirectionType.stemDown)
+                else if (stemDir === Model.StemDirectionType.StemDown)
                 {
                     stem = 'down';
                 }
@@ -919,7 +913,7 @@ module jMusicScore {
                 // lyric
                 if (note.syllableElements.length && !chord) {
                     var lyricXml = this.addChildElement(noteXml, 'lyric');
-                    this.addChildElement(lyricXml, 'text', note.syllableElements[0].text);
+                    this.addChildElement(lyricXml, 'text', note.syllableElements[0].Text);
                 }
 
                 // notations
@@ -966,14 +960,14 @@ module jMusicScore {
 
                 if (first) {
                     // divisions
-                    var divisions = this.S('divisions', "" + this.smallestDivision);
+                    var divisions = this.s('divisions', "" + this.smallestDivision);
                     attributes.appendChild(divisions);
                 }
                 // key
                 if (updateKey) {
                     var keyDef = staffContext.key;
                     var regularDefinition = <Model.RegularKeyDefinition>keyDef.definition; // todo: change when NonStandardKeyDefinition is implemented
-                    var key = this.S('key', this.S('fifths', "" + (regularDefinition.acci === 'b' ? -regularDefinition.number : regularDefinition.number)));
+                    var key = this.s('key', this.s('fifths', "" + (regularDefinition.acci === 'b' ? -regularDefinition.number : regularDefinition.number)));
                     attributes.appendChild(key);
                 }
 
@@ -982,7 +976,7 @@ module jMusicScore {
                     var timeDef = staffContext.meter;
                     var definition: any = timeDef.definition;
                     if (definition.numerator) {
-                        var time = this.S('time', this.S('beats', "" + definition.numerator), this.S('beat-type', "" + definition.denominator));
+                        var time = this.s('time', this.s('beats', "" + definition.numerator), this.s('beat-type', "" + definition.denominator));
                     attributes.appendChild(time);
                     } // todo: else?
                 }
@@ -990,13 +984,13 @@ module jMusicScore {
                 // clef
                 if (updateClef) {
                     var clefDef = staffContext.clef.definition;//MusicXmlWriter.clefDefs[staffContext.clef.clefCode];
-                    var clef = this.S('clef', this.S('sign', clefDef.clefName().toUpperCase()), this.S('line', 6 - clefDef.clefLine));
+                    var clef = this.s('clef', this.s('sign', clefDef.clefName().toUpperCase()), this.s('line', 6 - clefDef.clefLine));
                     attributes.appendChild(clef);
                 }
             }
 
             // function that creates the XML structure
-            public S(a: any, b: any = null, c: any = null) {
+            public s(a: any, b: any = null, c: any = null) {
                 var node = this.doc.createElement(arguments[0]), child: any;
 
                 for (var i = 1; i < arguments.length; i++) {
@@ -1017,16 +1011,16 @@ module jMusicScore {
 
 
 
-        export class MusicXmlPlugin implements ScoreApplication.ScorePlugin {
+        export class MusicXmlPlugin implements ScoreApplication.IScorePlugin {
             constructor() {
             }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
-                app.AddReader(new MusicXmlReader());
-                app.AddWriter(new MusicXmlWriter());
+            public init(app: ScoreApplication.IScoreApplication) {
+                app.addReader(new MusicXmlReader());
+                app.addWriter(new MusicXmlWriter());
             }
 
-            GetId() {
+            getId() {
                 return "MusicXml";
             }
         }

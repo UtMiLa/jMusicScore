@@ -85,23 +85,18 @@ declare namespace JQueryUI {
 
     interface ButtonOptions {
         disabled?: boolean;
-        //icons?: any;
         icon?: string;
         iconPosition?: string;
-        label?: string;
         showLabel?: boolean;
+        label?: string;
+        text?: string|boolean;
         click?: (event?: Event) => void;
     }
 
     interface Button extends Widget, ButtonOptions {
     }
 
-    interface CheckboxOptions {
-        classes?: { [key:string]: string };
-        disabled?: boolean;
-        icon?: boolean;
-        label?: string;
-        create?: (event: any, ui: any)=> any;
+    interface CheckboxRadioOptions {
     }
 
     // Datepicker //////////////////////////////////////////////////
@@ -1081,8 +1076,8 @@ interface JQuery {
     button(optionLiteral: string, optionName: string): any;
     button(optionLiteral: string, options: JQueryUI.ButtonOptions): any;
     button(optionLiteral: string, optionName: string, optionValue: any): JQuery;
-
-    checkboxradio(options: JQueryUI.CheckboxOptions): JQuery;
+    checkboxradio(options: JQueryUI.CheckboxRadioOptions): JQuery;
+    controlgroup(): JQuery;
 
     buttonset(): JQuery;
     buttonset(methodName: 'destroy'): void;
@@ -1095,8 +1090,6 @@ interface JQuery {
     buttonset(optionLiteral: string, optionName: string): any;
     buttonset(optionLiteral: string, options: JQueryUI.ButtonOptions): any;
     buttonset(optionLiteral: string, optionName: string, optionValue: any): JQuery;
-
-    controlgroup(): JQuery;
 
     /**
      * Initialize a datepicker

@@ -1,28 +1,22 @@
-﻿/// <reference path="jMusicScore.ts"/>
-/// <reference path="application.ts"/>
-/// <reference path="jMusicScore.UI.ts"/>
-/// <reference path="jMusicScore.Spacing.ts"/>
-/// <reference path="emmentaler.ts"/>
-/// <reference path="commands.ts"/>
-module jMusicScore {
+﻿module JMusicScore {
 
     export module IO {
 
         /** REST remote file manager */
-        export class ServerFileManager<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> implements Application.IFileManager<DocumentType, StatusManager, ContainerType> {
+        export class ServerFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> implements Application.IFileManager<TDocumentType, TStatusManager, TContainerType> {
             constructor(private ajaxUrl: string, private id: string) {
                 // new ServerFileManager ("Handler.ashx")
             }
 
-            Init(app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>): void { }
+            init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void { }
 
-            Exit(app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>): void { }
+            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void { }
 
-            GetId(): string { return this.id; }
+            getId(): string { return this.id; }
 
             public getFileList(handler: (data: string[]) => void) {
                 $.ajax(this.ajaxUrl, {
-                    success: function (data) {
+                    success: function (data: string) {
                         var files = data.split('\n');
                         handler(files);
                     },
@@ -32,7 +26,7 @@ module jMusicScore {
 
             public loadFile(name: string, handler: (data: string, name: string) => void) {
                 $.ajax(this.ajaxUrl, {
-                    success: function (data) {
+                    success: function (data: string) {
                         handler(data, name);
                     },
                     data: { 'Name': name },
@@ -42,7 +36,7 @@ module jMusicScore {
 
             public saveFile(name: string, data: string, handler: (res: string) => void) {
                 $.ajax(this.ajaxUrl, {
-                    success: function (res) {
+                    success: function (res: string) {
                         handler(res);
                     },
                     type: 'POST',
@@ -52,15 +46,15 @@ module jMusicScore {
         }
 
         /** Local storage file manager using the browser's local storage*/
-        export class LocalStorageFileManager<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> implements Application.IFileManager<DocumentType, StatusManager, ContainerType> {
+        export class LocalStorageFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> implements Application.IFileManager<TDocumentType, TStatusManager, TContainerType> {
             constructor(private id: string) {
             }
 
-            Init(app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>): void { }
+            init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void { }
 
-            Exit(app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>): void { }
+            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void { }
 
-            GetId(): string { return this.id; }
+            getId(): string { return this.id; }
 
             public getFileList(handler: (data: string[]) => void) {
                 var a: string = 'file:' + this.id + ':';

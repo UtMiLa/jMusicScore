@@ -1,13 +1,9 @@
-﻿/// <reference path="jMusicScore.ts"/>
-/// <reference path="application.ts"/>
-/// <reference path="jMusicScore.Views.ts"/>
-/// <reference path="jMusicScore.Spacing.ts"/>
-module jMusicScore {
+﻿module JMusicScore {
     export module Model {
-        export interface ScoreValidator extends Application.IValidator<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
+        export interface IScoreValidator extends Application.IValidator<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
 
-        export class UpdateBarsValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+        export class UpdateBarsValidator implements IScoreValidator {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 var score = app.document;
                 var maxTime = AbsoluteTime.startTime;
 
@@ -18,7 +14,7 @@ module jMusicScore {
                 app.document.withStaves((staff: IStaff): void => {
                     staff.withVoices((voice: IVoice): void => {
                         voice.withNotes((note: INote): void => {
-                            if (note.absTime.Add(note.timeVal).Gt(maxTime)) maxTime = note.absTime.Add(note.timeVal);
+                            if (note.absTime.add(note.timeVal).gt(maxTime)) maxTime = note.absTime.add(note.timeVal);
                         });
                     });
                 });
@@ -32,7 +28,7 @@ module jMusicScore {
                     // Tjek at der er bars fra this.meterElements[iMeter].absTime til this.meterElements[iMeter + 1].absTime
                     var toTime = (iMeter === score.meterElements.length - 1) ? maxTime : score.meterElements[iMeter + 1].absTime;
                     // Tjek at der er bars fra this.meterElements[this.meterElements.length-1].absTime til maxTime 
-                    while (toTime.Gt(barTime)) {
+                    while (toTime.gt(barTime)) {
                         barTime = score.meterElements[iMeter].nextBar(barTime);
 
                         var bar = app.document.findBar(barTime);
@@ -42,7 +38,7 @@ module jMusicScore {
                             bar.setProperty("updating", false);
                         }
                         else {
-                            Model.Music.setBar(score, barTime);
+                            Music.setBar(score, barTime);
                             //score.addChild(score.bars, new BarElement(score, barTime));
                         }
                     }
@@ -54,8 +50,8 @@ module jMusicScore {
             }
         }
 
-        export class CreateTimelineValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+        export class CreateTimelineValidator implements IScoreValidator {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 var score = app.document;
                 //score.updateBars();
                 var events: ITimedEvent[] = [];
@@ -63,10 +59,10 @@ module jMusicScore {
                     staff.withVoices((voice: IVoice) => {
                         var absTime = AbsoluteTime.startTime;
                         voice.withNotes((note: INote) => {
-                            if (!note.absTime.Eq(absTime)) {
+                            if (!note.absTime.eq(absTime)) {
                                 note.absTime = absTime;
                             }
-                            absTime = absTime.Add(note.getTimeVal());
+                            absTime = absTime.add(note.getTimeVal());
                             events.push(note);
                         });
                     });
@@ -90,8 +86,8 @@ module jMusicScore {
             }
         }
 
-        export class UpdateAccidentalsValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+        export class UpdateAccidentalsValidator implements IScoreValidator {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 var currentKey: IKey = null;
                 var pitchChanges: string[] = [];
                 var pitchClassChanges: string[] = [];
@@ -102,7 +98,7 @@ module jMusicScore {
                     // get events (bar lines + notes + keys changes) sorted by absTime from all voices
                     var events = staff.getEvents();
                     events = events.concat(scoreEvents);
-                    events.sort(Model.Music.compareEvents);
+                    events.sort(Music.compareEvents);
                     // for each event:
                     for (var iEvent = 0; iEvent < events.length; iEvent++) {
                         var event = events[iEvent];
@@ -168,41 +164,77 @@ module jMusicScore {
             }
         }
 
-        export class JoinNotesValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
-                app.document.withStaves((staff: IStaff, index: number): void => {
-                    staff.withVoices((voice: IVoice, index: number): void => {
-                        voice.withNotes((note: INote, index: number): void => {
+        export class JoinNotesValidator implements IScoreValidator {
+            public validate(app: ScoreApplication.IScoreApplication) {
+                app.document.withStaves((staff: IStaff): void => {
+                    staff.withVoices((voice: IVoice): void => {
+                        voice.withNotes((note: INote): void => {
                             if (note.getProperty('autojoin')) {
-                                var tiedNoteTotalDuration = Model.TimeSpan.infiniteNote;
-                                note.withHeads((head: Model.INotehead, index: number) => {
-                                    var tiedNoteheadTotalDuration = note.timeVal;
+                                var tiedNoteTotalDuration = TimeSpan.infiniteNote;
+                                var noNotes = 1;
+                                note.withHeads((head: INotehead) => {
+                                    var tiedNoteheadTotalDuration = note.getTimeVal();
+                                    var noNotesTmp = 1;
                                     while (head.tie) { // todo: check om tie er automatisk
                                         var nextHead = head.getProperty("tiedTo");
-                                        if (nextHead) {
-                                            tiedNoteheadTotalDuration = tiedNoteheadTotalDuration.Add(nextHead.parent.timeVal);
+                                        // make sure tied notes have no decorations/text
+                                        if (nextHead && !nextHead.parent.decorationElements.length && !nextHead.parent.syllableElements.length) {
+                                            tiedNoteheadTotalDuration = tiedNoteheadTotalDuration.add(nextHead.parent.getTimeVal());
                                             head = nextHead;
+                                            noNotesTmp ++;
                                         }
                                         else {
                                             break;
                                         }
                                     }
-                                    if (!tiedNoteheadTotalDuration.Gt(tiedNoteTotalDuration)) {
+                                    if (!tiedNoteheadTotalDuration.gt(tiedNoteTotalDuration)) {
                                         tiedNoteTotalDuration = tiedNoteheadTotalDuration;
+                                        noNotes = noNotesTmp;
                                     }
                                 });
-                                if (tiedNoteTotalDuration.Eq(Model.TimeSpan.infiniteNote)) return;
-                                if (tiedNoteTotalDuration.Gt(note.timeVal) && (tiedNoteTotalDuration.numerator === 1 || tiedNoteTotalDuration.numerator === 3 || tiedNoteTotalDuration.numerator === 7)) {
-                                    var notes = SplitNotesValidator.BestNoteValues(tiedNoteTotalDuration);
+                                if (tiedNoteTotalDuration.eq(TimeSpan.infiniteNote) || noNotes === 1) return;
+                                if (tiedNoteTotalDuration.gt(note.timeVal) && (tiedNoteTotalDuration.numerator === 1 || tiedNoteTotalDuration.numerator === 3 || tiedNoteTotalDuration.numerator === 7)) {
+                                    var bestNotes: TimeSpan[];
+                                    var staffContext = staff.getStaffContext(note.absTime);
+                                    if (staffContext.meter) {
+                                        var nextAbsTime = staffContext.meter.nextBar(note.absTime);
+                                        var beforeSplit = noNotes;
+                                        var afterSplit = 0;
+                                        if (note.absTime.add(tiedNoteTotalDuration).gt(nextAbsTime)) {
+                                            // timeVal for first note = nextAbsTime - absTime
+                                            var timeFirstNotes = SplitNotesValidator.bestNoteValues(nextAbsTime.diff(note.absTime)).reverse();
+                                            // timeVal for second note = timeVal - nextAbsTime + absTime
+                                            var timeLastNotes = SplitNotesValidator.bestNoteValues(note.absTime.add(tiedNoteTotalDuration).diff(nextAbsTime));
+                                            beforeSplit = timeFirstNotes.length;
+                                            afterSplit = timeLastNotes.length;
+                                            bestNotes = timeFirstNotes.concat(timeLastNotes);
+                                        }
+                                        else {
+                                            bestNotes = SplitNotesValidator.bestNoteValues(tiedNoteTotalDuration);
+                                        }
+
+                                        var getNotes: INote[] = [];
+                                        var next = note;
+                                        var matches = true;
+                                        for (var i = 0; i < noNotes; i++) {
+                                            getNotes.push(next);
+                                            if (bestNotes.length <= i || !next.getTimeVal().eq(bestNotes[i])) matches = false;
+                                            next = Music.nextNote(next);
+                                        }
+                                        // if bestNotes matches actual note values, break
+                                        if (matches) return;
+                                        // else remove original notes and add bestNotes
+
+                                        // We have noNotes notes who shall be merged to the values in bestNotes
+                                        // Best to merge to 1 first and then split
+
                                     // join notes!
-                                    var nextNote = Model.Music.nextNote(note);
-                                    note.timeVal = note.timeVal.Add(nextNote.timeVal);
-                                    note.withHeads((head: Model.INotehead, index: number) => {
-                                        head.tie = head.getProperty("tiedTo").tie;
-                                    });
-                                    note.noteId = Music.calcNoteId(note.timeVal);
-                                    note.setSpacingInfo(undefined);
-                                    voice.removeChild(nextNote);
+                                        note = Music.mergeNoteWithNext(note, noNotes - 1);
+
+                                        if (bestNotes.length > 0) {
+                                            Music.splitNote(note, bestNotes);
+                                }
+                            }
                                 }
                             }
                         });
@@ -211,19 +243,19 @@ module jMusicScore {
             }
         }
 
-        export class SplitNotesValidator implements ScoreValidator { //todo: tjek om der skiftes taktart inden noden ophører
+        export class SplitNotesValidator implements IScoreValidator { //todo: tjek om der skiftes taktart inden noden ophører
 
-            public static BestNoteValues(time: TimeSpan): Array<TimeSpan> {
-                if (new TimeSpan(1, 1024).Gt(time)) {
-                    throw "Bad time for note: " + time.ToString();
+            public static bestNoteValues(time: TimeSpan): Array<TimeSpan> {
+                if (new TimeSpan(1, 1024).gt(time)) {
+                    throw "Bad time for note: " + time.toString();
                 }
                 var res: TimeSpan[] = [];
                 //var runningTime = 4096;
                 var runningTime = new TimeSpan(8,1);
-                while (runningTime.Gt(time)) {
-                    runningTime = runningTime.DivideScalar(2);
+                while (runningTime.gt(time)) {
+                    runningTime = runningTime.divideScalar(2);
                 }
-                if (runningTime.Eq(time)) { return [runningTime]; }
+                if (runningTime.eq(time)) { return [runningTime]; }
                 
                 /* try dots ?
                 var dotTime = runningTime / 2;
@@ -236,58 +268,63 @@ module jMusicScore {
                     noDots++;
                 }*/
 
-                return [runningTime].concat(this.BestNoteValues(time.Sub(runningTime)));
+                return [runningTime].concat(SplitNotesValidator.bestNoteValues(time.sub(runningTime)));
             }
 
-            public Validate(app: ScoreApplication.ScoreApplication) {
-                app.document.withStaves((staff: IStaff, index: number): void => {
-                    staff.withVoices((voice: IVoice, index: number): void => {
-                        voice.withNotes((note: INote, index: number): void => {
-                            var staffContext = staff.getStaffContext(note.absTime);
-                            if (staffContext.meter) {
-                                var nextAbsTime = staffContext.meter.nextBar(note.absTime);
-                                if (note.absTime.Add(note.getTimeVal()).Gt(nextAbsTime)) {
+            private splitNote(note: INote, nextAbsTime: AbsoluteTime): void {
                                     // split note in 2 or more
                                     var timeFirstNotes: TimeSpan[];
                                     var timeLastNotes: TimeSpan[];
-                                    if (note.noteId === 'hidden') {
-                                        timeFirstNotes = [nextAbsTime.Diff(note.absTime)];
-                                        timeLastNotes = [note.absTime.Add(note.getTimeVal()).Diff(nextAbsTime)];
+                if (note.NoteId === 'hidden') {
+                    timeFirstNotes = [nextAbsTime.diff(note.absTime)];
+                    timeLastNotes = [note.absTime.add(note.getTimeVal()).diff(nextAbsTime)];
                                     }
                                     else {
                                         // timeVal for first note = nextAbsTime - absTime
-                                        timeFirstNotes = SplitNotesValidator.BestNoteValues(nextAbsTime.Diff(note.absTime)).reverse();
+                    timeFirstNotes = SplitNotesValidator.bestNoteValues(nextAbsTime.diff(note.absTime)).reverse();
                                         // timeVal for second note = timeVal - nextAbsTime + absTime
-                                        timeLastNotes = SplitNotesValidator.BestNoteValues(note.absTime.Add(note.getTimeVal()).Diff(nextAbsTime));
+                    timeLastNotes = SplitNotesValidator.bestNoteValues(note.absTime.add(note.getTimeVal()).diff(nextAbsTime));
                                     }
                                     var notes = timeFirstNotes.concat(timeLastNotes);
-                                    var absTime = note.absTime;
-                                    var nextNote = Model.Music.nextNote(note);
+                Music.splitNote(note, notes);
+                /*var absTime = note.absTime;
+                var nextNote = Music.nextNote(note);
                                     note.timeVal = notes[0];
-                                    if (note.noteId !== 'hidden')
-                                        note.noteId = Music.calcNoteId(note.timeVal);
+                if (note.NoteId !== 'hidden')
+                    note.NoteId = Music.calcNoteId(note.timeVal);
                                     var alreadyAutojoin = note.getProperty('autojoin');
-                                    note.setProperty('autojoin', true);
+                note.setProperty('autojoin', note.absTime);
                                     note.dotNo = 0;
-                                    note.withHeads((head: Model.INotehead, index: number) => {
+                note.withHeads((head: INotehead, index: number) => {
                                         head.tie = true;
                                     });
                                     for (var i = 1; i < notes.length; i++) {
-                                        absTime = absTime.Add(notes[i-1]);
-                                        var newNote = Music.AddNote(note.parent,
-                                            note.noteId === 'hidden' ? NoteType.placeholder : note.rest ? NoteType.rest : NoteType.note,
-                                            absTime, note.noteId, notes[i]);
+                    absTime = absTime.add(notes[i-1]);
+                    var newNote = Music.addNote(note.parent,
+                        note.NoteId === 'hidden' ? NoteType.Placeholder : note.rest ? NoteType.Rest : NoteType.Note,
+                        absTime, note.NoteId, notes[i]);
 
                                         // copy heads but not expressions and text
                                         var join = alreadyAutojoin || i < notes.length - 1;
                                         newNote.setProperty('autojoin', join);
-                                        note.withHeads((head: Model.INotehead, index: number) => {
+                    note.withHeads((head: INotehead, index: number) => {
                                             var newHead = newNote.setPitch(head.pitch);
                                             // tie heads
                                             newHead.tie = join;
                                             newHead.setProperty('autojoin', join);
                                         });
+                }*/
                                     }
+            
+            public validate(app: ScoreApplication.IScoreApplication) {
+                app.document.withStaves((staff: IStaff, index: number): void => {
+                    staff.withVoices((voice: IVoice, index: number): void => {
+                        voice.withNotes((note: INote, index: number): void => {
+                            var staffContext = staff.getStaffContext(note.absTime);
+                            if (staffContext.meter) {
+                                var nextAbsTime = staffContext.meter.nextBar(note.absTime);                                
+                                if (note.absTime.add(note.getTimeVal()).gt(nextAbsTime)) {
+                                    this.splitNote(note, nextAbsTime);
                                 }
                             }
                         });
@@ -296,17 +333,17 @@ module jMusicScore {
             }
         }
 
-        export class BeamValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
-                app.document.withStaves((staff: Model.IStaff) => {
-                    staff.withVoices((voice: Model.IVoice) => {
-                        this.ValidateVoice(voice);
+        export class BeamValidator implements IScoreValidator {
+            public validate(app: ScoreApplication.IScoreApplication) {
+                app.document.withStaves((staff: IStaff) => {
+                    staff.withVoices((voice: IVoice) => {
+                        this.validateVoice(voice);
                     });
                 });
             }
 
-            private ValidateVoice(voice: Model.IVoice) {
-                var firstNotes: Model.INote[] = [];
+            private validateVoice(voice: IVoice) {
+                var firstNotes: INote[] = [];
                 var noNotes: number[] = [0];
 
                 function endGroup(fromIndex = 0) {
@@ -348,16 +385,16 @@ module jMusicScore {
                     //var splitTime = 4 % staffContext.timeInBar.denominator === 0);
                     if (!staffContext.meter) return;
                     var nextB = staffContext.meter.nextBoundary(note.absTime);
-                    var splitTime = nextB.Eq(note.absTime);
-                    if (firstNotes.length && (!quarterNote.Gt(note.timeVal) || splitTime || note.rest)) {
+                    var splitTime = nextB.eq(note.absTime);
+                    if (firstNotes.length && (!quarterNote.gt(note.timeVal) || splitTime || note.rest)) {
                         // End group
                         endGroup();
                     }
                     // Check if new group must begin
-                    if (quarterNote.Gt(note.timeVal) && !note.rest) {
+                    if (quarterNote.gt(note.timeVal) && !note.rest) {
                         var index = 0;
                         var beamspan: number[] = [];
-                        for (var v = eighthNote; v.Ge(note.timeVal); v = v.DivideScalar(2)) {
+                        for (var v = eighthNote; v.ge(note.timeVal); v = v.divideScalar(2)) {
                             if (firstNotes[index]) {
                                 //noNotes[index]++;
                                 noNotes[index] += 1 + noOfGraceNotes;
@@ -388,11 +425,11 @@ module jMusicScore {
                 });
                 endGroup();
 
-                this.CheckSyncopeBeaming(voice);
-                this.UpdateBeams(voice);
+                this.checkSyncopeBeaming(voice);
+                this.updateBeams(voice);
             }
 
-            private CheckSyncopeBeaming(voice: Model.IVoice) {             
+            private checkSyncopeBeaming(voice: IVoice) {             
                 for (var iNote = 0; iNote < voice.noteElements.length; iNote++) {
                     var note: INote = voice.noteElements[iNote];
                     var staffContext = voice.parent.getStaffContext(note.absTime);
@@ -403,7 +440,7 @@ module jMusicScore {
                             // tjek om det er en synkope // 8 16* 8 *16 8  men 8 *16 4 16* 8 - måske skal designeren tjekke det!
                             var absTime = note.absTime;
                             var noteTime = note.timeVal;
-                            var res = absTime.Diff(AbsoluteTime.startTime).Modulo(note.timeVal.MultiplyScalar(2));
+                            var res = absTime.diff(AbsoluteTime.startTime).modulo(note.timeVal.multiplyScalar(2));
                             // todo: check if last in beam group
                             var firstNote = voice.noteElements[iNote + beamspan[0] + 1];
                             var lastInBeamGroup = beamspan[0] + firstNote.getBeamspan()[0] === 0;
@@ -417,7 +454,7 @@ module jMusicScore {
                 }
             }
 
-            private UpdateBeams(voice: Model.IVoice) {
+            private updateBeams(voice: IVoice) {
                 var beams: IBeam[] = [];
                 for (var iNote = 0; iNote < voice.noteElements.length; iNote++) {
                     var note: INote = voice.noteElements[iNote];
@@ -464,7 +501,7 @@ module jMusicScore {
                                 else {
                                     toNote = voice.noteElements[iNote + beamspan[i] - 1];
                                 }
-                                note.Beams[i] = new Model.BeamElement(note, toNote, i); // todo: toNote
+                                note.Beams[i] = new BeamElement(note, toNote, i); // todo: toNote
                                 beams[i] = note.Beams[i];
                             }
                         }
@@ -492,16 +529,16 @@ module jMusicScore {
         }
 
 
-        export class TieValidator implements ScoreValidator {
-            public Validate(app: ScoreApplication.ScoreApplication) {
+        export class TieValidator implements IScoreValidator {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 app.document.withVoices((voice: IVoice, index: number) => {
-                    this.ValidateVoice(voice);
+                    this.validateVoice(voice);
                 });
             }
 
-            private ValidateVoice(voice: Model.IVoice) {
+            private validateVoice(voice: IVoice) {
                 voice.withNotes((note: INote, index: number) => {
-                    var nextNote = Model.Music.nextNote(note);
+                    var nextNote = Music.nextNote(note);
                         /*: NoteElement;
                     if (index < voice.noteElements.length - 1) {
                         nextNote = voice.noteElements[index + 1];

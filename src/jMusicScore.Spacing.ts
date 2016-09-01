@@ -1,4 +1,4 @@
-﻿module jMusicScore {
+﻿module JMusicScore {
     /// Music spacing classes - independent of graphics methods
     export module MusicSpacing {
 
@@ -27,7 +27,7 @@
             public beamDist: number;
         }
 
-        interface INoteInfo {
+        export interface INoteInfo {
             postfix: string;
             timeVal: number;
             dotWidth: number;
@@ -47,7 +47,7 @@
         export class NoteHeadSpacingInfo extends BaseSpacingInfo implements Model.INoteHeadSpacingInfo {
             constructor(private parent: Model.INotehead) { super(); }
 
-            static noteValues: { [Index: string]: INoteInfo } = {
+            static noteValues: { [index: string]: INoteInfo } = {
                 hidden: {
                     postfix: "",
                     timeVal: 1,
@@ -202,11 +202,11 @@
             displacement: boolean;
             public get displace(): Model.Point { return new Model.Point(this.displacement ? Metrics.pitchX_Displacement * this.graceScale : Metrics.pitchX_Displacement * this.graceScale , 0); }
             public get headGlyph(): string {
-                var notedef = NoteHeadSpacingInfo.noteValues[this.parent.parent.noteId];
+                var notedef = NoteHeadSpacingInfo.noteValues[this.parent.parent.NoteId];
                 return this.reversed ? notedef.noteHeadRev : notedef.noteHead;
             }
             public get dotWidth(): number {
-                var notedef = NoteHeadSpacingInfo.noteValues[this.parent.parent.noteId];
+                var notedef = NoteHeadSpacingInfo.noteValues[this.parent.parent.NoteId];
                 return notedef.dotWidth;
             }
             reversed: boolean;
@@ -291,11 +291,11 @@
             public stemRootY: number;
             public stemLength: number;
             public get dotWidth(): number {
-                var notedef = NoteHeadSpacingInfo.noteValues[this.parent.noteId];
+                var notedef = NoteHeadSpacingInfo.noteValues[this.parent.NoteId];
                 return notedef.dotWidth;
             }
             public get restGlyph(): string {
-                var notedef = NoteHeadSpacingInfo.noteValues[this.parent.noteId];
+                var notedef = NoteHeadSpacingInfo.noteValues[this.parent.NoteId];
                 return notedef.baseRest;
             }
             public flagDisplacement = new Model.Point(0, 0);
@@ -313,27 +313,27 @@
             distX: number;
             endNoteY: number;
             endNoteheadY: number;
-            Render: (deco: Model.ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
+            render: (deco: Model.ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
         }
 
 
         class NullSpacer implements Model.IVisitor {
-            VisitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) { }
-            VisitNote(note: Model.INote, spacing: Model.INoteSpacingInfo) { }
-            VisitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) { }
-            VisitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) { }
-            VisitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) { }
-            VisitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) { }
-            VisitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) { }
-            VisitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) { }
-            VisitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) { }
-            VisitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) { }
-            VisitTextSyllable(textSyllable: Model.ITextSyllableElement, spacing: Model.ITextSyllableSpacingInfo) { }
-            VisitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) { }
-            VisitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) { }
-            VisitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void { }
+            visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) { }
+            visitNote(note: Model.INote, spacing: Model.INoteSpacingInfo) { }
+            visitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) { }
+            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) { }
+            visitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) { }
+            visitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) { }
+            visitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) { }
+            visitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) { }
+            visitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) { }
+            visitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) { }
+            visitTextSyllable(textSyllable: Model.ITextSyllableElement, spacing: Model.ITextSyllableSpacingInfo) { }
+            visitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) { }
+            visitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) { }
+            visitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void { }
 
-            VisitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
+            visitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
         }
 
         export class Metrics {
@@ -424,12 +424,12 @@
 
         class MinimalSpacer extends NullSpacer {
 
-            public VisitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
+            public visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
                 spacing.accidentalX = -head.spacingInfo.offset.x * 2 + Metrics.accidentalX + head.spacingInfo.accidentalStep * Metrics.accidentalXstep;
                 spacing.graceScale = head.parent.spacingInfo.graceScale;
 
                 spacing.offset.y = head.parent.rest ? 
-                Metrics.restY : MusicSpacing.NoteSpacer.pitchToStaffLine(head.pitch, head.parent) * Metrics.pitchYFactor;
+                Metrics.restY : NoteSpacer.pitchToStaffLine(head.pitch, head.parent) * Metrics.pitchYFactor;
 
 
                 if (head.tie) {
@@ -461,7 +461,7 @@
             }
 
             public static getSyllableWidth(syllable: Model.ITextSyllableElement) {
-                return syllable.text.length * 10;
+                return syllable.Text.length * 10;
                 /*var displayData = <SVGTextSyllableDisplayData>syllable.getDisplayData(context);
                 if (!displayData.ref) return syllable.getText().length; // todo: handle
                 var bBox = (<SVGLocatable><any>displayData.ref).getBBox();
@@ -518,38 +518,39 @@
                 return 6;
             }
 
-            public ClefRefId(def: Model.ClefDefinition, change: boolean): string {
+            public clefRefId(def: Model.ClefDefinition, change: boolean): string {
                 if (change) {
                     switch (def.clefCode) {
-                        case Model.ClefType.clefG: {
+                        case Model.ClefType.ClefG: {
                             if (def.transposition === -7) { return "tenor-clef"; }
                             else return "e_clefs.G_change";
                         }
-                        case Model.ClefType.clefC: return "e_clefs.C_change";
-                        case Model.ClefType.clefF: return "e_clefs.F_change";
-                        case Model.ClefType.clefNone: return "";
-                        case Model.ClefType.clefPercussion: return "e_clefs.percussion_change";
-                        case Model.ClefType.clefTab: return "e_clefs.tab_change";
+                        case Model.ClefType.ClefC: return "e_clefs.C_change";
+                        case Model.ClefType.ClefF: return "e_clefs.F_change";
+                        case Model.ClefType.ClefNone: return "";
+                        case Model.ClefType.ClefPercussion: return "e_clefs.percussion_change";
+                        case Model.ClefType.ClefTab: return "e_clefs.tab_change";
                     }
                 }
                 else {
                     switch (def.clefCode) {
-                        case Model.ClefType.clefG: {
+                        case Model.ClefType.ClefG: {
                             if (def.transposition === -7) { return "tenor-clef"; }
                             else return "e_clefs.G";
                         }
-                        case Model.ClefType.clefC: return "e_clefs.C";
-                        case Model.ClefType.clefF: return "e_clefs.F";
-                        case Model.ClefType.clefNone: return "";
-                        case Model.ClefType.clefPercussion: return "e_clefs.percussion";
-                        case Model.ClefType.clefTab: return "e_clefs.tab";
+                        case Model.ClefType.ClefC: return "e_clefs.C";
+                        case Model.ClefType.ClefF: return "e_clefs.F";
+                        case Model.ClefType.ClefNone: return "";
+                        case Model.ClefType.ClefPercussion: return "e_clefs.percussion";
+                        case Model.ClefType.ClefTab: return "e_clefs.tab";
                     }
                 }
+                return null;
             }
-            public static LongDecoCalculations(deco: Model.ILongDecorationElement) {
+            public static longDecoCalculations(deco: Model.ILongDecorationElement) {
                 var noteSpacing = deco.parent.spacingInfo;
                 var notedecoSpacing = deco.spacingInfo;
-                var tiedToNoteSpacing = deco.EndEvent.spacingInfo; //todo: if (deco.EndEvent)
+                var tiedToNoteSpacing = deco.endEvent.spacingInfo; //todo: if (deco.EndEvent)
                 var stemDir = deco.parent.spacingInfo.rev;
 
                 // todo: if length is changed
@@ -597,7 +598,7 @@
             }
 
             public static getNoteDecoWidth(deco: Model.INoteDecorationElement) {
-                if (deco.getDecorationId() >= Model.NoteDecorationKind.arpeggio && deco.getDecorationId() <= Model.NoteDecorationKind.nonArpeggio) {
+                if (deco.getDecorationId() >= Model.NoteDecorationKind.Arpeggio && deco.getDecorationId() <= Model.NoteDecorationKind.NonArpeggio) {
                     return 10;
                 }
                 else {
@@ -605,12 +606,12 @@
                 }
             }
 
-            public static NoteDecoCalculations(deco: Model.INoteDecorationElement) {
+            public static noteDecoCalculations(deco: Model.INoteDecorationElement) {
                 var noteSpacing = deco.parent.spacingInfo;
                 var notedecoSpacing = deco.spacingInfo;
 
                 //notedecoSpacing.center.x = 0;
-                if (deco.getDecorationId() >= Model.NoteDecorationKind.arpeggio && deco.getDecorationId() <= Model.NoteDecorationKind.nonArpeggio) {
+                if (deco.getDecorationId() >= Model.NoteDecorationKind.Arpeggio && deco.getDecorationId() <= Model.NoteDecorationKind.NonArpeggio) {
                     //noteSpacing.preWidth += 10;
                 }
                 else {
@@ -632,7 +633,7 @@
                 }
             }
 
-            VisitNote(note: Model.INote, spacing: Model.INoteSpacingInfo) {
+            visitNote(note: Model.INote, spacing: Model.INoteSpacingInfo) {
                 //(<NoteSpacingInfo>spacing).calcMetrics(note);
                 spacing.preWidth = MinimalSpacer.doGetPreWidth(note);
                 spacing.width = MinimalSpacer.doGetWidth(note);
@@ -643,23 +644,23 @@
                 NoteSpacer.recalcLedgerLinesUnder(note);
                 NoteSpacer.recalcLedgerLinesOver(note);
             }
-            VisitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
+            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
                 /*if (spacing.CalcSpacing) {
                     spacing.CalcSpacing(deco);
                 }
                 else {*/
-                MinimalSpacer.LongDecoCalculations(deco);
+                MinimalSpacer.longDecoCalculations(deco);
                 //}
             }
-            VisitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
-                MinimalSpacer.NoteDecoCalculations(deco);
+            visitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
+                MinimalSpacer.noteDecoCalculations(deco);
             }
-            VisitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) { }
-            VisitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
+            visitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) { }
+            visitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
                 spacing.offset.y = Metrics.pitchYFactor * (clef.definition.clefLine - 1) * 2;
-                spacing.clefId = this.ClefRefId(clef.definition, !!clef.absTime.numerator);
+                spacing.clefId = this.clefRefId(clef.definition, !!clef.absTime.numerator);
             }
-            VisitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
+            visitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
                 spacing.width = Metrics.meterWidth0;
                 var fracFunc = (num: string, den: string): any => {
                     var len = Math.max(num.length, den.length);
@@ -671,24 +672,24 @@
 
                 meter.definition.display(fracFunc, fullFunc);
             }
-            VisitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
+            visitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
                 spacing.width = -Metrics.meterXOffset + key.definition.enumerateKeys().length * Metrics.keyXPerAcc;
             }
-            VisitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
+            visitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
                 spacing.staffSpace = Metrics.pitchYFactor;
             }
-            VisitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
+            visitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
                 spacing.height = Metrics.staffYStep * score.staffElements.length + Metrics.staffYOffset + Metrics.staffYBottomMargin;
                 if (score.staffElements.length) spacing.width = score.staffElements[0].spacingInfo.staffLength + Metrics.staffXOffset;
             }
-            VisitTextSyllable(textSyllable: Model.ITextSyllableElement, spacing: Model.ITextSyllableSpacingInfo) {
+            visitTextSyllable(textSyllable: Model.ITextSyllableElement, spacing: Model.ITextSyllableSpacingInfo) {
                 spacing.offset.y = 50;
 
                 if (textSyllable.parent.syllableElements.length > 1) {
                     spacing.offset.y += 12 * textSyllable.parent.syllableElements.indexOf(textSyllable); // todo: konstanter
                 }
             }
-            VisitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
+            visitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
                 var beamSpacing = beam.spacingInfo;
                 var noteSpacing = beam.parent.spacingInfo;
                 // find noder
@@ -736,7 +737,7 @@
                 }
 
             }
-            VisitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
+            visitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
                 var score = bar.parent;
                 if (score.staffElements.length > 0) {
                     //this.checkRef(bar, context, svgHelper);
@@ -779,122 +780,122 @@
         }
 
         class SpacingFactory implements Model.IVisitorIterator, Model.IVisitor {
-            VisitPre(element: Model.IMusicElement): (element: Model.IMusicElement) => void {
-                element.InviteVisitor(this);
+            visitPre(element: Model.IMusicElement): (element: Model.IMusicElement) => void {
+                element.inviteVisitor(this);
                 return null;
             }
 
-            VisitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
+            visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
                 if (!spacing) {
                     head.setSpacingInfo(new NoteHeadSpacingInfo(head));
                 }
             }
-            VisitNote(note: Model.INote, spacing: Model.INoteSpacingInfo) {
+            visitNote(note: Model.INote, spacing: Model.INoteSpacingInfo) {
                 if (!spacing) {
                     note.setSpacingInfo(new NoteSpacingInfo(note));
                 }
                  // todo: visit in VisitAll - after all notes have been visited?
                 for (var i = 0; i < note.Beams.length; i++) {
                     if (note.Beams[i])
-                        note.Beams[i].InviteVisitor(this);
+                        note.Beams[i].inviteVisitor(this);
                 }
             }
-            VisitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
+            visitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
                 if (!spacing) {
                     deco.setSpacingInfo(new NoteDecorationSpacingInfo(deco));
                 }
             }
-            VisitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
+            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
                 var notedecoSpacing = deco.spacingInfo;
                 if (!notedecoSpacing) {
                     deco.setSpacingInfo(new LongDecorationSpacingInfo(deco));
                 }
             }
-            VisitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) {
+            visitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) {
                 if (!spacing) {
                     voice.setSpacingInfo(new VoiceSpacingInfo(voice));
                 }
             }
-            VisitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
+            visitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
                 if (!spacing) {
                     clef.setSpacingInfo(new ClefSpacingInfo(clef));
                 }
             }
-            VisitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
+            visitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
                 if (meter.parent.getElementName() === "Score") return;
                 if (!spacing) {
                     meter.setSpacingInfo(new MeterSpacingInfo(meter));
                 }
             }
-            VisitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
+            visitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
                 if (!spacing) {
                     key.setSpacingInfo(new KeySpacingInfo(key));
                 }
             }
-            VisitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
+            visitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
                 if (!spacing) {
                     staff.setSpacingInfo(new StaffSpacingInfo(staff));
                 }
             }
-            VisitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
+            visitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
                 if (!spacing) {
                     score.setSpacingInfo(new ScoreSpacingInfo(score));
                 }
             }
-            VisitTextSyllable(syllable: Model.ITextSyllableElement, spacing: Model.ITextSyllableSpacingInfo) {
+            visitTextSyllable(syllable: Model.ITextSyllableElement, spacing: Model.ITextSyllableSpacingInfo) {
                 if (!spacing) {
                     syllable.setSpacingInfo(new TextSpacingInfo(syllable));
                 }
             }
-            VisitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
+            visitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
                 if (!spacing) {
                     bar.setSpacingInfo(new BarSpacingInfo(bar));
                 }
             }
-            VisitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
+            visitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
                 if (!spacing) {
                     beam.setSpacingInfo(new BeamSpacingInfo(beam)); // todo: visit in VisitAll - after all notes have been visited?
                 }                
             }
-            VisitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void {
+            visitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void {
                 if (!spacing) {
                     staffExpression.setSpacingInfo(new StaffExpressionSpacingInfo(staffExpression));
                 }
             }
 
-            VisitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
+            visitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
         }
 
-        export class SpacingDesigner implements ScoreApplication.ScoreDesigner {
+        export class SpacingDesigner implements ScoreApplication.IScoreDesigner {
             constructor(private spacer: Model.IVisitor = null) {
                 if (!spacer) {
                     this.spacer = new MinimalSpacer();
                 }
             }
 
-            private CheckSpacingInfo(score: Model.IScore) {
-                score.VisitAll(new SpacingFactory());
+            private checkSpacingInfo(score: Model.IScore) {
+                score.visitAll(new SpacingFactory());
             }
 
-            private CheckUpdateAll(score: Model.IScore) {
+            private checkUpdateAll(score: Model.IScore) {
                 var spacer = this.spacer;
 
-                score.VisitAll({
-                    VisitPre: (element: Model.IMusicElement): (element: Model.IMusicElement) => void => {
+                score.visitAll({
+                    visitPre: (element: Model.IMusicElement): (element: Model.IMusicElement) => void => {
                         var spacing = element.spacingInfo;
                         if (spacing) {
-                            element.InviteVisitor(spacer);
+                            element.inviteVisitor(spacer);
                             return null;
                         }
                     }
                 });
-                score.withStaves((staff: Model.IStaff, index: number): void => {
-                    staff.withVoices((voice: Model.IVoice, index: number): void => {
-                        voice.withNotes((note: Model.INote, index: number): void => {
+                score.withStaves((staff: Model.IStaff): void => {
+                    staff.withVoices((voice: Model.IVoice): void => {
+                        voice.withNotes((note: Model.INote): void => {
                             for (var i = 0; i < note.Beams.length; i++) {
                                 var beam = note.Beams[i];
                                 if (beam) {
-                                    beam.InviteVisitor(spacer);
+                                    beam.inviteVisitor(spacer);
                                 }
                             }
                         });
@@ -903,28 +904,28 @@
             }
 
 
-            private CheckBars(score: Model.IScore) {
+            private checkBars(score: Model.IScore) {
                 score.withBars((bar: Model.IBar) => {
                     var barSpacing = bar.spacingInfo;
-                    this.spacer.VisitBar(bar, barSpacing);
+                    this.spacer.visitBar(bar, barSpacing);
                 });
             }
 
-            private CalculateSizes(score: Model.IScore) {
+            private calculateSizes(score: Model.IScore) {
                 score.withStaves((staff: Model.IStaff, index: number): void => {
                     staff.withTimedEvents((elm: Model.ITimedEvent, index: number) => {
-                        elm.InviteVisitor(this.spacer);
+                        elm.inviteVisitor(this.spacer);
                     });
 
                     staff.withVoices((voice: Model.IVoice, index: number): void => {
                         voice.withNotes((note: Model.INote, index: number): void => {
-                            note.InviteVisitor(this.spacer);
+                            note.inviteVisitor(this.spacer);
                         });
                     });
                 });
             }
 
-            private MakeTimeline(score: Model.IScore) {
+            private makeTimeline(score: Model.IScore) {
                 var beginPos = 0;
                 score.withStaves((staff: Model.IStaff, index: number): void => {
                     var staffBeginPos = 0; //todo: staffSpacingInfo
@@ -984,19 +985,19 @@
                 });
             }
 
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 var score = app.document;
 
-                this.CheckSpacingInfo(score); // create displayData and spacingInfo for all elements
-                this.CalculateSizes(score); // calculate metrics
-                this.MakeTimeline(score); // position all svg elements
+                this.checkSpacingInfo(score); // create displayData and spacingInfo for all elements
+                this.calculateSizes(score); // calculate metrics
+                this.makeTimeline(score); // position all svg elements
                 // update multi-dependent objects (beams, slurs etc.)
-                this.CheckUpdateAll(score); // update svg elements
+                this.checkUpdateAll(score); // update svg elements
 
 
                 var test = false;
                 if (!test) {
-                    this.CheckBars(score);
+                    this.checkBars(score);
                 }
             }
 
@@ -1015,7 +1016,7 @@
                 return !note.rest && note.timeVal.denominator >= 2;
             }
 
-            static GetFlagCount(note: Model.INote): number {
+            static getFlagCount(note: Model.INote): number {
                 var denom = note.timeVal.denominator;
                 var no = 0;
                 while (denom > 4) {
@@ -1040,7 +1041,7 @@
                 var lowPitch = 99;
                 var highPitch = -99;
                 note.withHeads((head: Model.INotehead) => {
-                    var thePitch = MusicSpacing.NoteSpacer.pitchToStaffLine(head.getPitch(), note);
+                    var thePitch = NoteSpacer.pitchToStaffLine(head.getPitch(), note);
                     if (thePitch < lowPitch) {
                         lowPitch = thePitch;
                     }
@@ -1061,13 +1062,13 @@
                 //noteSpacing.highPitch = MusicSpacing.NoteSpacer.staffLineToPitch(highPitch, note);
                 noteSpacing.highPitchY = lowPitch;
                 noteSpacing.lowPitchY = highPitch;
-                if (note.getStemDirection() == Model.StemDirectionType.stemFree) {
-                    if (note.parent.getStemDirection() == Model.StemDirectionType.stemFree) {
+                if (note.getStemDirection() == Model.StemDirectionType.StemFree) {
+                    if (note.parent.getStemDirection() == Model.StemDirectionType.StemFree) {
                         noteSpacing.rev = highPitch + lowPitch < 10;
                     }
-                    else noteSpacing.rev = (note.parent.getStemDirection() == Model.StemDirectionType.stemDown);
+                    else noteSpacing.rev = (note.parent.getStemDirection() == Model.StemDirectionType.StemDown);
                 }
-                else noteSpacing.rev = (note.getStemDirection() == Model.StemDirectionType.stemDown);
+                else noteSpacing.rev = (note.getStemDirection() == Model.StemDirectionType.StemDown);
             }
 
 
@@ -1106,7 +1107,7 @@
             }
 
             public static recalcStem(note: Model.INote, noteSpacing: Model.INoteSpacingInfo) {
-                var noteDef = NoteHeadSpacingInfo.noteValues[note.noteId]; // todo: fjern
+                var noteDef = NoteHeadSpacingInfo.noteValues[note.NoteId]; // todo: fjern
                 //var hasFlag = NoteSpacer.hasFlag(note);
                 //var hasStem = !note.rest && note.timeVal.denominator >= 2;//NoteSpacer.hasStem(note);
 
@@ -1137,7 +1138,7 @@
                     }
 
                     if (NoteSpacer.hasFlag(note)) {
-                        noteSpacing.flagNo = NoteSpacer.GetFlagCount(note);
+                        noteSpacing.flagNo = NoteSpacer.getFlagCount(note);
                         if (noteSpacing.rev) {
                             noteSpacing.flagDisplacement.x = Metrics.revFlagXDisplacement * noteSpacing.graceScale;
                             noteSpacing.flagDisplacement.y = Metrics.revFlagYDisplacement;
@@ -1220,7 +1221,7 @@
                 else {
                     spacingInfo.offset.x = spacingInfo.displacement ? Metrics.pitchXDisplacement : Metrics.pitchXNoDisplacement;
                 }
-                spacingInfo.offset.y = headElm.parent.rest ? Metrics.restY : MusicSpacing.NoteSpacer.pitchToStaffLine(headElm.pitch, headElm.parent) * Metrics.pitchYFactor;
+                spacingInfo.offset.y = headElm.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, headElm.parent) * Metrics.pitchYFactor;
                 //if (displayData.ref) displayData.ref.setAttribute("transform", "translate(" + spacingInfo.center.x + "," + spacingInfo.center.y + ")");                
             }
         }

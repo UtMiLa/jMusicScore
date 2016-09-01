@@ -1,17 +1,10 @@
-/// <reference path="jMusicScore.ts"/>
-/// <reference path="application.ts"/>
-/// <reference path="jMusicScore.UI.ts"/>
-/// <reference path="jMusicScore.Spacing.ts"/>
-/// <reference path="emmentaler.ts"/>
-/// <reference path="commands.ts"/>
-
-module jMusicScore {
+module JMusicScore {
 
     export module ScoreApplication {
-        export interface ScoreApplication extends Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> { }
-        export interface ScorePlugin extends Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> { }
-        export interface ScoreEventProcessor extends Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> { }
-        export interface ScoreDesigner extends Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScoreApplication extends Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScorePlugin extends Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScoreEventProcessor extends Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScoreDesigner extends Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> { }
 
         export interface IMessage extends Application.IMessage {
             note?: Model.INote;
@@ -40,10 +33,10 @@ module jMusicScore {
             private _currentVoice: Model.IVoice;
             private _currentStaff: Model.IStaff;
             private _insertPoint: Model.HorizPosition;
-            private _selectionStart: Model.AbsoluteTime; // todo: property
-            private _selectionEnd: Model.AbsoluteTime; // todo: property
-            private _selectionStartStaff: Model.IStaff; // todo: property
-            private _selectionEndStaff: Model.IStaff; // todo: property
+            private selectionStart: Model.AbsoluteTime; // todo: property
+            private selectionEnd: Model.AbsoluteTime; // todo: property
+            private selectionStartStaff: Model.IStaff; // todo: property
+            private selectionEndStaff: Model.IStaff; // todo: property
             private _rest: boolean = false;
             private _dots: number = 0;
             private _grace: boolean = false;
@@ -114,7 +107,7 @@ module jMusicScore {
             }
             public get currentTuplet(): Model.TupletDef { return this._currentTuplet; }
             public set currentTuplet(v: Model.TupletDef) {
-                if (!this._currentTuplet || !v || !this._currentTuplet.Eq(v)) {
+                if (!this._currentTuplet || !v || !this._currentTuplet.eq(v)) {
                     this._currentTuplet = v;
                     this.changed("currentTuplet", v);
                 }
@@ -160,7 +153,7 @@ module jMusicScore {
                 }
             }
             private _notesPressed: Model.Pitch[] = [];
-            private _noteValSelected: Model.TimeSpan;
+            private noteValSelected: Model.TimeSpan;
 
             public get notesPressed(): Model.Pitch[] { return this._notesPressed; }
             public pressNoteKey(pitch: Model.Pitch) {
@@ -180,34 +173,34 @@ module jMusicScore {
 
     export module Model {
         export interface ILongDecorationSpacingInfo extends ISpacingInfo {
-            Render?: (deco: ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
+            render?: (deco: ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
         }
     }
 
     export module Views {
         export interface IBaseGraphicsEngine {
-            SetSize(width: number, height: number): void;
-            BeginDraw(): void;
-            EndDraw(): void;
+            setSize(width: number, height: number): void;
+            beginDraw(): void;
+            endDraw(): void;
             // Parent = altid aktuel gruppe
-            BeginGroup(id: string, x: number, y: number, scale: number, className: string): any;// tjekker om der findes en gruppe med givne id og opretter ellers - hvor kommer id fra? Hvert MusicElement skal have en unik id
-            EndGroup(group: any): void; // popper gruppestakken - must be balanced!
+            beginGroup(id: string, x: number, y: number, scale: number, className: string): any;// tjekker om der findes en gruppe med givne id og opretter ellers - hvor kommer id fra? Hvert MusicElement skal have en unik id
+            endGroup(group: any): void; // popper gruppestakken - must be balanced!
         }
         export interface IGraphicsEngine extends IBaseGraphicsEngine {
-            CreateMusicObject(id: string, item: string, x: number, y: number, scale: number): any;
-            CreatePathObject(path: string, x: number, y: number, scale: number, stroke: string, fill: string, id?: string): any;
-            DrawText(id: string, text: string, x: number, y: number, justify: string): any;
+            createMusicObject(id: string, item: string, x: number, y: number, scale: number): any;
+            createPathObject(path: string, x: number, y: number, scale: number, stroke: string, fill: string, id?: string): any;
+            drawText(id: string, text: string, x: number, y: number, justify: string): any;
         }
 
         export interface ISensorGraphicsEngine extends IBaseGraphicsEngine {
-            CreateRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any;
+            createRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any;
             // Cursor
-            MoveCursor(id: string, x: number, y: number): void;
-            ShowCursor(noteId: string): void;
-            HideCursor(): void;
+            moveCursor(id: string, x: number, y: number): void;
+            showCursor(noteId: string): void;
+            hideCursor(): void;
             // InsertionPoint
-            ShowInsertionPoint(id: string, x: number, y: number): void;
-            HideInsertionPoint(): void;
+            showInsertionPoint(id: string, x: number, y: number): void;
+            hideInsertionPoint(): void;
 
             calcCoordinates(event: MouseEvent): Model.Point;
         }
@@ -240,9 +233,9 @@ module jMusicScore {
                 'x': [7, 6, 7, 6, 6, 6, 7]
             };
 
-            public static addKeyXY(id: string, graphic: Views.IGraphicsEngine, keyDefinition: Model.IKeyDefinition, clefDefinition: Model.ClefDefinition, x: number, y: number) {
+            public static addKeyXy(id: string, graphic: IGraphicsEngine, keyDefinition: Model.IKeyDefinition, clefDefinition: Model.ClefDefinition, x: number, y: number) {
                 //var staffContext = key.parent.getStaffContext(key.absTime);
-                var clefOffset = clefDefinition.PitchOffset();
+                var clefOffset = clefDefinition.pitchOffset();
                 var pitchClasses = keyDefinition.enumerateKeys();
                 for (var i = 0; i < pitchClasses.length; i++) {
                     var pc = pitchClasses[i];
@@ -262,7 +255,7 @@ module jMusicScore {
                         clefMagicNo = KeyDrawer.clefMagicNo['x'][clefOffset];
                         staffLine = ((i * 3 + clefOffset + 11 - clefMagicNo) % 7) + clefMagicNo - 6;
                     }
-                    graphic.CreateMusicObject(id + '_' + i, ref, x + i * MusicSpacing.Metrics.keyXPerAcc,
+                    graphic.createMusicObject(id + '_' + i, ref, x + i * MusicSpacing.Metrics.keyXPerAcc,
                         y + MusicSpacing.Metrics.pitchYFactor * staffLine - MusicSpacing.Metrics.pitchYFactor, 1);
                 }
             }
@@ -273,7 +266,7 @@ module jMusicScore {
                 'e_zero', 'e_one', 'e_two', 'e_three', 'e_four', 'e_five', 'e_six', 'e_seven', 'e_eight', 'e_nine'
             ];
 
-            public static addNumberXY(id: string, graphic: Views.IGraphicsEngine, meterChar: string, x: number, y: number) {
+            public static addNumberXy(id: string, graphic: IGraphicsEngine, meterChar: string, x: number, y: number) {
                 var symbol: string;
                 switch (meterChar) {
                     case 'c': symbol = 'e_timesig.C44';
@@ -285,30 +278,30 @@ module jMusicScore {
                     default:
                         symbol = MeterDrawer.meterDefs[parseInt(meterChar)];
                 }
-                graphic.CreateMusicObject(id, symbol, x, y, 1);
+                graphic.createMusicObject(id, symbol, x, y, 1);
             }
 
-            public static addStringXY(id: string, graphic: Views.IGraphicsEngine, meterString: string, x: number, y: number, maxLen: number) {
+            public static addStringXy(id: string, graphic: IGraphicsEngine, meterString: string, x: number, y: number, maxLen: number) {
                 var deltaX = 0;
                 if (meterString.length < maxLen) {
                     deltaX = (maxLen - meterString.length) * 4;
                 }
                 for (var i = 0; i < meterString.length; i++) {
                     var chr = meterString[i];
-                    this.addNumberXY(id, graphic, chr, x + deltaX + i * 8, y);
+                    MeterDrawer.addNumberXy(id, graphic, chr, x + deltaX + i * 8, y);
                 }
             }
 
-            public static addMeterXY(id: string, graphic: Views.IGraphicsEngine, meterDefinition: Model.IMeterDefinition, x: number, y: number) {
+            public static addMeterXy(id: string, graphic: IGraphicsEngine, meterDefinition: Model.IMeterDefinition, x: number, y: number) {
                 var fracFunc = (num: string, den: string): any => {
                     var len = Math.max(num.length, den.length);
-                    this.addStringXY(id + '_1', graphic, num, MusicSpacing.Metrics.meterX + x, MusicSpacing.Metrics.meterY0 + y, len);
-                    this.addStringXY(id + '_2', graphic, den, MusicSpacing.Metrics.meterX + x, MusicSpacing.Metrics.meterY1 + y, len);
+                    MeterDrawer.addStringXy(id + '_1', graphic, num, MusicSpacing.Metrics.meterX + x, MusicSpacing.Metrics.meterY0 + y, len);
+                    MeterDrawer.addStringXy(id + '_2', graphic, den, MusicSpacing.Metrics.meterX + x, MusicSpacing.Metrics.meterY1 + y, len);
                     //displayData.width = 4 + len * 8;
                 };
                 var fullFunc = (full: string): any => {
                     var len = full.length;
-                    this.addStringXY(id + '_1', graphic, full, MusicSpacing.Metrics.meterX + x, MusicSpacing.Metrics.meterY0 + y, len);
+                    MeterDrawer.addStringXy(id + '_1', graphic, full, MusicSpacing.Metrics.meterX + x, MusicSpacing.Metrics.meterY0 + y, len);
                 };
 
                 return meterDefinition.display(fracFunc, fullFunc);
@@ -357,12 +350,12 @@ module jMusicScore {
         }
 
         class TrillDrawer extends LongDecorationDrawer {
-            public static Render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+            public static render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
                 var path: string;
             }
         }
         class CrescDrawer extends LongDecorationDrawer {
-            public static Render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+            public static render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
                 // long deco (cresc)
                 var notedecoSpacing = deco.spacingInfo;
                 var longDeco = deco;
@@ -374,7 +367,7 @@ module jMusicScore {
                 var dy = 1;
                 var x1 = notedecoSpacing.distX - 2 * x0;
 
-                if (deco.type === Model.LongDecorationType.cresc) {
+                if (deco.type === Model.LongDecorationType.Cresc) {
                     x0 = notedecoSpacing.distX - x0;
                     x1 = -x1;
                 }
@@ -386,27 +379,27 @@ module jMusicScore {
                     " l " +
                     (-x1) + "," + (2 * dy) + " ";
 
-                graphEngine.CreatePathObject(path, 0, 0, 1, "black", null);
+                graphEngine.createPathObject(path, 0, 0, 1, "black", null);
             }
         }
         class BracketDrawer extends LongDecorationDrawer {
-            public static Render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+            public static render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
                 var path: string;
             }
         }
         class TupletDrawer extends LongDecorationDrawer {
-            public static Render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+            public static render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
                 var path: string;
             }
         } 
         class OttavaDrawer extends LongDecorationDrawer {
-            public static Render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+            public static render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
                 var path: string;
             }
         }
 
         class SlurDrawer extends LongDecorationDrawer {
-            public static Render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+            public static render(deco: Model.ILongDecorationElement, graphEngine: IGraphicsEngine): void {
                 // long deco (slur)
                 var notedecoSpacing = deco.spacingInfo;
                 var longDeco = deco;
@@ -434,88 +427,88 @@ module jMusicScore {
                     (dx - x1) + "," + (dy2 - 3*y1 / 4) + " " +
                     (-x1) + "," + (- y1) + " z";
 
-                graphEngine.CreatePathObject(path, 0, 0, 1, "", "black");
+                graphEngine.createPathObject(path, 0, 0, 1, "", "black");
             }
         }
 
         class ExpressionFactory implements Model.IVisitorIterator, Model.IVisitor {
-            VisitPre(element: Model.IMusicElement): (element: Model.IMusicElement) => void {
-                element.InviteVisitor(this);
+            visitPre(element: Model.IMusicElement): (element: Model.IMusicElement) => void {
+                element.inviteVisitor(this);
                 return null;
             }
 
-            VisitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
+            visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
             }
-            VisitNote(note: Model.INote, spacing: Model.INoteSpacingInfo) {
+            visitNote(note: Model.INote, spacing: Model.INoteSpacingInfo) {
             }
-            VisitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
+            visitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
                 // expr
             }
             static longDrawers: any[] = [TrillDrawer, CrescDrawer, CrescDrawer, SlurDrawer, BracketDrawer, TupletDrawer, OttavaDrawer];
-            VisitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
+            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
                 // expr
                 if (spacing && ExpressionFactory.longDrawers[deco.type]) {
-                    if (!spacing.Render) spacing.Render = ExpressionFactory.longDrawers[deco.type].Render;
+                    if (!spacing.render) spacing.render = ExpressionFactory.longDrawers[deco.type].Render;
                     //if (!spacing.CalcSpacing) spacing.CalcSpacing = ExpressionFactory.longDrawers[deco.type].CalcSpacing;
                 }
             }
-            VisitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) {
+            visitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) {
             }
-            VisitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
+            visitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
             }
-            VisitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
+            visitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
             }
-            VisitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
+            visitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
             }
-            VisitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
+            visitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
             }
-            VisitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
+            visitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
             }
-            VisitTextSyllable(syllable: Model.ITextSyllableElement, spacing: Model.ITextSyllableSpacingInfo) {
+            visitTextSyllable(syllable: Model.ITextSyllableElement, spacing: Model.ITextSyllableSpacingInfo) {
             }
-            VisitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
+            visitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
             }
-            VisitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
+            visitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
             }
-            VisitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void {
+            visitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void {
                 // expr
             }
 
-            VisitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
+            visitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
         }
 
-        export class ExpressionRenderer implements ScoreApplication.ScoreDesigner {
+        export class ExpressionRenderer implements ScoreApplication.IScoreDesigner {
             constructor(private spacer: Model.IVisitor = null) {
             }
 
-            public Validate(app: ScoreApplication.ScoreApplication) {
-                app.document.VisitAll(new ExpressionFactory()); // add renderer objects to all note/staff expressions
+            public validate(app: ScoreApplication.IScoreApplication) {
+                app.document.visitAll(new ExpressionFactory()); // add renderer objects to all note/staff expressions
             }
         }
 
         /** Responsible for making event handlers on DOM (SVG/HTML) sensors */
-        export class DOMCheckSensorsVisitor implements Model.IVisitor { // todo: remove event handlers when inactive
-            constructor(public sensorEngine: Views.ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: Application.IEventReceiver) {
+        export class DomCheckSensorsVisitor implements Model.IVisitor { // todo: remove event handlers when inactive
+            constructor(public sensorEngine: ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: Application.IEventReceiver) {
             }
 
-            VisitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
-                var elm = this.sensorEngine.CreateRectObject("edit_" + head.id, -5, -2, 10, 3, 'NoteheadEdit');
+            visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
+                var elm = this.sensorEngine.createRectObject("edit_" + head.id, -5, -2, 10, 3, 'NoteheadEdit');
                 var evRec = this.eventReceiver;
                 var me = this;
                 $(elm).mouseover(function (event) {
                     event.data = { head: head/*, feedback: me*/ };
-                    evRec.ProcessEvent("mouseoverhead", { head: head });
+                    evRec.processEvent("mouseoverhead", { head: head });
                 })
                     .mouseout(function (event) {
                         event.data = { head: head/*, feedback: me*/ };
-                        evRec.ProcessEvent("mouseouthead", { head: head });
+                        evRec.processEvent("mouseouthead", { head: head });
                     })
                     .click(function (event) {
                         event.data = { head: head/*, feedback: me*/ };
-                        evRec.ProcessEvent("clickhead", { head: head });
+                        evRec.processEvent("clickhead", { head: head });
                     });
             }
-            VisitNote(note: Model.INote, noteSpacing: Model.INoteSpacingInfo) {
+            visitNote(note: Model.INote, noteSpacing: Model.INoteSpacingInfo) {
                 var evRec = this.eventReceiver;
                 var me = this.sensorEngine;
                 var staffContext = note.parent.parent.getStaffContext(note.absTime);
@@ -530,56 +523,56 @@ module jMusicScore {
                 var rectHeightBefore = 70;
                 var staffLineSpacing = 3;
 
-                var elm = this.sensorEngine.CreateRectObject("edit_" + note.id, rectLeft, rectTop, rectWidth, rectHeight, 'NoteEdit');
+                var elm = this.sensorEngine.createRectObject("edit_" + note.id, rectLeft, rectTop, rectWidth, rectHeight, 'NoteEdit');
                 $(elm).mouseover(function (event) { //"#edit_" + note.id
                     var pt = me.calcCoordinates(<any>event); // todo: undgå cast
                     var pitch = clefDefinition.staffLineToPitch(Math.round(pt.y / staffLineSpacing)); // todo: abstraher
                     //event.data = { note: note/*, feedback: me*/, pitch: pitch };
-                    evRec.ProcessEvent("mouseovernote", { note: note, pitch: pitch });
+                    evRec.processEvent("mouseovernote", { note: note, pitch: pitch });
                 })
                     .mouseout(function (event) {
                         //event.data = { note: note/*, feedback: me*/ };
-                        evRec.ProcessEvent("mouseoutnote", { note: note });
+                        evRec.processEvent("mouseoutnote", { note: note });
                     })
                     .mousemove(function (event) {
                         var pt = me.calcCoordinates(<any>event); // todo: undgå cast
                         var pitch = clefDefinition.staffLineToPitch(Math.round(pt.y / staffLineSpacing)); // todo: abstraher
                         //event.data = { note: note/*, feedback: me*/, pitch: pitch };
-                        evRec.ProcessEvent("mousemovenote", { note: note, pitch: pitch });
+                        evRec.processEvent("mousemovenote", { note: note, pitch: pitch });
                     })
                     .click(function (event) {
                         var pt = me.calcCoordinates(<any>event); // todo: undgå cast
                         var pitch = clefDefinition.staffLineToPitch(Math.round(pt.y / staffLineSpacing)); // todo: abstraher
                         //event.data = { note: note/*, feedback: me*/, pitch: pitch };
-                        evRec.ProcessEvent("clicknote", { note: note, pitch: pitch });
+                        evRec.processEvent("clicknote", { note: note, pitch: pitch });
                     });
                 var x0 = rectX0Before - noteSpacing.preWidth;
                 var prevNote = Model.Music.prevNote(note);
                 if (prevNote && prevNote.spacingInfo.offset.x - note.spacingInfo.offset.x - rectLeft > x0) {
                     x0 = prevNote.spacingInfo.offset.x - note.spacingInfo.offset.x - rectLeft;
                 }
-                elm = this.sensorEngine.CreateRectObject("editbefore_" + note.id, x0, rectTopBefore, rectLeft - x0, rectHeightBefore, 'NoteEditBefore');
+                elm = this.sensorEngine.createRectObject("editbefore_" + note.id, x0, rectTopBefore, rectLeft - x0, rectHeightBefore, 'NoteEditBefore');
                 $(elm).mouseover(function (event) {
                     var pt = me.calcCoordinates(<any>event); // todo: undgå cast
                     var pitch = clefDefinition.staffLineToPitch(Math.round(pt.y / staffLineSpacing)); // todo: abstraher
                     //event.data = { note: note/*, feedback: me*/, pitch: pitch };
-                    evRec.ProcessEvent("mouseoverbeforenote", { note: note, pitch: pitch });
+                    evRec.processEvent("mouseoverbeforenote", { note: note, pitch: pitch });
                 })
                     .mouseout(function (event) {
                         //event.data = { note: note/*, feedback: me*/ };
-                        evRec.ProcessEvent("mouseoutbeforenote", { note: note });
+                        evRec.processEvent("mouseoutbeforenote", { note: note });
                     })
                     .mousemove(function (event) {
                         var pt = me.calcCoordinates(<any>event); // todo: undgå cast
                         var pitch = clefDefinition.staffLineToPitch(Math.round(pt.y / staffLineSpacing)); // todo: abstraher
                         //event.data = { note: note/*, feedback: me*/, pitch: pitch };
-                        evRec.ProcessEvent("mousemovebeforenote", { note: note, pitch: pitch });
+                        evRec.processEvent("mousemovebeforenote", { note: note, pitch: pitch });
                     })
                     .click(function (event) {
                         var pt = me.calcCoordinates(<any>event); // todo: undgå cast
                         var pitch = clefDefinition.staffLineToPitch(Math.round(pt.y / 3)); // todo: abstraher
                         //event.data = { note: note/*, feedback: me*/, pitch: pitch };
-                        evRec.ProcessEvent("clickbeforenote", { note: note, pitch: pitch });
+                        evRec.processEvent("clickbeforenote", { note: note, pitch: pitch });
                     });
 
 
@@ -587,36 +580,36 @@ module jMusicScore {
                 if (!nextNote) {
                     // afternote
 
-                    elm = this.sensorEngine.CreateRectObject("editafter_" + note.id, rectLeft + rectWidth, rectTopBefore, rectWidthAfter, rectHeightBefore, 'NoteEditAfter');
+                    elm = this.sensorEngine.createRectObject("editafter_" + note.id, rectLeft + rectWidth, rectTopBefore, rectWidthAfter, rectHeightBefore, 'NoteEditAfter');
                     $(elm).mouseover(function (event) {
                         var pt = me.calcCoordinates(<any>event); // todo: undgå cast
                         var pitch = clefDefinition.staffLineToPitch(Math.round(pt.y / staffLineSpacing)); // todo: abstraher
                         event.data = { note: note/*, feedback: me*/, pitch: pitch };
-                        evRec.ProcessEvent("mouseoverafternote", { note: note, pitch: pitch });
+                        evRec.processEvent("mouseoverafternote", { note: note, pitch: pitch });
                     })
                         .mouseout(function (event) {
                             event.data = { note: note/*, feedback: me*/ };
-                            evRec.ProcessEvent("mouseoutafternote", { note: note });
+                            evRec.processEvent("mouseoutafternote", { note: note });
                         })
                         .mousemove(function (event) {
                             var pt = me.calcCoordinates(<any>event); // todo: undgå cast
                             var pitch = clefDefinition.staffLineToPitch(Math.round(pt.y / staffLineSpacing)); // todo: abstraher
                             event.data = { note: note/*, feedback: me*/, pitch: pitch };
-                            evRec.ProcessEvent("mousemoveafternote", { note: note, pitch: pitch });
+                            evRec.processEvent("mousemoveafternote", { note: note, pitch: pitch });
                         })
                         .click(function (event) {
                             var pt = me.calcCoordinates(<any>event); // todo: undgå cast
                             var pitch = clefDefinition.staffLineToPitch(Math.round(pt.y / staffLineSpacing)); // todo: abstraher
                             event.data = { note: note, voice: note.parent/*, feedback: me*/, pitch: pitch };
-                            evRec.ProcessEvent("clickafternote", { note: note, pitch: pitch, voice: note.parent });
+                            evRec.processEvent("clickafternote", { note: note, pitch: pitch, voice: note.parent });
                         });
                 }
             }
-            VisitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
+            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
             }
-            VisitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
+            visitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
             }
-            VisitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) {
+            visitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) {
                 /*var voiceRef = this.sensorFactory.MakeSureVoiceSensor(voice, staffRef, svgHelper, {
                       'click': (event) => {
                           event.data = { voice: voice };
@@ -625,91 +618,91 @@ module jMusicScore {
                   });*/
 
             }
-            VisitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
-                var elm = this.sensorEngine.CreateRectObject("edit_" + clef.id, spacing.preWidth, -12, spacing.preWidth + spacing.width, 24, 'ClefEdit');
+            visitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
+                var elm = this.sensorEngine.createRectObject("edit_" + clef.id, spacing.preWidth, -12, spacing.preWidth + spacing.width, 24, 'ClefEdit');
                 var evRec = this.eventReceiver;
                 //var me = this;
                 $(elm).mouseover(function (event) {
                     event.data = { clef: clef/*, feedback: me*/ };
-                    evRec.ProcessEvent("mouseoverclef", { clef: clef });
+                    evRec.processEvent("mouseoverclef", { clef: clef });
                 })
                     .mouseout(function (event) {
                         event.data = { clef: clef/*, feedback: me*/ };
-                        evRec.ProcessEvent("mouseoutclef", { clef: clef });
+                        evRec.processEvent("mouseoutclef", { clef: clef });
                     })
                     .click(function (event) {
                         event.data = { clef: clef/*, feedback: me*/ };
-                        evRec.ProcessEvent("clickclef", { clef: clef });
+                        evRec.processEvent("clickclef", { clef: clef });
                     });
             }
-            VisitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
-                var elm = this.sensorEngine.CreateRectObject("edit_" + meter.id, spacing.preWidth, -12, spacing.preWidth + spacing.width, 24, 'MeterEdit');
+            visitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
+                var elm = this.sensorEngine.createRectObject("edit_" + meter.id, spacing.preWidth, -12, spacing.preWidth + spacing.width, 24, 'MeterEdit');
                 var evRec = this.eventReceiver;
                 //var me = this;
                 $(elm).mouseover(function (event) {
                     event.data = { meter: meter/*, feedback: me*/ };
-                    evRec.ProcessEvent("mouseovermeter", { meter: meter });
+                    evRec.processEvent("mouseovermeter", { meter: meter });
                 })
                     .mouseout(function (event) {
                         event.data = { meter: meter/*, feedback: me*/ };
-                        evRec.ProcessEvent("mouseoutmeter", { meter: meter });
+                        evRec.processEvent("mouseoutmeter", { meter: meter });
                     })
                     .click(function (event) {
                         event.data = { meter: meter/*, feedback: me*/ };
-                        evRec.ProcessEvent("clickmeter", { meter: meter });
+                        evRec.processEvent("clickmeter", { meter: meter });
                     });
             }
-            VisitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
+            visitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
                 /*this.sensorFactory.MakeSureGraphElementSensor(key, staffRef, svgHelper, {
                     'click': (event: JQueryEventObject) => {
                         event.data = { key: key };
                         app.ProcessEvent("clickkey", event);
                     }
                 });*/
-                var elm = this.sensorEngine.CreateRectObject("edit_" + key.id, spacing.preWidth, -12, spacing.preWidth + spacing.width, 24, 'KeyEdit');
+                var elm = this.sensorEngine.createRectObject("edit_" + key.id, spacing.preWidth, -12, spacing.preWidth + spacing.width, 24, 'KeyEdit');
                 var evRec = this.eventReceiver;
                 //var me = this;
                 $(elm).mouseover(function (event) {
                     event.data = { key: key/*, feedback: me*/ };
-                    evRec.ProcessEvent("mouseoverkey", { keySig: key});
+                    evRec.processEvent("mouseoverkey", { keySig: key});
                 })
                     .mouseout(function (event) {
                         event.data = { key: key/*, feedback: me*/ };
-                        evRec.ProcessEvent("mouseoutkey", { keySig: key });
+                        evRec.processEvent("mouseoutkey", { keySig: key });
                     })
                     .click(function (event) {
                         event.data = { key: key/*, feedback: me*/ };
-                        evRec.ProcessEvent("clickkey", { keySig: key });
+                        evRec.processEvent("clickkey", { keySig: key });
                     });
             }
-            VisitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
+            visitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
             }
-            VisitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
+            visitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
             }
-            VisitTextSyllable(textSyllable: Model.ITextSyllableElement, textSpacing: Model.ITextSyllableSpacingInfo) {
+            visitTextSyllable(textSyllable: Model.ITextSyllableElement, textSpacing: Model.ITextSyllableSpacingInfo) {
             }
-            VisitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
-                var elm = this.sensorEngine.CreateRectObject("edit_" + bar.id, -spacing.preWidth + spacing.extraXOffset - 3, 0, spacing.preWidth + spacing.width, spacing.end.y - spacing.offset.y, 'BarEdit');
+            visitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
+                var elm = this.sensorEngine.createRectObject("edit_" + bar.id, -spacing.preWidth + spacing.extraXOffset - 3, 0, spacing.preWidth + spacing.width, spacing.end.y - spacing.offset.y, 'BarEdit');
                 var evRec = this.eventReceiver;
                 //var me = this;
                 $(elm).mouseover(function (event) {
                     event.data = { bar: bar/*, feedback: me*/ };
-                    evRec.ProcessEvent("mouseoverbar", { bar: bar });
+                    evRec.processEvent("mouseoverbar", { bar: bar });
                 })
                     .mouseout(function (event) {
                         event.data = { bar: bar/*, feedback: me*/ };
-                        evRec.ProcessEvent("mouseoutbar", { bar: bar });
+                        evRec.processEvent("mouseoutbar", { bar: bar });
                     })
                     .click(function (event) {
                         event.data = { bar: bar/*, feedback: me*/ };
-                        evRec.ProcessEvent("clickbar", { bar: bar });
+                        evRec.processEvent("clickbar", { bar: bar });
                     });
             }
-            VisitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
+            visitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
             }
-            VisitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void { }
+            visitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void { }
 
-            VisitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
+            visitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
 
 
                         /*
@@ -812,9 +805,9 @@ module jMusicScore {
 
 
         export class RedrawVisitor implements Model.IVisitor {
-            constructor(private graphEngine: Views.IGraphicsEngine) { }
+            constructor(private graphEngine: IGraphicsEngine) { }
 
-            static getTie(spacing: Model.INoteHeadSpacingInfo) {
+            static getTie(spacing: Model.INoteHeadSpacingInfo): string {
                 if (spacing.tieStart) {
                     //var tiedTo = <Model.NoteheadElement>headElm.getProperty("tiedTo");
                     if (true) { // todo: if length is changed
@@ -842,7 +835,7 @@ module jMusicScore {
             }
 
 
-            private accidentalDefs: { [Index: string]: string } = {
+            private accidentalDefs: { [index: string]: string } = {
                 "bb": "e_accidentals.M4", // bb
                 "b": "e_accidentals.M2", // b
                 "n": "e_accidentals.0", // nat
@@ -852,54 +845,54 @@ module jMusicScore {
 
 
 
-            VisitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
-                this.graphEngine.CreateMusicObject(null, spacing.headGlyph, spacing.displace.x, spacing.displace.y, spacing.graceScale);
+            visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
+                this.graphEngine.createMusicObject(null, spacing.headGlyph, spacing.displace.x, spacing.displace.y, spacing.graceScale);
                 if (head.getAccidental()) {
-                    this.graphEngine.CreateMusicObject(null, this.accidentalDefs[head.getAccidental()], spacing.offset.x + spacing.accidentalX, 0, spacing.graceScale);
+                    this.graphEngine.createMusicObject(null, this.accidentalDefs[head.getAccidental()], spacing.offset.x + spacing.accidentalX, 0, spacing.graceScale);
                 }
                 var tiePath = RedrawVisitor.getTie(spacing);
                 if (tiePath) {
-                    this.graphEngine.CreatePathObject(tiePath, 0, 0, 1, undefined, 'black');
+                    this.graphEngine.createPathObject(tiePath, 0, 0, 1, undefined, 'black');
                 }
                 // dots
                 for (var i = 0; i < head.parent.dotNo; i++) {
-                    var dot = this.graphEngine.CreateMusicObject(null, 'e_dots.dot', head.parent.spacingInfo.dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 0, spacing.graceScale);
+                    var dot = this.graphEngine.createMusicObject(null, 'e_dots.dot', head.parent.spacingInfo.dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 0, spacing.graceScale);
                 }
             }
-            VisitNote(note: Model.INote, noteSpacing: Model.INoteSpacingInfo) {
+            visitNote(note: Model.INote, noteSpacing: Model.INoteSpacingInfo) {
                 // note stem
                 if (!note.rest) {
                     var dirFactor = noteSpacing.rev ? -1 : 1;
-                    this.graphEngine.CreatePathObject("m " + noteSpacing.stemX + "," + noteSpacing.stemRootY
+                    this.graphEngine.createPathObject("m " + noteSpacing.stemX + "," + noteSpacing.stemRootY
                         + " l 0," + (-dirFactor * noteSpacing.stemLength) + " " + 0.75 /*SVGMetrics.stemWidth*/ + "," + (dirFactor + 0/*SVGMetrics.stemYSlope*/) + " 0," + (dirFactor * noteSpacing.stemLength) + " z", 0, 0, 1, undefined, 'black');
                     // flag
                     if (noteSpacing.flagNo) {
                         var flagSuffix = "" + (noteSpacing.flagNo + 2);
                         if (noteSpacing.rev) {
                             //todo: SVGMetrics
-                            this.graphEngine.CreateMusicObject(null, 'e_flags.d' + flagSuffix, noteSpacing.flagDisplacement.x, (3/*SVGMetrics.pitchYFactor*/ * noteSpacing.highPitchY) + noteSpacing.stemLength + noteSpacing.flagDisplacement.y, noteSpacing.graceScale);
+                            this.graphEngine.createMusicObject(null, 'e_flags.d' + flagSuffix, noteSpacing.flagDisplacement.x, (3/*SVGMetrics.pitchYFactor*/ * noteSpacing.highPitchY) + noteSpacing.stemLength + noteSpacing.flagDisplacement.y, noteSpacing.graceScale);
                         } else {
-                            this.graphEngine.CreateMusicObject(null, 'e_flags.u' + flagSuffix, noteSpacing.flagDisplacement.x, (3/*SVGMetrics.pitchYFactor*/ * noteSpacing.lowPitchY) - noteSpacing.stemLength + noteSpacing.flagDisplacement.y, noteSpacing.graceScale);
+                            this.graphEngine.createMusicObject(null, 'e_flags.u' + flagSuffix, noteSpacing.flagDisplacement.x, (3/*SVGMetrics.pitchYFactor*/ * noteSpacing.lowPitchY) - noteSpacing.stemLength + noteSpacing.flagDisplacement.y, noteSpacing.graceScale);
                         }
                     }
                 }
                 // rest
-                if (note.rest && note.noteId != 'hidden') {
-                    this.graphEngine.CreateMusicObject(null, noteSpacing.restGlyph, -4.5/*SVGMetrics.restXDisplacement*/, 12/*SVGMetrics.restY*/, 1);
+                if (note.rest && note.NoteId != 'hidden') {
+                    this.graphEngine.createMusicObject(null, noteSpacing.restGlyph, -4.5/*SVGMetrics.restXDisplacement*/, 12/*SVGMetrics.restY*/, 1);
 
                     for (var i = 0; i < note.dotNo; i++) {
-                        var dot = this.graphEngine.CreateMusicObject(null, 'e_dots.dot', noteSpacing.dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 12, 1);
+                        var dot = this.graphEngine.createMusicObject(null, 'e_dots.dot', noteSpacing.dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 12, 1);
                     }
                 }
                 // ledger lines
                 for (var i = 0; i < noteSpacing.ledgerLinesOver.length; i++) {
                     var l = noteSpacing.ledgerLinesOver[i];
-                    this.graphEngine.CreatePathObject("M " + l.xStart + "," + l.y +
+                    this.graphEngine.createPathObject("M " + l.xStart + "," + l.y +
                         " L " + l.xEnd + "," + l.y + " z", 0, 0, 1, '#999999', undefined);
                 }
                 for (var i = 0; i < noteSpacing.ledgerLinesUnder.length; i++) {
                     var l = noteSpacing.ledgerLinesUnder[i];
-                    this.graphEngine.CreatePathObject("M " + l.xStart + "," + l.y +
+                    this.graphEngine.createPathObject("M " + l.xStart + "," + l.y +
                         " L " + l.xEnd + "," + l.y + " z", 0, 0, 1, '#999999', undefined);
                 }
 
@@ -911,99 +904,99 @@ module jMusicScore {
                         var beamSpacing = beam.spacingInfo;
                         var step = beam.index * beamSpacing.beamDist;
 
-                        this.graphEngine.CreatePathObject("M " + beamSpacing.start.x + "," + (beamSpacing.start.y + step) +
+                        this.graphEngine.createPathObject("M " + beamSpacing.start.x + "," + (beamSpacing.start.y + step) +
                             " L " + beamSpacing.end.x + "," + (beamSpacing.end.y + step) +
                             " " + beamSpacing.end.x + "," + (beamSpacing.end.y + 2 + step) +
                             " " + beamSpacing.start.x + "," + (beamSpacing.start.y + 2 + step) +
                             " z", 0, 0, 1, undefined, 'black', 'beam_'+beam.parent.id + '_' + beam.index);
                     }
             }
-            VisitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
-                if (spacing.Render) spacing.Render(deco, this.graphEngine);
+            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
+                if (spacing.render) spacing.render(deco, this.graphEngine);
             }
-            VisitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
+            visitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
                 // short deco
                 var decoId = deco.getDecorationId();
-                if (decoId >= Model.NoteDecorationKind.arpeggio && decoId <= Model.NoteDecorationKind.nonArpeggio) {
+                if (decoId >= Model.NoteDecorationKind.Arpeggio && decoId <= Model.NoteDecorationKind.NonArpeggio) {
                     // arpeggio
-                    if (decoId === Model.NoteDecorationKind.arpeggio || (decoId === Model.NoteDecorationKind.arpeggioDown)) {
+                    if (decoId === Model.NoteDecorationKind.Arpeggio || (decoId === Model.NoteDecorationKind.ArpeggioDown)) {
                         var yL = deco.parent.spacingInfo.lowPitchY;
                         var yH = deco.parent.spacingInfo.highPitchY;
                         var yStep = 2;
                         var y = yL;
                         while (y >= yH) {
-                            if (y === yL && (decoId === Model.NoteDecorationKind.arpeggioDown)) {
-                                this.graphEngine.CreateMusicObject(null, 'e_scripts.arpeggio.arrow.M1', -12, y * 3 + 2, 1);
+                            if (y === yL && (decoId === Model.NoteDecorationKind.ArpeggioDown)) {
+                                this.graphEngine.createMusicObject(null, 'e_scripts.arpeggio.arrow.M1', -12, y * 3 + 2, 1);
                             }
                             else
-                            this.graphEngine.CreateMusicObject(null, 'e_scripts.arpeggio', -12, y*3+2, 1);
+                            this.graphEngine.createMusicObject(null, 'e_scripts.arpeggio', -12, y*3+2, 1);
                             y -= yStep;
                         }
                         
                     }
-                    else if (decoId === Model.NoteDecorationKind.nonArpeggio) {
+                    else if (decoId === Model.NoteDecorationKind.NonArpeggio) {
                         var yL = deco.parent.spacingInfo.lowPitchY;
                         var yH = deco.parent.spacingInfo.highPitchY;
                         var path = 'm -10,' + (yL*3 + 2) + ' l -2,0 0,' + ((yH - yL)*3 - 4) + ' 2,0';
-                        this.graphEngine.CreatePathObject(path, 0, 0, 1, 'black', null);
+                        this.graphEngine.createPathObject(path, 0, 0, 1, 'black', null);
                     }
                 }
                 else {
                     var ref = Editors.NoteDecorations.getGlyph(decoId, deco.placement === "over");
 
                     if (ref) {
-                        this.graphEngine.CreateMusicObject(null, ref, 0, 0, 1);
+                        this.graphEngine.createMusicObject(null, ref, 0, 0, 1);
                     }
                     else {
                         alert("Error: " + decoId);
                     }
                 }
             }
-            VisitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) { }
-            VisitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
-                this.graphEngine.CreateMusicObject(null, spacing.clefId, 0, 0, 1);
+            visitVoice(voice: Model.IVoice, spacing: Model.IVoiceSpacingInfo) { }
+            visitClef(clef: Model.IClef, spacing: Model.IClefSpacingInfo) {
+                this.graphEngine.createMusicObject(null, spacing.clefId, 0, 0, 1);
             }
-            VisitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
+            visitMeter(meter: Model.IMeter, spacing: Model.IMeterSpacingInfo) {
                 if (!spacing) { meter.setSpacingInfo(spacing = new MusicSpacing.MeterSpacingInfo(meter)); }
-                Views.MeterDrawer.addMeterXY(null, this.graphEngine, meter.definition, 0, 0);
+                MeterDrawer.addMeterXy(null, this.graphEngine, meter.definition, 0, 0);
             }
-            VisitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
+            visitKey(key: Model.IKey, spacing: Model.IKeySpacingInfo) {
                 var staffContext = key.parent.getStaffContext(key.absTime);
-                Views.KeyDrawer.addKeyXY(null, this.graphEngine, key.definition, staffContext.clef.definition, 0, 0);
+                KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef.definition, 0, 0);
             }
-            VisitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
+            visitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
                 for (var i = 0; i < 5; i++) {
-                    this.graphEngine.CreatePathObject("m 0," + i * spacing.staffSpace * 2 + " l " + spacing.staffLength + ",0", 0, 0, 1, '#888', undefined, 'staffline' + staff.id + ' ' + i);
+                    this.graphEngine.createPathObject("m 0," + i * spacing.staffSpace * 2 + " l " + spacing.staffLength + ",0", 0, 0, 1, '#888', undefined, 'staffline' + staff.id + ' ' + i);
                 }
             }
-            VisitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
+            visitScore(score: Model.IScore, spacing: Model.IScoreSpacingInfo) {
                 //this.graphEngine.SetSize(spacing.width * spacing.scale, spacing.height);
             }
-            VisitTextSyllable(textSyllable: Model.ITextSyllableElement, textSpacing: Model.ITextSyllableSpacingInfo) {
-                this.graphEngine.DrawText("text" + textSyllable.id, textSyllable.text, 0, 0, "center");
+            visitTextSyllable(textSyllable: Model.ITextSyllableElement, textSpacing: Model.ITextSyllableSpacingInfo) {
+                this.graphEngine.drawText("text" + textSyllable.id, textSyllable.Text, 0, 0, "center");
             }
-            VisitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
-                this.graphEngine.CreatePathObject("m " + spacing.extraXOffset + ",0 l 0," + (spacing.end.y - spacing.offset.y), 0, 0, 1, '#444444', undefined);
+            visitBar(bar: Model.IBar, spacing: Model.IBarSpacingInfo) {
+                this.graphEngine.createPathObject("m " + spacing.extraXOffset + ",0 l 0," + (spacing.end.y - spacing.offset.y), 0, 0, 1, '#444444', undefined);
             }
-            VisitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
+            visitBeam(beam: Model.IBeam, spacing: Model.IBeamSpacingInfo) {
             }
-            VisitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void {
-                this.graphEngine.DrawText("text" + staffExpression.id, staffExpression.text, 0, 0, "left");
+            visitStaffExpression(staffExpression: Model.IStaffExpression, spacing: Model.IStaffExpressionSpacingInfo): void {
+                this.graphEngine.drawText("text" + staffExpression.id, staffExpression.text, 0, 0, "left");
             }
 
-            VisitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
+            visitDefault(element: Model.IMusicElement, spacing: Model.ISpacingInfo): void { }
         }
 
         export class PrefixVisitor implements Model.IVisitorIterator {
-            constructor(private visitor: Model.IVisitor, private cge: Views.IBaseGraphicsEngine, private prefix = '') {
+            constructor(private visitor: Model.IVisitor, private cge: IBaseGraphicsEngine, private prefix = '') {
             }
-            public VisitPre(element: Model.IMusicElement): (element: Model.IMusicElement) => void {
+            public visitPre(element: Model.IMusicElement): (element: Model.IMusicElement) => void {
                 var spacing = element.spacingInfo;
                 if (spacing) {
-                    var grp = this.cge.BeginGroup(this.prefix + element.id, spacing.offset.x, spacing.offset.y, spacing.scale, element.getElementName());
-                    element.InviteVisitor(this.visitor);
+                    var grp = this.cge.beginGroup(this.prefix + element.id, spacing.offset.x, spacing.offset.y, spacing.scale, element.getElementName());
+                    element.inviteVisitor(this.visitor);
                     //spacing.InviteVisitor(this.visitor);
-                    return (element: Model.IMusicElement) => { this.cge.EndGroup(grp); };
+                    return (element: Model.IMusicElement) => { this.cge.endGroup(grp); };
                 }
             }
         }
@@ -1014,7 +1007,7 @@ module jMusicScore {
     /// Music 
     export module SvgView {
 
-        class SVGMetrics { // todo: yt
+        class SvgMetrics { // todo: yt
             // NoteOutput
             static pitchYFactor = MusicSpacing.Metrics.pitchYFactor;
             
@@ -1039,7 +1032,7 @@ module jMusicScore {
         /***************************************** Notes ****************************************************/
 
 
-        interface NoteDef {
+        interface INoteDef {
             dotWidth: number;
             postfix: string;
             timeVal: number;
@@ -1052,36 +1045,36 @@ module jMusicScore {
             noteStem: string;
             noteStemRev: string;
             beamCount?: number;
-            flag_suffix?: string;
+            flagSuffix?: string;
             rest?: boolean;
         }
         //todo: still some spacing
-        class SVGClefOutput {
-            public static RefId(def: Model.ClefDefinition, change: boolean): string {//todo: væk
+        class SvgClefOutput {
+            public static refId(def: Model.ClefDefinition, change: boolean): string {//todo: væk
                 if (change) {
                     switch (def.clefCode) {
-                        case Model.ClefType.clefG: {
+                        case Model.ClefType.ClefG: {
                             if (def.transposition === -7) { return "tenor-clef"; }
                             else return "e_clefs.G_change";
                         }
-                        case Model.ClefType.clefC: return "e_clefs.C_change";
-                        case Model.ClefType.clefF: return "e_clefs.F_change";
-                        case Model.ClefType.clefNone: return "";
-                        case Model.ClefType.clefPercussion: return "e_clefs.percussion_change";
-                        case Model.ClefType.clefTab: return "e_clefs.tab_change";
+                        case Model.ClefType.ClefC: return "e_clefs.C_change";
+                        case Model.ClefType.ClefF: return "e_clefs.F_change";
+                        case Model.ClefType.ClefNone: return "";
+                        case Model.ClefType.ClefPercussion: return "e_clefs.percussion_change";
+                        case Model.ClefType.ClefTab: return "e_clefs.tab_change";
                     }
                 }
                 else {
                     switch (def.clefCode) {
-                        case Model.ClefType.clefG: {
+                        case Model.ClefType.ClefG: {
                             if (def.transposition === -7) { return "tenor-clef"; }
                             else return "e_clefs.G";
                         }
-                        case Model.ClefType.clefC: return "e_clefs.C";
-                        case Model.ClefType.clefF: return "e_clefs.F";
-                        case Model.ClefType.clefNone: return "";
-                        case Model.ClefType.clefPercussion: return "e_clefs.percussion";
-                        case Model.ClefType.clefTab: return "e_clefs.tab";
+                        case Model.ClefType.ClefC: return "e_clefs.C";
+                        case Model.ClefType.ClefF: return "e_clefs.F";
+                        case Model.ClefType.ClefNone: return "";
+                        case Model.ClefType.ClefPercussion: return "e_clefs.percussion";
+                        case Model.ClefType.ClefTab: return "e_clefs.tab";
                     }
                 }
             }/**/
@@ -1089,11 +1082,11 @@ module jMusicScore {
         }
 
                 
-        class SVGSizeDesigner implements ScoreApplication.ScoreDesigner {
-            constructor(private svgHelper: SVGHelper) {
+        class SvgSizeDesigner implements ScoreApplication.IScoreDesigner {
+            constructor(private svgHelper: SvgHelper) {
             }
 
-            Validate(app: ScoreApplication.ScoreApplication) {
+            validate(app: ScoreApplication.IScoreApplication) {
 /*                var height = SVGMetrics.staffYStep * app.score.staffElements.length + SVGMetrics.staffYOffset;
                 var pixelHeight = this.svgHelper.unitSvgToHtml(height);
                 app.container.find('.clientArea').height(pixelHeight);
@@ -1105,7 +1098,7 @@ module jMusicScore {
             }
         }
 
-        export class DOMFeedbackClient implements Application.IFeedbackClient {
+        export class DomFeedbackClient implements Application.IFeedbackClient {
             constructor(private sensorEngine: Views.ISensorGraphicsEngine) { }
             changed(status: ScoreApplication.ScoreStatusManager, key: string, val: any) {
                 if (key === "currentNote" || key === "currentPitch") {
@@ -1116,28 +1109,28 @@ module jMusicScore {
                             var staffContext = note.parent.parent.getStaffContext(note.absTime);
                             staffLine = staffContext.clef.pitchToStaffLine(status.currentPitch);
                         }
-                        this.sensorEngine.ShowInsertionPoint(note.id, note.getHorizPosition().beforeAfter * 9, staffLine * SVGMetrics.pitchYFactor);
+                        this.sensorEngine.showInsertionPoint(note.id, note.getHorizPosition().beforeAfter * 9, staffLine * SvgMetrics.pitchYFactor);
                     }
                     else if (!status.currentVoice) {
-                        this.sensorEngine.HideInsertionPoint();
+                        this.sensorEngine.hideInsertionPoint();
                     }
                 } // todo: note?
                 else if (key === "currentNote") {
                     var note = <Model.INote>val;
                     if (note) {
-                        this.ShowNoteCursor(note.id, note.parent, note.getHorizPosition(), new Model.Pitch(0, ''));
+                        this.showNoteCursor(note.id, note.parent, note.getHorizPosition(), new Model.Pitch(0, ''));
                     }
                     else {
-                        this.HideNoteCursor();
+                        this.hideNoteCursor();
                     }
                 }
                 else if (key === "insertPoint") {
                     if (status.currentVoice) {
                         var hPos = <Model.HorizPosition>val;
-                        var events = status.currentVoice.getEvents(hPos.absTime, hPos.absTime.Add(new Model.TimeSpan(1,1024))); // todo: grimt!
+                        var events = status.currentVoice.getEvents(hPos.absTime, hPos.absTime.add(new Model.TimeSpan(1,1024))); // todo: grimt!
                         if (events.length) {
                             var id = events[0].id;
-                            this.sensorEngine.ShowInsertionPoint(id, hPos.beforeAfter * 9, staffLine * SVGMetrics.pitchYFactor);
+                            this.sensorEngine.showInsertionPoint(id, hPos.beforeAfter * 9, staffLine * SvgMetrics.pitchYFactor);
                         }
                     }
                 }
@@ -1150,32 +1143,32 @@ module jMusicScore {
                 }
                 else if (key === "mouseOverElement") {
                     if (status.mouseOverElement)
-                        this.MouseOverElement(status.mouseOverElement, true);
+                        this.mouseOverElement(status.mouseOverElement, true);
                 }
                 else if (key === "mouseOutElement") {
                     if (val)
-                        this.MouseOverElement(val, false);
+                        this.mouseOverElement(val, false);
                 }
             }
 
             public mouseOverStyle: string = "color:#f00;fill:#960;fill-opacity:0.5;stroke:none";
 
-            ShowNoteCursor(noteId: string, voice: Model.IVoice, horizPos: Model.HorizPosition, pitch: Model.Pitch) {
-                this.sensorEngine.ShowCursor(noteId);
+            showNoteCursor(noteId: string, voice: Model.IVoice, horizPos: Model.HorizPosition, pitch: Model.Pitch) {
+                this.sensorEngine.showCursor(noteId);
                 var events = voice.getEvents();
                 for (var i = 0; i < events.length; i++) {
                     var ev = events[i];
-                    if (ev.getHorizPosition().Eq(horizPos)) {
+                    if (ev.getHorizPosition().eq(horizPos)) {
                         var staffContext = voice.parent.getStaffContext(horizPos.absTime);
                         var staffLine = staffContext.clef.pitchToStaffLine(pitch);
-                        this.sensorEngine.MoveCursor(ev.id, horizPos.beforeAfter * 9, staffLine * SVGMetrics.pitchYFactor); // todo: spacing
+                        this.sensorEngine.moveCursor(ev.id, horizPos.beforeAfter * 9, staffLine * SvgMetrics.pitchYFactor); // todo: spacing
                     }
                 }
             }
-            HideNoteCursor() {
-                this.sensorEngine.HideCursor();
+            hideNoteCursor() {
+                this.sensorEngine.hideCursor();
             }
-            MouseOverElement(elm: Model.IMusicElement, over: boolean) {
+            mouseOverElement(elm: Model.IMusicElement, over: boolean) {
                 $('#' + elm.id).attr("style", over ? this.mouseOverStyle : "");
                 if (elm.getElementName() === "Bar") {
                     $('#' + elm.id + ' path').attr("style", over ? "stroke:#4444ff" : "stroke:#444444");
@@ -1198,13 +1191,13 @@ module jMusicScore {
 
         }
 
-        export class SVGViewer implements ScoreApplication.ScorePlugin {
+        export class SvgViewer implements ScoreApplication.IScorePlugin {
             constructor(private $svg: JQuery) {
             }
 
-            private svgHelper: SVGHelper;
+            private svgHelper: SvgHelper;
 
-            public Init(app: ScoreApplication.ScoreApplication) {
+            public init(app: ScoreApplication.IScoreApplication) {
                 //var $svg = app.container.find('.svgArea');
                 if (!this.$svg.length) {
                     var $clientArea = app.container.find('.clientArea');
@@ -1215,30 +1208,30 @@ module jMusicScore {
                 }
                 this.$svg.height(300);
 
-                var svg = <SVGSVGElement>document.createElementNS(SVGHelper.xmlns, "svg");
+                var svg = <SVGSVGElement>document.createElementNS(SvgHelper.xmlns, "svg");
                 svg.setAttributeNS(null, "version", "1.1");
                 svg.setAttributeNS(null, "width", "900");
                 svg.setAttributeNS(null, "height", "300");
                 svg.setAttributeNS(null, "id", "Layer_1");
                 this.$svg[0].appendChild(svg);
 
-                this.svgHelper = new SVGHelper(document, svg);
+                this.svgHelper = new SvgHelper(document, svg);
 
-                app.AddDesigner(new MusicSpacing.SpacingDesigner());
-                app.AddDesigner(new Views.ExpressionRenderer());
-                app.AddDesigner(new TimelineDesigner(this.svgHelper));
+                app.addDesigner(new MusicSpacing.SpacingDesigner());
+                app.addDesigner(new Views.ExpressionRenderer());
+                app.addDesigner(new TimelineDesigner(this.svgHelper));
                 //app.AddDesigner(new BeamDesigner(this.context, this.svgHelper));
                 var editors = false;
                 if (editors) {
                     //app.AddDesigner(new SVGSensorsValidator(this.svgHelper));
-                    app.AddDesigner(new SVGSizeDesigner(this.svgHelper));
+                    app.addDesigner(new SvgSizeDesigner(this.svgHelper));
                 }
-                app.AddWriter(new SVGWriter(this.svgHelper));
+                app.addWriter(new SvgWriter(this.svgHelper));
 
-                app.FeedbackManager.registerClient(new DOMFeedbackClient(this.svgHelper.EditGraphicsHelper));
+                app.FeedbackManager.registerClient(new DomFeedbackClient(this.svgHelper.EditGraphicsHelper));
             }
 
-            public GetId(): string {
+            public getId(): string {
                 return "Output";
             }
 
@@ -1246,7 +1239,7 @@ module jMusicScore {
 
         /********************************* PRIVATE CLASSES ******************************************/
 
-        class SVGGraphicsEngine implements Views.IGraphicsEngine, Views.ISensorGraphicsEngine {
+        class SvgGraphicsEngine implements Views.IGraphicsEngine, Views.ISensorGraphicsEngine {
             constructor(svg: any) {
                 this._svg = svg;
                 this._currentGroup = svg;
@@ -1260,7 +1253,7 @@ module jMusicScore {
                 var m = (<SVGRectElement>event.currentTarget).getScreenCTM();
                 p = p.matrixTransform(m.inverse());
 
-                p.y = Math.round((p.y + 1) / SVGMetrics.pitchYFactor) * SVGMetrics.pitchYFactor;
+                p.y = Math.round((p.y + 1) / SvgMetrics.pitchYFactor) * SvgMetrics.pitchYFactor;
 
                 return p;
             }
@@ -1273,10 +1266,10 @@ module jMusicScore {
             private _svg: any;
             get svg(): any { return this._svg; }
 
-            private TransformElement(elm: Element, x: number, y: number, scale: number) {
+            private transformElement(elm: Element, x: number, y: number, scale: number) {
                 elm.setAttributeNS(null, "transform", 'translate (' + x + ',' + y + '), scale(' + scale + ',' + scale + ')');
             }
-            public SetSize(width: number, height: number) {
+            public setSize(width: number, height: number) {
                 /*var pixelHeight = this.unitSvgToHtml(height);
                 $('.clientArea').height(pixelHeight);*/
                 var $svg = $(this.svg);
@@ -1290,29 +1283,29 @@ module jMusicScore {
             // ISensorEngine members
             private cursorElement: SVGUseElement;
             private insertionElement: SVGGElement;
-            public MoveCursor(id: string, x: number, y: number) {
+            public moveCursor(id: string, x: number, y: number) {
                 $('#ed_' + id).prepend(this.cursorElement);
                 $(this.cursorElement).attr({ transform: "translate (" + x + ", " + y + ")" });
             }
-            public ShowCursor(noteId: string) {
+            public showCursor(noteId: string) {
                 if (!this.cursorElement) {
-                    this.cursorElement = this.CreateMusicObject(noteId, noteId, 0, 0, 1);
+                    this.cursorElement = this.createMusicObject(noteId, noteId, 0, 0, 1);
                 }
                 this.cursorElement.style.opacity = '1.0';
             }
-            public HideCursor() {
+            public hideCursor() {
                 if (this.cursorElement) {
                     this.cursorElement.style.opacity = '0.0';
                 }
             }
-            public ShowInsertionPoint(id: string, x: number, y: number) {
+            public showInsertionPoint(id: string, x: number, y: number) {
                 if (!this.insertionElement) {
-                    this.insertionElement = <SVGGElement>document.createElementNS(SVGHelper.xmlns, "g");
-                    var horiz = document.createElementNS(SVGHelper.xmlns, "path");
+                    this.insertionElement = <SVGGElement>document.createElementNS(SvgHelper.xmlns, "g");
+                    var horiz = document.createElementNS(SvgHelper.xmlns, "path");
                     horiz.setAttributeNS(null, "class", 'horiz');
                     horiz.setAttributeNS(null, "d", 'm -6,0 l 12,0');
                     horiz.setAttributeNS(null, "style", "stroke:#a44");
-                    var vert = document.createElementNS(SVGHelper.xmlns, "path");
+                    var vert = document.createElementNS(SvgHelper.xmlns, "path");
                     vert.setAttributeNS(null, "d", 'm 0,-6 l 0,36');
                     vert.setAttributeNS(null, "style", "stroke:#a44");
                     this.insertionElement.appendChild(horiz);
@@ -1323,32 +1316,32 @@ module jMusicScore {
                 (<SVGPathElement>this.insertionElement.getElementsByTagName('path')[0]).setAttribute('transform', "translate (0, " + y + ")");
                 this.insertionElement.setAttribute('display', "inline");
             }
-            public HideInsertionPoint() {
+            public hideInsertionPoint() {
                 $(this.insertionElement).attr({ display: "none" });
             }
 
             // IGraphicsEngine members
-            public CreateMusicObject(id: string, item: string, x: number, y: number, scale: number): any {
-                var curr = this.currentGroup.getElementsByTagNameNS(SVGHelper.xmlns, "path");
+            public createMusicObject(id: string, item: string, x: number, y: number, scale: number): any {
+                var curr = this.currentGroup.getElementsByTagNameNS(SvgHelper.xmlns, "path");
                 if (id)
                 for (var i = 0; i < curr.length; i++) {
                     if (curr[i].attributes.getNamedItem("id") && curr[i].attributes.getNamedItem("id").value === id) {
                         var elm = <Element>curr[i];
-                        elm.setAttributeNS(null, "d", emmentaler_notes[item]);
-                        this.TransformElement(elm, x, y, scale);
+                        elm.setAttributeNS(null, "d", emmentalerNotes[item]);
+                        this.transformElement(elm, x, y, scale);
                         return elm;
                     }
                 }
-                var p = document.createElementNS(SVGHelper.xmlns, "path");
-                this.TransformElement(p, x, y, scale);                        
+                var p = document.createElementNS(SvgHelper.xmlns, "path");
+                this.transformElement(p, x, y, scale);                        
                 p.setAttributeNS(null, 'id', id);
-                p.setAttributeNS(null, 'd', emmentaler_notes[item]);
+                p.setAttributeNS(null, 'd', emmentalerNotes[item]);
                 this.currentGroup.appendChild(p);
                 return p;
             }
-            public CreateRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any {
+            public createRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any {
                 // todo: find eksisterende rect
-                var rect = document.createElementNS(SVGHelper.xmlns, "rect");
+                var rect = document.createElementNS(SvgHelper.xmlns, "rect");
                 rect.setAttributeNS(null, "x", "" + x);
                 rect.setAttributeNS(null, "width", "" + w);
                 rect.setAttributeNS(null, "y", "" + y);
@@ -1360,7 +1353,7 @@ module jMusicScore {
                 this.currentGroup.appendChild(rect);
                 return rect;
             }
-            public CreatePathObject(path: string, x: number, y: number, scale: number, stroke: string, fill: string, id: string = null): any {
+            public createPathObject(path: string, x: number, y: number, scale: number, stroke: string, fill: string, id: string = null): any {
                 if (id) {
                     var exist = document.getElementById(id);
                     if (exist) {
@@ -1371,7 +1364,7 @@ module jMusicScore {
                         return exist;
                     }
                 }
-                var curr = this.currentGroup.getElementsByTagNameNS(SVGHelper.xmlns, "path");
+                var curr = this.currentGroup.getElementsByTagNameNS(SvgHelper.xmlns, "path");
                 for (var i = 0; i < curr.length; i++) {
                     if (curr[i].attributes.getNamedItem("data-path")) {
                         var p1 = curr[i].attributes.getNamedItem("data-path").value;
@@ -1380,7 +1373,7 @@ module jMusicScore {
                         }
                     }
                 }
-                var p = document.createElementNS(SVGHelper.xmlns, "path");
+                var p = document.createElementNS(SvgHelper.xmlns, "path");
                 if (id) p.setAttributeNS(null, "id", id);
                 p.setAttributeNS(null, "d", path);
                 if (!stroke) stroke = 'none';
@@ -1390,9 +1383,9 @@ module jMusicScore {
                 this.currentGroup.appendChild(p);
                 return p;
             }
-            public DrawText(id: string, text: string, x: number, y: number, justify: string): any {
+            public drawText(id: string, text: string, x: number, y: number, justify: string): any {
                 // todo: find existing
-                var textElem = <SVGTextElement>document.createElementNS(SVGHelper.xmlns, "text");
+                var textElem = <SVGTextElement>document.createElementNS(SvgHelper.xmlns, "text");
                 textElem.appendChild(document.createTextNode(text));
                 this.currentGroup.appendChild(textElem);
                 textElem.setAttributeNS(null, "x", '' + x);
@@ -1414,7 +1407,7 @@ module jMusicScore {
             }
 
             //private documentFragment: DocumentFragment;
-            public BeginDraw() {
+            public beginDraw() {
                 if (true) {
                     $(this.svg).empty(); // todo: slet slettede objekter
                     // todo: beams gentegnes
@@ -1432,7 +1425,7 @@ module jMusicScore {
                     this.groupStack = [this.svg];
                 }
             }
-            public EndDraw() {
+            public endDraw() {
                 if (true) {
                     //this.svg.appendChild(this.documentFragment);
                     this.groupStack = [];
@@ -1442,15 +1435,15 @@ module jMusicScore {
                 }
             }
 
-            public BeginGroup(id: string, x: number, y: number, scale: number, className: string): any {
+            public beginGroup(id: string, x: number, y: number, scale: number, className: string): any {
                 /*var curr = $(this.currentGroup).find('#' + id);
                 if (curr.length) {
                     this.currentGroup = curr[0];
                     this.TransformElement(this.currentGroup, x, y, scale);
                 }
                 else*/ {
-                    var newGrp = <Element>document.createElementNS(SVGHelper.xmlns, "g");
-                    this.TransformElement(newGrp, x, y, scale);
+                    var newGrp = document.createElementNS(SvgHelper.xmlns, "g");
+                    this.transformElement(newGrp, x, y, scale);
                     newGrp.setAttributeNS(null, "id", id);
                     newGrp.setAttributeNS(null, "class", className);
                     this.currentGroup.appendChild(newGrp);
@@ -1459,20 +1452,20 @@ module jMusicScore {
                 this.groupStack.push(this.currentGroup);
                 return this.currentGroup;
             }
-            public EndGroup(group: any) {
+            public endGroup(group: any) {
                 this.groupStack.pop();
                 this.currentGroup = this.groupStack[this.groupStack.length - 1];
             }
         }
 
-        class SVGUseGraphicsEngine extends SVGGraphicsEngine {
+        class SvgUseGraphicsEngine extends SvgGraphicsEngine {
             constructor(svg: any, private hiddenGroup: SVGElement) { super(svg); }
 
-            public CreateMusicObject(id: string, item: string, x: number, y: number, scale: number): any {
+            public createMusicObject(id: string, item: string, x: number, y: number, scale: number): any {
 
 
-                var curr = this.currentGroup.getElementsByTagNameNS(SVGHelper.xmlns, "use");
-                var useElm: Element;
+                var curr = this.currentGroup.getElementsByTagNameNS(SvgHelper.xmlns, "use");
+                var useElm: Element = undefined;
                 for (var i = 0; i < curr.length; i++) {
                     if (curr[i].attributes.getNamedItem("id").value === id) {
                         useElm = <Element>curr[i];
@@ -1480,7 +1473,7 @@ module jMusicScore {
                     }
                 }
                 if (!useElm) {
-                    useElm = document.createElementNS(SVGHelper.xmlns, "use");
+                    useElm = document.createElementNS(SvgHelper.xmlns, "use");
                     this.currentGroup.appendChild(useElm);
                 }
                 useElm.setAttributeNS(null, "x", "0");
@@ -1492,7 +1485,7 @@ module jMusicScore {
 
                 var hrefAttr = useElm.attributes.getNamedItem("href");
                 if (!hrefAttr || hrefAttr.textContent !== '#' + item) {
-                    useElm.setAttributeNS(SVGHelper.xmlnsXpath, "href", '#' + item);
+                    useElm.setAttributeNS(SvgHelper.xmlnsXpath, "href", '#' + item);
                     /*var curr = this.hiddenGroup.getElementsByTagNameNS(SVGHelper.xmlns, "path");
                     var elm: Element;
                     for (var i = 0; i < curr.length; i++) {
@@ -1503,8 +1496,8 @@ module jMusicScore {
                     }*/
                     var elm: any = document.getElementById(item);
                     if (!elm) {
-                        elm = document.createElementNS(SVGHelper.xmlns, "path");
-                        elm.setAttributeNS(null, "d", emmentaler_notes[item]);
+                        elm = document.createElementNS(SvgHelper.xmlns, "path");
+                        elm.setAttributeNS(null, "d", emmentalerNotes[item]);
                         elm.setAttributeNS(null, "id", item);
                         this.hiddenGroup.appendChild(elm);
                     }
@@ -1515,26 +1508,26 @@ module jMusicScore {
         }
 
 
-        class SVGHelper {
+        class SvgHelper {
             constructor(private svgDocument: Document, svg: SVGSVGElement) {
                 this.svg = svg;
 
-                this.hiddenLayer = <SVGGElement>document.createElementNS(SVGHelper.xmlns, "g");
+                this.hiddenLayer = <SVGGElement>document.createElementNS(SvgHelper.xmlns, "g");
                 $(this.hiddenLayer).css('display', 'none').attr('id', 'hidden');
                 this.svg.appendChild(this.hiddenLayer);
 
-                this.allLayer = <SVGGElement>document.createElementNS(SVGHelper.xmlns, "g");
+                this.allLayer = <SVGGElement>document.createElementNS(SvgHelper.xmlns, "g");
                 $(this.allLayer).attr('id', "MusicLayer_");
                 this.svg.appendChild(this.allLayer);
 
-                this.music = <SVGGElement>document.createElementNS(SVGHelper.xmlns, "g");
+                this.music = <SVGGElement>document.createElementNS(SvgHelper.xmlns, "g");
                 $(this.music).attr('id', "MusicLayer");
-                this.editLayer = <SVGGElement>document.createElementNS(SVGHelper.xmlns, "g");
+                this.editLayer = <SVGGElement>document.createElementNS(SvgHelper.xmlns, "g");
                 $(this.editLayer).attr('id', "EditLayer");
                 this.allLayer.appendChild(this.music);
                 this.allLayer.appendChild(this.editLayer);
 
-                var rect = document.createElementNS(SVGHelper.xmlns, "rect");
+                var rect = document.createElementNS(SvgHelper.xmlns, "rect");
                 rect.setAttributeNS(null, "x", "0");
                 rect.setAttributeNS(null, "width", "800");
                 rect.setAttributeNS(null, "y", "0");
@@ -1544,8 +1537,8 @@ module jMusicScore {
                 this.music.appendChild(rect);
 
 
-                this._MusicGraphicsHelper = new SVGUseGraphicsEngine(this.music, this.hiddenLayer);
-                this._EditGraphicsHelper = new SVGGraphicsEngine(this.editLayer);
+                this.musicGraphicsHelper = new SvgUseGraphicsEngine(this.music, this.hiddenLayer);
+                this.editGraphicsHelper = new SvgGraphicsEngine(this.editLayer);
             }
             
             static xmlns = 'http://www.w3.org/2000/svg';
@@ -1556,17 +1549,17 @@ module jMusicScore {
             public hiddenLayer: SVGGElement;
             public allLayer: SVGGElement;
             
-            private _MusicGraphicsHelper: Views.IGraphicsEngine;
-            private _EditGraphicsHelper: Views.ISensorGraphicsEngine;
-            public get MusicGraphicsHelper(): Views.IGraphicsEngine { return this._MusicGraphicsHelper; }
-            public get EditGraphicsHelper(): Views.ISensorGraphicsEngine { return this._EditGraphicsHelper; }
+            private musicGraphicsHelper: Views.IGraphicsEngine;
+            private editGraphicsHelper: Views.ISensorGraphicsEngine;
+            public get MusicGraphicsHelper(): Views.IGraphicsEngine { return this.musicGraphicsHelper; }
+            public get EditGraphicsHelper(): Views.ISensorGraphicsEngine { return this.editGraphicsHelper; }
 
             public createRectElement(): SVGRectElement {
-                return <SVGRectElement>(<Document>this.svgDocument).createElementNS(SVGHelper.xmlns, "rect");
+                return <SVGRectElement>(this.svgDocument).createElementNS(SvgHelper.xmlns, "rect");
             }
 
             public createGroupElement(): SVGGElement {
-                return <SVGGElement>(<Document>this.svgDocument).createElementNS(SVGHelper.xmlns, "g");
+                return <SVGGElement>(this.svgDocument).createElementNS(SvgHelper.xmlns, "g");
             }
         }
 
@@ -1576,7 +1569,7 @@ module jMusicScore {
 
         export interface IHintArea {
             Staff: Model.IStaff;
-            checkVoiceButtons(app: ScoreApplication.ScoreApplication, staff: Model.IStaff): void;
+            checkVoiceButtons(app: ScoreApplication.IScoreApplication, staff: Model.IStaff): void;
             release(): void;
         }
 
@@ -1609,7 +1602,7 @@ module jMusicScore {
             private graphic: Views.IGraphicsEngine;
             private voiceButtons: Element[] = [];
 
-            public checkVoiceButtons(app: ScoreApplication.ScoreApplication, staff: Model.IStaff) {
+            public checkVoiceButtons(app: ScoreApplication.IScoreApplication, staff: Model.IStaff) {
                 while (staff.voiceElements.length < this.voiceButtons.length) {
                     var voiceBtn = this.voiceButtons.pop();
                     var parent = voiceBtn.parentNode;
@@ -1658,13 +1651,13 @@ module jMusicScore {
                     p.x -= scrollLeft;
                     if (p.x < 150 && p.x > left) { newKey = key; left = p.x; }
                 });
-                var left = -Infinity;
+                left = -Infinity;
                 this.staff.withClefs((clef: Model.IClef, i: number) => {
                     var p = MusicSpacing.absolutePos(clef, 0, 0);
                     p.x -= scrollLeft;
                     if (p.x < 150 && p.x > left) { newClef = clef; left = p.x; }
                 });
-                var left = -Infinity;
+                left = -Infinity;
                 this.staff.withMeters((meter: Model.IMeter, i: number) => {
                     var p = MusicSpacing.absolutePos(meter, 0, 0);
                     p.x -= scrollLeft;
@@ -1701,19 +1694,19 @@ module jMusicScore {
                     .addClass('helperArea')
                     .appendTo($btnDiv);
 
-                var svg = document.createElementNS(SVGHelper.xmlns, "svg");
+                var svg = document.createElementNS(SvgHelper.xmlns, "svg");
                 svg.setAttributeNS(null, "version", "1.1");
                 svg.setAttributeNS(null, "width", "100");
                 svg.setAttributeNS(null, "height", "65");
                 this.$HelperDiv.append(svg);
 
 
-                var hidden = <SVGElement>document.createElementNS(SVGHelper.xmlns, "g");
+                var hidden = <SVGElement>document.createElementNS(SvgHelper.xmlns, "g");
                 hidden.setAttributeNS(null, "display", "none");
                 svg.appendChild(hidden);
-                var main = <SVGElement>document.createElementNS(SVGHelper.xmlns, "g");
+                var main = <SVGElement>document.createElementNS(SvgHelper.xmlns, "g");
                 svg.appendChild(main);
-                me.graphic = new SVGUseGraphicsEngine(main, hidden);
+                me.graphic = new SvgUseGraphicsEngine(main, hidden);
 
                 this.onScroll(null);
                 var staffContext = this.staff.getStaffContext(Model.AbsoluteTime.startTime);
@@ -1724,67 +1717,67 @@ module jMusicScore {
             }
 
             private redraw() {
-                this.graphic.BeginDraw();
-                var staffLines = this.graphic.BeginGroup('hintstaff' + this.staff.id, 0, 0, this.scale, 'staffLineHelper');
+                this.graphic.beginDraw();
+                var staffLines = this.graphic.beginGroup('hintstaff' + this.staff.id, 0, 0, this.scale, 'staffLineHelper');
                 // staff
                 for (var i = 0; i < 5; i++) {
-                    this.graphic.CreatePathObject("m 10," + (SVGMetrics.staffHelperYOffset + i * SVGMetrics.pitchYFactor * 2) + " l 80,0", 0, 0, 1, '#bbb', undefined);
+                    this.graphic.createPathObject("m 10," + (SvgMetrics.staffHelperYOffset + i * SvgMetrics.pitchYFactor * 2) + " l 80,0", 0, 0, 1, '#bbb', undefined);
                 }
                 //this.graphic.DrawText('teksterbne', 'Hej', 10, 10, 'left');
                 // clef
                 if (this.clefDefinition) {
-                    var clef = this.graphic.BeginGroup('hintclef' + this.staff.id,(10 + SVGMetrics.clefXOffset), SVGMetrics.staffHelperYOffset + (this.clefDefinition.clefLine - 1) * 2 * SVGMetrics.pitchYFactor, 1, 'clefHelper');
-                    this.clefElement = this.graphic.CreateMusicObject('hintclefg' + this.staff.id, SVGClefOutput.RefId(this.clefDefinition, false), 0, 0, 1);
-                    this.graphic.EndGroup(clef);
+                    var clef = this.graphic.beginGroup('hintclef' + this.staff.id,(10 + SvgMetrics.clefXOffset), SvgMetrics.staffHelperYOffset + (this.clefDefinition.clefLine - 1) * 2 * SvgMetrics.pitchYFactor, 1, 'clefHelper');
+                    this.clefElement = this.graphic.createMusicObject('hintclefg' + this.staff.id, SvgClefOutput.refId(this.clefDefinition, false), 0, 0, 1);
+                    this.graphic.endGroup(clef);
                 }
                 // meter
                 if (this.meterDefinition) {
                     var keyWidth = 0;
                     var index = 0;
                     if (this.keyDefinition) {
-                        keyWidth = this.keyDefinition.enumerateKeys().length * SVGMetrics.keyXPerAcc;
+                        keyWidth = this.keyDefinition.enumerateKeys().length * SvgMetrics.keyXPerAcc;
                     }
-                    var meter = this.graphic.BeginGroup('hintmeter' + this.staff.id, 30 + keyWidth + SVGMetrics.clefXOffset + SVGMetrics.meterX,(SVGMetrics.staffHelperYOffset), 1, 'meterHelper');
+                    var meter = this.graphic.beginGroup('hintmeter' + this.staff.id, 30 + keyWidth + SvgMetrics.clefXOffset + SvgMetrics.meterX,(SvgMetrics.staffHelperYOffset), 1, 'meterHelper');
                     var fracFunc = (num: string, den: string): any => {
                         var len = Math.max(num.length, den.length);
-                        Views.MeterDrawer.addStringXY('hintmeter' + this.staff.id + '_' + index++, this.graphic, num, 0, SVGMetrics.staffHelperYOffset + SVGMetrics.meterY0 - SVGMetrics.pitchYFactor * 6, len);
-                        Views.MeterDrawer.addStringXY('hintmeter' + this.staff.id + '_' + index++, this.graphic, den, 0, SVGMetrics.staffHelperYOffset + SVGMetrics.meterY1 - SVGMetrics.pitchYFactor * 6, len);
+                        Views.MeterDrawer.addStringXy('hintmeter' + this.staff.id + '_' + index++, this.graphic, num, 0, SvgMetrics.staffHelperYOffset + SvgMetrics.meterY0 - SvgMetrics.pitchYFactor * 6, len);
+                        Views.MeterDrawer.addStringXy('hintmeter' + this.staff.id + '_' + index++, this.graphic, den, 0, SvgMetrics.staffHelperYOffset + SvgMetrics.meterY1 - SvgMetrics.pitchYFactor * 6, len);
                     };
                     var fullFunc = (full: string): any => {
                         var len = full.length;
-                        Views.MeterDrawer.addStringXY('hintmeter' + this.staff.id + '_' + index++, this.graphic, full, 0, SVGMetrics.staffHelperYOffset + SVGMetrics.meterY0 - SVGMetrics.pitchYFactor * 6, len);
+                        Views.MeterDrawer.addStringXy('hintmeter' + this.staff.id + '_' + index++, this.graphic, full, 0, SvgMetrics.staffHelperYOffset + SvgMetrics.meterY0 - SvgMetrics.pitchYFactor * 6, len);
                     };
 
                     var res = this.meterDefinition.display(fracFunc, fullFunc);
                     $(this.meterElement).data('meter', this.meterDefinition);
-                    this.graphic.EndGroup(meter);
+                    this.graphic.endGroup(meter);
                 }
                 // key
                 if (this.keyDefinition && this.clefDefinition) {
-                    var key = this.graphic.BeginGroup('hintkey' + this.staff.id, 28 + SVGMetrics.clefXOffset,(SVGMetrics.staffHelperYOffset), 1, 'keyHelper');
-                    Views.KeyDrawer.addKeyXY('hintkeyg' + this.staff.id, this.graphic, this.keyDefinition, this.clefDefinition, 0, 0);
-                    this.graphic.EndGroup(key);
+                    var key = this.graphic.beginGroup('hintkey' + this.staff.id, 28 + SvgMetrics.clefXOffset,(SvgMetrics.staffHelperYOffset), 1, 'keyHelper');
+                    Views.KeyDrawer.addKeyXy('hintkeyg' + this.staff.id, this.graphic, this.keyDefinition, this.clefDefinition, 0, 0);
+                    this.graphic.endGroup(key);
                 }
-                this.graphic.EndGroup(staffLines);
-                this.graphic.EndDraw();
+                this.graphic.endGroup(staffLines);
+                this.graphic.endDraw();
             }
 
             public setClef(clefDefinition: Model.ClefDefinition) {
-                if (!this.clefDefinition || !this.clefDefinition.Eq(clefDefinition)) {
+                if (!this.clefDefinition || !this.clefDefinition.eq(clefDefinition)) {
                     this.clefDefinition = clefDefinition;
                     this.redraw();
                 }
             }
 
             public setKey(keyDefinition: Model.IKeyDefinition, clefDefinition: Model.ClefDefinition) {
-                if (!this.keyDefinition || !this.keyDefinition.Eq(keyDefinition)) {
+                if (!this.keyDefinition || !this.keyDefinition.eq(keyDefinition)) {
                     this.keyDefinition = keyDefinition;
                     this.redraw();
                 }
             }
 
             public setMeter(meterDefinition: Model.IMeterDefinition) {
-                if (!this.meterDefinition || !this.meterDefinition.Eq(meterDefinition)) {
+                if (!this.meterDefinition || !this.meterDefinition.eq(meterDefinition)) {
                     this.meterDefinition = meterDefinition;
                     this.redraw();
                 }
@@ -1792,15 +1785,15 @@ module jMusicScore {
             }
         }
 
-        export class HintAreaPlugin implements ScoreApplication.ScorePlugin, IHintAreaCreator {
-            Init(app: ScoreApplication.ScoreApplication) {
+        export class HintAreaPlugin implements ScoreApplication.IScorePlugin, IHintAreaCreator {
+            init(app: ScoreApplication.IScoreApplication) {
                 this.container = $('.appContainer');
-                app.AddDesigner(new HintAreaDesigner(app, this));
+                app.addDesigner(new HintAreaDesigner(app, this));
             }
 
             private container: JQuery;
 
-            GetId() {
+            getId() {
                 return "HintArea";
             }
 
@@ -1811,8 +1804,8 @@ module jMusicScore {
             }
         }
 
-        class HintAreaDesigner implements ScoreApplication.ScoreDesigner, Application.IFeedbackClient {
-            constructor(private app: ScoreApplication.ScoreApplication, private svgHelper: IHintAreaCreator) {
+        class HintAreaDesigner implements ScoreApplication.IScoreDesigner, Application.IFeedbackClient {
+            constructor(private app: ScoreApplication.IScoreApplication, private svgHelper: IHintAreaCreator) {
                 app.FeedbackManager.registerClient(this);
             }
 
@@ -1827,7 +1820,7 @@ module jMusicScore {
                 }
             }
 
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 var score = app.document;
                 while (this.staffButtons.length > score.staffElements.length) {
                     var removeBtn = this.staffButtons.pop();
@@ -1849,33 +1842,33 @@ module jMusicScore {
             }
         }
 
-        class TimelineDesigner implements ScoreApplication.ScoreDesigner {
-            constructor(private svgHelper: SVGHelper) {                
+        class TimelineDesigner implements ScoreApplication.IScoreDesigner {
+            constructor(private svgHelper: SvgHelper) {                
             }
-            private checkSensors: Views.DOMCheckSensorsVisitor;
+            private checkSensors: Views.DomCheckSensorsVisitor;
 
-            private CheckHintButtons(score: Model.IScore) {
+            private checkHintButtons(score: Model.IScore) {
             }
 
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 var score = app.document;
                 var svgHelper = this.svgHelper;//<SVGHelper>app.GetState("svgHelper:" + this.context); // todo: Svghelper yt
 
                 var visitor = new Views.PrefixVisitor(new Views.RedrawVisitor(svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
-                svgHelper.MusicGraphicsHelper.SetSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
-                svgHelper.MusicGraphicsHelper.BeginDraw();
-                score.VisitAll(visitor);
-                svgHelper.MusicGraphicsHelper.EndDraw();
+                svgHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
+                svgHelper.MusicGraphicsHelper.beginDraw();
+                score.visitAll(visitor);
+                svgHelper.MusicGraphicsHelper.endDraw();
 
                 if (!this.checkSensors) {
-                    this.checkSensors = new Views.DOMCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.document, app);
+                    this.checkSensors = new Views.DomCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.document, app);
                     //app.FeedbackManager.registerClient(this.checkSensors);
                 }
 
                 var visitor = new Views.PrefixVisitor(this.checkSensors, svgHelper.EditGraphicsHelper, 'ed_');
-                svgHelper.EditGraphicsHelper.BeginDraw();
-                score.VisitAll(visitor);
-                svgHelper.EditGraphicsHelper.EndDraw();
+                svgHelper.EditGraphicsHelper.beginDraw();
+                score.visitAll(visitor);
+                svgHelper.EditGraphicsHelper.endDraw();
 
             }
         }
@@ -1929,7 +1922,7 @@ module jMusicScore {
 
         /***************************************************** Sensors ************************************************************/
 
-        class SVGEditorMetrics {
+        class SvgEditorMetrics {
             static xPrevFirst = -35;
             static xNextLast = 45;
 
@@ -1938,8 +1931,8 @@ module jMusicScore {
             static yUp = -20;
             static yDown = 50;
 
-            static xLeftPitch = SVGEditorMetrics.xLeft;
-            static xRightPitch = SVGEditorMetrics.xRight;
+            static xLeftPitch = SvgEditorMetrics.xLeft;
+            static xRightPitch = SvgEditorMetrics.xRight;
             static yUpPitch = -3;
             static yDownPitch = 3;
 
@@ -1952,42 +1945,42 @@ module jMusicScore {
         dialogs (note, head, voice, staff)       
         */
 
-        class SVGWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            constructor(private svgHelper: SVGHelper) { }
+        class SvgWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+            constructor(private svgHelper: SvgHelper) { }
 
-            Init(app: ScoreApplication.ScoreApplication) {
+            init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
 
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
-            GetId(): string {
+            getId(): string {
                 return "SVGWriter";
             }
 
-            GetFormats(): string[] {
+            getFormats(): string[] {
                 return [
                     "SVG"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "SVG";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "svg";
             }
 
-            public Save() {
+            public save() {
                 var $svg = $(this.svgHelper.svg.parentNode);
                 var xml = $svg.html();
                 return xml;
             }
         }
 
-        export class SVGEditorManager {
-            public static ActivateVoiceSensors(voice: Model.IVoice, context: string, activate: boolean) {
+        export class SvgEditorManager {
+            public static activateVoiceSensors(voice: Model.IVoice, context: string, activate: boolean) {
                 //todo: ActivateVoiceSensors
                 /*var displayData = <SVGVoiceDisplayData>voice.getDisplayData(context);
                 var dispGroupRef = <SensorDisplayData>voice.getDisplayData("Edit:" + context);
@@ -2003,9 +1996,9 @@ module jMusicScore {
                 }*/
             }
 
-            public static ActivateAllVoiceSensors(score: Model.IScore, context: string, activate: boolean) {
+            public static activateAllVoiceSensors(score: Model.IScore, context: string, activate: boolean) {
                 score.withVoices((voice: Model.IVoice, index: number) => {
-                    this.ActivateVoiceSensors(voice, context, activate);
+                    SvgEditorManager.activateVoiceSensors(voice, context, activate);
                 });
             }
 
@@ -2022,180 +2015,180 @@ module jMusicScore {
     export module Editors {
 
         export class NoteDecorations {
-            private static decorationKeyDefs: { [Index: string]: Model.NoteDecorationKind } = {
-                'f': Model.NoteDecorationKind.fermata,
-                'q': Model.NoteDecorationKind.thumb,
-                '>': Model.NoteDecorationKind.sforzato,
-                '<': Model.NoteDecorationKind.espr,
-                '.': Model.NoteDecorationKind.staccato,
-                ';': Model.NoteDecorationKind.staccatissimo,
-                '_': Model.NoteDecorationKind.tenuto,
-                'p': Model.NoteDecorationKind.portato,
-                'A': Model.NoteDecorationKind.marcato,
-                'M': Model.NoteDecorationKind.prall,
-                'm': Model.NoteDecorationKind.mordent,
-                ',': Model.NoteDecorationKind.caesura,
-                '#': Model.NoteDecorationKind.accX,
-                'b': Model.NoteDecorationKind.accB,
-                't': Model.NoteDecorationKind.trill,
-                '§': Model.NoteDecorationKind.turn
+            private static decorationKeyDefs: { [index: string]: Model.NoteDecorationKind } = {
+                'f': Model.NoteDecorationKind.Fermata,
+                'q': Model.NoteDecorationKind.Thumb,
+                '>': Model.NoteDecorationKind.Sforzato,
+                '<': Model.NoteDecorationKind.Espr,
+                '.': Model.NoteDecorationKind.Staccato,
+                ';': Model.NoteDecorationKind.Staccatissimo,
+                '_': Model.NoteDecorationKind.Tenuto,
+                'p': Model.NoteDecorationKind.Portato,
+                'A': Model.NoteDecorationKind.Marcato,
+                'M': Model.NoteDecorationKind.Prall,
+                'm': Model.NoteDecorationKind.Mordent,
+                ',': Model.NoteDecorationKind.Caesura,
+                '#': Model.NoteDecorationKind.AccX,
+                'b': Model.NoteDecorationKind.AccB,
+                't': Model.NoteDecorationKind.Trill,
+                '§': Model.NoteDecorationKind.Turn
             };
 
             private static getDef(id: Model.NoteDecorationKind): { u: string; d: string; } {
                 switch (id) {
-                    case Model.NoteDecorationKind.accX: return {
+                    case Model.NoteDecorationKind.AccX: return {
                         u: 'e_accidentals.2',
                         d: 'e_accidentals.2'
                     };
-                    case Model.NoteDecorationKind.accXX: return {
+                    case Model.NoteDecorationKind.AccXx: return {
                         u: 'e_accidentals.4',
                         d: 'e_accidentals.4'
                     };
-                    case Model.NoteDecorationKind.accB: return {
+                    case Model.NoteDecorationKind.AccB: return {
                         u: 'e_accidentals.M2',
                         d: 'e_accidentals.M2'
                     };
-                    case Model.NoteDecorationKind.accBB: return {
+                    case Model.NoteDecorationKind.AccBb: return {
                         u: 'e_accidentals.M4',
                         d: 'e_accidentals.M4'
                     };
-                    case Model.NoteDecorationKind.fermata: return {
+                    case Model.NoteDecorationKind.Fermata: return {
                         u: 'e_scripts.ufermata',
                         d: 'e_scripts.dfermata'
                     };
-                    case Model.NoteDecorationKind.shortFermata: return {
+                    case Model.NoteDecorationKind.ShortFermata: return {
                         u: 'e_scripts.ushortfermata',
                         d: 'e_scripts.dshortfermata'
                     };
-                    case Model.NoteDecorationKind.longFermata: return {
+                    case Model.NoteDecorationKind.LongFermata: return {
                         u: 'e_scripts.ulongfermata',
                         d: 'e_scripts.dlongfermata'
                     };
-                    case Model.NoteDecorationKind.veryLongFermata: return {
+                    case Model.NoteDecorationKind.VeryLongFermata: return {
                         u: 'e_scripts.uverylongfermata',
                         d: 'e_scripts.dverylongfermata'
                     };
-                    case Model.NoteDecorationKind.thumb: return {
+                    case Model.NoteDecorationKind.Thumb: return {
                         u: 'e_scripts.thumb',
                         d: 'e_scripts.thumb'
                     };
-                    case Model.NoteDecorationKind.sforzato: return {
+                    case Model.NoteDecorationKind.Sforzato: return {
                         u: 'e_scripts.sforzato',
                         d: 'e_scripts.sforzato'
                     };
-                    case Model.NoteDecorationKind.espr: return {
+                    case Model.NoteDecorationKind.Espr: return {
                         u: 'e_scripts.espr',
                         d: 'e_scripts.espr'
                     };
-                    case Model.NoteDecorationKind.staccato: return {
+                    case Model.NoteDecorationKind.Staccato: return {
                         u: 'e_scripts.staccato',
                         d: 'e_scripts.staccato'
                     };
-                    case Model.NoteDecorationKind.staccatissimo: return {
+                    case Model.NoteDecorationKind.Staccatissimo: return {
                         u: 'e_scripts.ustaccatissimo',
                         d: 'e_scripts.dstaccatissimo'
                     };
-                    case Model.NoteDecorationKind.tenuto: return {
+                    case Model.NoteDecorationKind.Tenuto: return {
                         u: 'e_scripts.tenuto',
                         d: 'e_scripts.tenuto'
                     };
-                    case Model.NoteDecorationKind.portato: return {
+                    case Model.NoteDecorationKind.Portato: return {
                         u: 'e_scripts.uportato',
                         d: 'e_scripts.dportato'
                     };
-                    case Model.NoteDecorationKind.marcato: return {
+                    case Model.NoteDecorationKind.Marcato: return {
                         u: 'e_scripts.umarcato',
                         d: 'e_scripts.dmarcato'
                     };
-                    case Model.NoteDecorationKind.open: return {
+                    case Model.NoteDecorationKind.Open: return {
                         u: 'e_scripts.open',
                         d: 'e_scripts.open'
                     };
-                    case Model.NoteDecorationKind.stopped: return {
+                    case Model.NoteDecorationKind.Stopped: return {
                         u: 'e_scripts.stopped',
                         d: 'e_scripts.stopped'
                     };
-                    case Model.NoteDecorationKind.upbow: return {
+                    case Model.NoteDecorationKind.Upbow: return {
                         u: 'e_scripts.upbow',
                         d: 'e_scripts.upbow'
                     };
-                    case Model.NoteDecorationKind.downbow: return {
+                    case Model.NoteDecorationKind.Downbow: return {
                         u: 'e_scripts.downbow',
                         d: 'e_scripts.downbow'
                     };
-                    case Model.NoteDecorationKind.reverseturn: return {
+                    case Model.NoteDecorationKind.Reverseturn: return {
                         u: 'e_scripts.reverseturn',
                         d: 'e_scripts.reverseturn'
                     };
-                    case Model.NoteDecorationKind.turn: return {
+                    case Model.NoteDecorationKind.Turn: return {
                         u: 'e_scripts.turn',
                         d: 'e_scripts.turn'
                     };
-                    case Model.NoteDecorationKind.trill: return {
+                    case Model.NoteDecorationKind.Trill: return {
                         u: 'e_scripts.trill',
                         d: 'e_scripts.trill'
                     };
-                    case Model.NoteDecorationKind.pedalheel: return {
+                    case Model.NoteDecorationKind.Pedalheel: return {
                         u: 'e_scripts.upedalheel',
                         d: 'e_scripts.dpedalheel'
                     };
-                    case Model.NoteDecorationKind.pedaltoe: return {
+                    case Model.NoteDecorationKind.Pedaltoe: return {
                         u: 'e_scripts.upedaltoe',
                         d: 'e_scripts.dpedaltoe'
                     };
-                    case Model.NoteDecorationKind.flageolet: return {
+                    case Model.NoteDecorationKind.Flageolet: return {
                         u: 'e_scripts.flageolet',
                         d: 'e_scripts.flageolet'
                     };
-                    case Model.NoteDecorationKind.rcomma: return {
+                    case Model.NoteDecorationKind.Rcomma: return {
                         u: 'e_scripts.rcomma',
                         d: 'e_scripts.rcomma'
                     };
-                    case Model.NoteDecorationKind.prall: return {
+                    case Model.NoteDecorationKind.Prall: return {
                         u: 'e_scripts.prall',
                         d: 'e_scripts.prall'
                     };
-                    case Model.NoteDecorationKind.mordent: return {
+                    case Model.NoteDecorationKind.Mordent: return {
                         u: 'e_scripts.mordent',
                         d: 'e_scripts.mordent'
                     };
-                    case Model.NoteDecorationKind.prallprall: return {
+                    case Model.NoteDecorationKind.Prallprall: return {
                         u: 'e_scripts.prallprall',
                         d: 'e_scripts.prallprall'
                     };
-                    case Model.NoteDecorationKind.prallmordent: return {
+                    case Model.NoteDecorationKind.Prallmordent: return {
                         u: 'e_scripts.prallmordent',
                         d: 'e_scripts.prallmordent'
                     };
-                    case Model.NoteDecorationKind.upprall: return {
+                    case Model.NoteDecorationKind.Upprall: return {
                         u: 'e_scripts.upprall',
                         d: 'e_scripts.upprall'
                     };
-                    case Model.NoteDecorationKind.upmordent: return {
+                    case Model.NoteDecorationKind.Upmordent: return {
                         u: 'e_scripts.upmordent',
                         d: 'e_scripts.upmordent'
                     };
-                    case Model.NoteDecorationKind.pralldown: return {
+                    case Model.NoteDecorationKind.Pralldown: return {
                         u: 'e_scripts.pralldown',
                         d: 'e_scripts.pralldown'
                     };
-                    case Model.NoteDecorationKind.downprall: return {
+                    case Model.NoteDecorationKind.Downprall: return {
                         u: 'e_scripts.downprall',
                         d: 'e_scripts.downprall'
                     };
-                    case Model.NoteDecorationKind.downmordent: return {
+                    case Model.NoteDecorationKind.Downmordent: return {
                         u: 'e_scripts.downmordent',
                         d: 'e_scripts.downmordent'
                     };
-                    case Model.NoteDecorationKind.prallup: return {
+                    case Model.NoteDecorationKind.Prallup: return {
                         u: 'e_scripts.prallup',
                         d: 'e_scripts.prallup'
                     };
-                    case Model.NoteDecorationKind.lineprall: return {
+                    case Model.NoteDecorationKind.Lineprall: return {
                         u: 'e_scripts.lineprall',
                         d: 'e_scripts.lineprall'
                     };
-                    case Model.NoteDecorationKind.caesura: return {
+                    case Model.NoteDecorationKind.Caesura: return {
                         u: 'e_scripts.caesura',
                         d: 'e_scripts.caesura'
                     };
@@ -2227,13 +2220,13 @@ module jMusicScore {
         }*/
         
 
-        export class NoteEditor implements ScoreApplication.ScoreEventProcessor {
+        export class NoteEditor implements ScoreApplication.IScoreEventProcessor {
             constructor(public context: string) { }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
+            public init(app: ScoreApplication.IScoreApplication) {
             }
 
-            public Exit(app: ScoreApplication.ScoreApplication) {
+            public exit(app: ScoreApplication.IScoreApplication) {
                 /*var event: any = { data: { voice: null } }; // todo: any
                 this.clickvoice(app, event);*/
             }
@@ -2241,8 +2234,8 @@ module jMusicScore {
             public mouseOverStyle: string = "color:#f00;fill:#0a0;fill-opacity:0.5;stroke:none";
             private cursorElement: SVGUseElement = null;
 
-            public mouseovernote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public mouseovernote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
                 app.Status.currentNote = note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(note, true);
@@ -2250,15 +2243,15 @@ module jMusicScore {
                 app.Status.mouseOverElement = note; // todo: note cursor
                 return true;
             }
-            public mousemovenote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public mousemovenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition(), event.data.pitch);*/
                 // todo: note cursor
                 return false;
             }
-            public mouseoutnote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public mouseoutnote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
                 app.Status.currentNote = undefined;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(note, false);*/
@@ -2267,8 +2260,8 @@ module jMusicScore {
                 return true;
             }
 
-            public mouseoverafternote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public mouseoverafternote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(1), event.data.pitch);*/
                 // todo: note cursor
@@ -2276,32 +2269,32 @@ module jMusicScore {
                 return false;
             }
 
-            public mousemoveafternote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public mousemoveafternote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(1), event.data.pitch);*/
                 // todo: note cursor
                 return false;
             }
 
-            public mouseoutafternote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public mouseoutafternote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.HideNoteCursor();*/
                 if (app.Status.mouseOverElement === note) app.Status.mouseOverElement = null;
                 return false;
             }
 
-            public mousemovebeforenote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public mousemovebeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(-1), event.data.pitch);*/
                 // todo: note cursor
                 return false;
             }
 
-            public mouseoverbeforenote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public mouseoverbeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
                 app.Status.currentNote = undefined;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.ShowNoteCursor('edit1_8', note.parent, note.getHorizPosition().clone(-1), event.data.pitch);*/
@@ -2309,15 +2302,15 @@ module jMusicScore {
                 return true;
             }
 
-            public mouseoutbeforenote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public mouseoutbeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.HideNoteCursor();*/
                 if (app.Status.mouseOverElement === note) app.Status.mouseOverElement = null;
                 return true;
             }
-            public mouseoverhead(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var head = <Model.INotehead>event.head;
+            public mouseoverhead(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var head = event.head;
                 app.Status.currentNotehead = head;
                 app.Status.currentNote = head.parent;
 
@@ -2326,8 +2319,8 @@ module jMusicScore {
                 app.Status.mouseOverElement = head;
                 return false;
             }
-            public mouseouthead(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var head = <Model.INotehead>event.head;
+            public mouseouthead(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var head = event.head;
                 app.Status.currentNotehead = undefined;
                 app.Status.currentNote = undefined;
 
@@ -2342,19 +2335,19 @@ module jMusicScore {
 
 
         export class KeyboardNoteEditor extends NoteEditor {
-            public keymessage(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public keymessage(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 return this.keyPressed(app, event.key);
             }
 
-            public keyPressed(app: ScoreApplication.ScoreApplication, key: string): boolean {
+            public keyPressed(app: ScoreApplication.IScoreApplication, key: string): boolean {
                 if (key === 'DELETE') {
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand(new Model.DeleteNoteheadCommand({
+                        app.executeCommand(new Model.DeleteNoteheadCommand({
                             head: app.Status.currentNotehead
                         }));
                     }
                     else if (app.Status.currentNote) {
-                        app.ExecuteCommand(new Model.DeleteNoteCommand({
+                        app.executeCommand(new Model.DeleteNoteCommand({
                             note: app.Status.currentNote
                         }));
                     }
@@ -2362,7 +2355,7 @@ module jMusicScore {
                 }
                 else if (key === '+') {
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand(new Model.RaisePitchAlterationCommand({
+                        app.executeCommand(new Model.RaisePitchAlterationCommand({
                             head: app.Status.currentNotehead,
                             deltaAlteration: 1
                         }));
@@ -2371,7 +2364,7 @@ module jMusicScore {
                 else if (key === '-') // -
                 {
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand(new Model.RaisePitchAlterationCommand({
+                        app.executeCommand(new Model.RaisePitchAlterationCommand({
                             head: app.Status.currentNotehead,
                             deltaAlteration: -1
                         }));
@@ -2379,7 +2372,7 @@ module jMusicScore {
                 }
                 else if (key === '=') {
                     if (app.Status.currentNotehead) {
-                        app.ExecuteCommand(new Model.TieNoteheadCommand({
+                        app.executeCommand(new Model.TieNoteheadCommand({
                             head: app.Status.currentNotehead,
                             toggle: true,
                             forced: false
@@ -2387,7 +2380,7 @@ module jMusicScore {
                     }
                     else
                         if (app.Status.currentNote) {
-                            app.ExecuteCommand(new Model.TieNoteCommand({
+                            app.executeCommand(new Model.TieNoteCommand({
                                 note: app.Status.currentNote,
                                 forced: false,
                                 toggle: true
@@ -2398,7 +2391,7 @@ module jMusicScore {
                     if (app.Status.currentNote) {
                         var k = NoteDecorations.getIdFromKey(key);
                         if (k) {
-                            app.ExecuteCommand(new Model.AddNoteDecorationCommand({
+                            app.executeCommand(new Model.AddNoteDecorationCommand({
                                 note: app.Status.currentNote,
                                 placement: "under",
                                 expression: k
@@ -2409,7 +2402,7 @@ module jMusicScore {
                             var note = app.Status.currentNote;
                             if (note) {
                                 //note.setStemDirection(key === "UP" ? Model.StemDirectionType.stemUp : Model.StemDirectionType.stemDown);
-                                app.ExecuteCommand(new Model.SetNoteStemDirectionCommand({
+                                app.executeCommand(new Model.SetNoteStemDirectionCommand({
                                     note: note,
                                     direction: key
                                 }));
@@ -2424,10 +2417,10 @@ module jMusicScore {
 
         export class EditNoteEditor extends KeyboardNoteEditor {
 
-            public clicknote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 // note dialog
-                var dlg = new UI.NoteDialog("ed", app);
-                dlg.setNote(event.note).Show();
+                var dlg = new Ui.NoteDialog("ed", app);
+                dlg.setNote(event.note).show();
                 return false;
             }
 
@@ -2438,17 +2431,17 @@ module jMusicScore {
                 super(context);
             }
 
-            public clickafternote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public clickafternote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutafternote(app, event);
 
-                var voice = <Model.IVoice>event.voice;
+                var voice = event.voice;
 
                 var absTime = Model.AbsoluteTime.startTime;
                 if (voice.noteElements.length) {
                     var lastNote = voice.noteElements[voice.noteElements.length - 1];
-                    absTime = lastNote.absTime.Add(lastNote.timeVal);
+                    absTime = lastNote.absTime.add(lastNote.timeVal);
                 }
-                var pitch = <Model.Pitch>event.pitch; 
+                var pitch = event.pitch; 
                 
                 var rest = app.Status.rest;
                 var dots = app.Status.dots;
@@ -2466,22 +2459,22 @@ module jMusicScore {
                         beforeNote: null,
                         absTime: absTime
                     });
-                app.ExecuteCommand(cmd);
+                app.executeCommand(cmd);
                 return false;
             }
 
-            public clicknote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutnote(app, event);
 
-                var note = <Model.INote>event.note;
+                var note = event.note;
 
                 var absTime = Model.AbsoluteTime.startTime;
                 if (note.parent.noteElements.length) {
                     var lastNote = note.parent.noteElements[note.parent.noteElements.length - 1];
-                    absTime = lastNote.absTime.Add(lastNote.timeVal);
+                    absTime = lastNote.absTime.add(lastNote.timeVal);
                 }
                 
-                var pitch = <Model.Pitch>event.pitch; 
+                var pitch = event.pitch; 
                 if (note.matchesPitch(pitch, true)) {
                     if (!note.matchesOnePitch(pitch, true)) {
                         for (var i = 0; i < note.noteheadElements.length; i++) {
@@ -2490,14 +2483,14 @@ module jMusicScore {
                                     {
                                         head: note.noteheadElements[i]
                                     });
-                                app.ExecuteCommand(cmd);
+                                app.executeCommand(cmd);
                                 break;
                             }
                         }
                     }
                 }
                 else {
-                    app.ExecuteCommand(new Model.AddNoteheadCommand(
+                    app.executeCommand(new Model.AddNoteheadCommand(
                         {
                             note: note,
                             pitch: pitch
@@ -2506,17 +2499,17 @@ module jMusicScore {
                 return false;
             }
 
-            public clickbeforenote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public clickbeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutbeforenote(app, event);
 
-                var note = <Model.INote>event.note;
+                var note = event.note;
 
                 var absTime = Model.AbsoluteTime.startTime;
                 if (note.parent.noteElements.length) {
                     var lastNote = note.parent.noteElements[note.parent.noteElements.length - 1];
-                    absTime = lastNote.absTime.Add(lastNote.timeVal);
+                    absTime = lastNote.absTime.add(lastNote.timeVal);
                 }
-                var pitch = <Model.Pitch>event.pitch; 
+                var pitch = event.pitch; 
 
                 var rest = app.Status.rest;
                 var dots = app.Status.dots;
@@ -2534,7 +2527,7 @@ module jMusicScore {
                         beforeNote: note,
                         absTime: absTime
                     });
-                app.ExecuteCommand(cmd);
+                app.executeCommand(cmd);
                 return false;
             }
 
@@ -2552,7 +2545,7 @@ module jMusicScore {
             }
             public editor: HTMLInputElement;
 
-            public Exit(app: ScoreApplication.ScoreApplication) {
+            public exit(app: ScoreApplication.IScoreApplication) {
                 $(this.editor).hide();
             }
 
@@ -2560,12 +2553,17 @@ module jMusicScore {
                 var syll: Model.ITextSyllableElement;
                 if (note.syllableElements.length) {
                     syll = note.syllableElements[0];
-                    return syll.text;
+                    return syll.Text;
                 }
                 else {
                     return '';
                 }
             }
+
+            private static getNoteRect(note: Model.INote): ClientRect {
+                return $('#edit_' + note.id + ', #htmlSensor_edit_' + note.id)[0].getBoundingClientRect(); // todo: more portable!
+            }
+
             // todo: backspace
             // todo: '-' tilføjes til den foregående node - bør aktiveres i keyup eller keypressed
             // todo: fjern editor når der skiftes voice eller tool
@@ -2574,7 +2572,7 @@ module jMusicScore {
                 var syll: Model.ITextSyllableElement;
                 if (note.syllableElements.length) {
                     syll = note.syllableElements[0];
-                    syll.text = text;
+                    syll.Text = text;
                     $('#' + syll.id + ' text').text(text);
                 }
                 else {
@@ -2605,7 +2603,7 @@ module jMusicScore {
                         var nextNote = Model.Music.nextNote(note);
                         while (nextNote && nextNote.rest) nextNote = Model.Music.nextNote(nextNote);
                         if (nextNote) {
-                            var rect = $('#edit_' + nextNote.id)[0].getBoundingClientRect();
+                            var rect = EditNoteTextEditor.getNoteRect(nextNote);// $('#edit_' + nextNote.id)[0].getBoundingClientRect();
                             var val = $(editor).val();
                             if (val) {
                                 controller.updateNoteText(note, val);
@@ -2632,7 +2630,7 @@ module jMusicScore {
                         var prevNote = Model.Music.prevNote(note);
                         while (prevNote && prevNote.rest) prevNote = Model.Music.prevNote(prevNote);
                         if (prevNote) {
-                            var rect = $('#edit_' + prevNote.id)[0].getBoundingClientRect();
+                            var rect = EditNoteTextEditor.getNoteRect(prevNote); //$('#edit_' + prevNote.id)[0].getBoundingClientRect();
                             var val = $(editor).val();
                             if (val) {
                                 controller.updateNoteText(note, val);
@@ -2643,11 +2641,11 @@ module jMusicScore {
                 }
                 else if (event.key === 'Right') {
                     if (editor.selectionStart === editor.value.length) {
-                        var note = <Model.INote>$(editor).data('note');
+                        var note = <Model.INote><any>($(editor).data('note'));
                         var nextNote = Model.Music.nextNote(note);
                         while (nextNote && nextNote.rest) nextNote = Model.Music.nextNote(nextNote);
                         if (nextNote) {
-                            var rect = $('#edit_' + nextNote.id)[0].getBoundingClientRect();
+                            var rect = EditNoteTextEditor.getNoteRect(nextNote);// $('#edit_' + nextNote.id)[0].getBoundingClientRect();
                             var val = $(editor).val();
                             if (val) {
                                 controller.updateNoteText(note, val);
@@ -2658,16 +2656,16 @@ module jMusicScore {
                 }
             }
 
-            public clicknote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutnote(app, event);
-                var note = <Model.INote>event.note;
+                var note = event.note;
                 var text = '';
                 if (note.syllableElements.length) {
                     // Edit first syllable
-                    if (note.syllableElements[0]) text = note.syllableElements[0].text;
+                    if (note.syllableElements[0]) text = note.syllableElements[0].Text;
                 }
                 // Show editor                    
-                var rect = $('#edit_' + note.id)[0].getBoundingClientRect();
+                var rect = EditNoteTextEditor.getNoteRect(note);// $('#edit_' + note.id+ ', #htmlSensor_edit_' + note.id)[0].getBoundingClientRect();
 
                 $(this.editor)
                     .css({
@@ -2690,27 +2688,27 @@ module jMusicScore {
         }
 
         export class DeleteNoteEditor extends NoteEditor {
-            public clicknote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutnote(app, event);
-                var note = <Model.INote>event.note;
-                app.ExecuteCommand(new Model.DeleteNoteCommand({
+                var note = event.note;
+                app.executeCommand(new Model.DeleteNoteCommand({
                     note: note
                 }));
                 return false;
             }
 
-            public clickhead(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
+            public clickhead(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseouthead(app, event);
-                var head = <Model.INotehead>event.head;
+                var head = event.head;
                 // todo: slet eneste head bør gøre note til pause
                 if (head.parent.matchesOnePitch(head.getPitch(), true) || head.parent.rest) {
-                    app.ExecuteCommand(new Model.DeleteNoteCommand({
+                    app.executeCommand(new Model.DeleteNoteCommand({
                         note: head.parent
                     }));
                 }
                 // Hvis node med mange heades: slet denne head
                 else if (head.parent.matchesPitch(head.getPitch(), true) || head.parent.rest) {
-                    app.ExecuteCommand(new Model.DeleteNoteheadCommand({
+                    app.executeCommand(new Model.DeleteNoteheadCommand({
                         head: head
                     }));
                 }                
@@ -2718,58 +2716,58 @@ module jMusicScore {
             }
         }
 
-        export class ChangeMeterEditor implements ScoreApplication.ScoreEventProcessor {
+        export class ChangeMeterEditor implements ScoreApplication.IScoreEventProcessor {
             constructor(public context: string) { }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
-                SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.document, this.context, false);
+            public init(app: ScoreApplication.IScoreApplication) {
+                SvgView.SvgEditorManager.activateAllVoiceSensors(app.document, this.context, false);
             }
 
-            public Exit(app: ScoreApplication.ScoreApplication) {
+            public exit(app: ScoreApplication.IScoreApplication) {
             }
 
 
-            public clickbar(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+            public clickbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var bar = event.bar;
 
-                var dlg = new UI.MeterDialog("click", app);
-                dlg.setTime(bar.absTime).Show();
+                var dlg = new Ui.MeterDialog("click", app);
+                dlg.setTime(bar.absTime).show();
 
                 return false;
             }
 
-            public clickmeter(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var meter = <Model.IMeter>event.meter;
+            public clickmeter(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var meter = event.meter;
 
-                var dlg = new UI.MeterDialog("click", app);
-                dlg.setTime(meter.absTime).setMeter(meter.definition).Show();
+                var dlg = new Ui.MeterDialog("click", app);
+                dlg.setTime(meter.absTime).setMeter(meter.definition).show();
 
                 return false;
             }
 
-            public mouseoverbar(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+            public mouseoverbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var bar = event.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, true);*/
                 app.Status.mouseOverElement = bar;
                 return true;
             }
-            public mouseoutbar(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+            public mouseoutbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var bar = event.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, false);*/
                 if (app.Status.mouseOverElement === bar) app.Status.mouseOverElement = null;
                 return true;
             }
-            public mouseovermeter(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var meter = <Model.IMeter>event.meter;
+            public mouseovermeter(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var meter = event.meter;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(meter, true);*/
                 app.Status.mouseOverElement = meter;
                 return true;
             }
-            public mouseoutmeter(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var meter = <Model.IMeter>event.meter;
+            public mouseoutmeter(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var meter = event.meter;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(meter, false);*/
                 if (app.Status.mouseOverElement === meter) app.Status.mouseOverElement = null;
@@ -2777,57 +2775,57 @@ module jMusicScore {
             }
         }
 
-        export class ChangeKeyEditor implements ScoreApplication.ScoreEventProcessor {
+        export class ChangeKeyEditor implements ScoreApplication.IScoreEventProcessor {
             constructor(public context: string) { }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
-                SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.document, this.context, false);
+            public init(app: ScoreApplication.IScoreApplication) {
+                SvgView.SvgEditorManager.activateAllVoiceSensors(app.document, this.context, false);
             }
 
-            public Exit(app: ScoreApplication.ScoreApplication) {
+            public exit(app: ScoreApplication.IScoreApplication) {
             }
 
 
-            public clickbar(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+            public clickbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var bar = event.bar;
 
-                var dlg = new UI.KeyDialog("click", app);
-                dlg.setTime(bar.absTime).Show();
+                var dlg = new Ui.KeyDialog("click", app);
+                dlg.setTime(bar.absTime).show();
 
                 return false;
             }
 
-            public clickkey(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var key = <Model.IKey>event.keySig;
+            public clickkey(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var key = event.keySig;
 
-                var dlg = new UI.KeyDialog("click", app);
-                dlg.setTime(key.absTime).setKey(key).Show();
+                var dlg = new Ui.KeyDialog("click", app);
+                dlg.setTime(key.absTime).setKey(key).show();
 
                 return false;
             }
-            public mouseoverbar(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+            public mouseoverbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var bar = event.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, true);*/
                 app.Status.mouseOverElement = bar;
                 return true;
             }
-            public mouseoutbar(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var bar = <Model.IBar>event.bar;
+            public mouseoutbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var bar = event.bar;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(bar, false);*/
                 if (app.Status.mouseOverElement === bar) app.Status.mouseOverElement = null;
                 return true;
             }
-            public mouseoverkey(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var key = <Model.IKey>event.keySig;
+            public mouseoverkey(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var key = event.keySig;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(key, true);*/
                 app.Status.mouseOverElement = key;
                 return true;
             }
-            public mouseoutkey(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var key = <Model.IKey>event.keySig;
+            public mouseoutkey(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var key = event.keySig;
                 /*var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 fb.MouseOverElement(key, false);*/
                 if (app.Status.mouseOverElement === key) app.Status.mouseOverElement = null;
@@ -2836,45 +2834,45 @@ module jMusicScore {
         }
         
         
-        export class ChangeClefEditor implements ScoreApplication.ScoreEventProcessor {
+        export class ChangeClefEditor implements ScoreApplication.IScoreEventProcessor {
             constructor(public context: string) { }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
-                SvgView.SVGEditorManager.ActivateAllVoiceSensors(app.document, this.context, true);
+            public init(app: ScoreApplication.IScoreApplication) {
+                SvgView.SvgEditorManager.activateAllVoiceSensors(app.document, this.context, true);
                 // Activate BeforeNote, AfterNote, clef
             }
 
-            public Exit(app: ScoreApplication.ScoreApplication) {
+            public exit(app: ScoreApplication.IScoreApplication) {
             }
 
 
-            public clickbeforenote(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var note = <Model.INote>event.note;
+            public clickbeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var note = event.note;
 
-                var dlg = new UI.ClefDialog("click", app);
-                dlg.setTime(note.absTime).setStaff(note.parent.parent).Show();
+                var dlg = new JMusicScore.Ui.ClefDialog("click", app);
+                dlg.setTime(note.absTime).setStaff(note.parent.parent).show();
 
                 return false;
             }
 
-            public clickclef(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var clef = <Model.IClef>event.clef;
+            public clickclef(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var clef = event.clef;
 
-                var dlg = new UI.ClefDialog("click", app);
-                dlg.setClef(clef).setTime(clef.absTime).setStaff(clef.parent).Show();
+                var dlg = new JMusicScore.Ui.ClefDialog("click", app);
+                dlg.setClef(clef).setTime(clef.absTime).setStaff(clef.parent).show();
 
                 return false;
             }
 
 
-            public mouseoverclef(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var clef = <Model.IClef>event.clef;
+            public mouseoverclef(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var clef = event.clef;
                 //var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 //fb.MouseOverElement(clef, true);
                 return true;
             }
-            public mouseoutclef(app: ScoreApplication.ScoreApplication, event: ScoreApplication.IMessage): boolean {
-                var clef = <Model.IClef>event.clef;
+            public mouseoutclef(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
+                var clef = event.clef;
                 //var fb = <FeedbackGraphicsEngine>event.data.feedback;
                 //fb.MouseOverElement(clef, false);
                 return true;
@@ -2897,26 +2895,38 @@ module jMusicScore {
             private context: CanvasRenderingContext2D;
 
 
-            private SetTranslation(x: number, y: number) {
+            private setTranslation(x: number, y: number) {
                 this.context.translate(x, y);
             }
-            public SetSize(width: number, height: number) {
+            public setSize(width: number, height: number) {
                 $(this.canvas).attr({ height: height, width: width });
             }
-            public BeginDraw() {
+            public beginDraw() {
                 this.context.setTransform(1, 0, 0, 1, 0, 0);
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
-            public EndDraw() {
+            public endDraw() {
             }
-            public CreateMusicObject(id: string, item: string, x: number, y: number, scale: number): any {
-                this.SetTranslation(x, y);
+            public createMusicObject(id: string, item: string, x: number, y: number, scale: number): any {
+                var useMusicFonts = true;
+                if (!useMusicFonts) {
+                    this.setTranslation(x, y);
                 this.context.scale(scale, scale);
-                this.DrawPath(jMusicScore.emmentaler_notes[item], 'black', null);
+                    this.drawPath(JMusicScore.emmentalerNotes[item], 'black', null);
                 this.context.scale(1 / scale, 1 / scale);
-                this.SetTranslation(-x, -y);
+                    this.setTranslation(-x, -y);
+                }
+                else {
+                    var char: string = emmentalerCode[item.substr(2)];
+                    if (char === undefined) {
+                        char = 'u';
+                    }
+                    var fontsize = Math.round(24 * scale);
+                    this.context.font = fontsize + "px Emmentaler";
+                    this.context.fillText(char, x, y);
+                }
             }
-            private DrawPath(path: string, fillStyle: string, strokeStyle: string): any {
+            private drawPath(path: string, fillStyle: string, strokeStyle: string): any {
                 function move(stack: number[], context: CanvasRenderingContext2D, current: Model.Point, relative: boolean): boolean {
                     if (stack.length < 2) return false;
                     context.moveTo(stack[0], stack[1]);
@@ -3042,17 +3052,18 @@ module jMusicScore {
             /*public UpdateMusicObject(element: any, item: string, x: number, y: number, scale: number): any {
                 this.DrawPath(jMusicScore.emmentaler_notes[item], 'black', null);
             }*/
-            public CreatePathObject(path: string, x: number, y: number, scale: number, stroke: string, fill: string, id: string = null): any {
-                this.SetTranslation(x, y);
+            public createPathObject(path: string, x: number, y: number, scale: number, stroke: string, fill: string, id: string = null): any {
+                this.setTranslation(x, y);
                 this.context.scale(scale, scale);
-                this.DrawPath(path, fill, stroke);
+                this.drawPath(path, fill, stroke);
                 this.context.scale(1 / scale, 1 / scale);
-                this.SetTranslation(-x, -y);
+                this.setTranslation(-x, -y);
             }
-            public CreateRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any {
+            public createRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any {
                 // todo: canvas rect
+                var x1 = x + 1;
             }
-            public DrawText(id: string, text: string, x: number, y: number, justify: string): any {
+            public drawText(id: string, text: string, x: number, y: number, justify: string): any {
                 /*this.context.fillStyle = "black";*/
                 this.context.font = "16px Arial";
                 var w = this.context.measureText(text).width;
@@ -3064,14 +3075,14 @@ module jMusicScore {
                 }
                 this.context.fillText(text, x, y);
             }
-            public BeginGroup(id: string, x: number, y: number, scale: number, className: string): any {
-                this.SetTranslation(x, y);
+            public beginGroup(id: string, x: number, y: number, scale: number, className: string): any {
+                this.setTranslation(x, y);
                 this.context.scale(scale, scale);
                 return { x: x, y: y, scale: scale };
             }
-            public EndGroup(group: any) {
+            public endGroup(group: any) {
                 this.context.scale(1 / group.scale, 1 / group.scale);
-                this.SetTranslation(-group.x, -group.y);
+                this.setTranslation(-group.x, -group.y);
             }
         }
 
@@ -3102,11 +3113,11 @@ module jMusicScore {
             }
             //CreateRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any;
             // Cursor
-            MoveCursor(id: string, x: number, y: number): void { }
-            ShowCursor(noteId: string): void { }
-            HideCursor(): void { }
+            moveCursor(id: string, x: number, y: number): void { }
+            showCursor(noteId: string): void { }
+            hideCursor(): void { }
             // InsertionPoint
-            ShowInsertionPoint(id: string, x: number, y: number): void {
+            showInsertionPoint(id: string, x: number, y: number): void {
                 var $insertPoint = $('#insertionPoint');
                 if (!$insertPoint.length) {
                     $insertPoint = $('<div>').attr('id', 'insertionPoint').css({
@@ -3123,32 +3134,32 @@ module jMusicScore {
                     left: x
                 }).appendTo('#htmlSensor_ed_' + id);
             }
-            HideInsertionPoint(): void {
+            hideInsertionPoint(): void {
                 $('#insertionPoint').remove();
             }
 
-            public BeginDraw() {
+            public beginDraw() {
                 //this.scale = 1;
                 $(this.root).empty();
                 this.currentGroup = $(this.root);
                 this.groupStack = [];
             }
-            public EndDraw() {
+            public endDraw() {
                 this.groupStack = [];
             }
-            public SetSize(width: number, height: number) {
+            public setSize(width: number, height: number) {
                 $(this.root).css({ height: height, width: width });
             }
-            public CreateMusicObject(parent: any, item: string, x: number, y: number, scale: number): any {
+            public createMusicObject(parent: any, item: string, x: number, y: number, scale: number): any {
                 var $img = $('<img>')
                     .attr('src', 'images/symbol1/' + item + '.png')
                     .css({ position: 'absolute', left: x, top: y })
                     .appendTo(this.currentGroup);
                 return $img;
             }
-            CreatePathObject(path: string, x: number, y: number, scale: number, stroke: string, fill: string, id: string = null): any {
+            createPathObject(path: string, x: number, y: number, scale: number, stroke: string, fill: string, id: string = null): any {
             }
-            CreateRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any {
+            createRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any {
                 var $rect = $('<div>')
                     .css({ position: 'absolute', left: x, top: y, width: w, height: h/*, border: 'solid blue thin'*/ })
                     //.css({ position: 'absolute', 'margin-top': y, 'margin-left': x, left: 0, top: 0, width: w, height: h, border: 'solid blue thin' })
@@ -3156,15 +3167,15 @@ module jMusicScore {
                     .appendTo(this.currentGroup);
                 return $rect;
             }
-            public DrawText(id: string, text: string, x: number, y: number, justify: string): any { }
-            BeginGroup(id: string, x: number, y: number, scale: number, className: string): any {
+            public drawText(id: string, text: string, x: number, y: number, justify: string): any { }
+            beginGroup(id: string, x: number, y: number, scale: number, className: string): any {
                 var $group = $('<div>').addClass(className).attr('id', this.idPrefix + id).appendTo(this.currentGroup);
                 $group.css({ position: "absolute", left: x, top: y, transform: "scale(" + scale + "," + scale + ")" });
                 this.groupStack.push($group);
                 this.currentGroup = $group;
                 return $group;
             }
-            EndGroup(group: any) {
+            endGroup(group: any) {
                 this.groupStack.pop();
                 this.currentGroup = this.groupStack[this.groupStack.length - 1];
             }
@@ -3234,45 +3245,45 @@ module jMusicScore {
         }
 
 
-        class TimelineDesigner implements ScoreApplication.ScoreDesigner {
+        class TimelineDesigner implements ScoreApplication.IScoreDesigner {
             constructor(private svgHelper: CanvasHelper) {
             }
-            private checkSensors: Views.DOMCheckSensorsVisitor;
+            private checkSensors: Views.DomCheckSensorsVisitor;
 
             private CheckHintButtons(score: Model.IScore) {
             }
 
-            public Validate(app: ScoreApplication.ScoreApplication) {
+            public validate(app: ScoreApplication.IScoreApplication) {
                 var score = app.document;
                 var svgHelper = this.svgHelper;//<SVGHelper>app.GetState("svgHelper:" + this.context); // todo: Svghelper yt
 
                 var visitor = new Views.PrefixVisitor(new Views.RedrawVisitor(svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
-                svgHelper.MusicGraphicsHelper.SetSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
-                svgHelper.MusicGraphicsHelper.BeginDraw();
-                score.VisitAll(visitor);
-                svgHelper.MusicGraphicsHelper.EndDraw();
+                svgHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
+                svgHelper.MusicGraphicsHelper.beginDraw();
+                score.visitAll(visitor);
+                svgHelper.MusicGraphicsHelper.endDraw();
 
                 if (!this.checkSensors) {
-                    this.checkSensors = new Views.DOMCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.document, app);
+                    this.checkSensors = new Views.DomCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.document, app);
                     //app.FeedbackManager.registerClient(this.checkSensors);
                 }
 
                 var visitor = new Views.PrefixVisitor(this.checkSensors, svgHelper.EditGraphicsHelper, 'ed_');
-                svgHelper.EditGraphicsHelper.BeginDraw();
-                score.VisitAll(visitor);
-                svgHelper.EditGraphicsHelper.EndDraw();
+                svgHelper.EditGraphicsHelper.beginDraw();
+                score.visitAll(visitor);
+                svgHelper.EditGraphicsHelper.endDraw();
 
             }
         }
 
 
-        export class CanvasViewer implements ScoreApplication.ScorePlugin {
+        export class CanvasViewer implements ScoreApplication.IScorePlugin {
             constructor(private $root: JQuery) {
             }
 
             private canvasHelper: CanvasHelper;
 
-            public Init(app: ScoreApplication.ScoreApplication) {
+            public init(app: ScoreApplication.IScoreApplication) {
                 //var $svg = app.container.find('.svgArea');
                 if (!this.$root.length) {
                     var $clientArea = app.container.find('.clientArea');
@@ -3285,9 +3296,9 @@ module jMusicScore {
 
                 this.canvasHelper = new CanvasHelper(document, this.$root[0]);
 
-                app.AddDesigner(new MusicSpacing.SpacingDesigner());
-                app.AddDesigner(new Views.ExpressionRenderer());
-                app.AddDesigner(new TimelineDesigner(this.canvasHelper));
+                app.addDesigner(new MusicSpacing.SpacingDesigner());
+                app.addDesigner(new Views.ExpressionRenderer());
+                app.addDesigner(new TimelineDesigner(this.canvasHelper));
                 //app.AddDesigner(new HintAreaDesigner(app, this.canvasHelper)); // todo: til egen plugin?
                 //app.AddDesigner(new BeamDesigner(this.context, this.svgHelper));
                 var editors = false;
@@ -3297,10 +3308,10 @@ module jMusicScore {
                 }
                 app.AddWriter(new CanvasWriter(this.canvasHelper));
                 */
-                app.FeedbackManager.registerClient(new SvgView.DOMFeedbackClient(this.canvasHelper.EditGraphicsHelper));
+                app.FeedbackManager.registerClient(new SvgView.DomFeedbackClient(this.canvasHelper.EditGraphicsHelper));
             }
 
-            public GetId(): string {
+            public getId(): string {
                 return "Output";
             }
 

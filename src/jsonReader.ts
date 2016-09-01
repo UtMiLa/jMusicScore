@@ -1,35 +1,32 @@
-/// <reference path="jMusicScore.ts"/>
-/// <reference path="jMusicScore.Views.ts"/>
-/// <reference path="application.ts"/>
-module jMusicScore {
+module JMusicScore {
     export module Model {
 
-        class JSONReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            Init(app: ScoreApplication.ScoreApplication) {
+        class JsonReader implements Application.IReaderPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+            init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
 
-            private app: ScoreApplication.ScoreApplication;
+            private app: ScoreApplication.IScoreApplication;
 
-            GetFormats(): string[] {
+            getFormats(): string[] {
                 return [
                     "JSON"
                 ]
             }
 
-            GetId(): string {
+            getId(): string {
                 return "JSONReader";
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "JSON";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "json";
             }
 
-            public Load(data: any) {
+            public load(data: any) {
                 if (typeof (data) === "string") {
                     data = JSON.parse(data);
                 }
@@ -37,51 +34,51 @@ module jMusicScore {
                 while (score.staffElements.length)
                     score.removeChild(score.staffElements[0], score.staffElements);
                 
-                this.app.document = <Model.IScore>Model.MusicElementFactory.RecreateElement(null, data); // memento format                
+                this.app.document = <IScore>MusicElementFactory.recreateElement(null, data); // memento format                
             }
         }
 
 
-        export class JsonPlugin implements ScoreApplication.ScorePlugin {
+        export class JsonPlugin implements ScoreApplication.IScorePlugin {
             constructor() {
             }
 
-            public Init(app: ScoreApplication.ScoreApplication) {
-                app.AddReader(new JSONReader());
-                app.AddWriter(new JSONWriter())
+            public init(app: ScoreApplication.IScoreApplication) {
+                app.addReader(new JsonReader());
+                app.addWriter(new JsonWriter())
             }
 
-            GetId() {
+            getId() {
                 return "JsonPlugin";
             }
         }
 
-        class JSONWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
-            private app: ScoreApplication.ScoreApplication;
+        class JsonWriter implements Application.IWriterPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+            private app: ScoreApplication.IScoreApplication;
 
-            Init(app: ScoreApplication.ScoreApplication) { this.app = app; }
+            init(app: ScoreApplication.IScoreApplication) { this.app = app; }
 
-            GetId(): string {
+            getId(): string {
                 return "JSONReader";
             }
 
 
-            GetFormats(): string[] {
+            getFormats(): string[] {
                 return [
                     "JSON"
                 ]
             }
 
-            public Supports(type: string): boolean {
+            public supports(type: string): boolean {
                 return type === "JSON";
             }
 
-            GetExtension(type: string): string {
+            getExtension(type: string): string {
                 return "json";
             }
 
-            public Save() {
-                var seen:any[] = [];
+            public save() {
+                var seen: any[] = [];
                 var text = JSON.stringify(this.app.document.getMemento());
                 return text;
             }

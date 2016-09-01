@@ -293,6 +293,9 @@
   <ItemGroup>
     <Content Include="Scripts\jquery-ui-1.12.0.js" />
     <Content Include="Scripts\jquery-ui-1.12.0.min.js" />
+    <Content Include="tests\jasmine-2.0.0\jasmine.css" />
+    <Content Include="tests\jasmine-2.0.0\jasmine_favicon.png" />
+    <Content Include="tests\SpecRunner.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -307,6 +310,7 @@
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="src\application.ts" />
     <TypeScriptCompile Include="src\Japps.ui.ts" />
+    <TypeScriptCompile Include="src\emmentaler_code.ts" />
     <TypeScriptCompile Include="src\jMusicScore.BrowserFileSystem.ts" />
     <TypeScriptCompile Include="src\commands.ts" />
     <TypeScriptCompile Include="src\jMusicScore.UI.ts" />
@@ -324,6 +328,13 @@
     <TypeScriptCompile Include="src\midiEditor.ts" />
     <TypeScriptCompile Include="src\midiIn.ts" />
     <TypeScriptCompile Include="src\validators.ts" />
+    <TypeScriptCompile Include="tests\jasmine-2.0.0\jasmine.d.ts" />
+    <TypeScriptCompile Include="tests\SpecInit.ts" />
+    <TypeScriptCompile Include="tests\spec\scoreSpec.ts" />
+    <TypeScriptCompile Include="tests\spec\viewerSpec.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\typings\jquery.ui.layout\" />
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>
