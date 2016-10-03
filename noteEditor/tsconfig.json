@@ -1,0 +1,14 @@
+﻿{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "include": [
+    "node_modules/jmusicscore/src/*.d.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts"
+  ]
+}
