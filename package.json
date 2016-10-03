@@ -1,8 +1,20 @@
 {
-  "name": "someProj",
+  "name": "jmusicscore",
   "version": "0.0.0",
-  "description": "",
-  "scripts": { },
-  "author": "",
-  "license": ""
+  "description": "jMusicScore is a library of Typescript classes to represent, view and edit music scores.",
+  "scripts": {},
+  "author": "John Ekberg",
+  "license": "ISC",
+  "main": "jmusicscore.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UtMiLa/jMusicScore.git"
+  },
+  "bugs": {
+    "url": "https://github.com/UtMiLa/jMusicScore/issues"
+  },
+  "homepage": "https://github.com/UtMiLa/jMusicScore#readme"
 }
