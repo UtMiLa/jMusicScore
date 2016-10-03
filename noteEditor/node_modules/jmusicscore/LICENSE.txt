@@ -1,0 +1,22 @@
+    jMusicScore is a library of Typescript classes aiming to allow users to view and edit music scores
+    in browsers.
+
+    Copyright (C) 2015  John Erik Rønne Ekberg
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+In short, you can use or modify this software as you like it, but you cannot deny others these rights.
+
+If you improve the product it will be highly appreciated if you submit the changes to https://github.com/UtMiLa/jMusicScore,
+but you are not obliged to do so.

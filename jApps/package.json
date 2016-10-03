@@ -1,0 +1,11 @@
+{
+  "name": "japps",
+  "version": "1.0.0",
+  "description": "framework for in-browser apps",
+  "main": "japps.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "John Ekberg",
+  "license": "ISC"
+}
