@@ -1,19 +1,3 @@
-/// <reference path="node_modules/jmusicscore/application.d.ts" />
-/// <reference path="node_modules/jmusicscore/commands.d.ts" />
-/// <reference path="node_modules/jmusicscore/jMusicScore.d.ts" />
-/// <reference path="node_modules/jmusicscore/ghostElements.d.ts" />
-/// <reference path="node_modules/jmusicscore/jMusicScore.UI.d.ts" />
-/// <reference path="node_modules/jmusicscore/jMusicScore.BrowserFileSystem.d.ts" />
-/// <reference path="node_modules/jmusicscore/jMusicScore.Views.d.ts" />
-/// <reference path="node_modules/jmusicscore/jMusicScore.MusicXml.d.ts" />
-/// <reference path="node_modules/jmusicscore/jMusicScore.LilyPond.d.ts" />
-/// <reference path="node_modules/jmusicscore/JsonReader.d.ts" />
-/// <reference path="node_modules/jmusicscore/validators.d.ts" />
-/// <reference path="node_modules/jmusicscore/jApps.ui.d.ts" />
-/// <reference path="node_modules/jmusicscore/FinaleEmulator.d.ts" />
-/// <reference path="node_modules/jmusicscore/keyboard.d.ts" />
-/// <reference path="node_modules/jmusicscore/midiEditor.d.ts" />
-/// <reference path="node_modules/jmusicscore/midiIn.d.ts" />
 var JMusicScore;
 (function (JMusicScore) {
     var app = new JMusicScore.Application.AbstractApplication($("#appContainer"), new JMusicScore.Model.ScoreElement(null), new JMusicScore.ScoreApplication.ScoreStatusManager());

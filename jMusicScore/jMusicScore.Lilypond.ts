@@ -1,5 +1,4 @@
 ﻿/// <reference path="jMusicScore.ts"/>
-/// <reference path="application.ts"/>
 /// <reference path="jMusicScore.UI.ts"/>
 /// <reference path="jMusicScore.Spacing.ts"/>
 /// <reference path="emmentaler.ts"/>

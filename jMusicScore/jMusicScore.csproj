@@ -73,10 +73,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="References.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="application.ts" />
-    <TypeScriptCompile Include="Japps.ui.ts" />
     <TypeScriptCompile Include="emmentaler_code.ts" />
     <TypeScriptCompile Include="jMusicScore.BrowserFileSystem.ts" />
     <TypeScriptCompile Include="commands.ts" />
@@ -91,7 +90,6 @@
     <TypeScriptCompile Include="jMusicScore.ts" />
     <TypeScriptCompile Include="jMusicScore.Views.ts" />
     <TypeScriptCompile Include="jsonReader.ts" />
-    <TypeScriptCompile Include="keyboard.ts" />
     <TypeScriptCompile Include="midiEditor.ts" />
     <TypeScriptCompile Include="midiIn.ts" />
     <TypeScriptCompile Include="validators.ts" />
