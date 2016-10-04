@@ -1,14 +1,19 @@
-﻿/// <reference path="node_modules/jmusicscore/src/application.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/ghostElements.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.UI.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.Views.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.MusicXml.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.LilyPond.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/JsonReader.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/validators.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jApps.ui.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/FinaleEmulator.d.ts" />
+﻿/// <reference path="node_modules/jmusicscore/application.d.ts" />
+/// <reference path="node_modules/jmusicscore/commands.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.d.ts" />
+/// <reference path="node_modules/jmusicscore/ghostElements.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.UI.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.BrowserFileSystem.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.Views.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.MusicXml.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.LilyPond.d.ts" />
+/// <reference path="node_modules/jmusicscore/JsonReader.d.ts" />
+/// <reference path="node_modules/jmusicscore/validators.d.ts" />
+/// <reference path="node_modules/jmusicscore/jApps.ui.d.ts" />
+/// <reference path="node_modules/jmusicscore/FinaleEmulator.d.ts" />
+/// <reference path="node_modules/jmusicscore/keyboard.d.ts" />
+/// <reference path="node_modules/jmusicscore/midiEditor.d.ts" />
+/// <reference path="node_modules/jmusicscore/midiIn.d.ts" />
 
 module JMusicScore {
     var app = <ScoreApplication.IScoreApplication>new Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(

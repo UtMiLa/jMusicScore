@@ -5,14 +5,8 @@
   "scripts": {},
   "author": "John Ekberg",
   "license": "ISC",
-  "main": "jmusicscore.js",
-  "directories": {
-    "test": "tests"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/UtMiLa/jMusicScore.git"
-  },
+  "files": ["jMusicScore.d.ts", "jMusicScore.js", "*.d.ts", "*.js" ],
+  "main": "jMusicScore.js",
   "bugs": {
     "url": "https://github.com/UtMiLa/jMusicScore/issues"
   },

@@ -5,7 +5,11 @@
   "main": "app1.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "npm install ../japps/ ../jmusicscore/"
+    "preinstall": "npm install ../japps/ && npm install ../jmusicscore/"
+  },
+  "dependencies": {
+    "japps": "1.0.0",
+    "jmusicscore": "0.0.0"
   },
   "author": "John Ekberg",
   "license": "ISC"

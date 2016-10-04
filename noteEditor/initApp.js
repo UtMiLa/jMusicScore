@@ -1,14 +1,19 @@
-/// <reference path="node_modules/jmusicscore/src/application.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/ghostElements.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.UI.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.Views.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.MusicXml.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jMusicScore.LilyPond.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/JsonReader.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/validators.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/jApps.ui.d.ts" />
-/// <reference path="node_modules/jmusicscore/src/FinaleEmulator.d.ts" />
+/// <reference path="node_modules/jmusicscore/application.d.ts" />
+/// <reference path="node_modules/jmusicscore/commands.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.d.ts" />
+/// <reference path="node_modules/jmusicscore/ghostElements.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.UI.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.BrowserFileSystem.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.Views.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.MusicXml.d.ts" />
+/// <reference path="node_modules/jmusicscore/jMusicScore.LilyPond.d.ts" />
+/// <reference path="node_modules/jmusicscore/JsonReader.d.ts" />
+/// <reference path="node_modules/jmusicscore/validators.d.ts" />
+/// <reference path="node_modules/jmusicscore/jApps.ui.d.ts" />
+/// <reference path="node_modules/jmusicscore/FinaleEmulator.d.ts" />
+/// <reference path="node_modules/jmusicscore/keyboard.d.ts" />
+/// <reference path="node_modules/jmusicscore/midiEditor.d.ts" />
+/// <reference path="node_modules/jmusicscore/midiIn.d.ts" />
 var JMusicScore;
 (function (JMusicScore) {
     var app = new JMusicScore.Application.AbstractApplication($("#appContainer"), new JMusicScore.Model.ScoreElement(null), new JMusicScore.ScoreApplication.ScoreStatusManager());
@@ -24,9 +29,9 @@ var JMusicScore;
     app.addValidator(new JMusicScore.Model.TieValidator());
     app.addValidator(new JMusicScore.Model.UpdateAccidentalsValidator());
     app.addValidator(new JMusicScore.GhostElements.GhostsValidator());
-    app.addFileManager(new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
-    app.addFileManager(new IO.ServerFileManager("/Handler.php", "Server (PHP)"));
-    app.addFileManager(new IO.LocalStorageFileManager("Local"));
+    app.addFileManager(new JMusicScore.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
+    app.addFileManager(new JMusicScore.IO.ServerFileManager("/Handler.php", "Server (PHP)"));
+    app.addFileManager(new JMusicScore.IO.LocalStorageFileManager("Local"));
     //UtMiLa.application.LoadUsing("Esajas40.xml", "Server", "MusicXML");
     var mus = {
         "id": "89", "t": "Score", "def": { "metadata": {} },
