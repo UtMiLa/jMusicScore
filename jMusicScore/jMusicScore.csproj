@@ -77,7 +77,6 @@
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="emmentaler_code.ts" />
-    <TypeScriptCompile Include="jMusicScore.BrowserFileSystem.ts" />
     <TypeScriptCompile Include="commands.ts" />
     <TypeScriptCompile Include="jMusicScore.UI.ts" />
     <TypeScriptCompile Include="emmentaler.ts" />

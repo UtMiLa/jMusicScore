@@ -42,6 +42,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="application.ts" />
     <TypeScriptCompile Include="Japps.ui.ts" />
+    <TypeScriptCompile Include="jApps.BrowserFileSystem.ts" />
     <TypeScriptCompile Include="keyboard.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
