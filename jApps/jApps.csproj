@@ -25,7 +25,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="index.html" />
-    <Content Include="npmPlaceholder.txt" />
     <None Include=".bin\node.cmd" />
     <Content Include="web.config" />
   </ItemGroup>

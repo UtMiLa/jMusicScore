@@ -1,4 +1,4 @@
-// Type definitions for jQueryUI 1.9
+// Type definitions for jQueryUI 1.11
 // Project: http://jqueryui.com/
 // Definitions by: Boris Yankov <https://github.com/borisyankov/>, John Reilly <https://github.com/johnnyreilly>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
@@ -85,9 +85,7 @@ declare namespace JQueryUI {
 
     interface ButtonOptions {
         disabled?: boolean;
-        icon?: string;
-        iconPosition?: string;
-        showLabel?: boolean;
+        icons?: any;
         label?: string;
         text?: string|boolean;
         click?: (event?: Event) => void;
@@ -96,8 +94,6 @@ declare namespace JQueryUI {
     interface Button extends Widget, ButtonOptions {
     }
 
-    interface CheckboxRadioOptions {
-    }
 
     // Datepicker //////////////////////////////////////////////////
 
@@ -431,7 +427,7 @@ declare namespace JQueryUI {
         appendTo?: any;
         axis?: string;
         cancel?: string;
-        connectToSortable?: string;
+        connectToSortable?: Element | Element[] | JQuery | string;
         containment?: any;
         cursor?: string;
         cursorAt?: any;
@@ -629,9 +625,9 @@ declare namespace JQueryUI {
 
     interface Selectable extends Widget, SelectableOptions {
     }
-    
+
     // SelectMenu //////////////////////////////////////////////////
-    
+
     interface SelectMenuOptions extends SelectMenuEvents {
         appendTo?: string;
         disabled?: boolean;
@@ -1076,8 +1072,6 @@ interface JQuery {
     button(optionLiteral: string, optionName: string): any;
     button(optionLiteral: string, options: JQueryUI.ButtonOptions): any;
     button(optionLiteral: string, optionName: string, optionValue: any): JQuery;
-    checkboxradio(options: JQueryUI.CheckboxRadioOptions): JQuery;
-    controlgroup(): JQuery;
 
     buttonset(): JQuery;
     buttonset(methodName: 'destroy'): void;
@@ -1711,7 +1705,7 @@ interface JQuery {
     selectable(optionLiteral: string, optionName: string): any;
     selectable(optionLiteral: string, options: JQueryUI.SelectableOptions): any;
     selectable(optionLiteral: string, optionName: string, optionValue: any): JQuery;
- 
+
     selectmenu(): JQuery;
     selectmenu(methodName: 'close'): JQuery;
     selectmenu(methodName: 'destroy'): JQuery;
