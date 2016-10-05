@@ -9,7 +9,7 @@
     "preinstall": "npm install ../japps/"
   },
   "dependencies": {
-    "japps": "1.0.0"
+    "japps": "*"
   },
   "main": "jMusicScore.js",
   "bugs": {
@@ -17,3 +17,4 @@
   },
   "homepage": "https://github.com/UtMiLa/jMusicScore#readme"
 }
+ 

@@ -8,10 +8,7 @@
     "preinstall": "npm install ../japps/ && npm install ../jmusicscore/"
   },
   "dependencies": {
-    "japps": "1.0.0",
-    "jmusicscore": "0.0.0"
   },
   "author": "John Ekberg",
   "license": "ISC"
 }
- 
