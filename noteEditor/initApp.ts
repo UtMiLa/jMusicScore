@@ -1,6 +1,6 @@
 ﻿
 module JMusicScore {
-    var app = <ScoreApplication.IScoreApplication>new Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(
+    var app = <ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(
         $("#appContainer"),
         new Model.ScoreElement(null),
         new ScoreApplication.ScoreStatusManager());

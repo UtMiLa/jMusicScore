@@ -1,12 +1,12 @@
 module JMusicScore {
 
     export module ScoreApplication {
-        export interface IScoreApplication extends Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> { }
-        export interface IScorePlugin extends Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> { }
-        export interface IScoreEventProcessor extends Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> { }
-        export interface IScoreDesigner extends Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScoreApplication extends JApps.Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScorePlugin extends JApps.Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScoreEventProcessor extends JApps.Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScoreDesigner extends JApps.Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> { }
 
-        export interface IMessage extends Application.IMessage {
+        export interface IMessage extends JApps.Application.IMessage {
             note?: Model.INote;
             pitch?: Model.Pitch;
             head?: Model.INotehead;
@@ -18,12 +18,12 @@ module JMusicScore {
         }
 
 
-        export class ScoreStatusManager implements Application.IStatusManager {
+        export class ScoreStatusManager implements JApps.Application.IStatusManager {
             constructor() { }
 
-            private feedbackManager: Application.IFeedbackManager;
+            private feedbackManager: JApps.Application.IFeedbackManager;
 
-            public setFeedbackManager(f: Application.IFeedbackManager): void {
+            public setFeedbackManager(f: JApps.Application.IFeedbackManager): void {
                 this.feedbackManager = f;
             }
 
@@ -488,7 +488,7 @@ module JMusicScore {
 
         /** Responsible for making event handlers on DOM (SVG/HTML) sensors */
         export class DomCheckSensorsVisitor implements Model.IVisitor { // todo: remove event handlers when inactive
-            constructor(public sensorEngine: ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: Application.IEventReceiver) {
+            constructor(public sensorEngine: ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: JApps.Application.IEventReceiver) {
             }
 
             visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
@@ -1098,7 +1098,7 @@ module JMusicScore {
             }
         }
 
-        export class DomFeedbackClient implements Application.IFeedbackClient {
+        export class DomFeedbackClient implements JApps.Application.IFeedbackClient {
             constructor(private sensorEngine: Views.ISensorGraphicsEngine) { }
             changed(status: ScoreApplication.ScoreStatusManager, key: string, val: any) {
                 if (key === "currentNote" || key === "currentPitch") {
@@ -1804,14 +1804,14 @@ module JMusicScore {
             }
         }
 
-        class HintAreaDesigner implements ScoreApplication.IScoreDesigner, Application.IFeedbackClient {
+        class HintAreaDesigner implements ScoreApplication.IScoreDesigner, JApps.Application.IFeedbackClient {
             constructor(private app: ScoreApplication.IScoreApplication, private svgHelper: IHintAreaCreator) {
                 app.FeedbackManager.registerClient(this);
             }
 
             private staffButtons: IHintArea[] = [];
 
-            public changed(status: Application.IStatusManager, key: string, val: any) {
+            public changed(status: JApps.Application.IStatusManager, key: string, val: any) {
                 if (key === 'currentVoice') {
                     $('.voiceBtn')
                         .css('opacity', '0.5');
@@ -1945,7 +1945,7 @@ module JMusicScore {
         dialogs (note, head, voice, staff)       
         */
 
-        class SvgWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        class SvgWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor(private svgHelper: SvgHelper) { }
 
             init(app: ScoreApplication.IScoreApplication) {

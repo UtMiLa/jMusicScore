@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="application.ts" />
+    <TypeScriptCompile Include="hammerPlugin.ts" />
     <TypeScriptCompile Include="Japps.ui.ts" />
     <TypeScriptCompile Include="jApps.BrowserFileSystem.ts" />
     <TypeScriptCompile Include="keyboard.ts" />

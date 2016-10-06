@@ -28,7 +28,7 @@ var initScore: any = { "id": "2", "t": "Score", "def": { "metadata": {} }, "chil
         var app: JMusicScore.ScoreApplication.IScoreApplication;
 
         beforeEach(function () {
-            app = <JMusicScore.ScoreApplication.IScoreApplication>new JMusicScore.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery>(
+            app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery>(
                 $("#application"),
                 new JMusicScore.Model.ScoreElement(null),
                 new JMusicScore.ScoreApplication.ScoreStatusManager());
@@ -222,7 +222,7 @@ describe("Beaming", function() {
     var voice: JMusicScore.Model.IVoice;
 
     beforeEach(function() {
-        app = <JMusicScore.ScoreApplication.IScoreApplication>new JMusicScore.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery>(
+        app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery>(
             $("#application"),
             new JMusicScore.Model.ScoreElement(null),
             new JMusicScore.ScoreApplication.ScoreStatusManager());

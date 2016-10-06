@@ -1,15 +1,11 @@
 {
   "name": "jmusicscore",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "jMusicScore is a library of Typescript classes to represent, view and edit music scores.",
   "author": "John Ekberg",
   "license": "ISC",
   "files": ["*.d.ts", "*.js" ],
   "scripts": {
-    "preinstall": "npm install ../japps/"
-  },
-  "dependencies": {
-    "japps": "*"
   },
   "main": "jMusicScore.js",
   "bugs": {

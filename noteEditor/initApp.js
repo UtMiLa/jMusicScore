@@ -1,6 +1,6 @@
 var JMusicScore;
 (function (JMusicScore) {
-    var app = new JMusicScore.Application.AbstractApplication($("#appContainer"), new JMusicScore.Model.ScoreElement(null), new JMusicScore.ScoreApplication.ScoreStatusManager());
+    var app = new JApps.Application.AbstractApplication($("#appContainer"), new JMusicScore.Model.ScoreElement(null), new JMusicScore.ScoreApplication.ScoreStatusManager());
     /* JSONReader */
     app.addPlugin(new JMusicScore.MusicXml.MusicXmlPlugin());
     app.addPlugin(new JMusicScore.Lilypond.LilypondPlugin());
@@ -13,9 +13,9 @@ var JMusicScore;
     app.addValidator(new JMusicScore.Model.TieValidator());
     app.addValidator(new JMusicScore.Model.UpdateAccidentalsValidator());
     app.addValidator(new JMusicScore.GhostElements.GhostsValidator());
-    app.addFileManager(new JMusicScore.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
-    app.addFileManager(new JMusicScore.IO.ServerFileManager("/Handler.php", "Server (PHP)"));
-    app.addFileManager(new JMusicScore.IO.LocalStorageFileManager("Local"));
+    app.addFileManager(new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
+    app.addFileManager(new IO.ServerFileManager("/Handler.php", "Server (PHP)"));
+    app.addFileManager(new IO.LocalStorageFileManager("Local"));
     //UtMiLa.application.LoadUsing("Esajas40.xml", "Server", "MusicXML");
     var mus = {
         "id": "89", "t": "Score", "def": { "metadata": {} },

@@ -101,7 +101,7 @@ module JMusicScore {
             }
         }
 
-        class LilypondReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        class LilypondReader implements JApps.Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             private app: ScoreApplication.IScoreApplication;
 
             init(app: ScoreApplication.IScoreApplication) {
@@ -133,7 +133,7 @@ module JMusicScore {
 
 
 
-        export class LilypondWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        export class LilypondWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor() {
             }
 

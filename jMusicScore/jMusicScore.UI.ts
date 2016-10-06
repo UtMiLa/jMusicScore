@@ -1,6 +1,5 @@
-module JMusicScore {
+module JApps {
     export module Ui {
-
         /* Abstract toolkit */
 
         export interface IWidget {
@@ -12,8 +11,8 @@ module JMusicScore {
             $container: JQuery;
         }
 
-        export class UiContainer<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
+        export class UiContainer<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
             }
 
             public $container: JQuery; // todo: ContainerType;
@@ -40,20 +39,20 @@ module JMusicScore {
 
         /* tools using JQuery */
 
-        export class MenuPlugin implements ScoreApplication.IScorePlugin {
-            init(app: ScoreApplication.IScoreApplication) {
+        export class MenuPlugin<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> implements JApps.Application.IPlugIn<TDocumentType, TStatusManager, TContainerType> {
+            init(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
                 this.app = app;
                 var obj = this.getMenuObj(app);
                 this.menuAddItem(obj/*, 0*/);
             }
 
-            private app: ScoreApplication.IScoreApplication;
+            private app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
 
             getId(): string {
                 return "Menu";
             }
 
-            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef {
+            getMenuObj(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): IMenuDef {
                 return null;
             }
 
@@ -74,18 +73,18 @@ module JMusicScore {
                         $('#' + e.id + "Button")
                             .button({
                                 showLabel: true,
-                        })
+                            })
                             .click(function () {
-                            var menu = $(this).next().show().position({
-                                my: "left top",
-                                at: "left bottom",
-                                of: this
-                            });
-                            $(document).one("click", function () {
-                                menu.hide();
-                            });
-                            return false;
-                        })
+                                var menu = $(this).next().show().position({
+                                    my: "left top",
+                                    at: "left bottom",
+                                    of: this
+                                });
+                                $(document).one("click", function () {
+                                    menu.hide();
+                                });
+                                return false;
+                            })
                             .next()
                             .hide()
                             .menu();
@@ -93,7 +92,7 @@ module JMusicScore {
                     else {
                         $('#' + e.id + "Button")
                             .next()
-                        //.find('ul')
+                            //.find('ul')
                             .append(this.menuSubMenu(e).children())
                             .menu("refresh");
                     }
@@ -108,7 +107,7 @@ module JMusicScore {
                             .addClass("ui-widget-header").addClass("ui-corner-all")
                             .button({
                                 showLabel: true,
-                        })
+                            })
                             .click(e.action)
                         );
                 }
@@ -142,8 +141,8 @@ module JMusicScore {
             }
         }
 
-        export class Dialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends UiContainer<TDocumentType, TStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
+        export class Dialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> extends UiContainer<TDocumentType, TStatusManager, TContainerType> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
                 this.createDialogElement();
             }
@@ -246,7 +245,7 @@ module JMusicScore {
 
 
         export class DropdownWidget implements IWidget {
-            constructor(public values: { [index: string]: string} ) {
+            constructor(public values: { [index: string]: string }) {
                 //this.values = values;
             }
 
@@ -263,7 +262,7 @@ module JMusicScore {
 
             public setOptions(items: Array<any>) {
                 this.$ctl.empty();
-                $.each(items, (i: number, e: {label: string; val:string;}) => {
+                $.each(items, (i: number, e: { label: string; val: string; }) => {
                     $('<option>').text(e.label).attr('value', e.val).appendTo(this.$ctl);
                 });
             }
@@ -286,11 +285,11 @@ module JMusicScore {
         }
 
         export class DisplayTextWidget implements IWidget {
-            constructor() {                
+            constructor() {
             }
 
             private $ctl: JQuery;
-            
+
             public set value(value: string) {
                 this.$ctl.text(value);
             }
@@ -337,22 +336,22 @@ module JMusicScore {
                 parent.append(this.$ctl);
                 this.$ctl
                     .accordion({
-                    header: "> div > h2",
-                    collapsible: true,
-                    heightStyle: "content"
-                })
+                        header: "> div > h2",
+                        collapsible: true,
+                        heightStyle: "content"
+                    })
                     .sortable({
-                    axis: "y",
-                    handle: "h2",
-                    stop: function (event: Event, ui: JQueryUI.SortableUIParams) {
-                        // IE doesn't register the blur when sorting
-                        // so trigger focusout handlers to remove .ui-state-focus
-                        ui.item.children("h3").triggerHandler("focusout");
-                    }
-                });
+                        axis: "y",
+                        handle: "h2",
+                        stop: function (event: Event, ui: JQueryUI.SortableUIParams) {
+                            // IE doesn't register the blur when sorting
+                            // so trigger focusout handlers to remove .ui-state-focus
+                            ui.item.children("h3").triggerHandler("focusout");
+                        }
+                    });
 
                 return this.$ctl;
-            }     
+            }
         }
 
         export class SpinnerWidget implements IWidget {
@@ -431,12 +430,12 @@ module JMusicScore {
                                 $("<a>").text(e)
                                     .attr("href", "#")
                                     .click(function () {
-                                    var name = $(this).text();
-                                    $list.children("li").removeClass('selected');
-                                    $(this).parent().addClass('selected');
-                                    $list.data("filename", name);
-                                })
-                            // todo: .dblclick(function () { $('#BtnOk_Open_FileDialog').trigger('click'); })
+                                        var name = $(this).text();
+                                        $list.children("li").removeClass('selected');
+                                        $(this).parent().addClass('selected');
+                                        $list.data("filename", name);
+                                    })
+                                // todo: .dblclick(function () { $('#BtnOk_Open_FileDialog').trigger('click'); })
                                 ));
                     }
                 });
@@ -451,8 +450,8 @@ module JMusicScore {
             }
         }
 
-        export class FileDialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends Dialog<TDocumentType, TStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
+        export class FileDialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> extends Dialog<TDocumentType, TStatusManager, TContainerType> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
@@ -468,8 +467,8 @@ module JMusicScore {
 
             public onInit() {
                 var ids = this.app.getFileManagerIds();
-                this.sourceWidget.setOptions(<any>$.map(ids,(e, i) => { return { val: e, label: e }; }));
-                this.fileTypeWidget.setOptions(<any>$.map(this.app.getFileSaveTypes(),(e, i) => { return { val: e, label: e }; }));
+                this.sourceWidget.setOptions(<any>$.map(ids, (e, i) => { return { val: e, label: e }; }));
+                this.fileTypeWidget.setOptions(<any>$.map(this.app.getFileSaveTypes(), (e, i) => { return { val: e, label: e }; }));
 
                 var me = this;
                 var updateFileList = function (source: string) {
@@ -508,8 +507,8 @@ module JMusicScore {
             }
         }
 
-        export class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
+        export class OpenFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "OpenFileDialog";
                 this.dialogTitle = "Open file";
@@ -527,8 +526,8 @@ module JMusicScore {
             }
         }
 
-        export class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
+        export class SaveFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
                 super(idPrefix, app);
                 this.dialogId = "SaveFileDialog";
                 this.dialogTitle = "Save file";
@@ -588,12 +587,34 @@ module JMusicScore {
                 this.addWidget(this.fileNameWidget = new TextEditWidget(), "fileName", "Enter file name");
             }
         }
+        export interface IAction {
+            getCaption(): string;
+            getImageUri(): string;
+            getSvg(): string;
+            getIndex(): number;
+            getId(): string;
+            getParentId(): string;
+            checkEnabled(): void;
+        }
 
-        export class FileMenuPlugin extends MenuPlugin {
+        export class RadioActionGroup {
+            getId(): string { return undefined; }
+        }
+
+        export class RadioAction {
+        }
+    }
+}
+
+module JMusicScore {
+    export module Ui {
+
+
+        export class FileMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor() {
                 super();
             }
-            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef {
+            getMenuObj(app: JApps.Application.AbstractApplication<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>): JApps.Ui.IMenuDef {
                 return {
                     id: "FileMenu",
                     caption: "File",
@@ -617,14 +638,14 @@ module JMusicScore {
                             id: "OpenMenu",
                             caption: "Open...",
                             action: () => {
-                                new OpenFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('open', app).show();
+                                new JApps.Ui.OpenFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery >('open', app).show();
                             }
                         },
                         {
                             id: "SaveMenu",
                             caption: "Save as...",
                             action: () => {
-                                new SaveFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('save', app).show();
+                                new JApps.Ui.SaveFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('save', app).show();
                             }
                         },
                     ]
@@ -635,7 +656,7 @@ module JMusicScore {
 
         // ************************* Music widgets ************************ //
 
-        export class KeyWidget implements IWidget {
+        export class KeyWidget implements JApps.Ui.IWidget {
             constructor() {
             }
             private values: { [index: string]: string } = {
@@ -720,7 +741,7 @@ module JMusicScore {
 
         }
 
-        export class TimeWidget implements IWidget {
+        export class TimeWidget implements JApps.Ui.IWidget {
             private $spinner: JQuery;
 
             public set value(value: number) {
@@ -760,7 +781,7 @@ module JMusicScore {
 
         // ************************* Music dialogs ************************ //
 
-        export class ScoreDialog extends Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        export class ScoreDialog extends JApps.Ui.Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
             }
@@ -774,9 +795,9 @@ module JMusicScore {
             }
             public height = 400;
 
-            private numCtl: SpinnerWidget;
+            private numCtl: JApps.Ui.SpinnerWidget;
             private denCtl: TimeWidget;
-            private upbCtl: CheckboxWidget;
+            private upbCtl: JApps.Ui.CheckboxWidget;
 
             private absTime = Model.AbsoluteTime.startTime;
 
@@ -806,9 +827,9 @@ module JMusicScore {
             }
             
             public createBodyElements($element: JQuery) {
-                this.addWidget(this.numCtl = new SpinnerWidget(), "spinner_num", "Numerator");
+                this.addWidget(this.numCtl = new JApps.Ui.SpinnerWidget(), "spinner_num", "Numerator");
                 this.addWidget(this.denCtl = new TimeWidget(), "spinner_den", "Denominator");
-                this.addWidget(this.upbCtl = new CheckboxWidget(), "check_upbeat", "Upbeat");
+                this.addWidget(this.upbCtl = new JApps.Ui.CheckboxWidget(), "check_upbeat", "Upbeat");
             }
         }
 
@@ -854,9 +875,9 @@ module JMusicScore {
                 this.dialogId = "ClefDialog";
                 this.dialogTitle = "Edit clef";
             }
-            private clefWidget: DropdownWidget;
-            private lineWidget: SpinnerWidget;
-            private transposeWidget: SpinnerWidget;
+            private clefWidget: JApps.Ui.DropdownWidget;
+            private lineWidget: JApps.Ui.SpinnerWidget;
+            private transposeWidget: JApps.Ui.SpinnerWidget;
             private absTime: Model.AbsoluteTime;
             private staff: Model.IStaff;
 
@@ -891,9 +912,9 @@ module JMusicScore {
             }
 
             public createBodyElements($element: JQuery) {
-                this.addWidget(this.clefWidget = new DropdownWidget({1: 'G', 2: 'C', 3: 'F', 4: 'Percussion'}), "clef", "Clef");
-                this.addWidget(this.lineWidget = new SpinnerWidget(), "line", "Line");
-                this.addWidget(this.transposeWidget = new SpinnerWidget(), "transpose", "Transpose");
+                this.addWidget(this.clefWidget = new JApps.Ui.DropdownWidget({1: 'G', 2: 'C', 3: 'F', 4: 'Percussion'}), "clef", "Clef");
+                this.addWidget(this.lineWidget = new JApps.Ui.SpinnerWidget(), "line", "Line");
+                this.addWidget(this.transposeWidget = new JApps.Ui.SpinnerWidget(), "transpose", "Transpose");
                 this.transposeWidget.value = 0;
             }
         }
@@ -949,11 +970,11 @@ module JMusicScore {
                 this.dialogId = "NoteDialog";
                 this.dialogTitle = "Edit note settings";
             }
-            private stemDirCtl: DropdownWidget;
+            private stemDirCtl: JApps.Ui.DropdownWidget;
             private note: Model.INote;
 
             public createBodyElements($element: JQuery) {
-                this.addWidget(this.stemDirCtl = new DropdownWidget({
+                this.addWidget(this.stemDirCtl = new JApps.Ui.DropdownWidget({
                     "0": "Free",
                     "1": "Up",
                     "2": "Down"
@@ -986,11 +1007,11 @@ module JMusicScore {
                 this.dialogId = "VoiceDialog";
                 this.dialogTitle = "Edit voice settings";
             }
-            private stemDirCtl: DropdownWidget;
+            private stemDirCtl: JApps.Ui.DropdownWidget;
             private voice: Model.IVoice;
 
             public createBodyElements($element: JQuery) {
-                this.addWidget(this.stemDirCtl = new DropdownWidget({
+                this.addWidget(this.stemDirCtl = new JApps.Ui.DropdownWidget({
                     "0": "Free",
                     "1": "Up",
                     "2": "Down"
@@ -1072,10 +1093,10 @@ module JMusicScore {
                 this.width = 600;
                 this.height = 500;
             }
-            private textDivCtl: DisplayTextWidget;
+            private textDivCtl: JApps.Ui.DisplayTextWidget;
 
             public createBodyElements($element: JQuery) {
-                this.addWidget(this.textDivCtl = new DisplayTextWidget(), "ShowTextDialogTextDiv", "Text");
+                this.addWidget(this.textDivCtl = new JApps.Ui.DisplayTextWidget(), "ShowTextDialogTextDiv", "Text");
             }
 
             public setText(text: string): ShowTextDialog {
@@ -1089,7 +1110,7 @@ module JMusicScore {
 
         }
 
-        class StaffContainer extends UiContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> implements IContainer {
+        class StaffContainer extends JApps.Ui.UiContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> implements JApps.Ui.IContainer {
             constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication, staff: Model.IStaff, index: number) {
                 super(idPrefix, app);
 
@@ -1113,22 +1134,22 @@ module JMusicScore {
             }
 
             private $staffDetails: JQuery;
-            private titleWidget: TextEditWidget;
-            private clefWidget: DropdownWidget; // todo: clefWidget
-            private lineWidget: SpinnerWidget;
-            private transposeWidget: SpinnerWidget;
+            private titleWidget: JApps.Ui.TextEditWidget;
+            private clefWidget: JApps.Ui.DropdownWidget; // todo: clefWidget
+            private lineWidget: JApps.Ui.SpinnerWidget;
+            private transposeWidget: JApps.Ui.SpinnerWidget;
             public staff: Model.IStaff;
 
-            public addWidget(widget: IWidget, id: string, label: string): IWidget {
+            public addWidget(widget: JApps.Ui.IWidget, id: string, label: string): JApps.Ui.IWidget {
                 widget.addTo(this.$staffDetails, this.idPrefix + id, label);
                 return widget;
             }
 
             public createBodyElements() {
-                this.addWidget(this.titleWidget = new TextEditWidget(), 'title', 'Title');
-                this.addWidget(this.clefWidget = new DropdownWidget({ 1: 'G', 2: 'C', 3: 'F', 4: 'Percussion' }), "clef", "Clef");
-                this.addWidget(this.lineWidget = new SpinnerWidget(), "line", "Line");
-                this.addWidget(this.transposeWidget = new SpinnerWidget(), "transpose", "Transpose");
+                this.addWidget(this.titleWidget = new JApps.Ui.TextEditWidget(), 'title', 'Title');
+                this.addWidget(this.clefWidget = new JApps.Ui.DropdownWidget({ 1: 'G', 2: 'C', 3: 'F', 4: 'Percussion' }), "clef", "Clef");
+                this.addWidget(this.lineWidget = new JApps.Ui.SpinnerWidget(), "line", "Line");
+                this.addWidget(this.transposeWidget = new JApps.Ui.SpinnerWidget(), "transpose", "Transpose");
                 this.transposeWidget.value = 0;
             }
         }
@@ -1141,7 +1162,7 @@ module JMusicScore {
                 this.width = 750;
                 this.height = 500;
             }
-            private stavesWidget: CollectionWidget;
+            private stavesWidget: JApps.Ui.CollectionWidget;
 
             public onOk(): boolean {
                 return true;
@@ -1213,16 +1234,16 @@ module JMusicScore {
 
             public createBodyElements($element: JQuery) {
                 var me = this;
-                this.addWidget(this.stavesWidget = new CollectionWidget(), "staves", "Staves");
+                this.addWidget(this.stavesWidget = new JApps.Ui.CollectionWidget(), "staves", "Staves");
             }
         }
 
-        export class QuickMenuPlugin extends MenuPlugin {
+        export class QuickMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor(private id: string, private menuCaption: string, private parentId: string, private parentCaption: string, private menuAction: () => void) {
                 super();
             }
 
-            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.IScoreApplication): JApps.Ui.IMenuDef {
                 // ****************** Custom action ******************* //
                 var menuItem = {
                     id: this.id,
@@ -1255,11 +1276,11 @@ module JMusicScore {
             }
         }
 
-        export class ExportMenuPlugin extends MenuPlugin {
+        export class ExportMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor() {
                 super();
             }
-            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef {
+            getMenuObj(app: ScoreApplication.IScoreApplication): JApps.Ui.IMenuDef {
                 return {
                     id: "ExportMenu",
                     caption: "Export",
@@ -1298,24 +1319,8 @@ module JMusicScore {
         }
 
 
-        export interface IAction {
-            getCaption(): string;
-            getImageUri(): string;
-            getSvg(): string;
-            getIndex(): number;
-            getId(): string;
-            getParentId(): string;
-            checkEnabled(): void;
-        }
 
-        class RadioActionGroup {
-            getId(): string { return undefined; }
-        }
-
-        class RadioAction {
-        }
-
-        class FinaleSpeedyAction extends RadioAction {
+        class FinaleSpeedyAction extends JApps.Ui.RadioAction {
             getCaption(): string { return "Edit"; }
             getImageUri(): string { return "icon-finale"; }
             getSvg(): string { return undefined; }
@@ -1721,14 +1726,14 @@ module JMusicScore {
             }
         }
 
-        export class PianoPlugIn implements ScoreApplication.IScorePlugin, Application.IFeedbackClient { // todo: change sizing of clientArea etc.
+        export class PianoPlugIn implements ScoreApplication.IScorePlugin, JApps.Application.IFeedbackClient { // todo: change sizing of clientArea etc.
             init(app: ScoreApplication.IScoreApplication) {
                 var $root = (<any>$('<div>').addClass('piano').appendTo('#footer'));
                 this.createPianoKeyboard($root, { tgWidth: 40 }, app);
                 app.FeedbackManager.registerClient(this);
             }
 
-            public changed(status: Application.IStatusManager, key: string, val: any) {
+            public changed(status: JApps.Application.IStatusManager, key: string, val: any) {
                 if (key === "pressKey") {
                     $('#tast' + (<Model.Pitch>val).toMidi()).addClass('down');
                     //$('.staffTitleArea:first').text('#tast' + (<Model.Pitch>val).toMidi());

@@ -1,5 +1,5 @@
-var JMusicScore;
-(function (JMusicScore) {
+var JApps;
+(function (JApps) {
     var Application;
     (function (Application) {
         var HtmlDesktopManager = (function () {
@@ -284,8 +284,53 @@ var JMusicScore;
             return AbstractApplication;
         })();
         Application.AbstractApplication = AbstractApplication;
-    })(Application = JMusicScore.Application || (JMusicScore.Application = {}));
-})(JMusicScore || (JMusicScore = {}));
+    })(Application = JApps.Application || (JApps.Application = {}));
+})(JApps || (JApps = {}));
+/*$(document).bind("touchstart touchmove", function(e) {
+  //Disable scrolling by preventing default touch behaviour
+  e.preventDefault();
+  var orig = e.originalEvent;
+  var x = orig.changedTouches[0].pageX;
+  var y = orig.changedTouches[0].pageY;
+  // Move a div with id "rect"
+  $("#rect").css({top: y, left: x});
+}); */
+//$('#MusicLayer').overscroll();
+//$('#MusicLayer').hammer({prevent_default: true,})
+/*.bind("touchmove", function(e) {
+    //Disable scrolling by preventing default touch behaviour
+    e.preventDefault();
+})*/
+/*.on("drag", function(event) {
+    //$('#events').prepend('<li>drag'+event.gesture.deltaX+ ','+ event.gesture.eventType+ '</li>');
+    //application.deltaScroll(event.gesture.deltaX);
+    //application.scroll(event.clientX);
+    //console.log(event.gesture.startEvent.touches.length)
+    event.preventDefault();
+    application.scroll(event.gesture.deltaX + dragStartX);
+})
+.on("touch", function(event) {
+    //$('#events').prepend('<li>touch</li>');
+    //event.preventDefault();
+    dragStartX = application.scoreOutput.getX();
+})*/
+/*.on("pinch", /*".nested_el", * /function(event) {
+    $('#events').prepend('<li>pinch</li>');
+})
+.on("hold", /*".nested_el", * /function(event) {
+    $('#events').prepend('<li>hold</li>');
+})
+.on("doubletap", /*".nested_el", * /function(event) {
+    $('#events').prepend('<li>doubletap</li>');
+})
+.on("tap", /*".nested_el", * /function(event) {
+    $('#events').prepend('<li>tap</li>');
+})*/
+/*.on("swipe", function(event) {
+    $('#events').prepend('<li>swipe</li>');
+    event.preventDefault();
+})
+;*/ 
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -446,8 +491,8 @@ var JApps;
         UI.JQCommandLineManager = JQCommandLineManager;
     })(UI = JApps.UI || (JApps.UI = {}));
 })(JApps || (JApps = {}));
-var JMusicScore;
-(function (JMusicScore) {
+var JApps;
+(function (JApps) {
     var IO;
     (function (IO) {
         /** REST remote file manager */
@@ -517,10 +562,10 @@ var JMusicScore;
             return LocalStorageFileManager;
         })();
         IO.LocalStorageFileManager = LocalStorageFileManager;
-    })(IO = JMusicScore.IO || (JMusicScore.IO = {}));
-})(JMusicScore || (JMusicScore = {}));
-var JMusicScore;
-(function (JMusicScore) {
+    })(IO = JApps.IO || (JApps.IO = {}));
+})(JApps || (JApps = {}));
+var JApps;
+(function (JApps) {
     var Editors;
     (function (Editors) {
         var KeybordInputPlugin = (function () {
@@ -605,6 +650,6 @@ var JMusicScore;
             return KeybordInputPlugin;
         })();
         Editors.KeybordInputPlugin = KeybordInputPlugin;
-    })(Editors = JMusicScore.Editors || (JMusicScore.Editors = {}));
-})(JMusicScore || (JMusicScore = {}));
+    })(Editors = JApps.Editors || (JApps.Editors = {}));
+})(JApps || (JApps = {}));
 //# sourceMappingURL=japps.js.map

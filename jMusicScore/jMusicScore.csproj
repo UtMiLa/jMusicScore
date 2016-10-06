@@ -84,7 +84,6 @@
     <TypeScriptCompile Include="emmentaler.ts" />
     <TypeScriptCompile Include="FinaleEmulator.ts" />
     <TypeScriptCompile Include="ghostElements.ts" />
-    <TypeScriptCompile Include="hammerPlugin.ts" />
     <TypeScriptCompile Include="jMusicScore.Lilypond.ts" />
     <TypeScriptCompile Include="jMusicScore.MusicXml.ts" />
     <TypeScriptCompile Include="jMusicScore.Spacing.ts" />

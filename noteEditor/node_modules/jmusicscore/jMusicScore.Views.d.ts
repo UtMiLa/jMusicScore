@@ -1,14 +1,14 @@
 declare module JMusicScore {
     module ScoreApplication {
-        interface IScoreApplication extends Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> {
+        interface IScoreApplication extends JApps.Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> {
         }
-        interface IScorePlugin extends Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> {
+        interface IScorePlugin extends JApps.Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> {
         }
-        interface IScoreEventProcessor extends Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> {
+        interface IScoreEventProcessor extends JApps.Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> {
         }
-        interface IScoreDesigner extends Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> {
+        interface IScoreDesigner extends JApps.Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> {
         }
-        interface IMessage extends Application.IMessage {
+        interface IMessage extends JApps.Application.IMessage {
             note?: Model.INote;
             pitch?: Model.Pitch;
             head?: Model.INotehead;
@@ -18,10 +18,10 @@ declare module JMusicScore {
             clef?: Model.IClef;
             meter?: Model.IMeter;
         }
-        class ScoreStatusManager implements Application.IStatusManager {
+        class ScoreStatusManager implements JApps.Application.IStatusManager {
             constructor();
             private feedbackManager;
-            setFeedbackManager(f: Application.IFeedbackManager): void;
+            setFeedbackManager(f: JApps.Application.IFeedbackManager): void;
             private _currentPitch;
             private _currentNote;
             private _currentNotehead;
@@ -102,7 +102,7 @@ declare module JMusicScore {
             sensorEngine: ISensorGraphicsEngine;
             private score;
             private eventReceiver;
-            constructor(sensorEngine: ISensorGraphicsEngine, score: Model.IScore, eventReceiver: Application.IEventReceiver);
+            constructor(sensorEngine: ISensorGraphicsEngine, score: Model.IScore, eventReceiver: JApps.Application.IEventReceiver);
             visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo): void;
             visitNote(note: Model.INote, noteSpacing: Model.INoteSpacingInfo): void;
             visitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo): void;
@@ -149,7 +149,7 @@ declare module JMusicScore {
         }
     }
     module SvgView {
-        class DomFeedbackClient implements Application.IFeedbackClient {
+        class DomFeedbackClient implements JApps.Application.IFeedbackClient {
             private sensorEngine;
             constructor(sensorEngine: Views.ISensorGraphicsEngine);
             changed(status: ScoreApplication.ScoreStatusManager, key: string, val: any): void;

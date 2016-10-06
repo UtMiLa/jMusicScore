@@ -1,4 +1,4 @@
-module JMusicScore {
+module JApps {
     export module Editors {
         export class KeybordInputPlugin<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> implements Application.IPlugIn<TDocumentType, TStatusManager, TContainerType> {
             public init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {

@@ -1,4 +1,4 @@
-declare module JMusicScore {
+declare module JApps {
     module Ui {
         interface IWidget {
             addTo(parent: JQuery, id: string, label: string): JQuery;
@@ -7,10 +7,10 @@ declare module JMusicScore {
             addWidget(widget: IWidget, id: string, label: string): IWidget;
             $container: JQuery;
         }
-        class UiContainer<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> {
+        class UiContainer<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> {
             idPrefix: string;
-            app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
-            constructor(idPrefix: string, app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>);
+            app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>);
             $container: JQuery;
             addWidget(widget: IWidget, id: string, label: string): IWidget;
         }
@@ -25,18 +25,18 @@ declare module JMusicScore {
             caption: string;
             action?: () => void;
         }
-        class MenuPlugin implements ScoreApplication.IScorePlugin {
-            init(app: ScoreApplication.IScoreApplication): void;
+        class MenuPlugin<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> implements JApps.Application.IPlugIn<TDocumentType, TStatusManager, TContainerType> {
+            init(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
             private app;
             getId(): string;
-            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef;
+            getMenuObj(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): IMenuDef;
             private menuAddItem(e);
             private menuSubMenu(e);
         }
-        class Dialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends UiContainer<TDocumentType, TStatusManager, TContainerType> {
+        class Dialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> extends UiContainer<TDocumentType, TStatusManager, TContainerType> {
             idPrefix: string;
-            app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
-            constructor(idPrefix: string, app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>);
+            app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>);
             private $dialog;
             dialogId: string;
             dialogTitle: string;
@@ -97,10 +97,10 @@ declare module JMusicScore {
             value: string;
             addTo(parent: JQuery, id: string, label: string): JQuery;
         }
-        class FileDialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> extends Dialog<TDocumentType, TStatusManager, TContainerType> {
+        class FileDialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> extends Dialog<TDocumentType, TStatusManager, TContainerType> {
             idPrefix: string;
-            app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
-            constructor(idPrefix: string, app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>);
+            app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>);
             private sourceWidget;
             private fileListWidget;
             private fileTypeWidget;
@@ -112,26 +112,44 @@ declare module JMusicScore {
             existsInFileList(name: string): boolean;
             createBodyElements($element: JQuery): void;
         }
-        class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+        class OpenFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
             idPrefix: string;
-            app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>;
-            constructor(idPrefix: string, app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>);
+            app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>);
             onOk(): boolean;
         }
-        class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+        class SaveFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
             idPrefix: string;
-            app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>;
-            constructor(idPrefix: string, app: Application.AbstractApplication<DocumentType, StatusManager, ContainerType>);
+            app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>);
             onOk(): boolean;
             private fileNameWidget;
             filename: string;
             createBodyElements($element: JQuery): void;
         }
-        class FileMenuPlugin extends MenuPlugin {
-            constructor();
-            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef;
+        interface IAction {
+            getCaption(): string;
+            getImageUri(): string;
+            getSvg(): string;
+            getIndex(): number;
+            getId(): string;
+            getParentId(): string;
+            checkEnabled(): void;
         }
-        class KeyWidget implements IWidget {
+        class RadioActionGroup {
+            getId(): string;
+        }
+        class RadioAction {
+        }
+    }
+}
+declare module JMusicScore {
+    module Ui {
+        class FileMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+            constructor();
+            getMenuObj(app: JApps.Application.AbstractApplication<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>): JApps.Ui.IMenuDef;
+        }
+        class KeyWidget implements JApps.Ui.IWidget {
             constructor();
             private values;
             private val;
@@ -139,12 +157,12 @@ declare module JMusicScore {
             value: string;
             addTo(parent: JQuery, id: string, label: string): JQuery;
         }
-        class TimeWidget implements IWidget {
+        class TimeWidget implements JApps.Ui.IWidget {
             private $spinner;
             value: number;
             addTo(parent: JQuery, id: string, label: string): JQuery;
         }
-        class ScoreDialog extends Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        class ScoreDialog extends JApps.Ui.Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
             idPrefix: string;
             app: ScoreApplication.IScoreApplication;
             constructor(idPrefix: string, app: ScoreApplication.IScoreApplication);
@@ -267,14 +285,14 @@ declare module JMusicScore {
             show(): void;
             createBodyElements($element: JQuery): void;
         }
-        class QuickMenuPlugin extends MenuPlugin {
+        class QuickMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
             private id;
             private menuCaption;
             private parentId;
             private parentCaption;
             private menuAction;
             constructor(id: string, menuCaption: string, parentId: string, parentCaption: string, menuAction: () => void);
-            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef;
+            getMenuObj(app: ScoreApplication.IScoreApplication): JApps.Ui.IMenuDef;
         }
         class VoiceMenuPlugin extends QuickMenuPlugin {
             constructor(app: ScoreApplication.IScoreApplication);
@@ -282,18 +300,9 @@ declare module JMusicScore {
         class StavesMenuPlugin extends QuickMenuPlugin {
             constructor(app: ScoreApplication.IScoreApplication);
         }
-        class ExportMenuPlugin extends MenuPlugin {
+        class ExportMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
             constructor();
-            getMenuObj(app: ScoreApplication.IScoreApplication): IMenuDef;
-        }
-        interface IAction {
-            getCaption(): string;
-            getImageUri(): string;
-            getSvg(): string;
-            getIndex(): number;
-            getId(): string;
-            getParentId(): string;
-            checkEnabled(): void;
+            getMenuObj(app: ScoreApplication.IScoreApplication): JApps.Ui.IMenuDef;
         }
         interface IToolBtnDef {
             id: string;
@@ -323,9 +332,9 @@ declare module JMusicScore {
             init(app: ScoreApplication.IScoreApplication): void;
             getId(): string;
         }
-        class PianoPlugIn implements ScoreApplication.IScorePlugin, Application.IFeedbackClient {
+        class PianoPlugIn implements ScoreApplication.IScorePlugin, JApps.Application.IFeedbackClient {
             init(app: ScoreApplication.IScoreApplication): void;
-            changed(status: Application.IStatusManager, key: string, val: any): void;
+            changed(status: JApps.Application.IStatusManager, key: string, val: any): void;
             private createPianoKeyboard($root, param, app);
             getId(): string;
         }

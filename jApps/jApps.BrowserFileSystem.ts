@@ -1,4 +1,4 @@
-﻿module JMusicScore {
+﻿module JApps {
 
     export module IO {
 

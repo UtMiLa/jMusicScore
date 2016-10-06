@@ -2,9 +2,9 @@
     export module Editors {
 
         export class MidiHelper {
-            constructor(private eventReceiver: Application.IEventReceiver) { }
+            constructor(private eventReceiver: JApps.Application.IEventReceiver) { }
 
-            private trigger(eventtype: string, event: Application.IMessage) {
+            private trigger(eventtype: string, event: JApps.Application.IMessage) {
                 //var eventtype: string = event.type;
                 this.eventReceiver.processEvent(eventtype.toLowerCase(), event);
             }
@@ -163,7 +163,7 @@
         export class MidiInputPlugin implements ScoreApplication.IScorePlugin {
             private static _midiHelper: MidiHelper;
 
-            public static getMidiHelper(app: Application.IEventReceiver): MidiHelper {
+            public static getMidiHelper(app: JApps.Application.IEventReceiver): MidiHelper {
                 if (!this._midiHelper) this._midiHelper = new MidiHelper(app);
                 return this._midiHelper;
             }
@@ -244,7 +244,7 @@
                 this.createControls();
             }
 
-            private midiInCtl: JMusicScore.Ui.DropdownWidget;
+            private midiInCtl: JApps.Ui.DropdownWidget;
 
             setHelper(helper: MidiHelper): MidiSettingsDialog {
                 this.helper = helper;
@@ -262,7 +262,7 @@
                         values[list[i]] = list[i];
                     }
 
-                    this.addWidget(this.midiInCtl = new JMusicScore.Ui.DropdownWidget(values), "midiIn", "Midi in");
+                    this.addWidget(this.midiInCtl = new JApps.Ui.DropdownWidget(values), "midiIn", "Midi in");
                     this.midiInCtl.value = this.helper.currentIn;
                 }
                 catch (err) {
@@ -292,10 +292,10 @@
 
 
         // ****************** Midi ******************* //
-        class MidiMenuPlugin extends JMusicScore.Ui.MenuPlugin {
+        class MidiMenuPlugin extends JApps.Ui.MenuPlugin<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery> {
             constructor(private helper: MidiHelper) { super(); }
 
-            getMenuObj(app: ScoreApplication.IScoreApplication): JMusicScore.Ui.IMenuDef {
+            getMenuObj(app: ScoreApplication.IScoreApplication): JApps.Ui.IMenuDef {
                 // ****************** staves ******************* //
                 var me = this;
                 return {
