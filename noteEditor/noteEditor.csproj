@@ -322,7 +322,10 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <PropertyGroup>
-    <PreBuildEvent>cd $(ProjectDir)\css
+    <PreBuildEvent>cd $(ProjectDir)
+npm install ../japps/
+npm install ../jmusicscore/
+cd $(ProjectDir)\css
 lessc jMusicScore.less jMusicScore.css</PreBuildEvent>
   </PropertyGroup>
 </Project>

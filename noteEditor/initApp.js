@@ -13,9 +13,9 @@ var JMusicScore;
     app.addValidator(new JMusicScore.Model.TieValidator());
     app.addValidator(new JMusicScore.Model.UpdateAccidentalsValidator());
     app.addValidator(new JMusicScore.GhostElements.GhostsValidator());
-    app.addFileManager(new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
-    app.addFileManager(new IO.ServerFileManager("/Handler.php", "Server (PHP)"));
-    app.addFileManager(new IO.LocalStorageFileManager("Local"));
+    app.addFileManager(new JApps.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
+    app.addFileManager(new JApps.IO.ServerFileManager("/Handler.php", "Server (PHP)"));
+    app.addFileManager(new JApps.IO.LocalStorageFileManager("Local"));
     //UtMiLa.application.LoadUsing("Esajas40.xml", "Server", "MusicXML");
     var mus = {
         "id": "89", "t": "Score", "def": { "metadata": {} },
@@ -94,7 +94,7 @@ var JMusicScore;
         app.addPlugin(new JMusicScore.Ui.VoiceMenuPlugin(app));
         app.addPlugin(new JMusicScore.Ui.ExportMenuPlugin());
         app.addPlugin(new JMusicScore.Ui.StavesMenuPlugin(app));
-        app.addPlugin(new JMusicScore.Editors.KeybordInputPlugin());
+        app.addPlugin(new JApps.Editors.KeybordInputPlugin());
         app.addPlugin(new JMusicScore.Editors.MidiInputPlugin());
         app.registerEventProcessor(new JMusicScore.Editors.MidiEditor()); // "midiNoteOff", 
         /** test **/
@@ -222,8 +222,8 @@ var JMusicScore;
         //app.AddPlugin(new Players.MidiPlayer());
         var jMusicActions = {
             FileNew: { caption: "New", action: function () { app.executeCommand(new JMusicScore.Model.ClearScoreCommand({})); }, type: JApps.UI.ActionType.execute },
-            FileLoad: { caption: "Load", action: function () { new JMusicScore.Ui.OpenFileDialog('open', app).show(); }, type: JApps.UI.ActionType.execute },
-            FileSaveAs: { caption: "SaveAs", action: function () { new JMusicScore.Ui.SaveFileDialog('save', app).show(); }, type: JApps.UI.ActionType.execute },
+            FileLoad: { caption: "Load", action: function () { new JApps.Ui.OpenFileDialog('open', app).show(); }, type: JApps.UI.ActionType.execute },
+            FileSaveAs: { caption: "SaveAs", action: function () { new JApps.Ui.SaveFileDialog('save', app).show(); }, type: JApps.UI.ActionType.execute },
             Voice: {
                 caption: "Voice",
                 action: function () {

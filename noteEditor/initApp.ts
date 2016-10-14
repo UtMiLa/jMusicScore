@@ -20,9 +20,9 @@ module JMusicScore {
 
     app.addValidator(new GhostElements.GhostsValidator());
     
-    app.addFileManager(new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
-    app.addFileManager(new IO.ServerFileManager("/Handler.php", "Server (PHP)"));
-    app.addFileManager(new IO.LocalStorageFileManager("Local"));
+    app.addFileManager(new JApps.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
+    app.addFileManager(new JApps.IO.ServerFileManager("/Handler.php", "Server (PHP)"));
+    app.addFileManager(new JApps.IO.LocalStorageFileManager("Local"));
     //UtMiLa.application.LoadUsing("Esajas40.xml", "Server", "MusicXML");
 
     var mus = {
@@ -107,7 +107,7 @@ module JMusicScore {
 
         app.addPlugin(new Ui.StavesMenuPlugin(app));
 
-        app.addPlugin(new Editors.KeybordInputPlugin());
+        app.addPlugin(new JApps.Editors.KeybordInputPlugin());
         app.addPlugin(new Editors.MidiInputPlugin());
         app.registerEventProcessor(new Editors.MidiEditor()); // "midiNoteOff", 
 
@@ -243,8 +243,8 @@ module JMusicScore {
 
         var jMusicActions: JApps.UI.ActionCollection = {
             FileNew: { caption: "New", action: () => { app.executeCommand(new JMusicScore.Model.ClearScoreCommand({})); }, type: JApps.UI.ActionType.execute },
-            FileLoad: { caption: "Load", action: () => { new Ui.OpenFileDialog('open', app).show(); }, type: JApps.UI.ActionType.execute },
-            FileSaveAs: { caption: "SaveAs", action: () => { new Ui.SaveFileDialog('save', app).show(); }, type: JApps.UI.ActionType.execute },
+            FileLoad: { caption: "Load", action: () => { new JApps.Ui.OpenFileDialog('open', app).show(); }, type: JApps.UI.ActionType.execute },
+            FileSaveAs: { caption: "SaveAs", action: () => { new JApps.Ui.SaveFileDialog('save', app).show(); }, type: JApps.UI.ActionType.execute },
             Voice: {
                 caption: "Voice",
                 action: () => {
