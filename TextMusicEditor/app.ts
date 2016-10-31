@@ -1,33 +1,4 @@
-﻿/*class Greeter {
-    element: HTMLElement;
-    span: HTMLElement;
-    timerToken: number;
-
-    constructor(element: HTMLElement) {
-        this.element = element;
-        this.element.innerHTML += "The time is: ";
-        this.span = document.createElement('span');
-        this.element.appendChild(this.span);
-        this.span.innerText = new Date().toUTCString();
-    }
-
-    start() {
-        this.timerToken = setInterval(() => this.span.innerHTML = new Date().toUTCString(), 500);
-    }
-
-    stop() {
-        clearTimeout(this.timerToken);
-    }
-
-}
-
-window.onload = () => {
-    var el = document.getElementById('content');
-    var greeter = new Greeter(el);
-    greeter.start();
-};
-*/
-$(() => {
+﻿$(() => {
     var app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery>(
         $("#content"),
         new JMusicScore.Model.ScoreElement(null),
@@ -40,14 +11,11 @@ $(() => {
     app.addValidator(new JMusicScore.Model.BeamValidator());
     app.addValidator(new JMusicScore.Model.TieValidator());
     app.addValidator(new JMusicScore.Model.UpdateAccidentalsValidator());
-    //app.addPlugin(new JMusicScore.Model.JsonPlugin());
 
     app.addValidator(new JMusicScore.GhostElements.GhostsValidator());
 
     var staff = app.document.addStaff(JMusicScore.Model.ClefDefinition.clefG);
     var voice = staff.addVoice();
-    //JMusicScore.Model.Music.addNote(voice, JMusicScore.Model.NoteType.Note, JMusicScore.Model.AbsoluteTime.startTime, "n1_4", JMusicScore.Model.TimeSpan.quarterNote);
-
     
     //app.addPlugin(new JMusicScore.CanvasView.CanvasViewer($('#svgArea')));
     app.addPlugin(new JMusicScore.SvgView.SvgViewer($('#svgArea')));
