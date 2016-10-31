@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>TypeScript HTML App</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="Scripts/jquery-3.1.1.min.js"></script>
+    <script src="Scripts/jquery-ui-1.12.1.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/jMusicScore.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/jMusicScore.Spacing.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/jMusicScore.Views.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/jMusicScore.MusicXml.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/jMusicScore.Lilypond.js"></script>
+
+    <script charset="utf-8" src="node_modules/jmusicscore/FinaleEmulator.js"></script>
+
+    <script charset="utf-8" src="node_modules/japps/japps.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/validators.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/commands.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/jsonReader.js"></script>
+
+    <script charset="utf-8" src="node_modules/jmusicscore/emmentaler.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/emmentaler_code.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/jMusicScore.UI.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/ghostElements.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/midiEditor.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/jazzsoft/jquery.midi.js"></script>
+    <script charset="utf-8" src="node_modules/jmusicscore/midiIn.js"></script>
+
+    <script src="app.js"></script>
+
+</head>
+<body>
+    <h1>TypeScript HTML App</h1>
+
+    <div id="content">
+
+        <div id="appContainer" class="appContainer">
+            <div class="toolbarArea">
+                <div id="notetools5"></div>
+                <div id="notetools"></div>
+                <div id="notetools1"></div>
+            </div>
+            <div class="clientArea">
+                <div id="svgArea" class="svgArea"></div>
+                <div class="overlay">
+                    <ol id="events" style="width:50px; height:50px"></ol>
+                    <div style="font: Emmentaler 20px;">.</div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <textarea name="code" id="musicCode">
+    </textarea>
+    <input type="button" id="compile"/>
+
+</body>
+</html>

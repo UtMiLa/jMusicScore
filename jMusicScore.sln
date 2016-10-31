@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jMusicScore", "jMusicScore\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "noteEditor", "noteEditor\noteEditor.csproj", "{357A09D6-F9C9-4DDB-92C0-A2D07966D42A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMusicEditor", "TextMusicEditor\TextMusicEditor.csproj", "{C2DCD4E5-759F-4E98-9EAF-FD3B0E955495}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{357A09D6-F9C9-4DDB-92C0-A2D07966D42A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{357A09D6-F9C9-4DDB-92C0-A2D07966D42A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{357A09D6-F9C9-4DDB-92C0-A2D07966D42A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2DCD4E5-759F-4E98-9EAF-FD3B0E955495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2DCD4E5-759F-4E98-9EAF-FD3B0E955495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2DCD4E5-759F-4E98-9EAF-FD3B0E955495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2DCD4E5-759F-4E98-9EAF-FD3B0E955495}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
