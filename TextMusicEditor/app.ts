@@ -1,4 +1,6 @@
-﻿$(() => {
+﻿
+
+$(() => {
     var app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery>(
         $("#content"),
         new JMusicScore.Model.ScoreElement(null),
@@ -22,7 +24,9 @@
 
     $("#compile").click(() => {
         var text = $("#musicCode").text();
-        var notes = text.split(/\s+/);
+        var res = Lily.parser.parse(text, {});
+        alert(JSON.stringify(res));
+        /*var notes = text.split(/\s+/);
         var s = "";
         var dur = 1;
         for (var i = 0; i < notes.length; i++) {
@@ -76,6 +80,6 @@
 
             }
         }
-        //alert(s);
+        //alert(s);*/
     });
 });

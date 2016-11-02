@@ -11,3 +11,4 @@
 /// <reference path="node_modules/jmusicscore/FinaleEmulator.d.ts" />
 /// <reference path="node_modules/jmusicscore/midiEditor.d.ts" />
 /// <reference path="node_modules/jmusicscore/midiIn.d.ts" />
+/// <reference path="parser.ts" />

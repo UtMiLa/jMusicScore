@@ -9,3 +9,4 @@ C:\Users\rnj283\Documents\GitHub\jMusicScore\jApps\bin\jApps.dll
 C:\Users\rnj283\Documents\GitHub\jMusicScore\jApps\bin\jApps.pdb
 C:\Users\rnj283\Documents\GitHub\jMusicScore\jApps\obj\Debug\jApps.dll
 C:\Users\rnj283\Documents\GitHub\jMusicScore\jApps\obj\Debug\jApps.pdb
+C:\Users\rnj283\Documents\GitHub\jMusicScore\jApps\obj\Debug\jApps.csprojResolveAssemblyReference.cache
