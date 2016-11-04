@@ -5,10 +5,12 @@
   "main": "app1.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "npm install ../japps/ && npm install ../jmusicscore/"
+    "preinstall": "npm install ../japps/ && npm install ../jmusicscore/ && npm install pegjs"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "author": "John Ekberg",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
 }

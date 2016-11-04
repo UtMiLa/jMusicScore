@@ -1972,7 +1972,7 @@ module Lily {
                 if (peg$result !== peg$FAILED && peg$currPos < input.length) {
                     peg$fail(peg$endExpectation());
                 }
-
+                
                 throw peg$buildStructuredError(
                   peg$maxFailExpected,
                   peg$maxFailPos < input.length ? input.charAt(peg$maxFailPos) : null,

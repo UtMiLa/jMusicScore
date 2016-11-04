@@ -24,7 +24,7 @@ $(() => {
 
     $("#compile").click(() => {
         var text = $("#musicCode").text();
-        var res = Lily.parser.parse(text, {});
+        var res = Lily.parser.parse(text, { "startRule": "Music" });
         alert(JSON.stringify(res));
         /*var notes = text.split(/\s+/);
         var s = "";
