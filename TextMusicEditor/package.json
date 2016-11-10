@@ -5,7 +5,7 @@
   "main": "app1.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "npm install ../japps/ && npm install ../jmusicscore/ && npm install pegjs && npm install gulp-pegjs"
+    "preinstall": "npm install ../japps/ && npm install ../jmusicscore/ && npm install pegjs"
   },
   "dependencies": {},
   "author": "John Ekberg",
