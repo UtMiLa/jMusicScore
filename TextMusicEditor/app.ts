@@ -1,4 +1,4 @@
-﻿
+﻿declare var pegjs: any;
 
 $(() => {
     var app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery>(
@@ -24,7 +24,7 @@ $(() => {
 
     $("#compile").click(() => {
         var text = $("#musicCode").text();
-        var res = Lily.parser.parse(text, { "startRule": "Music" });
+        var res = pegjs.parse(text, { /*"startRule": "Music" */});
         alert(JSON.stringify(res));
         /*var notes = text.split(/\s+/);
         var s = "";
