@@ -28,6 +28,7 @@
     <Content Include="gulpfile.js" />
     <Content Include="index.html" />
     <None Include=".bin\node.cmd" />
+    <Content Include="memento.txt" />
     <Content Include="npmPlaceholder.txt" />
     <Content Include="package.json" />
     <Content Include="lilypond.pegjs" />

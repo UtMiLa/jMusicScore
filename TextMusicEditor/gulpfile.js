@@ -1,4 +1,5 @@
-﻿var gulp = require('gulp');
+﻿/// <binding BeforeBuild='default1' />
+var gulp = require('gulp');
 //var pegjs = require("gulp-pegjs");
 
 var gutil = require('gulp-util');

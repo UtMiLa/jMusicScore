@@ -1,0 +1,130 @@
+﻿musicElement:
+            public getMemento(withChildren: boolean = true): IMemento {
+                var memento: IMemento = {
+                    id: this.id,
+                    t: this.getElementName(),
+                    def: this.doGetMemento()
+                };
+                if (withChildren) {
+                    var children: IMemento[] = [];
+                    for (var i = 0; i < this.childLists.length; i++) {
+                        for (var j = 0; j < this.childLists[i].length; j++) {
+                            children.push(this.childLists[i][j].getMemento(true));
+                        }
+                    }
+                    if (children.length) memento.children = children;
+                }
+                return memento;
+            }
+
+
+score:
+
+            public doGetMemento(): any {
+                var val: any = {};
+                val.title = this.title;
+                val.composer = this.composer;
+                val.author = this.author;
+                val.subTitle = this.subTitle;                
+                if (this.metadata !== {}) {
+                    val.metadata =  this.metadata;
+                }
+                return val;
+            }
+	{
+		id: id,
+		t: "Score",
+		def: {
+            title: t,
+            composer: c,
+            author: a,
+            subTitle: s,
+            metadata: {}
+		},
+		children: [...]		
+	}
+
+	
+staff:
+
+            public doGetMemento(): any {
+                var val: any;
+                if (this.title) {
+                    val = { title: this.title };
+                }
+                return val;
+            }
+
+	{
+		id: id,
+		t: "Staff",
+		def: {
+			title: xxx
+		},
+		children: [...]		
+	}
+
+voice:
+            public doGetMemento(): any {
+                var val: any;
+                if (this.stemDirection) {
+                    val = { stem: this.stemDirection };
+                }
+                return val;
+            }
+			
+	{
+		id: id,
+		t: "Voice",
+		def: {
+			stem: dir
+		},
+		children: [...]		
+	}
+			
+
+note:
+     public doGetMemento(): any {
+                var val: any = {
+                    time: this.timeVal.getMemento(),
+                    abs: this.absTime.getMemento(),
+                    noteId: this.noteId                    
+                };
+                if (this.dotNo) { val.dots = this.dotNo; }
+                if (this.tupletDef) {
+                    val.tuplet = this.tupletDef.fraction.getMemento();
+                    if (this.tupletDef.fullTime) {
+                        val.tuplet.fullTime = this.tupletDef.fullTime.getMemento();
+                    }
+                }
+                if (this.graceType) {
+                    val.grace = this.graceType;
+                }
+                if (this.rest) {
+                    val.rest = true;
+                }
+                if (this.noteId === 'hidden') {
+                    val.hidden = true;
+                }
+                // todo: beams
+                if (this.stemDirection) {
+                    val.stem = this.stemDirection;
+                }
+                return val;
+            }
+
+notehead:
+
+
+            public doGetMemento(): any {
+                var val: any = {
+                    p: this.pitch.pitch,
+                    a: this.pitch.alteration
+                };
+                if (this.forceAccidental) { val.forceAcc = true; }
+                if (this.tie) { val.tie = true; }
+                if (this.tieForced) { val.tieForced = true; }
+                return val;
+            }
+			
+			
