@@ -16,16 +16,21 @@ $(() => {
 
     app.addValidator(new JMusicScore.GhostElements.GhostsValidator());
 
-    var staff = app.document.addStaff(JMusicScore.Model.ClefDefinition.clefG);
-    var voice = staff.addVoice();
-    
     //app.addPlugin(new JMusicScore.CanvasView.CanvasViewer($('#svgArea')));
     app.addPlugin(new JMusicScore.SvgView.SvgViewer($('#svgArea')));
 
     $("#compile").click(() => {
         var text = $("#musicCode").text();
         var res = pegjs.parse(text, { /*"startRule": "Music" */});
-        alert(JSON.stringify(res));
+        //alert(JSON.stringify(res));
+        $("#json").text(JSON.stringify(res));
+        app.document = <JMusicScore.Model.IScore>JMusicScore.Model.MusicElementFactory.recreateElement(null, res[0]); // memento format                
+            app.executeCommand({
+                execute: (app: JMusicScore.ScoreApplication.IScoreApplication) => { }
+            });
+            var staff = app.document.addStaff(JMusicScore.Model.ClefDefinition.clefG);
+            var voice = staff.addVoice();
+    
         /*var notes = text.split(/\s+/);
         var s = "";
         var dur = 1;
@@ -81,5 +86,18 @@ $(() => {
             }
         }
         //alert(s);*/
+            app.executeCommand(new JMusicScore.Model.AddNoteCommand({
+                noteName: "1_4",
+                noteTime: new JMusicScore.Model.TimeSpan(1, 4),
+                grace: false,
+                pitches: [new JMusicScore.Model.Pitch(JMusicScore.Model.Pitch.noteNames.indexOf("c"), JMusicScore.Model.Pitch.intToStr(1))],
+                voice: voice,
+                absTime: voice.getEndTime(),
+                rest: false,
+                dots: 0,
+                tuplet: undefined
+            }));
+
+            $("#json1").text(JSON.stringify(app.document.getMemento()));
     });
 });

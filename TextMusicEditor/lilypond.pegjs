@@ -81,17 +81,21 @@ StaffExpression
 Note 
 	= p:Pitch o:Octave d:Duration? __ { return {
                     t: "Note",
-					time: {},
-                    abs: {},
-                    noteId: "n4",
-					children: p
+					def: {
+						time: { num: 1, den: 4 },
+						abs: {num:0, den:1},
+						noteId: "n1_4",
+					},
+					children: [p]
 					}}
 Chord
 	= "<" n:(Note+) ">" d:Duration? __ { return {
 					t: "Note",
-                    time: {},
-                    abs: {},
-                    noteId: "n4",
+					def: {
+						time: { num: 1, den: 4 },
+						abs: {num:0, den:1},
+						noteId: "n1_4",
+					},
 					children: [function(n){ var arr = []; for (var i = 0; i < n.length; i++) {arr.push(n[i].children[0]); } return arr; }(n)]
 					}; }
 Duration
@@ -99,7 +103,25 @@ Duration
 Dots 
 	= "."+
 Pitch "pitch"
-	= p:[a-hrs] Inflection?
+	= pit:[a-hrs] i:Inflection? { 
+				    var alteration = 0;
+					switch (i) {
+                        case "is": alteration = "x"; break;
+                        case "isis": alteration = "xx"; break;
+                        case "es": case "s": alteration = "b"; break;
+                        case "eses": case "ses": alteration = "bb"; break;
+                    }
+					return {
+						t: "Notehead",
+						def: {
+							p: JMusicScore.Model.Pitch.noteNames.indexOf(pit),
+							a: alteration,
+							forceAcc: false,
+							tie: false,
+							tieForced: false
+						}
+					};
+				}
 Inflection
 	= "s" / "f" / "is" / "es"
     
