@@ -31,7 +31,9 @@ ScoreThings
 	= "\\new" _ "Staff" _ m:Music __ { return {
 		t: "Staff",
 		def: {},
-		children: [m]
+		children: [
+		{"t":"Clef","def":{"abs":{"num":0,"den":1},"clef":1,"lin":4,"tr":0}},// todo: remove this
+		m]
 	}; }
 Music
 	= "{" __ notes:MusicElement* __ "}" { return {
@@ -39,7 +41,7 @@ Music
 			def: {
 				stem: "dir"
 			},
-			children: [notes]
+			children: notes // todo: kommer underligt nok i omvendt rækkefølge
 		};
 	} /
      "{" __ "<<" __ StaffExpression* ">>" __ "}"
@@ -96,7 +98,7 @@ Chord
 						abs: {num:0, den:1},
 						noteId: "n1_4",
 					},
-					children: [function(n){ var arr = []; for (var i = 0; i < n.length; i++) {arr.push(n[i].children[0]); } return arr; }(n)]
+					children: function(n){ var arr = []; for (var i = 0; i < n.length; i++) {arr.push(n[i].children[0]); } return arr; }(n)
 					}; }
 Duration
 	= d:([0-9]+) dot:Dots? { return { dur: d, dots: dot } }

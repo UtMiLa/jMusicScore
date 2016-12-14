@@ -18,12 +18,20 @@ $(() => {
 
     //app.addPlugin(new JMusicScore.CanvasView.CanvasViewer($('#svgArea')));
     app.addPlugin(new JMusicScore.SvgView.SvgViewer($('#svgArea')));
+    $("#importmemento").click(() => {
+        var txt = $("#jsoncode").val();
+        app.document = <JMusicScore.Model.IScore>JMusicScore.Model.MusicElementFactory.recreateElement(null, JSON.parse(txt)); // memento format
+        app.executeCommand({
+            execute: (app: JMusicScore.ScoreApplication.IScoreApplication) => { }
+        });
+    });
 
     $("#compile").click(() => {
         var text = $("#musicCode").text();
         var res = pegjs.parse(text, { /*"startRule": "Music" */});
         //alert(JSON.stringify(res));
         $("#json").text(JSON.stringify(res));
+        $("#jsoncode").val(JSON.stringify(res[0]));
         app.document = <JMusicScore.Model.IScore>JMusicScore.Model.MusicElementFactory.recreateElement(null, res[0]); // memento format                
             app.executeCommand({
                 execute: (app: JMusicScore.ScoreApplication.IScoreApplication) => { }
