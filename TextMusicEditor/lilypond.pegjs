@@ -41,7 +41,7 @@ Music
 			def: {
 				stem: "dir"
 			},
-			children: notes // todo: kommer underligt nok i omvendt rækkefølge
+			children: notes.reverse() // kommer underligt nok i omvendt rækkefølge
 		};
 	} /
      "{" __ "<<" __ StaffExpression* ">>" __ "}"
