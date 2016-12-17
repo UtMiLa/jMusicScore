@@ -331,79 +331,6 @@ var JApps;
     event.preventDefault();
 })
 ;*/ 
-var JApps;
-(function (JApps) {
-    var IO;
-    (function (IO) {
-        /** REST remote file manager */
-        var ServerFileManager = (function () {
-            function ServerFileManager(ajaxUrl, id) {
-                this.ajaxUrl = ajaxUrl;
-                this.id = id;
-                // new ServerFileManager ("Handler.ashx")
-            }
-            ServerFileManager.prototype.init = function (app) { };
-            ServerFileManager.prototype.exit = function (app) { };
-            ServerFileManager.prototype.getId = function () { return this.id; };
-            ServerFileManager.prototype.getFileList = function (handler) {
-                $.ajax(this.ajaxUrl, {
-                    success: function (data) {
-                        var files = data.split('\n');
-                        handler(files);
-                    },
-                    cache: false
-                });
-            };
-            ServerFileManager.prototype.loadFile = function (name, handler) {
-                $.ajax(this.ajaxUrl, {
-                    success: function (data) {
-                        handler(data, name);
-                    },
-                    data: { 'Name': name },
-                    cache: false
-                });
-            };
-            ServerFileManager.prototype.saveFile = function (name, data, handler) {
-                $.ajax(this.ajaxUrl, {
-                    success: function (res) {
-                        handler(res);
-                    },
-                    type: 'POST',
-                    data: { 'Name': name, 'Data': data }
-                });
-            };
-            return ServerFileManager;
-        })();
-        IO.ServerFileManager = ServerFileManager;
-        /** Local storage file manager using the browser's local storage*/
-        var LocalStorageFileManager = (function () {
-            function LocalStorageFileManager(id) {
-                this.id = id;
-            }
-            LocalStorageFileManager.prototype.init = function (app) { };
-            LocalStorageFileManager.prototype.exit = function (app) { };
-            LocalStorageFileManager.prototype.getId = function () { return this.id; };
-            LocalStorageFileManager.prototype.getFileList = function (handler) {
-                var a = 'file:' + this.id + ':';
-                var res = [];
-                for (var key in localStorage) {
-                    if (key.substr(0, a.length) === a) {
-                        res.push(key.substr(a.length));
-                    }
-                }
-                handler(res);
-            };
-            LocalStorageFileManager.prototype.loadFile = function (name, handler) {
-                handler(localStorage['file:' + this.id + ':' + name], name);
-            };
-            LocalStorageFileManager.prototype.saveFile = function (name, data, handler) {
-                localStorage['file:' + this.id + ':' + name] = data;
-            };
-            return LocalStorageFileManager;
-        })();
-        IO.LocalStorageFileManager = LocalStorageFileManager;
-    })(IO = JApps.IO || (JApps.IO = {}));
-})(JApps || (JApps = {}));
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -563,6 +490,79 @@ var JApps;
         })(CommandLineManager);
         UI.JQCommandLineManager = JQCommandLineManager;
     })(UI = JApps.UI || (JApps.UI = {}));
+})(JApps || (JApps = {}));
+var JApps;
+(function (JApps) {
+    var IO;
+    (function (IO) {
+        /** REST remote file manager */
+        var ServerFileManager = (function () {
+            function ServerFileManager(ajaxUrl, id) {
+                this.ajaxUrl = ajaxUrl;
+                this.id = id;
+                // new ServerFileManager ("Handler.ashx")
+            }
+            ServerFileManager.prototype.init = function (app) { };
+            ServerFileManager.prototype.exit = function (app) { };
+            ServerFileManager.prototype.getId = function () { return this.id; };
+            ServerFileManager.prototype.getFileList = function (handler) {
+                $.ajax(this.ajaxUrl, {
+                    success: function (data) {
+                        var files = data.split('\n');
+                        handler(files);
+                    },
+                    cache: false
+                });
+            };
+            ServerFileManager.prototype.loadFile = function (name, handler) {
+                $.ajax(this.ajaxUrl, {
+                    success: function (data) {
+                        handler(data, name);
+                    },
+                    data: { 'Name': name },
+                    cache: false
+                });
+            };
+            ServerFileManager.prototype.saveFile = function (name, data, handler) {
+                $.ajax(this.ajaxUrl, {
+                    success: function (res) {
+                        handler(res);
+                    },
+                    type: 'POST',
+                    data: { 'Name': name, 'Data': data }
+                });
+            };
+            return ServerFileManager;
+        })();
+        IO.ServerFileManager = ServerFileManager;
+        /** Local storage file manager using the browser's local storage*/
+        var LocalStorageFileManager = (function () {
+            function LocalStorageFileManager(id) {
+                this.id = id;
+            }
+            LocalStorageFileManager.prototype.init = function (app) { };
+            LocalStorageFileManager.prototype.exit = function (app) { };
+            LocalStorageFileManager.prototype.getId = function () { return this.id; };
+            LocalStorageFileManager.prototype.getFileList = function (handler) {
+                var a = 'file:' + this.id + ':';
+                var res = [];
+                for (var key in localStorage) {
+                    if (key.substr(0, a.length) === a) {
+                        res.push(key.substr(a.length));
+                    }
+                }
+                handler(res);
+            };
+            LocalStorageFileManager.prototype.loadFile = function (name, handler) {
+                handler(localStorage['file:' + this.id + ':' + name], name);
+            };
+            LocalStorageFileManager.prototype.saveFile = function (name, data, handler) {
+                localStorage['file:' + this.id + ':' + name] = data;
+            };
+            return LocalStorageFileManager;
+        })();
+        IO.LocalStorageFileManager = LocalStorageFileManager;
+    })(IO = JApps.IO || (JApps.IO = {}));
 })(JApps || (JApps = {}));
 var JApps;
 (function (JApps) {

@@ -105,4 +105,7 @@
   </Target>
   <Import Project="..\packages\Gulp.js.1.0.2\build\gulp.js.targets" Condition="Exists('..\packages\Gulp.js.1.0.2\build\gulp.js.targets')" />
   <Import Project="..\packages\Npm.js.2.13.1.0\build\npm.js.targets" Condition="Exists('..\packages\Npm.js.2.13.1.0\build\npm.js.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>gulp default</PreBuildEvent>
+  </PropertyGroup>
 </Project>
