@@ -31,9 +31,7 @@ ScoreThings
 	= "\\new" _ "Staff" _ m:Music __ { return {
 		t: "Staff",
 		def: {},
-		children: [
-		{"t":"Clef","def":{"abs":{"num":0,"den":1},"clef":1,"lin":4,"tr":0}},// todo: remove this
-		m]
+		children: [m]
 	}; }
 Music
 	= "{" __ notes:MusicElement* __ "}" { return {

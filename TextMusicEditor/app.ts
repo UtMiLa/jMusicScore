@@ -5,6 +5,7 @@ class JSONCleaner {
         switch (type) {
             case "Staff":
                 // for hver voice:
+                var clefExists = false;
                 for (var i = 0; i < element.children.length; i++) {
                     var v = element.children[i];
                     if (v.t === "Voice") {
@@ -18,6 +19,18 @@ class JSONCleaner {
                         }
                     }
                 }
+                for (var i = 0; i < element.children.length; i++) {
+                    var v = element.children[i];
+                    if (v.t === "Clef") {
+                        clefExists = true;
+                    }
+                }
+
+                if (!clefExists) {
+                    element.children.push(
+                        { "id": undefined, "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }); // g clef
+                }
+
                 break;
         }
     }
