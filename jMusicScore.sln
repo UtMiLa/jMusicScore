@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jApps", "jApps\jApps.csproj", "{1F255045-D1DD-4BDE-90B3-5944EE65C890}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "noteEditor", "noteEditor\noteEditor.csproj", "{357A09D6-F9C9-4DDB-92C0-A2D07966D42A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMusicEditor", "TextMusicEditor\TextMusicEditor.csproj", "{C2DCD4E5-759F-4E98-9EAF-FD3B0E955495}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyMCEPlugin", "TinyMCEPlugin\TinyMCEPlugin.csproj", "{F8EB3BA3-CCC6-46B9-9990-E0EA4D768D11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{C2DCD4E5-759F-4E98-9EAF-FD3B0E955495}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2DCD4E5-759F-4E98-9EAF-FD3B0E955495}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2DCD4E5-759F-4E98-9EAF-FD3B0E955495}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8EB3BA3-CCC6-46B9-9990-E0EA4D768D11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8EB3BA3-CCC6-46B9-9990-E0EA4D768D11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8EB3BA3-CCC6-46B9-9990-E0EA4D768D11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8EB3BA3-CCC6-46B9-9990-E0EA4D768D11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
