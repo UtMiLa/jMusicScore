@@ -16,3 +16,8 @@ I:\GitHub\jMusicScore\noteEditor\obj\Debug\noteEditor.csprojResolveAssemblyRefer
 I:\GitHub\jMusicScore\noteEditor\obj\Debug\noteEditor.dll
 I:\GitHub\jMusicScore\noteEditor\obj\Debug\noteEditor.pdb
 C:\udv\github\jMusicScore\noteEditor\obj\Debug\noteEditor.csprojResolveAssemblyReference.cache
+C:\udv\github\jMusicScore\noteEditor\bin\noteEditor.dll.config
+C:\udv\github\jMusicScore\noteEditor\bin\noteEditor.dll
+C:\udv\github\jMusicScore\noteEditor\bin\noteEditor.pdb
+C:\udv\github\jMusicScore\noteEditor\obj\Debug\noteEditor.dll
+C:\udv\github\jMusicScore\noteEditor\obj\Debug\noteEditor.pdb

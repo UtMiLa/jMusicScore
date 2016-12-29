@@ -13,7 +13,7 @@ var JApps;
             };
             HtmlDesktopManager.prototype.removeArea = function (area) { };
             return HtmlDesktopManager;
-        })();
+        }());
         var FeedbackManager = (function () {
             function FeedbackManager() {
                 this.clients = [];
@@ -33,7 +33,7 @@ var JApps;
                 }
             };
             return FeedbackManager;
-        })();
+        }());
         /** Application object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
         var AbstractApplication = (function () {
             function AbstractApplication(container, score, status) {
@@ -282,7 +282,7 @@ var JApps;
                 return true;
             };
             return AbstractApplication;
-        })();
+        }());
         Application.AbstractApplication = AbstractApplication;
     })(Application = JApps.Application || (JApps.Application = {}));
 })(JApps || (JApps = {}));
@@ -357,7 +357,7 @@ var JApps;
             };
             MenuManager.prototype.updateMenuItems = function () { };
             return MenuManager;
-        })();
+        }());
         UI.MenuManager = MenuManager;
         var ToolbarManager = (function () {
             function ToolbarManager() {
@@ -369,13 +369,13 @@ var JApps;
                 this._actions = actions;
             };
             return ToolbarManager;
-        })();
+        }());
         UI.ToolbarManager = ToolbarManager;
         var CommandLineManager = (function () {
             function CommandLineManager() {
             }
             return CommandLineManager;
-        })();
+        }());
         UI.CommandLineManager = CommandLineManager;
         var JQUIMenuManager = (function (_super) {
             __extends(JQUIMenuManager, _super);
@@ -471,7 +471,7 @@ var JApps;
                 });
             };
             return JQUIMenuManager;
-        })(MenuManager);
+        }(MenuManager));
         UI.JQUIMenuManager = JQUIMenuManager;
         var JQUIToolbarManager = (function (_super) {
             __extends(JQUIToolbarManager, _super);
@@ -479,7 +479,7 @@ var JApps;
                 _super.apply(this, arguments);
             }
             return JQUIToolbarManager;
-        })(ToolbarManager);
+        }(ToolbarManager));
         UI.JQUIToolbarManager = JQUIToolbarManager;
         var JQCommandLineManager = (function (_super) {
             __extends(JQCommandLineManager, _super);
@@ -487,7 +487,7 @@ var JApps;
                 _super.apply(this, arguments);
             }
             return JQCommandLineManager;
-        })(CommandLineManager);
+        }(CommandLineManager));
         UI.JQCommandLineManager = JQCommandLineManager;
     })(UI = JApps.UI || (JApps.UI = {}));
 })(JApps || (JApps = {}));
@@ -533,7 +533,7 @@ var JApps;
                 });
             };
             return ServerFileManager;
-        })();
+        }());
         IO.ServerFileManager = ServerFileManager;
         /** Local storage file manager using the browser's local storage*/
         var LocalStorageFileManager = (function () {
@@ -560,7 +560,7 @@ var JApps;
                 localStorage['file:' + this.id + ':' + name] = data;
             };
             return LocalStorageFileManager;
-        })();
+        }());
         IO.LocalStorageFileManager = LocalStorageFileManager;
     })(IO = JApps.IO || (JApps.IO = {}));
 })(JApps || (JApps = {}));
@@ -648,7 +648,7 @@ var JApps;
             */
             KeybordInputPlugin.prototype.getId = function () { return 'KeybordInputPlugin'; };
             return KeybordInputPlugin;
-        })();
+        }());
         Editors.KeybordInputPlugin = KeybordInputPlugin;
     })(Editors = JApps.Editors || (JApps.Editors = {}));
 })(JApps || (JApps = {}));

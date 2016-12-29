@@ -1420,19 +1420,19 @@ module JMusicScore {
                     this.currentGroup = this.svg;
                     this.groupStack = [this.svg];
                 }
-                else {
+                /*else {
                     this.currentGroup = this.svg;
                     this.groupStack = [this.svg];
-                }
+                }*/
             }
             public endDraw() {
                 if (true) {
                     //this.svg.appendChild(this.documentFragment);
                     this.groupStack = [];
                 }
-                else {
+                /*else {
                     this.groupStack = [];
-                }
+                }*/
             }
 
             public beginGroup(id: string, x: number, y: number, scale: number, className: string): any {
