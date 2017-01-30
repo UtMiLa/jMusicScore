@@ -1,0 +1,14 @@
+*.pdb
+*.dll
+*.js
+*.map
+*.d.ts
+/**/node_modules/**
+/packages/**
+/**/bin/**
+/**/obj/Debug/**
+TextMusicEditor/node_modules/japps/package.json
+noteEditor/obj/Debug/noteEditor.csproj.FileListAbsolute.txt
+jApps/obj/Debug/jApps.pdb
+jApps/bin/jApps.dll
+noteEditor/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache

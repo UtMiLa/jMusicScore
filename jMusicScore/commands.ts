@@ -103,7 +103,7 @@
                             return "OBJECT";
                         }
                     }
-                    break;
+                    //break;
                 case "function":
                     return "FUNCTION";
                 case "symbol":

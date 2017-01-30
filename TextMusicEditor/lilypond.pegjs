@@ -31,9 +31,7 @@ ScoreThings
 	= "\\new" _ "Staff" _ m:Music __ { return {
 		t: "Staff",
 		def: {},
-		children: [
-		{"t":"Clef","def":{"abs":{"num":0,"den":1},"clef":1,"lin":4,"tr":0}},// todo: remove this
-		m]
+		children: [m]
 	}; }
 Music
 	= "{" __ notes:MusicElement* __ "}" { return {
@@ -75,7 +73,9 @@ Mode
 	= "\\major" / "\\minor"
     
 TimeDef "command_element_time"
-	= "\\time" _ s:[0-9]+ "/" d:[0-9]+ _ { return { nom: s, den: d } }
+	= "\\time" _ s:[0-9]+ "/" d:[0-9]+ _ { 
+	return {"t":"Meter","def":{"abs":{"num":0,"den":1},"def":{"t":"Regular","num":s,"den":d}}};
+	}
     
 StaffExpression
 	= "\\new" _ "Staff" __ m:Music __ { return m }     

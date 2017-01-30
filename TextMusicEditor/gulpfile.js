@@ -40,7 +40,7 @@ var pegjsfunc = function (opts) {
 
 
 
-gulp.task('default1', function () {
+gulp.task('default', function () {
     // place code for your default task here 
     return gulp.src('*.pegjs')
       .pipe(pegjsfunc({ output: "source", trace: true, exportVar: "pegjs", format: "umd" }))
