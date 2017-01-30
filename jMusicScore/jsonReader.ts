@@ -1,7 +1,7 @@
 module JMusicScore {
     export module Model {
 
-        class JsonReader implements JApps.Application.IReaderPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        class JsonReader implements JApps.Application.IReaderPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager> {
             init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
@@ -53,7 +53,7 @@ module JMusicScore {
             }
         }
 
-        class JsonWriter implements JApps.Application.IWriterPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        class JsonWriter implements JApps.Application.IWriterPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager> {
             private app: ScoreApplication.IScoreApplication;
 
             init(app: ScoreApplication.IScoreApplication) { this.app = app; }

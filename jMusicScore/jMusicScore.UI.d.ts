@@ -7,10 +7,10 @@ declare module JApps {
             addWidget(widget: IWidget, id: string, label: string): IWidget;
             $container: JQuery;
         }
-        class UiContainer<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> {
+        class UiContainer<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> {
             idPrefix: string;
-            app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
-            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>);
+            app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>);
             $container: JQuery;
             addWidget(widget: IWidget, id: string, label: string): IWidget;
         }
@@ -25,18 +25,18 @@ declare module JApps {
             caption: string;
             action?: () => void;
         }
-        class MenuPlugin<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> implements JApps.Application.IPlugIn<TDocumentType, TStatusManager, TContainerType> {
-            init(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+        class MenuPlugin<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> implements JApps.Application.IPlugIn<TDocumentType, TStatusManager> {
+            init(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>): void;
             private app;
             getId(): string;
-            getMenuObj(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): IMenuDef;
+            getMenuObj(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>): IMenuDef;
             private menuAddItem(e);
             private menuSubMenu(e);
         }
-        class Dialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> extends UiContainer<TDocumentType, TStatusManager, TContainerType> {
+        class Dialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> extends UiContainer<TDocumentType, TStatusManager> {
             idPrefix: string;
-            app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
-            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>);
+            app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>);
             private $dialog;
             dialogId: string;
             dialogTitle: string;
@@ -97,10 +97,10 @@ declare module JApps {
             value: string;
             addTo(parent: JQuery, id: string, label: string): JQuery;
         }
-        class FileDialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> extends Dialog<TDocumentType, TStatusManager, TContainerType> {
+        class FileDialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> extends Dialog<TDocumentType, TStatusManager> {
             idPrefix: string;
-            app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
-            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>);
+            app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>);
             private sourceWidget;
             private fileListWidget;
             private fileTypeWidget;
@@ -112,16 +112,16 @@ declare module JApps {
             existsInFileList(name: string): boolean;
             createBodyElements($element: JQuery): void;
         }
-        class OpenFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+        class OpenFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager> extends FileDialog<DocumentType, StatusManager> {
             idPrefix: string;
-            app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>;
-            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>);
+            app: JApps.Application.AbstractApplication<DocumentType, StatusManager>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<DocumentType, StatusManager>);
             onOk(): boolean;
         }
-        class SaveFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
+        class SaveFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager> extends FileDialog<DocumentType, StatusManager> {
             idPrefix: string;
-            app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>;
-            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>);
+            app: JApps.Application.AbstractApplication<DocumentType, StatusManager>;
+            constructor(idPrefix: string, app: JApps.Application.AbstractApplication<DocumentType, StatusManager>);
             onOk(): boolean;
             private fileNameWidget;
             filename: string;
@@ -145,9 +145,9 @@ declare module JApps {
 }
 declare module JMusicScore {
     module Ui {
-        class FileMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        class FileMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager> {
             constructor();
-            getMenuObj(app: JApps.Application.AbstractApplication<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>): JApps.Ui.IMenuDef;
+            getMenuObj(app: JApps.Application.AbstractApplication<Model.IScore, ScoreApplication.ScoreStatusManager>): JApps.Ui.IMenuDef;
         }
         class KeyWidget implements JApps.Ui.IWidget {
             constructor();
@@ -162,7 +162,7 @@ declare module JMusicScore {
             value: number;
             addTo(parent: JQuery, id: string, label: string): JQuery;
         }
-        class ScoreDialog extends JApps.Ui.Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        class ScoreDialog extends JApps.Ui.Dialog<Model.IScore, ScoreApplication.ScoreStatusManager> {
             idPrefix: string;
             app: ScoreApplication.IScoreApplication;
             constructor(idPrefix: string, app: ScoreApplication.IScoreApplication);
@@ -285,7 +285,7 @@ declare module JMusicScore {
             show(): void;
             createBodyElements($element: JQuery): void;
         }
-        class QuickMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        class QuickMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager> {
             private id;
             private menuCaption;
             private parentId;
@@ -300,7 +300,7 @@ declare module JMusicScore {
         class StavesMenuPlugin extends QuickMenuPlugin {
             constructor(app: ScoreApplication.IScoreApplication);
         }
-        class ExportMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        class ExportMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager> {
             constructor();
             getMenuObj(app: ScoreApplication.IScoreApplication): JApps.Ui.IMenuDef;
         }

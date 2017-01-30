@@ -117,7 +117,7 @@
 
         }
 
-        export interface IScoreCommand extends JApps.Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
+        export interface IScoreCommand extends JApps.Application.ICommand<IScore, ScoreApplication.ScoreStatusManager> {}
 
         export interface IMacroCommand {
             commandName: string;

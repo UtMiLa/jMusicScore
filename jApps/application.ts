@@ -3,13 +3,13 @@ module JApps {
     export module Application {
 
         /** Every external plugin to application must implement this interface */
-        export interface IPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+        export interface IPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            init(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
             getId(): string;
         }
 
         /** Interface for file readers (in varying formats) */
-        export interface IReaderPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> extends IPlugIn<TDocumentType, TStatusManager, TContainerType> {
+        export interface IReaderPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> extends IPlugIn<TDocumentType, TStatusManager> {
             //Init(app: Application): void;
             supports(type: string): boolean;
             getExtension(type: string): string;
@@ -19,7 +19,7 @@ module JApps {
         }
 
         /** Interface for file writers */
-        export interface IWriterPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> extends IPlugIn<TDocumentType, TStatusManager, TContainerType> {
+        export interface IWriterPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> extends IPlugIn<TDocumentType, TStatusManager> {
             //Init(app: Application): void;
             supports(type: string): boolean;
             getExtension(type: string): string;
@@ -29,37 +29,37 @@ module JApps {
         }
 
         /** Interface for commands. Every user action that changes data in the model must use Command objects. */
-        export interface ICommand<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            execute(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
-            undo?(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+        export interface ICommand<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            execute(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
+            undo?(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
             [param: string]: any;
         }
 
         /** Interface for objects that check and refines the model after every change (like beam calculation) */
-        export interface IValidator<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            validate(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+        export interface IValidator<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            validate(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
         }
 
         /** Interface for objects that check and refines the user interface after every model change (like spacing and drawing) */
-        export interface IDesigner<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            validate(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+        export interface IDesigner<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            validate(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
         }
 
         /** Interface for pluggable event processors that can handle events */
-        export interface IEventProcessor<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
-            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+        export interface IEventProcessor<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            init(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
+            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
 
-            midinoteoff? (app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
-            keypressed? (app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
-            keyup? (app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
-            keydown? (app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>, event: IMessage): boolean;
+            midinoteoff? (app: AbstractApplication<TDocumentType, TStatusManager>, event: IMessage): boolean;
+            keypressed? (app: AbstractApplication<TDocumentType, TStatusManager>, event: IMessage): boolean;
+            keyup? (app: AbstractApplication<TDocumentType, TStatusManager>, event: IMessage): boolean;
+            keydown? (app: AbstractApplication<TDocumentType, TStatusManager>, event: IMessage): boolean;
         }
 
         /** Interface for file managers that can load and save files in various file systems (remote or local) */
-        export interface IFileManager<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            init(app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
-            exit(app: AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void;
+        export interface IFileManager<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            init(app: AbstractApplication<TDocumentType, TStatusManager>): void;
+            exit(app: AbstractApplication<TDocumentType, TStatusManager>): void;
 
             getFileList(handler: (data: string[]) => void): void;
             loadFile(name: string, handler: (data: string, name: string) => void): void;
@@ -136,21 +136,21 @@ module JApps {
         }
 
         /** Application object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
-        export class AbstractApplication<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager, TContainerType> {
-            constructor(public container: TContainerType, score: TDocumentType, status: TStatusManager) {
+        export class AbstractApplication<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            constructor(score: TDocumentType, status: TStatusManager) {
                 this.document = score;
                 this.status = status;
                 this.status.setFeedbackManager(this.feedbackManager);
             }
 
             public document: TDocumentType;
-            private plugins: IPlugIn<TDocumentType, TStatusManager, TContainerType>[] = [];
-            private readers: IReaderPlugIn<TDocumentType, TStatusManager, TContainerType>[] = [];
-            private writers: IWriterPlugIn<TDocumentType, TStatusManager, TContainerType>[] = [];
-            private fileManagers: IFileManager<TDocumentType, TStatusManager, TContainerType>[] = [];
-            private validators: IValidator<TDocumentType, TStatusManager, TContainerType>[] = [];
-            private designers: IDesigner<TDocumentType, TStatusManager, TContainerType>[] = [];
-            private editors: IDesigner<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private plugins: IPlugIn<TDocumentType, TStatusManager>[] = [];
+            private readers: IReaderPlugIn<TDocumentType, TStatusManager>[] = [];
+            private writers: IWriterPlugIn<TDocumentType, TStatusManager>[] = [];
+            private fileManagers: IFileManager<TDocumentType, TStatusManager>[] = [];
+            private validators: IValidator<TDocumentType, TStatusManager>[] = [];
+            private designers: IDesigner<TDocumentType, TStatusManager>[] = [];
+            private editors: IDesigner<TDocumentType, TStatusManager>[] = [];
             private feedbackManager: IFeedbackManager = new FeedbackManager();
             private status: TStatusManager;
 
@@ -159,32 +159,32 @@ module JApps {
             }
             public get FeedbackManager(): IFeedbackManager { return this.feedbackManager; }
 
-            public addPlugin(plugin: IPlugIn<TDocumentType, TStatusManager, TContainerType>) {
+            public addPlugin(plugin: IPlugIn<TDocumentType, TStatusManager>) {
                 this.plugins.push(plugin);
                 plugin.init(this);
             }
 
-            public addReader(reader: IReaderPlugIn<TDocumentType, TStatusManager, TContainerType>) {
+            public addReader(reader: IReaderPlugIn<TDocumentType, TStatusManager>) {
                 this.readers.push(reader);
                 reader.init(this);
             }
 
-            public addWriter(writer: IWriterPlugIn<TDocumentType, TStatusManager, TContainerType>) {
+            public addWriter(writer: IWriterPlugIn<TDocumentType, TStatusManager>) {
                 this.writers.push(writer);
                 writer.init(this);
             }
 
-            public addFileManager(fileManager: IFileManager<TDocumentType, TStatusManager, TContainerType>) {
+            public addFileManager(fileManager: IFileManager<TDocumentType, TStatusManager>) {
                 this.fileManagers.push(fileManager);
                 fileManager.init(this);
             }
 
-            public addValidator(validator: IValidator<TDocumentType, TStatusManager, TContainerType>) {
+            public addValidator(validator: IValidator<TDocumentType, TStatusManager>) {
                 this.validators.push(validator);
                 validator.validate(this);
             }
 
-            public addDesigner(designer: IDesigner<TDocumentType, TStatusManager, TContainerType>) {
+            public addDesigner(designer: IDesigner<TDocumentType, TStatusManager>) {
                 this.designers.push(designer);
                 designer.validate(this);
             }
@@ -245,7 +245,7 @@ module JApps {
                 throw "File manager not found: " + fileManager;
             }
 
-            public save(name: string, fileManager: IFileManager<TDocumentType, TStatusManager, TContainerType>, type: string) {
+            public save(name: string, fileManager: IFileManager<TDocumentType, TStatusManager>, type: string) {
                 fileManager.saveFile(name, this.saveToString(type), function (res: string) { });
             }
 
@@ -270,7 +270,7 @@ module JApps {
                 throw "File manager not found: " + fileManager;
             }
 
-            public load(name: string, fileManager: IFileManager<TDocumentType, TStatusManager, TContainerType>, type: string) {
+            public load(name: string, fileManager: IFileManager<TDocumentType, TStatusManager>, type: string) {
                 var app = this;
                 this.processEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
                 var me = this;
@@ -314,17 +314,17 @@ module JApps {
                 throw "Input format not supported: " + type;
             }
 
-            public getPlugin(id: string): IPlugIn<TDocumentType, TStatusManager, TContainerType> {
+            public getPlugin(id: string): IPlugIn<TDocumentType, TStatusManager> {
                 for (var i = 0; i < this.plugins.length; i++) {
                     if (this.plugins[i].getId() === id) return this.plugins[i];
                 }
                 return null;
             }
 
-            private undoStack: ICommand<TDocumentType, TStatusManager, TContainerType>[] = [];
-            private redoStack: ICommand<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private undoStack: ICommand<TDocumentType, TStatusManager>[] = [];
+            private redoStack: ICommand<TDocumentType, TStatusManager>[] = [];
 
-            public executeCommand(command: ICommand<TDocumentType, TStatusManager, TContainerType>) {
+            public executeCommand(command: ICommand<TDocumentType, TStatusManager>) {
                 command.execute(this);
                 if (command.undo) {
                     this.undoStack.push(command);
@@ -391,14 +391,14 @@ module JApps {
                 }
             }
 
-            private eventProcessors: IEventProcessor<TDocumentType, TStatusManager, TContainerType>[] = [];
+            private eventProcessors: IEventProcessor<TDocumentType, TStatusManager>[] = [];
 
-            public registerEventProcessor(eventProc: IEventProcessor<TDocumentType, TStatusManager, TContainerType>) {
+            public registerEventProcessor(eventProc: IEventProcessor<TDocumentType, TStatusManager>) {
                 this.eventProcessors.push(eventProc);
                 eventProc.init(this);
             }
 
-            public unregisterEventProcessor(eventProc: IEventProcessor<TDocumentType, TStatusManager, TContainerType>) {
+            public unregisterEventProcessor(eventProc: IEventProcessor<TDocumentType, TStatusManager>) {
                 var i = this.eventProcessors.indexOf(eventProc);
                 if (i >= 0) {
                     this.eventProcessors.splice(i, 1);

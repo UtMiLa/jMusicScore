@@ -1,7 +1,7 @@
 module JApps {
     export module Editors {
-        export class KeybordInputPlugin<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> implements Application.IPlugIn<TDocumentType, TStatusManager, TContainerType> {
-            public init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
+        export class KeybordInputPlugin<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IPlugIn<TDocumentType, TStatusManager> {
+            public init(app: Application.AbstractApplication<TDocumentType, TStatusManager>) {
                 document.addEventListener("keydown", function (event: JQueryEventObject) {
                     //if (document.activeElement && document.activeElement !== document.body && document.activeElement.tagName !== 'svg') return; // todo: svg element also gets focus
 

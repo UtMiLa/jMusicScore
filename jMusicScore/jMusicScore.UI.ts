@@ -11,8 +11,8 @@ module JApps {
             $container: JQuery;
         }
 
-        export class UiContainer<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
+        export class UiContainer<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) {
             }
 
             public $container: JQuery; // todo: ContainerType;
@@ -39,20 +39,20 @@ module JApps {
 
         /* tools using JQuery */
 
-        export class MenuPlugin<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> implements JApps.Application.IPlugIn<TDocumentType, TStatusManager, TContainerType> {
-            init(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
+        export class MenuPlugin<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> implements JApps.Application.IPlugIn<TDocumentType, TStatusManager> {
+            init(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) {
                 this.app = app;
                 var obj = this.getMenuObj(app);
                 this.menuAddItem(obj/*, 0*/);
             }
 
-            private app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>;
+            private app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>;
 
             getId(): string {
                 return "Menu";
             }
 
-            getMenuObj(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): IMenuDef {
+            getMenuObj(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>): IMenuDef {
                 return null;
             }
 
@@ -141,8 +141,8 @@ module JApps {
             }
         }
 
-        export class Dialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> extends UiContainer<TDocumentType, TStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
+        export class Dialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> extends UiContainer<TDocumentType, TStatusManager> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) {
                 super(idPrefix, app);
                 this.createDialogElement();
             }
@@ -450,8 +450,8 @@ module JApps {
             }
         }
 
-        export class FileDialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager, TContainerType> extends Dialog<TDocumentType, TStatusManager, TContainerType> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>) {
+        export class FileDialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> extends Dialog<TDocumentType, TStatusManager> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) {
                 super(idPrefix, app);
                 this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
@@ -507,8 +507,8 @@ module JApps {
             }
         }
 
-        export class OpenFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
+        export class OpenFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager> extends FileDialog<DocumentType, StatusManager> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<DocumentType, StatusManager>) {
                 super(idPrefix, app);
                 this.dialogId = "OpenFileDialog";
                 this.dialogTitle = "Open file";
@@ -526,8 +526,8 @@ module JApps {
             }
         }
 
-        export class SaveFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager, ContainerType> extends FileDialog<DocumentType, StatusManager, ContainerType> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<DocumentType, StatusManager, ContainerType>) {
+        export class SaveFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager> extends FileDialog<DocumentType, StatusManager> {
+            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<DocumentType, StatusManager>) {
                 super(idPrefix, app);
                 this.dialogId = "SaveFileDialog";
                 this.dialogTitle = "Save file";
@@ -610,11 +610,11 @@ module JMusicScore {
     export module Ui {
 
 
-        export class FileMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        export class FileMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager> {
             constructor() {
                 super();
             }
-            getMenuObj(app: JApps.Application.AbstractApplication<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>): JApps.Ui.IMenuDef {
+            getMenuObj(app: JApps.Application.AbstractApplication<Model.IScore, ScoreApplication.ScoreStatusManager>): JApps.Ui.IMenuDef {
                 return {
                     id: "FileMenu",
                     caption: "File",
@@ -638,14 +638,14 @@ module JMusicScore {
                             id: "OpenMenu",
                             caption: "Open...",
                             action: () => {
-                                new JApps.Ui.OpenFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery >('open', app).show();
+                                new JApps.Ui.OpenFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager >('open', app).show();
                             }
                         },
                         {
                             id: "SaveMenu",
                             caption: "Save as...",
                             action: () => {
-                                new JApps.Ui.SaveFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery>('save', app).show();
+                                new JApps.Ui.SaveFileDialog<Model.IScore, ScoreApplication.ScoreStatusManager>('save', app).show();
                             }
                         },
                     ]
@@ -781,7 +781,7 @@ module JMusicScore {
 
         // ************************* Music dialogs ************************ //
 
-        export class ScoreDialog extends JApps.Ui.Dialog<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        export class ScoreDialog extends JApps.Ui.Dialog<Model.IScore, ScoreApplication.ScoreStatusManager> {
             constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication) {
                 super(idPrefix, app);
             }
@@ -1110,7 +1110,7 @@ module JMusicScore {
 
         }
 
-        class StaffContainer extends JApps.Ui.UiContainer<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> implements JApps.Ui.IContainer {
+        class StaffContainer extends JApps.Ui.UiContainer<Model.IScore, ScoreApplication.ScoreStatusManager> implements JApps.Ui.IContainer {
             constructor(public idPrefix: string, public app: ScoreApplication.IScoreApplication, staff: Model.IStaff, index: number) {
                 super(idPrefix, app);
 
@@ -1238,7 +1238,7 @@ module JMusicScore {
             }
         }
 
-        export class QuickMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        export class QuickMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager> {
             constructor(private id: string, private menuCaption: string, private parentId: string, private parentCaption: string, private menuAction: () => void) {
                 super();
             }
@@ -1276,7 +1276,7 @@ module JMusicScore {
             }
         }
 
-        export class ExportMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        export class ExportMenuPlugin extends JApps.Ui.MenuPlugin<Model.IScore, ScoreApplication.ScoreStatusManager> {
             constructor() {
                 super();
             }

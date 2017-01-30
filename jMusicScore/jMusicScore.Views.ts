@@ -1,10 +1,10 @@
 module JMusicScore {
 
     export module ScoreApplication {
-        export interface IScoreApplication extends JApps.Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> { }
-        export interface IScorePlugin extends JApps.Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> { }
-        export interface IScoreEventProcessor extends JApps.Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> { }
-        export interface IScoreDesigner extends JApps.Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> { }
+        export interface IScoreApplication extends JApps.Application.AbstractApplication<Model.IScore, ScoreStatusManager> { }
+        export interface IScorePlugin extends JApps.Application.IPlugIn<Model.IScore, ScoreStatusManager> { }
+        export interface IScoreEventProcessor extends JApps.Application.IEventProcessor<Model.IScore, ScoreStatusManager> { }
+        export interface IScoreDesigner extends JApps.Application.IDesigner<Model.IScore, ScoreStatusManager> { }
 
         export interface IMessage extends JApps.Application.IMessage {
             note?: Model.INote;
@@ -1192,7 +1192,7 @@ module JMusicScore {
         }
 
         export class SvgViewer implements ScoreApplication.IScorePlugin {
-            constructor(private $svg: JQuery) {
+            constructor(private $svg: JQuery, public container: JQuery) {
             }
 
             private svgHelper: SvgHelper;
@@ -1200,9 +1200,9 @@ module JMusicScore {
             public init(app: ScoreApplication.IScoreApplication) {
                 //var $svg = app.container.find('.svgArea');
                 if (!this.$svg.length) {
-                    var $clientArea = app.container.find('.clientArea');
+                    var $clientArea = this.container.find('.clientArea');
                     if (!$clientArea.length) {
-                        $clientArea = $('<div>').attr('class', 'clientArea').appendTo(app.container);
+                        $clientArea = $('<div>').attr('class', 'clientArea').appendTo(this.container);
                     }
                     this.$svg = $('<div>').attr('class', 'svgArea').appendTo($clientArea);
                 }
@@ -1945,7 +1945,7 @@ module JMusicScore {
         dialogs (note, head, voice, staff)       
         */
 
-        class SvgWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        class SvgWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             constructor(private svgHelper: SvgHelper) { }
 
             init(app: ScoreApplication.IScoreApplication) {
@@ -3278,7 +3278,7 @@ module JMusicScore {
 
 
         export class CanvasViewer implements ScoreApplication.IScorePlugin {
-            constructor(private $root: JQuery) {
+            constructor(private $root: JQuery, public container: JQuery) {
             }
 
             private canvasHelper: CanvasHelper;
@@ -3286,9 +3286,9 @@ module JMusicScore {
             public init(app: ScoreApplication.IScoreApplication) {
                 //var $svg = app.container.find('.svgArea');
                 if (!this.$root.length) {
-                    var $clientArea = app.container.find('.clientArea');
+                    var $clientArea = this.container.find('.clientArea');
                     if (!$clientArea.length) {
-                        $clientArea = $('<div>').attr('class', 'clientArea').appendTo(app.container);
+                        $clientArea = $('<div>').attr('class', 'clientArea').appendTo(this.container);
                     }
                     this.$root = $('<div>').attr('class', 'svgArea').appendTo($clientArea);
                 }

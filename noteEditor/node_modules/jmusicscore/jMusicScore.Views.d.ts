@@ -1,12 +1,12 @@
 declare module JMusicScore {
     module ScoreApplication {
-        interface IScoreApplication extends JApps.Application.AbstractApplication<Model.IScore, ScoreStatusManager, JQuery> {
+        interface IScoreApplication extends JApps.Application.AbstractApplication<Model.IScore, ScoreStatusManager> {
         }
-        interface IScorePlugin extends JApps.Application.IPlugIn<Model.IScore, ScoreStatusManager, JQuery> {
+        interface IScorePlugin extends JApps.Application.IPlugIn<Model.IScore, ScoreStatusManager> {
         }
-        interface IScoreEventProcessor extends JApps.Application.IEventProcessor<Model.IScore, ScoreStatusManager, JQuery> {
+        interface IScoreEventProcessor extends JApps.Application.IEventProcessor<Model.IScore, ScoreStatusManager> {
         }
-        interface IScoreDesigner extends JApps.Application.IDesigner<Model.IScore, ScoreStatusManager, JQuery> {
+        interface IScoreDesigner extends JApps.Application.IDesigner<Model.IScore, ScoreStatusManager> {
         }
         interface IMessage extends JApps.Application.IMessage {
             note?: Model.INote;
@@ -160,7 +160,8 @@ declare module JMusicScore {
         }
         class SvgViewer implements ScoreApplication.IScorePlugin {
             private $svg;
-            constructor($svg: JQuery);
+            container: JQuery;
+            constructor($svg: JQuery, container: JQuery);
             private svgHelper;
             init(app: ScoreApplication.IScoreApplication): void;
             getId(): string;
@@ -297,7 +298,8 @@ declare module JMusicScore {
         }
         class CanvasViewer implements ScoreApplication.IScorePlugin {
             private $root;
-            constructor($root: JQuery);
+            container: JQuery;
+            constructor($root: JQuery, container: JQuery);
             private canvasHelper;
             init(app: ScoreApplication.IScoreApplication): void;
             getId(): string;

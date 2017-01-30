@@ -17,7 +17,7 @@ declare module JMusicScore {
             static exportMusicElm(elm: Model.IMusicElement): string;
             static exportArg(arg: any): string;
         }
-        interface IScoreCommand extends JApps.Application.ICommand<IScore, ScoreApplication.ScoreStatusManager, JQuery> {
+        interface IScoreCommand extends JApps.Application.ICommand<IScore, ScoreApplication.ScoreStatusManager> {
         }
         interface IMacroCommand {
             commandName: string;

@@ -10,3 +10,9 @@ C:\Users\rnj283\Documents\GitHub\jMusicScore\jApps\bin\jApps.pdb
 C:\Users\rnj283\Documents\GitHub\jMusicScore\jApps\obj\Debug\jApps.dll
 C:\Users\rnj283\Documents\GitHub\jMusicScore\jApps\obj\Debug\jApps.pdb
 C:\Users\rnj283\Documents\GitHub\jMusicScore\jApps\obj\Debug\jApps.csprojResolveAssemblyReference.cache
+I:\GitHub\jMusicScore\jApps\bin\jApps.dll.config
+I:\GitHub\jMusicScore\jApps\bin\jApps.dll
+I:\GitHub\jMusicScore\jApps\bin\jApps.pdb
+I:\GitHub\jMusicScore\jApps\obj\Debug\jApps.csprojResolveAssemblyReference.cache
+I:\GitHub\jMusicScore\jApps\obj\Debug\jApps.dll
+I:\GitHub\jMusicScore\jApps\obj\Debug\jApps.pdb

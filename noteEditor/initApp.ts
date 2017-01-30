@@ -1,7 +1,7 @@
 ﻿
 module JMusicScore {
-    var app = <ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery>(
-        $("#appContainer"),
+    var app = <ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager>(
+        //$("#appContainer"),
         new Model.ScoreElement(null),
         new ScoreApplication.ScoreStatusManager());
 
@@ -95,8 +95,8 @@ module JMusicScore {
 
     $(function() {
         /* Menus */
-        app.addPlugin(new CanvasView.CanvasViewer($('#svgArea')));
-        //app.addPlugin(new SvgView.SvgViewer($('#svgArea')));
+        app.addPlugin(new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")));
+        //app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
         app.addPlugin(new SvgView.HintAreaPlugin());
 
         app.addPlugin(new Ui.ToolbarPlugin());

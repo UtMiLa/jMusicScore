@@ -4,8 +4,8 @@ describe("Viewer", function() {
   
     
   beforeEach(function() {
-      app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery>(
-          $("#application"),
+      app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager>(
+          //$("#application"),
           new JMusicScore.Model.ScoreElement(null),
           new JMusicScore.ScoreApplication.ScoreStatusManager());
       //new JMusicScore.ScoreApplication.ScoreApplication($('#application'));
@@ -16,7 +16,7 @@ describe("Viewer", function() {
       app.addValidator(new JMusicScore.Model.UpdateBarsValidator());
       app.addValidator(new JMusicScore.Model.CreateTimelineValidator());
 
-      app.addPlugin(new JMusicScore.SvgView.SvgViewer($('<svg>').appendTo('body')));
+      app.addPlugin(new JMusicScore.SvgView.SvgViewer($('<svg>').appendTo('body'), $("#application")));
   });
 
     

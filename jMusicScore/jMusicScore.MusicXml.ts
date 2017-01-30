@@ -121,7 +121,7 @@
             partStaves: Model.IStaff[];
         }
 
-        class MusicXmlReader implements JApps.Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        class MusicXmlReader implements JApps.Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             private app: ScoreApplication.IScoreApplication;
 
             init(app: ScoreApplication.IScoreApplication) {
@@ -630,7 +630,7 @@
 
 
 
-        export class MusicXmlWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager, JQuery> {
+        export class MusicXmlWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             constructor() {
             }
 

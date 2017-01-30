@@ -1,8 +1,8 @@
 ﻿declare var pegjs: any;
 
 $(() => {
-    var app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery>(
-        $("#content"),
+    var app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager>(
+        //$("#content"),
         new JMusicScore.Model.ScoreElement(null),
         new JMusicScore.ScoreApplication.ScoreStatusManager());
 
@@ -17,7 +17,7 @@ $(() => {
     app.addValidator(new JMusicScore.GhostElements.GhostsValidator());
 
     //app.addPlugin(new JMusicScore.CanvasView.CanvasViewer($('#svgArea')));
-    app.addPlugin(new JMusicScore.SvgView.SvgViewer($('#svgArea')));
+    app.addPlugin(new JMusicScore.SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
     $("#importmemento").click(() => {
         var txt = $("#jsoncode").val();
         app.document = <JMusicScore.Model.IScore>JMusicScore.Model.MusicElementFactory.recreateElement(null, JSON.parse(txt)); // memento format

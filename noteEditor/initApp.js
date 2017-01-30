@@ -1,6 +1,8 @@
 var JMusicScore;
 (function (JMusicScore) {
-    var app = new JApps.Application.AbstractApplication($("#appContainer"), new JMusicScore.Model.ScoreElement(null), new JMusicScore.ScoreApplication.ScoreStatusManager());
+    var app = new JApps.Application.AbstractApplication(
+    //$("#appContainer"),
+    new JMusicScore.Model.ScoreElement(null), new JMusicScore.ScoreApplication.ScoreStatusManager());
     /* JSONReader */
     app.addPlugin(new JMusicScore.MusicXml.MusicXmlPlugin());
     app.addPlugin(new JMusicScore.Lilypond.LilypondPlugin());
@@ -86,8 +88,8 @@ var JMusicScore;
     app.loadFromString(mus, 'JSON');
     $(function () {
         /* Menus */
-        app.addPlugin(new JMusicScore.CanvasView.CanvasViewer($('#svgArea')));
-        //app.addPlugin(new SvgView.SvgViewer($('#svgArea')));
+        app.addPlugin(new JMusicScore.CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")));
+        //app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
         app.addPlugin(new JMusicScore.SvgView.HintAreaPlugin());
         app.addPlugin(new JMusicScore.Ui.ToolbarPlugin());
         app.addPlugin(new JMusicScore.Ui.FileMenuPlugin());

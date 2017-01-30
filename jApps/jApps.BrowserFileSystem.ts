@@ -3,14 +3,14 @@
     export module IO {
 
         /** REST remote file manager */
-        export class ServerFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> implements Application.IFileManager<TDocumentType, TStatusManager, TContainerType> {
+        export class ServerFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IFileManager<TDocumentType, TStatusManager> {
             constructor(private ajaxUrl: string, private id: string) {
                 // new ServerFileManager ("Handler.ashx")
             }
 
-            init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void { }
+            init(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
 
-            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void { }
+            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
 
             getId(): string { return this.id; }
 
@@ -46,13 +46,13 @@
         }
 
         /** Local storage file manager using the browser's local storage*/
-        export class LocalStorageFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager, TContainerType> implements Application.IFileManager<TDocumentType, TStatusManager, TContainerType> {
+        export class LocalStorageFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IFileManager<TDocumentType, TStatusManager> {
             constructor(private id: string) {
             }
 
-            init(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void { }
+            init(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
 
-            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager, TContainerType>): void { }
+            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
 
             getId(): string { return this.id; }
 

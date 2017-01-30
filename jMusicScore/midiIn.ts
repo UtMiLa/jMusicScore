@@ -292,7 +292,7 @@
 
 
         // ****************** Midi ******************* //
-        class MidiMenuPlugin extends JApps.Ui.MenuPlugin<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager, JQuery> {
+        class MidiMenuPlugin extends JApps.Ui.MenuPlugin<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager> {
             constructor(private helper: MidiHelper) { super(); }
 
             getMenuObj(app: ScoreApplication.IScoreApplication): JApps.Ui.IMenuDef {

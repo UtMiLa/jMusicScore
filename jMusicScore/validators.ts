@@ -1,6 +1,6 @@
 ﻿module JMusicScore {
     export module Model {
-        export interface IScoreValidator extends JApps.Application.IValidator<IScore, ScoreApplication.ScoreStatusManager, JQuery> {}
+        export interface IScoreValidator extends JApps.Application.IValidator<IScore, ScoreApplication.ScoreStatusManager> {}
 
         export class UpdateBarsValidator implements IScoreValidator {
             public validate(app: ScoreApplication.IScoreApplication) {
