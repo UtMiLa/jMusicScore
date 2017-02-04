@@ -15,3 +15,4 @@ C:\udv\github\jMusicScore\jApps\bin\jApps.dll
 C:\udv\github\jMusicScore\jApps\bin\jApps.pdb
 C:\udv\github\jMusicScore\jApps\obj\Debug\jApps.dll
 C:\udv\github\jMusicScore\jApps\obj\Debug\jApps.pdb
+C:\udv\github\jMusicScore\jApps\obj\Debug\jApps.csprojResolveAssemblyReference.cache
