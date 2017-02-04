@@ -285,6 +285,110 @@ var JApps;
         Application.AbstractApplication = AbstractApplication;
     })(Application = JApps.Application || (JApps.Application = {}));
 })(JApps || (JApps = {}));
+var JApps;
+(function (JApps) {
+    var Configuration;
+    (function (Configuration) {
+        (function (ConfigurationType) {
+            ConfigurationType[ConfigurationType["ctFileManager"] = 0] = "ctFileManager";
+            ConfigurationType[ConfigurationType["ctPlugin"] = 1] = "ctPlugin";
+            ConfigurationType[ConfigurationType["ctValidator"] = 2] = "ctValidator";
+        })(Configuration.ConfigurationType || (Configuration.ConfigurationType = {}));
+        var ConfigurationType = Configuration.ConfigurationType;
+        ;
+        var PluginConfiguration = (function () {
+            function PluginConfiguration(label, plugin) {
+                this.label = label;
+                this.plugin = plugin;
+                this.type = ConfigurationType.ctPlugin;
+                this.active = true;
+            }
+            PluginConfiguration.prototype.installer = function (app) {
+                app.addPlugin(this.plugin());
+            };
+            return PluginConfiguration;
+        }());
+        Configuration.PluginConfiguration = PluginConfiguration;
+        var ValidatorConfiguration = (function () {
+            function ValidatorConfiguration(label, validator) {
+                this.label = label;
+                this.validator = validator;
+                this.type = ConfigurationType.ctValidator;
+                this.active = true;
+            }
+            ValidatorConfiguration.prototype.installer = function (app) {
+                app.addValidator(this.validator());
+            };
+            return ValidatorConfiguration;
+        }());
+        Configuration.ValidatorConfiguration = ValidatorConfiguration;
+        var FileManagerConfiguration = (function () {
+            function FileManagerConfiguration(label, fileManager) {
+                this.label = label;
+                this.fileManager = fileManager;
+                this.type = ConfigurationType.ctFileManager;
+                this.active = true;
+            }
+            FileManagerConfiguration.prototype.installer = function (app) {
+                app.addFileManager(this.fileManager());
+            };
+            return FileManagerConfiguration;
+        }());
+        Configuration.FileManagerConfiguration = FileManagerConfiguration;
+        var MakeBuilder = (function () {
+            function MakeBuilder() {
+            }
+            MakeBuilder.make = function (type) {
+                return function () { return new type; };
+            };
+            return MakeBuilder;
+        }());
+        Configuration.MakeBuilder = MakeBuilder;
+        var ConfigurationManager = (function () {
+            function ConfigurationManager(app) {
+                this.app = app;
+                this.configurations = [];
+            }
+            //protected plugins: Application.IBuilder<Application.IPlugIn<TDocumentType, TStatusManager>>[] = [];
+            /*protected validators: Application.IBuilder<Application.IValidator<TDocumentType, TStatusManager>>[] = [];
+            protected fileManagers: Application.IBuilder<Application.IFileManager<TDocumentType, TStatusManager>>[] = [];*/
+            ConfigurationManager.prototype.addConfiguration = function (configuration) {
+                this.configurations.push(configuration);
+            };
+            /*addPlugin(label: string, plugin: Application.IBuilder<Application.IPlugIn<TDocumentType, TStatusManager>>) {
+                this.plugins.push(plugin);
+            }*/
+            /*addValidator(label: string, validator: Application.IBuilder<Application.IValidator<TDocumentType, TStatusManager>>) {
+                this.validators.push(validator);
+            }
+    
+            addFileManager(label: string, fileManager: Application.IBuilder<Application.IFileManager<TDocumentType, TStatusManager>>) {
+                this.fileManagers.push(fileManager);
+            }
+            */
+            ConfigurationManager.prototype.apply = function () {
+                for (var i = 0; i < this.configurations.length; i++) {
+                    var configuration = this.configurations[i];
+                    configuration.installer(this.app);
+                } /*
+                for (var i = 0; i < this.validators.length; i++) {
+                    var validator = this.validators[i];
+                    this.app.addValidator(validator());
+                }
+                for (var i = 0; i < this.plugins.length; i++) {
+                    var plugin = this.plugins[i];
+                    this.app.addPlugin(plugin());
+                }
+                for (var i = 0; i < this.fileManagers.length; i++) {
+                    var fileManager = this.fileManagers[i];
+                    this.app.addFileManager(fileManager());
+                }*/
+            };
+            return ConfigurationManager;
+        }());
+        Configuration.ConfigurationManager = ConfigurationManager;
+    })(Configuration = JApps.Configuration || (JApps.Configuration = {}));
+})(JApps || (JApps = {}));
 /*$(document).bind("touchstart touchmove", function(e) {
   //Disable scrolling by preventing default touch behaviour
   e.preventDefault();

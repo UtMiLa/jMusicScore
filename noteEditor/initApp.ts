@@ -1,29 +1,34 @@
 ﻿
 module JMusicScore {
+
+    class MusicConfiguration extends JApps.Configuration.ConfigurationManager<Model.IScore, ScoreApplication.ScoreStatusManager> {
+        constructor(app: ScoreApplication.IScoreApplication) {
+            super(app);
+
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("MusicXml", JApps.Configuration.MakeBuilder.make<MusicXml.MusicXmlPlugin>(MusicXml.MusicXmlPlugin)));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Lilypond", JApps.Configuration.MakeBuilder.make<Lilypond.LilypondPlugin>(Lilypond.LilypondPlugin)));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("JSON", JApps.Configuration.MakeBuilder.make<Model.JsonPlugin>(Model.JsonPlugin)));
+
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("Update Bars", JApps.Configuration.MakeBuilder.make<Model.UpdateBarsValidator>(Model.UpdateBarsValidator)));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("CreateTimelineValidator", JApps.Configuration.MakeBuilder.make<Model.CreateTimelineValidator>(Model.CreateTimelineValidator)));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("JoinNotesValidator", JApps.Configuration.MakeBuilder.make<Model.JoinNotesValidator>(Model.JoinNotesValidator)));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("SplitNotesValidator", JApps.Configuration.MakeBuilder.make<Model.SplitNotesValidator>(Model.SplitNotesValidator)));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("BeamValidator", JApps.Configuration.MakeBuilder.make<Model.BeamValidator>(Model.BeamValidator)));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("TieValidator", JApps.Configuration.MakeBuilder.make<Model.TieValidator>(Model.TieValidator)));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateAccidentals", JApps.Configuration.MakeBuilder.make<Model.UpdateAccidentalsValidator>(Model.UpdateAccidentalsValidator)));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("GhostsValidator", JApps.Configuration.MakeBuilder.make<GhostElements.GhostsValidator>(GhostElements.GhostsValidator)));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateBarsValidator", JApps.Configuration.MakeBuilder.make<Model.UpdateBarsValidator>(Model.UpdateBarsValidator)));
+
+            this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Aspx handler", () => { return new JApps.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"); }));
+            this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("PHP handler", () => { return new JApps.IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
+            this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Local", () => { return new JApps.IO.LocalStorageFileManager("Local"); }));
+        }
+    }
+
     var app = <ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager>(
-        //$("#appContainer"),
         new Model.ScoreElement(null),
         new ScoreApplication.ScoreStatusManager());
 
-    /* JSONReader */
-    app.addPlugin(new MusicXml.MusicXmlPlugin());
-    app.addPlugin(new Lilypond.LilypondPlugin());
-    app.addPlugin(new Model.JsonPlugin());
-
-    app.addValidator(new Model.UpdateBarsValidator());
-    app.addValidator(new Model.CreateTimelineValidator());
-    app.addValidator(new Model.JoinNotesValidator());
-    app.addValidator(new Model.SplitNotesValidator());
-    app.addValidator(new Model.BeamValidator());
-    app.addValidator(new Model.TieValidator());
-    app.addValidator(new Model.UpdateAccidentalsValidator());
-
-    app.addValidator(new GhostElements.GhostsValidator());
-    
-    app.addFileManager(new JApps.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"));
-    app.addFileManager(new JApps.IO.ServerFileManager("/Handler.php", "Server (PHP)"));
-    app.addFileManager(new JApps.IO.LocalStorageFileManager("Local"));
-    //UtMiLa.application.LoadUsing("Esajas40.xml", "Server", "MusicXML");
 
     var mus = {
         "id": "89", "t": "Score", "def": { "metadata": {} },
@@ -91,9 +96,12 @@ module JMusicScore {
                     { "id": "153", "t": "Meter" }]
             }]
     };
-    app.loadFromString(mus, 'JSON');
 
     $(function() {
+
+        var conf = new MusicConfiguration(app);
+
+
         /* Menus */
         app.addPlugin(new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")));
         //app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
@@ -105,13 +113,16 @@ module JMusicScore {
         app.addPlugin(new Ui.VoiceMenuPlugin(app));
         app.addPlugin(new Ui.ExportMenuPlugin());
 
+
+
+
         app.addPlugin(new Ui.StavesMenuPlugin(app));
 
         app.addPlugin(new JApps.Editors.KeybordInputPlugin());
         app.addPlugin(new Editors.MidiInputPlugin());
         app.registerEventProcessor(new Editors.MidiEditor()); // "midiNoteOff", 
 
-        /** test **/
+                /** test **/
 
         app.addPlugin(new Ui.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
         app.addPlugin(new Ui.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function() { app.saveUsing('saved.xml', 'Server', 'JSON'); }));
@@ -193,6 +204,7 @@ module JMusicScore {
             app.executeCommand(cmd);
         }));
 
+        
         app.addPlugin(new Ui.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function() {
             app.document.withBars((bar: Model.IBar, index: number) => { app.document.removeChild(bar); });
             app.executeCommand({
@@ -239,8 +251,7 @@ module JMusicScore {
 
         app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
         //app.AddPlugin(new Players.MidiPlayer());
-
-
+        
         var jMusicActions: JApps.UI.ActionCollection = {
             FileNew: { caption: "New", action: () => { app.executeCommand(new JMusicScore.Model.ClearScoreCommand({})); }, type: JApps.UI.ActionType.execute },
             FileLoad: { caption: "Load", action: () => { new JApps.Ui.OpenFileDialog('open', app).show(); }, type: JApps.UI.ActionType.execute },
@@ -318,8 +329,12 @@ module JMusicScore {
         var menuman = new JApps.UI.JQUIMenuManager('#notetools5');
         menuman.addActions(jMusicActions);
         menuman.setMenu(jMusicMenuDef);
+
+
+
+        conf.apply();
+
+        app.loadFromString(mus, 'JSON');
         
-
-
     });
 } 

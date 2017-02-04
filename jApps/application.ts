@@ -8,6 +8,14 @@ module JApps {
             getId(): string;
         }
 
+        /*export interface IPlugInClass<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            new (): IPlugIn<TDocumentType, TStatusManager>;
+        }*/
+
+        export interface IBuilder<Type> {
+            (): Type;
+        }
+
         /** Interface for file readers (in varying formats) */
         export interface IReaderPlugIn<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> extends IPlugIn<TDocumentType, TStatusManager> {
             //Init(app: Application): void;
@@ -40,6 +48,10 @@ module JApps {
             validate(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
         }
 
+        /*export interface IValidatorClass<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            new (): IValidator<TDocumentType, TStatusManager>;
+        }*/
+
         /** Interface for objects that check and refines the user interface after every model change (like spacing and drawing) */
         export interface IDesigner<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
             validate(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
@@ -66,6 +78,10 @@ module JApps {
             saveFile(name: string, data: string, handler: (res: string) => void): void;
             getId(): string;
         }
+
+        /*export interface IFileManagerClass<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+            new (): IFileManager<TDocumentType, TStatusManager>;
+        }*/
 
         export interface IDesktopArea { }
 
