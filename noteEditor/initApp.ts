@@ -5,23 +5,30 @@ module JMusicScore {
         constructor(app: ScoreApplication.IScoreApplication) {
             super(app);
 
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("MusicXml", JApps.Configuration.MakeBuilder.make<MusicXml.MusicXmlPlugin>(MusicXml.MusicXmlPlugin)));
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Lilypond", JApps.Configuration.MakeBuilder.make<Lilypond.LilypondPlugin>(Lilypond.LilypondPlugin)));
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("JSON", JApps.Configuration.MakeBuilder.make<Model.JsonPlugin>(Model.JsonPlugin)));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("MusicXml", MusicXml.MusicXmlPlugin));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Lilypond", Lilypond.LilypondPlugin));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("JSON", Model.JsonPlugin));
 
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("Update Bars", JApps.Configuration.MakeBuilder.make<Model.UpdateBarsValidator>(Model.UpdateBarsValidator)));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("CreateTimelineValidator", JApps.Configuration.MakeBuilder.make<Model.CreateTimelineValidator>(Model.CreateTimelineValidator)));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("JoinNotesValidator", JApps.Configuration.MakeBuilder.make<Model.JoinNotesValidator>(Model.JoinNotesValidator)));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("SplitNotesValidator", JApps.Configuration.MakeBuilder.make<Model.SplitNotesValidator>(Model.SplitNotesValidator)));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("BeamValidator", JApps.Configuration.MakeBuilder.make<Model.BeamValidator>(Model.BeamValidator)));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("TieValidator", JApps.Configuration.MakeBuilder.make<Model.TieValidator>(Model.TieValidator)));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateAccidentals", JApps.Configuration.MakeBuilder.make<Model.UpdateAccidentalsValidator>(Model.UpdateAccidentalsValidator)));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("GhostsValidator", JApps.Configuration.MakeBuilder.make<GhostElements.GhostsValidator>(GhostElements.GhostsValidator)));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateBarsValidator", JApps.Configuration.MakeBuilder.make<Model.UpdateBarsValidator>(Model.UpdateBarsValidator)));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("Update Bars", Model.UpdateBarsValidator));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("CreateTimelineValidator", Model.CreateTimelineValidator));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("JoinNotesValidator", Model.JoinNotesValidator));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("SplitNotesValidator", Model.SplitNotesValidator));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("BeamValidator", Model.BeamValidator));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("TieValidator", Model.TieValidator));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateAccidentals", Model.UpdateAccidentalsValidator));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("GhostsValidator", GhostElements.GhostsValidator));
+            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateBarsValidator", Model.UpdateBarsValidator));
 
             this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Aspx handler", () => { return new JApps.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"); }));
             this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("PHP handler", () => { return new JApps.IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
             this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Local", () => { return new JApps.IO.LocalStorageFileManager("Local"); }));
+
+            //this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
+            //this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView.HintAreaPlugin", SvgView.HintAreaPlugin));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ToolbarPlugin", Ui.ToolbarPlugin));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.FileMenuPlugin", Ui.FileMenuPlugin));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ExportMenuPlugin", Ui.ExportMenuPlugin));/**/
         }
     }
 
@@ -105,17 +112,10 @@ module JMusicScore {
         /* Menus */
         app.addPlugin(new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")));
         //app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
-        app.addPlugin(new SvgView.HintAreaPlugin());
-
-        app.addPlugin(new Ui.ToolbarPlugin());
+        conf.disableConfiguration("SvgView");
         
-        app.addPlugin(new Ui.FileMenuPlugin());
         app.addPlugin(new Ui.VoiceMenuPlugin(app));
-        app.addPlugin(new Ui.ExportMenuPlugin());
-
-
-
-
+        
         app.addPlugin(new Ui.StavesMenuPlugin(app));
 
         app.addPlugin(new JApps.Editors.KeybordInputPlugin());

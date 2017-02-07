@@ -8,11 +8,23 @@
         active: boolean;
     }
 
+    export interface IPluginClass<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
+        new (): Application.IPlugIn<TDocumentType, TStatusManager>;
+    }
     export class PluginConfiguration<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
         public type = ConfigurationType.ctPlugin;
         public active: boolean = true;
+        private plugin: Application.IBuilder<Application.IPlugIn<TDocumentType, TStatusManager>>;
 
-        constructor(public label: string, private plugin: Application.IBuilder<Application.IPlugIn<TDocumentType, TStatusManager>>) {
+        constructor(label: string, x: Application.IBuilder<Application.IPlugIn<TDocumentType, TStatusManager>>);
+        constructor(label: string, x: IPluginClass<TDocumentType, TStatusManager>);
+        constructor(public label: string, x: any) {
+            if (typeof (x) === "object") {
+                this.plugin = x;
+            }
+            else {
+                this.plugin = MakeBuilder.make<Application.IPlugIn<TDocumentType, TStatusManager>>(x);
+            }
         }
 
         installer(app: Application.AbstractApplication<TDocumentType, TStatusManager>) {
@@ -20,11 +32,24 @@
         }
     }
 
+    export interface IValidatorClass<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
+        new (): Application.IValidator<TDocumentType, TStatusManager>;
+    }
     export class ValidatorConfiguration<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
         public type = ConfigurationType.ctValidator;
         public active: boolean = true;
 
-        constructor(public label: string, private validator: Application.IBuilder<Application.IValidator<TDocumentType, TStatusManager>>) {
+        private validator: Application.IBuilder<Application.IValidator<TDocumentType, TStatusManager>>;
+
+        constructor(label: string, x: Application.IBuilder<Application.IValidator<TDocumentType, TStatusManager>>);
+        constructor(label: string, x: IValidatorClass<TDocumentType, TStatusManager>);
+        constructor(public label: string, x: any) {
+            if (typeof (x) === "object") {
+                this.validator = x;
+            }
+            else {
+                this.validator = MakeBuilder.make<Application.IValidator<TDocumentType, TStatusManager>>(x);
+            }
         }
 
         installer(app: Application.AbstractApplication<TDocumentType, TStatusManager>) {
@@ -32,11 +57,24 @@
         }
     }
 
+    export interface IFileManagerClass<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
+        new (): Application.IFileManager<TDocumentType, TStatusManager>;
+    }
     export class FileManagerConfiguration<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
         public type = ConfigurationType.ctFileManager;
         public active: boolean = true;
 
-        constructor(public label: string, private fileManager: Application.IBuilder<Application.IFileManager<TDocumentType, TStatusManager>>) {
+        private fileManager: Application.IBuilder<Application.IFileManager<TDocumentType, TStatusManager>>;
+
+        constructor(label: string, x: Application.IBuilder<Application.IFileManager<TDocumentType, TStatusManager>>);
+        constructor(label: string, x: IFileManagerClass<TDocumentType, TStatusManager>);
+        constructor(public label: string, x: any) {
+            if (typeof (x) === "object") {
+                this.fileManager = x;
+            }
+            else {
+                this.fileManager = MakeBuilder.make<Application.IFileManager<TDocumentType, TStatusManager>>(x);
+            }
         }
 
         installer(app: Application.AbstractApplication<TDocumentType, TStatusManager>) {
@@ -53,43 +91,30 @@
         constructor(public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) { }
 
         protected configurations: IConfiguration<TDocumentType, TStatusManager>[] = [];
-        //protected plugins: Application.IBuilder<Application.IPlugIn<TDocumentType, TStatusManager>>[] = [];
-        /*protected validators: Application.IBuilder<Application.IValidator<TDocumentType, TStatusManager>>[] = [];
-        protected fileManagers: Application.IBuilder<Application.IFileManager<TDocumentType, TStatusManager>>[] = [];*/
 
         addConfiguration(configuration: IConfiguration<TDocumentType, TStatusManager>) {
             this.configurations.push(configuration);
         }
-
-        /*addPlugin(label: string, plugin: Application.IBuilder<Application.IPlugIn<TDocumentType, TStatusManager>>) {
-            this.plugins.push(plugin);
-        }*/
-
-        /*addValidator(label: string, validator: Application.IBuilder<Application.IValidator<TDocumentType, TStatusManager>>) {
-            this.validators.push(validator);
+        
+        disableConfiguration(id: string) {
+            for (var i = 0; i < this.configurations.length; i++) {
+                var configuration = this.configurations[i];
+                if (configuration.label === id) configuration.active = false;
+            }
         }
 
-        addFileManager(label: string, fileManager: Application.IBuilder<Application.IFileManager<TDocumentType, TStatusManager>>) {
-            this.fileManagers.push(fileManager);
+        enableConfiguration(id: string) {
+            for (var i = 0; i < this.configurations.length; i++) {
+                var configuration = this.configurations[i];
+                if (configuration.label === id) configuration.active = true;
+            }
         }
-        */
+
         apply() {
             for (var i = 0; i < this.configurations.length; i++) {
                 var configuration = this.configurations[i];
                 configuration.installer(this.app);
-            }/*
-            for (var i = 0; i < this.validators.length; i++) {
-                var validator = this.validators[i];
-                this.app.addValidator(validator());
             }
-            for (var i = 0; i < this.plugins.length; i++) {
-                var plugin = this.plugins[i];
-                this.app.addPlugin(plugin());
-            }
-            for (var i = 0; i < this.fileManagers.length; i++) {
-                var fileManager = this.fileManagers[i];
-                this.app.addFileManager(fileManager());
-            }*/
         }
     }
     

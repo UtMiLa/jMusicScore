@@ -16,3 +16,9 @@ C:\udv\github\jMusicScore\jApps\bin\jApps.pdb
 C:\udv\github\jMusicScore\jApps\obj\Debug\jApps.dll
 C:\udv\github\jMusicScore\jApps\obj\Debug\jApps.pdb
 C:\udv\github\jMusicScore\jApps\obj\Debug\jApps.csprojResolveAssemblyReference.cache
+I:\GitHub\jMusicScore\jApps\bin\jApps.dll.config
+I:\GitHub\jMusicScore\jApps\bin\jApps.dll
+I:\GitHub\jMusicScore\jApps\bin\jApps.pdb
+I:\GitHub\jMusicScore\jApps\obj\Debug\jApps.csprojResolveAssemblyReference.cache
+I:\GitHub\jMusicScore\jApps\obj\Debug\jApps.dll
+I:\GitHub\jMusicScore\jApps\obj\Debug\jApps.pdb
