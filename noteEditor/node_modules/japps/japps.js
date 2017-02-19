@@ -13,7 +13,7 @@ var JApps;
             };
             HtmlDesktopManager.prototype.removeArea = function (area) { };
             return HtmlDesktopManager;
-        })();
+        }());
         var FeedbackManager = (function () {
             function FeedbackManager() {
                 this.clients = [];
@@ -33,7 +33,7 @@ var JApps;
                 }
             };
             return FeedbackManager;
-        })();
+        }());
         /** Application object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
         var AbstractApplication = (function () {
             function AbstractApplication(score, status) {
@@ -281,20 +281,32 @@ var JApps;
                 return true;
             };
             return AbstractApplication;
-        })();
+        }());
         Application.AbstractApplication = AbstractApplication;
+        /** Debug event processor: writes event info in #msg */
+        /*export class DummyEventProcessor implements IEventProcessor {
+            public keydown(app: AbstractApplication, event: Event): boolean {
+                $('#msg').text((<KeyboardEvent>event).char);
+                return false;
+            }
+
+            public Init(app: ScoreApplication.ScoreApplication) {
+            }
+            public Exit(app: ScoreApplication.ScoreApplication) {
+            }
+        }*/
     })(Application = JApps.Application || (JApps.Application = {}));
 })(JApps || (JApps = {}));
 var JApps;
 (function (JApps) {
     var Configuration;
     (function (Configuration) {
+        var ConfigurationType;
         (function (ConfigurationType) {
             ConfigurationType[ConfigurationType["ctFileManager"] = 0] = "ctFileManager";
             ConfigurationType[ConfigurationType["ctPlugin"] = 1] = "ctPlugin";
             ConfigurationType[ConfigurationType["ctValidator"] = 2] = "ctValidator";
-        })(Configuration.ConfigurationType || (Configuration.ConfigurationType = {}));
-        var ConfigurationType = Configuration.ConfigurationType;
+        })(ConfigurationType = Configuration.ConfigurationType || (Configuration.ConfigurationType = {}));
         ;
         var PluginConfiguration = (function () {
             function PluginConfiguration(label, x) {
@@ -312,7 +324,7 @@ var JApps;
                 app.addPlugin(this.plugin());
             };
             return PluginConfiguration;
-        })();
+        }());
         Configuration.PluginConfiguration = PluginConfiguration;
         var ValidatorConfiguration = (function () {
             function ValidatorConfiguration(label, x) {
@@ -330,7 +342,7 @@ var JApps;
                 app.addValidator(this.validator());
             };
             return ValidatorConfiguration;
-        })();
+        }());
         Configuration.ValidatorConfiguration = ValidatorConfiguration;
         var FileManagerConfiguration = (function () {
             function FileManagerConfiguration(label, x) {
@@ -348,7 +360,7 @@ var JApps;
                 app.addFileManager(this.fileManager());
             };
             return FileManagerConfiguration;
-        })();
+        }());
         Configuration.FileManagerConfiguration = FileManagerConfiguration;
         var MakeBuilder = (function () {
             function MakeBuilder() {
@@ -357,7 +369,7 @@ var JApps;
                 return function () { return new type; };
             };
             return MakeBuilder;
-        })();
+        }());
         Configuration.MakeBuilder = MakeBuilder;
         var ConfigurationManager = (function () {
             function ConfigurationManager(app) {
@@ -388,7 +400,7 @@ var JApps;
                 }
             };
             return ConfigurationManager;
-        })();
+        }());
         Configuration.ConfigurationManager = ConfigurationManager;
     })(Configuration = JApps.Configuration || (JApps.Configuration = {}));
 })(JApps || (JApps = {}));
@@ -437,79 +449,6 @@ var JApps;
     event.preventDefault();
 })
 ;*/ 
-var JApps;
-(function (JApps) {
-    var IO;
-    (function (IO) {
-        /** REST remote file manager */
-        var ServerFileManager = (function () {
-            function ServerFileManager(ajaxUrl, id) {
-                this.ajaxUrl = ajaxUrl;
-                this.id = id;
-                // new ServerFileManager ("Handler.ashx")
-            }
-            ServerFileManager.prototype.init = function (app) { };
-            ServerFileManager.prototype.exit = function (app) { };
-            ServerFileManager.prototype.getId = function () { return this.id; };
-            ServerFileManager.prototype.getFileList = function (handler) {
-                $.ajax(this.ajaxUrl, {
-                    success: function (data) {
-                        var files = data.split('\n');
-                        handler(files);
-                    },
-                    cache: false
-                });
-            };
-            ServerFileManager.prototype.loadFile = function (name, handler) {
-                $.ajax(this.ajaxUrl, {
-                    success: function (data) {
-                        handler(data, name);
-                    },
-                    data: { 'Name': name },
-                    cache: false
-                });
-            };
-            ServerFileManager.prototype.saveFile = function (name, data, handler) {
-                $.ajax(this.ajaxUrl, {
-                    success: function (res) {
-                        handler(res);
-                    },
-                    type: 'POST',
-                    data: { 'Name': name, 'Data': data }
-                });
-            };
-            return ServerFileManager;
-        })();
-        IO.ServerFileManager = ServerFileManager;
-        /** Local storage file manager using the browser's local storage*/
-        var LocalStorageFileManager = (function () {
-            function LocalStorageFileManager(id) {
-                this.id = id;
-            }
-            LocalStorageFileManager.prototype.init = function (app) { };
-            LocalStorageFileManager.prototype.exit = function (app) { };
-            LocalStorageFileManager.prototype.getId = function () { return this.id; };
-            LocalStorageFileManager.prototype.getFileList = function (handler) {
-                var a = 'file:' + this.id + ':';
-                var res = [];
-                for (var key in localStorage) {
-                    if (key.substr(0, a.length) === a) {
-                        res.push(key.substr(a.length));
-                    }
-                }
-                handler(res);
-            };
-            LocalStorageFileManager.prototype.loadFile = function (name, handler) {
-                handler(localStorage['file:' + this.id + ':' + name], name);
-            };
-            LocalStorageFileManager.prototype.saveFile = function (name, data, handler) {
-                localStorage['file:' + this.id + ':' + name] = data;
-            };
-            return LocalStorageFileManager;
-        })();
-        IO.LocalStorageFileManager = LocalStorageFileManager;
-    })(IO = JApps.IO || (JApps.IO = {}));
-})(JApps || (JApps = {}));
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -519,12 +458,12 @@ var JApps;
 (function (JApps) {
     var UI;
     (function (UI) {
+        var ActionType;
         (function (ActionType) {
             ActionType[ActionType["execute"] = 0] = "execute";
             ActionType[ActionType["check"] = 1] = "check";
             ActionType[ActionType["radio"] = 2] = "radio";
-        })(UI.ActionType || (UI.ActionType = {}));
-        var ActionType = UI.ActionType;
+        })(ActionType = UI.ActionType || (UI.ActionType = {}));
         var MenuManager = (function () {
             function MenuManager() {
                 this._actions = {};
@@ -536,7 +475,7 @@ var JApps;
             };
             MenuManager.prototype.updateMenuItems = function () { };
             return MenuManager;
-        })();
+        }());
         UI.MenuManager = MenuManager;
         var ToolbarManager = (function () {
             function ToolbarManager() {
@@ -548,19 +487,20 @@ var JApps;
                 this._actions = actions;
             };
             return ToolbarManager;
-        })();
+        }());
         UI.ToolbarManager = ToolbarManager;
         var CommandLineManager = (function () {
             function CommandLineManager() {
             }
             return CommandLineManager;
-        })();
+        }());
         UI.CommandLineManager = CommandLineManager;
         var JQUIMenuManager = (function (_super) {
             __extends(JQUIMenuManager, _super);
             function JQUIMenuManager(element) {
-                _super.call(this);
-                this.element = element;
+                var _this = _super.call(this) || this;
+                _this.element = element;
+                return _this;
             }
             JQUIMenuManager.prototype.createMenuButton = function (item) {
                 var $menuSpan = $("<span>");
@@ -650,25 +590,98 @@ var JApps;
                 });
             };
             return JQUIMenuManager;
-        })(MenuManager);
+        }(MenuManager));
         UI.JQUIMenuManager = JQUIMenuManager;
         var JQUIToolbarManager = (function (_super) {
             __extends(JQUIToolbarManager, _super);
             function JQUIToolbarManager() {
-                _super.apply(this, arguments);
+                return _super !== null && _super.apply(this, arguments) || this;
             }
             return JQUIToolbarManager;
-        })(ToolbarManager);
+        }(ToolbarManager));
         UI.JQUIToolbarManager = JQUIToolbarManager;
         var JQCommandLineManager = (function (_super) {
             __extends(JQCommandLineManager, _super);
             function JQCommandLineManager() {
-                _super.apply(this, arguments);
+                return _super !== null && _super.apply(this, arguments) || this;
             }
             return JQCommandLineManager;
-        })(CommandLineManager);
+        }(CommandLineManager));
         UI.JQCommandLineManager = JQCommandLineManager;
     })(UI = JApps.UI || (JApps.UI = {}));
+})(JApps || (JApps = {}));
+var JApps;
+(function (JApps) {
+    var IO;
+    (function (IO) {
+        /** REST remote file manager */
+        var ServerFileManager = (function () {
+            function ServerFileManager(ajaxUrl, id) {
+                this.ajaxUrl = ajaxUrl;
+                this.id = id;
+                // new ServerFileManager ("Handler.ashx")
+            }
+            ServerFileManager.prototype.init = function (app) { };
+            ServerFileManager.prototype.exit = function (app) { };
+            ServerFileManager.prototype.getId = function () { return this.id; };
+            ServerFileManager.prototype.getFileList = function (handler) {
+                $.ajax(this.ajaxUrl, {
+                    success: function (data) {
+                        var files = data.split('\n');
+                        handler(files);
+                    },
+                    cache: false
+                });
+            };
+            ServerFileManager.prototype.loadFile = function (name, handler) {
+                $.ajax(this.ajaxUrl, {
+                    success: function (data) {
+                        handler(data, name);
+                    },
+                    data: { 'Name': name },
+                    cache: false
+                });
+            };
+            ServerFileManager.prototype.saveFile = function (name, data, handler) {
+                $.ajax(this.ajaxUrl, {
+                    success: function (res) {
+                        handler(res);
+                    },
+                    type: 'POST',
+                    data: { 'Name': name, 'Data': data }
+                });
+            };
+            return ServerFileManager;
+        }());
+        IO.ServerFileManager = ServerFileManager;
+        /** Local storage file manager using the browser's local storage*/
+        var LocalStorageFileManager = (function () {
+            function LocalStorageFileManager(id) {
+                this.id = id;
+            }
+            LocalStorageFileManager.prototype.init = function (app) { };
+            LocalStorageFileManager.prototype.exit = function (app) { };
+            LocalStorageFileManager.prototype.getId = function () { return this.id; };
+            LocalStorageFileManager.prototype.getFileList = function (handler) {
+                var a = 'file:' + this.id + ':';
+                var res = [];
+                for (var key in localStorage) {
+                    if (key.substr(0, a.length) === a) {
+                        res.push(key.substr(a.length));
+                    }
+                }
+                handler(res);
+            };
+            LocalStorageFileManager.prototype.loadFile = function (name, handler) {
+                handler(localStorage['file:' + this.id + ':' + name], name);
+            };
+            LocalStorageFileManager.prototype.saveFile = function (name, data, handler) {
+                localStorage['file:' + this.id + ':' + name] = data;
+            };
+            return LocalStorageFileManager;
+        }());
+        IO.LocalStorageFileManager = LocalStorageFileManager;
+    })(IO = JApps.IO || (JApps.IO = {}));
 })(JApps || (JApps = {}));
 var JApps;
 (function (JApps) {
@@ -754,7 +767,7 @@ var JApps;
             */
             KeybordInputPlugin.prototype.getId = function () { return 'KeybordInputPlugin'; };
             return KeybordInputPlugin;
-        })();
+        }());
         Editors.KeybordInputPlugin = KeybordInputPlugin;
     })(Editors = JApps.Editors || (JApps.Editors = {}));
 })(JApps || (JApps = {}));
