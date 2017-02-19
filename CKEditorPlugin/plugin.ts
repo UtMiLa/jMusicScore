@@ -27,4 +27,4 @@ CKEDITOR.plugins.add('jmusic', {
             }
         });
     }
-});
+}); 
