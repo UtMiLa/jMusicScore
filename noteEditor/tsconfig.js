@@ -1,0 +1,27 @@
+{
+    "compilerOptions";
+    {
+        "module";
+        "commonjs",
+            "noImplicitAny";
+        true,
+            "removeComments";
+        true,
+            "preserveConstEnums";
+        true,
+            "outFile";
+        "../../built/local/tsc.js",
+            "sourceMap";
+        true;
+    }
+    "include";
+    [
+        "node_modules/**/*"
+    ],
+        "exclude";
+    [
+        "node_modules",
+        "**/*.spec.ts"
+    ];
+}
+//# sourceMappingURL=tsconfig.js.map
