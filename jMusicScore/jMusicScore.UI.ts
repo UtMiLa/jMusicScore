@@ -1771,8 +1771,7 @@ module JMusicScore {
                             setTimeout(function (p: string) {
                                 var timer = $obj.data('timer');
                                 if (timer) {
-                                    var ev = event;
-                                    ev.type = "midinoteon";
+                                    //var ev = new Event("midinoteon");
                                     //(<any>ev).noteInt = parseInt(p);
                                     app.processEvent("midinoteon", { noteInt: parseInt(p) });
                                 }
@@ -1781,7 +1780,7 @@ module JMusicScore {
                         })
                             .on('mouseup touchend', function (ev: JQueryEventObject) {
                             var p = $(this).attr('id').replace('tast', '');
-                            ev.type = "midinoteoff";
+                            //ev.type = "midinoteoff";
                             //(<any>ev).noteInt = parseInt(p);
                             app.processEvent("midinoteoff", { noteInt: parseInt(p) });
                             event.preventDefault();

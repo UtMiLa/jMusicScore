@@ -113,7 +113,8 @@
         apply() {
             for (var i = 0; i < this.configurations.length; i++) {
                 var configuration = this.configurations[i];
-                configuration.installer(this.app);
+                if (configuration.active)
+                    configuration.installer(this.app);
             }
         }
     }

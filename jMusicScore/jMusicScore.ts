@@ -1680,7 +1680,7 @@ module JMusicScore {
             public set NoteId(v: string) {
                 if (this.noteId !== v) {
                     this.noteId = v;
-                    this.spacingInfo = undefined;
+                    this.setSpacingInfo(undefined);
                 }
             }
 

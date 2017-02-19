@@ -23,8 +23,8 @@ module JMusicScore {
             this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("PHP handler", () => { return new JApps.IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
             this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Local", () => { return new JApps.IO.LocalStorageFileManager("Local"); }));
 
-            //this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
-            //this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
+            this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
             this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView.HintAreaPlugin", SvgView.HintAreaPlugin));
             this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ToolbarPlugin", Ui.ToolbarPlugin));
             this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.FileMenuPlugin", Ui.FileMenuPlugin));
@@ -110,9 +110,9 @@ module JMusicScore {
 
 
         /* Menus */
-        app.addPlugin(new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")));
+        //app.addPlugin(new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")));
         //app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
-        conf.disableConfiguration("SvgView");
+        conf.disableConfiguration("CanvasView");
         
         app.addPlugin(new Ui.VoiceMenuPlugin(app));
         
