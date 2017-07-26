@@ -247,7 +247,8 @@ module JMusicScore {
             });
             new Ui.ShowTextDialog('menu', app).setText(res.join("\n")).show();
         }));
-        app.addPlugin(new Ui.PianoPlugIn());
+        //app.addPlugin(new Ui.PianoPlugIn());
+        app.addPlugin(new ScriptRunner.ScriptRunnerPlugIn());
 
         app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
         //app.AddPlugin(new Players.MidiPlayer());

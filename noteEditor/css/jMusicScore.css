@@ -156,7 +156,7 @@ body {
 .bw2.down,
 .bw4.down,
 .bw6.down {
-  border-right: solid #888 4px;
+  border-right: solid #888888 4px;
   width: 36px;
   background-color: #bbb;
 }
@@ -189,7 +189,7 @@ body {
 .bw11.down {
   background-color: #444;
   width: 22px;
-  border-right: solid black 3px;
+  border-right: solid #000000 3px;
 }
 #tast53 {
   background-image: url(../images/symbol1/e_clefs.F_change.png);
@@ -209,6 +209,11 @@ body {
 .piano {
   position: relative;
   left: -450px;
+  top: 80px;
+}
+.scripteditor {
+  position: relative;
+  left: 0px;
   top: 80px;
 }
 .toolbox {

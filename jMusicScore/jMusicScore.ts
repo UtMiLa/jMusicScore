@@ -2,6 +2,9 @@ module JMusicScore {
     /** logical music definition classes and classes for music concepts */
     export module Model {
 
+        // todo: Spacers out of this file
+        // todo: NoteId away
+
         /*
         Linked list i stedet for Array:
 
