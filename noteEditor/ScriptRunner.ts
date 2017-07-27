@@ -81,6 +81,7 @@ namespace ScriptRunner {
     export interface ICommandArgDef {
         name: string;
         type: string;
+        cls?: {};
         customParser?: (arg: string) => any;
     }
 
@@ -88,6 +89,15 @@ namespace ScriptRunner {
         cls: ICommandClass;
         name: string;
         args: ICommandArgDef[];
+    }
+
+    export interface ICommandParameter {
+        val: string;
+    }
+
+    export interface IDataTypeRegistration {
+        name: string;
+        valueGetter: (arg: ICommandArgDef, param: ICommandParameter, app: JMusicScore.ScoreApplication.IScoreApplication) => any;
     }
 
     export class ScriptRunnerPlugIn implements JMusicScore.ScoreApplication.IScorePlugin, JApps.Application.IFeedbackClient {
@@ -99,17 +109,11 @@ namespace ScriptRunner {
         }
 
         public changed(status: JApps.Application.IStatusManager, key: string, val: any) {
-            /*if (key === "pressKey") {
-                $('#tast' + (<JMusicScore.Model.Pitch>val).toMidi()).addClass('down');
-            }
-            else if (key === "releaseKey") {
-                $('#tast' + (<JMusicScore.Model.Pitch>val).toMidi()).removeClass('down');
-            }*/
         }
 
         private createInputArea($root: JQuery, param: { tgWidth: number }, app: JMusicScore.ScoreApplication.IScoreApplication) {
-            var $inputArea = $('<textarea>').text("SetVoiceStemDir . StemUp");
-            var $inputButton = $('<button>');
+            var $inputArea = $('<textarea>').text("SetVoiceStemDir . StemDown");
+            var $inputButton = $('<button>').text("Execute");
             $root.append(
                 $('<div>').append($inputArea).append($inputButton)
             );
@@ -137,6 +141,16 @@ namespace ScriptRunner {
             return null;
         }
 
+        static findDataType(t: string): IDataTypeRegistration {
+            for (var i = 0; i < ScriptRunnerPlugIn.dataTypes.length; i++) {
+                var dt = ScriptRunnerPlugIn.dataTypes[i];
+                if (dt.name.toLowerCase() === t.toLowerCase()) {
+                    return dt;
+                }
+            }
+            return null;
+        }
+
         parseScript(t: string, app: JMusicScore.ScoreApplication.IScoreApplication): JMusicScore.Model.IScoreCommand {
 
             var parse = commandParser.exports.parse;
@@ -156,31 +170,17 @@ namespace ScriptRunner {
                     for (var j = 0; j < cmd.args.length; j++) {
                         var value;
                         var arg = cmd.args[j];
-                        var param = null;
+                        var param: ICommandParameter = null;
                         if (res.args.length > j) param = res.args[j];
+                        
+                        var dt = ScriptRunnerPlugIn.findDataType(arg.type);
+                        if (!dt) throw "Unknown Type: " + arg.type;
 
-                        if (arg.type.match(/^Enum /i)) {
-                            var enumName = arg.type.replace(/^Enum /, "");
-                            value = eval(enumName + "." + param.val);
-                        }
-                        else
-                            switch (arg.type) {
-                                case "Voice":
-                                    if (param === ".") {
-                                        value = app.Status.currentVoice;
-                                    } // todo: voice variables or voice literal
-                                    if (!value) throw "No voice selected"
-                                    break;
-                                default:
-                                    throw "Unknown Type: " + arg.type;
-                            }
-
+                        value = dt.valueGetter(arg, param, app);                        
                         args[arg.name] = value;
                     }
                     return new cmd.cls(args);
             }
-
-            //alert(JSON.stringify(res));
             
             throw "Unknown Command Type";
         }
@@ -194,13 +194,38 @@ namespace ScriptRunner {
         static registerCommand(cls: ICommandRegistration) {
             this.commands.push(cls);
         }
+
+        static dataTypes: IDataTypeRegistration[] = [];
+
+        static registerDataType(dt: IDataTypeRegistration) {
+            this.dataTypes.push(dt);
+        }
+
     }
 
     ScriptRunnerPlugIn.registerCommand({
         cls: JMusicScore.Model.SetVoiceStemDirectionCommand,
         name: "SetVoiceStemDir",
         args: [{ name: "voice", type: "Voice" },
-            { name: "direction", type: "Enum JMusicScore.Model.StemDirectionType" }]
+            { name: "direction", type: "Enum", cls: JMusicScore.Model.StemDirectionType }]
     });
 
+    ScriptRunnerPlugIn.registerDataType({
+        name: "Voice",
+        valueGetter: (arg: ICommandArgDef, param: ICommandParameter, app: JMusicScore.ScoreApplication.IScoreApplication): any => {
+            var value;
+            if (param.val === ".") {
+                value = app.Status.currentVoice;
+            } // todo: voice variables or voice literal
+            if (!value) throw "No voice selected"
+
+            return value;
+        }
+    });
+    ScriptRunnerPlugIn.registerDataType({
+        name: "Enum",
+        valueGetter: (arg: ICommandArgDef, param: ICommandParameter, app: JMusicScore.ScoreApplication.IScoreApplication): any => {
+            return arg.cls[param.val];;
+        }
+    });
 }
