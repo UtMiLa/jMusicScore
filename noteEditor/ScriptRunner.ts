@@ -11,6 +11,7 @@ Typer af kommandoer:
   KOMMANDO val1 val2 val3...                    # udfør kommando via kommandokøen
   variabel1 = FUNKTION val1 val2...             # find en værdi uden sideeffekter
   variabel1 = CREATE-objecttype init1 init2...  # konstruktør til objekt
+  variabel1.property = expression
 Typer af udtryk:
   1
   4/8
@@ -23,6 +24,26 @@ Typer af udtryk:
   < musiksekvens >
   CREATE object params (eller syntaks var1 = OBJEKTTYPE { param1: val1, param2: val2 } )
 Commands kan registrere tilhørende script (pattern) i factory
+
+Funktioner:
+  transponer diatonisk/kromatisk
+  udfør matematisk operation på værdi
+  forlæng/forkort tidsværdi
+  (på selektion/voice/score/musiksekvens)
+  konkatener sekvenser
+  split sekvens ved antal noder eller tid
+  beregn sekvens' længde
+  beregn sekvens' højeste og laveste tone
+
+  
+Kommandoer:
+  ændr tonehøjder
+  ændr tidsværdier
+
+Strukturer:
+  for alle staff/voice/note/head in expression:
+  hvis expression så kommando ellers kommando
+  
 */
 
 /*
@@ -47,12 +68,20 @@ Identifier
   = _ id:[A-Za-z]+ { return id.join(''); }
 
 Arg
-  = t:String {return {type: "string", val: t}}
-  / r:Rational {return {type: "rational", val: r}}
-  / i:Integer {return {type: "number", val: i}}
+  = t:String _ {return {type: "string", val: t}}
+  / r:Rational _ {return {type: "rational", val: r}}
+  / i:Integer _ {return {type: "number", val: i}}
   / "<" _ m:Music* _ ">"{return {type: "music", val: m}}
+  / v:Voice _ {return {type: "voice", val: v}}
+  / s:Staff _ {return {type: "staff", val: s}}
   / v:Identifier _ {return {type: "identifier", val: v }; }
   / v:[^ ]+ _ {return {type: "expression", val: v.join('') }; }
+
+Voice
+  = [s]s:[0-9]+[v]v:[0-9]+ _ {return {s:s.join(''),v:v.join('')}}
+
+Staff
+  = [s]s:[0-9]+ _ {return {s:s.join('')}}
 
 Rational
   = i1:Integer "/" i2:Integer { return { num: i1, den: i2};  }
@@ -92,7 +121,8 @@ namespace ScriptRunner {
     }
 
     export interface ICommandParameter {
-        val: string;
+        val: any;
+        type: string;
     }
 
     export interface IDataTypeRegistration {
@@ -112,7 +142,7 @@ namespace ScriptRunner {
         }
 
         private createInputArea($root: JQuery, param: { tgWidth: number }, app: JMusicScore.ScoreApplication.IScoreApplication) {
-            var $inputArea = $('<textarea>').text("SetVoiceStemDir . StemDown");
+            var $inputArea = $('<textarea>').text("SetVoiceStemDir s1v1 StemDown\nSetVoiceStemDir s1v2 StemUp").css({ "height": "80px", "width": "480px" });
             var $inputButton = $('<button>').text("Execute");
             $root.append(
                 $('<div>').append($inputArea).append($inputButton)
@@ -153,36 +183,45 @@ namespace ScriptRunner {
 
         parseScript(t: string, app: JMusicScore.ScoreApplication.IScoreApplication): JMusicScore.Model.IScoreCommand {
 
+            var lines = t.split("\n");
+
             var parse = commandParser.exports.parse;
-            var res = parse(t);
-            if (!res) throw "Syntax Error";
 
-            switch (res.type) {
-                case "assignment":
-                    throw "Assignment not supported";
+            var commands: JMusicScore.Model.IScoreCommand[] = [];
+
+            for (var i = 0; i < lines.length; i++) {
+                var res = parse(lines[i]);
+                if (!res) throw "Syntax Error";
+
+                switch (res.type) {
+                    case "assignment":
+                        throw "Assignment not supported";
                     //break;
-                case "command":
-                    var cmd = ScriptRunnerPlugIn.findCommand(res.c);
+                    case "command":
+                        var cmd = ScriptRunnerPlugIn.findCommand(res.c);
 
-                    if (!cmd) throw "Unknown Command: " + res.c;
+                        if (!cmd) throw "Unknown Command: " + res.c;
 
-                    var args = {};
-                    for (var j = 0; j < cmd.args.length; j++) {
-                        var value;
-                        var arg = cmd.args[j];
-                        var param: ICommandParameter = null;
-                        if (res.args.length > j) param = res.args[j];
-                        
-                        var dt = ScriptRunnerPlugIn.findDataType(arg.type);
-                        if (!dt) throw "Unknown Type: " + arg.type;
+                        var args = {};
+                        for (var j = 0; j < cmd.args.length; j++) {
+                            var value;
+                            var arg = cmd.args[j];
+                            var param: ICommandParameter = null;
+                            if (res.args.length > j) param = res.args[j];
 
-                        value = dt.valueGetter(arg, param, app);                        
-                        args[arg.name] = value;
-                    }
-                    return new cmd.cls(args);
+                            var dt = ScriptRunnerPlugIn.findDataType(arg.type);
+                            if (!dt) throw "Unknown Type: " + arg.type;
+
+                            value = dt.valueGetter(arg, param, app);
+                            args[arg.name] = value;
+                        }
+                        commands.push(new cmd.cls(args));
+                        break;
+                    default: 
+                        throw "Unknown Command Type";
+                }                
             }
-            
-            throw "Unknown Command Type";
+            return new JMusicScore.Model.BundleCommand(commands);
         }
 
         getId(): string {
@@ -216,7 +255,12 @@ namespace ScriptRunner {
             var value;
             if (param.val === ".") {
                 value = app.Status.currentVoice;
-            } // todo: voice variables or voice literal
+            }
+            else if (param.type === "voice") {
+                var s = param.val.s;
+                var v = param.val.v;
+                value = app.document.staffElements[s-1].voiceElements[v-1];
+            } // todo: voice variables
             if (!value) throw "No voice selected"
 
             return value;
