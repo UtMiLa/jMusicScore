@@ -10,7 +10,7 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>2.1</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.2</TypeScriptToolsVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -237,9 +237,11 @@
     <Content Include="images\symbol1\tenor-clef.png" />
     <Content Include="images\UIimages.png" />
     <Content Include="index.html" />
+    <Content Include="npmPlaceholder.txt" />
     <Content Include="Score.htm" />
     <Content Include="Handler.ashx" />
     <Content Include="Handler.php" />
+    <None Include=".bin\node.cmd" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
@@ -252,18 +254,17 @@
   <ItemGroup>
     <TypeScriptCompile Include="app1.ts" />
     <TypeScriptCompile Include="initApp.ts" />
-    <None Include=".bin\node.cmd" />
     <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
     <None Include="tsconfig.json" />
     <TypeScriptCompile Include="References.ts" />
     <TypeScriptCompile Include="ScriptRunner.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".bin\git.cmd" />
     <Content Include="packages.config" />
-    <None Include=".bin\npm.cmd" />
     <Content Include="package.json" />
     <Content Include="css\emmentaler-16.otf" />
     <Content Include="css\jMusicScore.less" />
@@ -330,4 +331,11 @@ npm install ../jmusicscore/
 cd $(ProjectDir)\css
 lessc jMusicScore.less jMusicScore.css</PreBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Npm.js.2.13.1.0\build\npm.js.targets" Condition="Exists('..\packages\Npm.js.2.13.1.0\build\npm.js.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Npm.js.2.13.1.0\build\npm.js.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Npm.js.2.13.1.0\build\npm.js.targets'))" />
+  </Target>
 </Project>

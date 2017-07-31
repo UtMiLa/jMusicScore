@@ -20,7 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <TypeScriptToolsVersion>2.1</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.2</TypeScriptToolsVersion>
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -56,6 +56,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\jasmine\jasmine.css" />
+    <Content Include="Content\jasmine\jasmine_favicon.png" />
     <Content Include="npmPlaceholder.txt" />
     <Content Include="package.json" />
     <Content Include="packages.config" />
@@ -68,8 +70,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="tests\jasmine-2.0.0\jasmine.css" />
-    <Content Include="tests\jasmine-2.0.0\jasmine_favicon.png" />
+    <Content Include="Scripts\jasmine\boot.js" />
+    <Content Include="Scripts\jasmine\console.js" />
+    <Content Include="Scripts\jasmine\jasmine-html.js" />
+    <Content Include="Scripts\jasmine\jasmine.js" />
     <Content Include="tests\SpecRunner.html" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -92,10 +96,10 @@
     <TypeScriptCompile Include="jsonReader.ts" />
     <TypeScriptCompile Include="midiEditor.ts" />
     <TypeScriptCompile Include="midiIn.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="validators.ts" />
-    <TypeScriptCompile Include="tests\jasmine-2.0.0\jasmine.d.ts" />
     <TypeScriptCompile Include="tests\SpecInit.ts" />
     <TypeScriptCompile Include="tests\spec\scoreSpec.ts" />
     <TypeScriptCompile Include="tests\spec\viewerSpec.ts" />
