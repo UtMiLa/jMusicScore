@@ -42,6 +42,7 @@
     <TypeScriptCompile Include="app.ts" />
     <Content Include="parser.ts" />
     <TypeScriptCompile Include="References.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
