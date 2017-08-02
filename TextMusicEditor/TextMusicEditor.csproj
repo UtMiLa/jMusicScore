@@ -99,14 +99,14 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Gulp.js.1.0.2\build\gulp.js.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Gulp.js.1.0.2\build\gulp.js.targets'))" />
     <Error Condition="!Exists('..\packages\Npm.js.2.13.1.0\build\npm.js.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Npm.js.2.13.1.0\build\npm.js.targets'))" />
+    <Error Condition="!Exists('..\packages\Gulp.js.1.0.2\build\gulp.js.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Gulp.js.1.0.2\build\gulp.js.targets'))" />
   </Target>
-  <Import Project="..\packages\Gulp.js.1.0.2\build\gulp.js.targets" Condition="Exists('..\packages\Gulp.js.1.0.2\build\gulp.js.targets')" />
   <Import Project="..\packages\Npm.js.2.13.1.0\build\npm.js.targets" Condition="Exists('..\packages\Npm.js.2.13.1.0\build\npm.js.targets')" />
   <PropertyGroup>
     <PreBuildEvent>cd $(ProjectDir)
 npm install ../japps/
 npm install ../jmusicscore/</PreBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Gulp.js.1.0.2\build\gulp.js.targets" Condition="Exists('..\packages\Gulp.js.1.0.2\build\gulp.js.targets')" />
 </Project>
