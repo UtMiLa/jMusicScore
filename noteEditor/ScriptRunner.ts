@@ -57,7 +57,7 @@ namespace ScriptRunner {
     export interface ICommandArgDef {
         name: string;
         type: string;
-        cls?: {};
+        cls?: {[k: string]: any};
         customParser?: (arg: string) => any;
     }
 
@@ -149,7 +149,7 @@ namespace ScriptRunner {
 
                         if (!cmd) throw "Unknown Command: " + res.c;
 
-                        var args = {};
+                        var args: {[k: string]: any} = {};
                         for (var j = 0; j < cmd.args.length; j++) {
                             var value;
                             var arg = cmd.args[j];
