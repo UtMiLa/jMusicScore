@@ -3,8 +3,8 @@ var gulp = require('gulp');
 //var pegjs = require("gulp-pegjs");
 
 var gutil = require('gulp-util');
-var through = require('through2');
-var assign = require('object-assign');
+//var through = require('through2');
+//var assign = require('object-assign');
 
 var pegjs = require('pegjs');
 var ts = require("gulp-typescript");
@@ -70,13 +70,13 @@ gulp.task('textmusic_ts', function () {
 });
 
 gulp.task('CKEditorPlugin_ts', function () {
-    return ckProj.src()//["CKEditorPlugin/*.ts", "CKEditorPlugin/node_modules/jmusicscore/*.d.ts", "CKEditorPlugin/scripts/typings/**/*.d.ts"]
+    return ckProj.src()//["CKEditorPlugin/*.ts", "CKEditorPlugin/node_modules/jmusicscore/*.d.ts", "CKEditorPlugin/scripts/typings/**"+"/*.d.ts"]
         .pipe(ckProj())
         .pipe(gulp.dest("dist/CKEditorPlugin"));
 });
 
 gulp.task('TinyMCEPlugin_ts', function () {
-    return tinyProj.src()//["TinyMCEPlugin/*.ts", "TinyMCEPlugin/node_modules/jmusicscore/*.d.ts", "TinyMCEPlugin/scripts/typings/**/*.d.ts"]
+    return tinyProj.src()//["TinyMCEPlugin/*.ts", "TinyMCEPlugin/node_modules/jmusicscore/*.d.ts", "TinyMCEPlugin/scripts/typings/**"+"/.d.ts"]
         .pipe(tinyProj())
         .pipe(gulp.dest("dist/TinyMCEPlugin"));
 });
@@ -84,8 +84,8 @@ gulp.task('TinyMCEPlugin_ts', function () {
 
 gulp.task('peg', function () {
     // place code for your default task here 
-    return gulp.src(['*/*.pegjs'])
-        .pipe(pegjsfunc({ output: "source", trace: true, exportVar: "pegjs", format: "umd" }))
+    return gulp.src(['*'+'/*.pegjs'])
+        //.pipe(pegjsfunc({ output: "source", trace: true, exportVar: "pegjs", format: "umd" }))
         .pipe(gulp.dest('dist'));
 });
 
