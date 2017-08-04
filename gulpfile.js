@@ -39,44 +39,44 @@ var pegjsfunc = function (opts) {
 };
 
 var appProj = ts.createProject("jApps/tsconfig.json", { outFile: "jApps/jApps.js" });
-var jsMusicScoreProj = ts.createProject("jsMusicScore/tsconfig.json", { outFile: "jsMusicScore/jsMusicScore.js" });
+var jMusicScoreProj = ts.createProject("jMusicScore/tsconfig.json", { outFile: "jMusicScore/jMusicScore.js" });
 var noteEditorProj = ts.createProject("noteEditor/tsconfig.json", { outFile: "noteEditor/noteEditor.js" });
 var ckProj = ts.createProject("CKEditorPlugin/tsconfig.json", { outFile: "CKEditorPlugin/app.js" });
 var txProj = ts.createProject("TextMusicEditor/tsconfig.json", { outFile: "TextMusicEditor/app.js" });
 var tinyProj = ts.createProject("TinyMCEPlugin/tsconfig.json", { outFile: "TinyMCEPlugin/app.js" });
 
 gulp.task('jApps_ts', function () {
-    return gulp.src(["jApps/*.ts", "jApps/scripts/typings/**/*.d.ts"])
+    return appProj.src()
         .pipe(appProj())
         .pipe(gulp.dest("dist/jApps"));
 });
 
-gulp.task('jsMusicScore_ts', function () {
-    return gulp.src(["TextMusicEditor/*.ts", "jsMusicScore/scripts/typings/**/*.d.ts"])
-        .pipe(jsMusicScoreProj())
-        .pipe(gulp.dest("dist/jsMusicScore"));
+gulp.task('jMusicScore_ts', function () {
+    return jMusicScoreProj.src()
+        .pipe(jMusicScoreProj())
+        .pipe(gulp.dest("dist/jMusicScore"));
 });
 
 gulp.task('noteEditor_ts', function () {
-    return gulp.src(["noteEditor/*.ts", "noteEditor/node_modules/jmusicscore/*.d.ts", "noteEditor/scripts/typings/**/*.d.ts"])
+    return noteEditorProj.src()
         .pipe(noteEditorProj())
         .pipe(gulp.dest("dist/noteEditor"));
 });
 
 gulp.task('textmusic_ts', function () {
-    return gulp.src(["TextMusicEditor/app.ts", "TextMusicEditor/node_modules/jmusicscore/*.d.ts", "TextMusicEditor/scripts/typings/**/*.d.ts"])
+    return txProj.src()
         .pipe(txProj())
         .pipe(gulp.dest("dist/TextMusicEditor"));
 });
 
 gulp.task('CKEditorPlugin_ts', function () {
-    return gulp.src(["CKEditorPlugin/*.ts", "CKEditorPlugin/node_modules/jmusicscore/*.d.ts", "CKEditorPlugin/scripts/typings/**/*.d.ts"])
+    return ckProj.src()//["CKEditorPlugin/*.ts", "CKEditorPlugin/node_modules/jmusicscore/*.d.ts", "CKEditorPlugin/scripts/typings/**/*.d.ts"]
         .pipe(ckProj())
         .pipe(gulp.dest("dist/CKEditorPlugin"));
 });
 
 gulp.task('TinyMCEPlugin_ts', function () {
-    return gulp.src(["TinyMCEPlugin/*.ts", "TinyMCEPlugin/node_modules/jmusicscore/*.d.ts", "TinyMCEPlugin/scripts/typings/**/*.d.ts"])
+    return tinyProj.src()//["TinyMCEPlugin/*.ts", "TinyMCEPlugin/node_modules/jmusicscore/*.d.ts", "TinyMCEPlugin/scripts/typings/**/*.d.ts"]
         .pipe(tinyProj())
         .pipe(gulp.dest("dist/TinyMCEPlugin"));
 });
@@ -90,4 +90,10 @@ gulp.task('peg', function () {
 });
 
 gulp.task('textmusic', ['peg', 'textmusic_ts']);
+
+gulp.task('all', ['jApps_ts', 'jMusicScore_ts', 'textmusic', 'noteEditor_ts','CKEditorPlugin_ts','TinyMCEPlugin_ts']);
+
+
+
+
 

@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "sourceMap": true,
+        "module": "amd",
+        "moduleResolution": "node",
+        "outFile": "jMusicScore.js",
+        "isolatedModules": false,
+        "jsx": "react",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "declaration": false,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "noLib": false,
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+  "include": [
+    "jMusicScore.ts", 
+    "jMusicScore.Spacing.ts", 
+    "jMusicScore.Views.ts", 
+    "*.ts", 
+    "scripts/typings/*/*.d.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "*.d.ts"
+  ]
+}
