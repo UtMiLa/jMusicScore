@@ -14,5 +14,12 @@
         "noLib": false,
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true
-    }
+    },
+  "include": [
+    "*.ts", 
+    "scripts/typings/*/*.d.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts"
+  ]
 }
