@@ -12,5 +12,6 @@ noteEditor/obj/Debug/noteEditor.csproj.FileListAbsolute.txt
 jApps/obj/Debug/jApps.pdb
 jApps/bin/jApps.dll
 noteEditor/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+/dist/**
 
 !gulpfile.js

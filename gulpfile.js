@@ -82,6 +82,19 @@ gulp.task('TinyMCEPlugin_ts', function () {
         .pipe(gulp.dest("dist/TinyMCEPlugin"));
 });
 
+gulp.task('css', function () {
+    return gulp.src(['**/*.css'])
+        .pipe(gulp.dest('dist'));
+});
+
+
+gulp.task('html', function () {
+    return gulp.src(['*'+'/*.htm', '*'+'/*.html'])
+        .pipe(gulp.dest('dist'));
+});
+
+
+
 
 gulp.task('peg', function () {
     // place code for your default task here 
@@ -92,7 +105,7 @@ gulp.task('peg', function () {
 
 gulp.task('textmusic', ['peg', 'textmusic_ts']);
 
-gulp.task('all', ['jApps_ts', 'jMusicScore_ts', 'textmusic', 'noteEditor_ts','CKEditorPlugin_ts','TinyMCEPlugin_ts']);
+gulp.task('all', ['jApps_ts', 'jMusicScore_ts', 'textmusic', 'noteEditor_ts','CKEditorPlugin_ts','TinyMCEPlugin_ts', 'html', 'css']);
 
 
 
