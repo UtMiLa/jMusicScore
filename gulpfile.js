@@ -3,6 +3,7 @@ var gulp = require('gulp');
 //var pegjs = require("gulp-pegjs");
 
 var gutil = require('gulp-util');
+var browserSync = require('browser-sync');
 //var through = require('through2');
 //var assign = require('object-assign');
 
@@ -95,5 +96,13 @@ gulp.task('all', ['jApps_ts', 'jMusicScore_ts', 'textmusic', 'noteEditor_ts','CK
 
 
 
+gulp.task("watch", ["all"], function () {
 
+    browserSync.init({
+        server: "."
+    });
+
+    gulp.watch([ "source/**/**.ts", "test/**/*.ts"], ["all"]);
+    gulp.watch("dist/*.js").on('change', browserSync.reload); 
+});
 

@@ -8,7 +8,6 @@ module JMusicScore {
             this.addConfiguration(new JApps.Configuration.PluginConfiguration("MusicXml", MusicXml.MusicXmlPlugin));
             this.addConfiguration(new JApps.Configuration.PluginConfiguration("Lilypond", Lilypond.LilypondPlugin));
             this.addConfiguration(new JApps.Configuration.PluginConfiguration("JSON", Model.JsonPlugin));
-
             this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("Update Bars", Model.UpdateBarsValidator));
             this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("CreateTimelineValidator", Model.CreateTimelineValidator));
             this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("JoinNotesValidator", Model.JoinNotesValidator));
