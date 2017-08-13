@@ -2,9 +2,8 @@
     "compilerOptions": {
         "target": "es5",
         "sourceMap": true,
-        "module": "amd",
+        "module": "commonjs",
         "moduleResolution": "node",
-        "outFile": "jApps.js",
         "isolatedModules": false,
         "jsx": "react",
         "experimentalDecorators": true,

@@ -1,6 +1,7 @@
 /// <binding BeforeBuild='default1' />
 var gulp = require('gulp');
-//var pegjs = require("gulp-pegjs");
+var browserify = require("gulp-browserify");
+var concat = require('gulp-concat');
 
 var gutil = require('gulp-util');
 var browserSync = require('browser-sync');
@@ -39,7 +40,7 @@ var pegjsfunc = function (opts) {
     });
 };
 
-var appProj = ts.createProject("jApps/tsconfig.json", { outFile: "jApps/jApps.js" });
+var appProj = ts.createProject("jApps/tsconfig.json", {  });
 var jMusicScoreProj = ts.createProject("jMusicScore/tsconfig.json", { outFile: "jMusicScore/jMusicScore.js" });
 var noteEditorProj = ts.createProject("noteEditor/tsconfig.json", { outFile: "noteEditor/noteEditor.js" });
 var ckProj = ts.createProject("CKEditorPlugin/tsconfig.json", { outFile: "CKEditorPlugin/app.js" });
@@ -49,6 +50,9 @@ var tinyProj = ts.createProject("TinyMCEPlugin/tsconfig.json", { outFile: "TinyM
 gulp.task('jApps_ts', function () {
     return appProj.src()
         .pipe(appProj())
+        .pipe(gulp.dest("test"))
+        .pipe(browserify())
+        .pipe(concat('jApps.js'))
         .pipe(gulp.dest("dist/jApps"));
 });
 

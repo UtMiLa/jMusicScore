@@ -6,10 +6,12 @@
   "author": "",
   "license": "",
   "devDependencies": {
-    "browser-sync": "^2.18.13",
+    "browser-sync": "~2.18.13",
     "gulp": "^3.9.1",
     "gulp-typescript": "^3.2.1",
     "gulp-util": "^3.0.8",
-    "pegjs": "~0.10.0"
+    "pegjs": "~0.10.0",
+    "gulp-browserify": "~0.5.1",
+    "gulp-concat": "~2.6.1"
   }
 }
