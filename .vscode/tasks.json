@@ -6,6 +6,21 @@
         {
             "type": "typescript",
             "tsconfig": "noteEditor\\tsconfig.json"
+        },
+        {
+            "type": "npm",
+            "script": "test",
+            "problemMatcher": []
+        },
+        {
+            "type": "gulp",
+            "task": "jApps_ts",
+            "problemMatcher": []
+        },
+        {
+            "type": "gulp",
+            "task": "all",
+            "problemMatcher": []
         }
     ]
 }

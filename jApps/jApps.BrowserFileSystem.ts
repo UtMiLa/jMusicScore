@@ -1,4 +1,6 @@
-﻿module JApps {
+﻿import {Application} from './application';
+
+
 
     export module IO {
 
@@ -76,4 +78,3 @@
             }
         }
     }
-}

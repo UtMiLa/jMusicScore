@@ -2,7 +2,9 @@
   "name": "JMUSICSCORE",
   "version": "0.0.0",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
   "author": "",
   "license": "",
   "devDependencies": {
@@ -14,6 +16,8 @@
     "gulp-util": "^3.0.8",
     "pegjs": "~0.10.0",
     "gulp-browserify": "~0.5.1",
-    "gulp-concat": "~2.6.1"
+    "gulp-concat": "~2.6.1",
+    "chai": "~4.1.1",
+    "mocha": "~3.5.0"
   }
 }

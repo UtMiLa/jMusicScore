@@ -1,7 +1,9 @@
-﻿module JApps.Configuration {
+﻿import {Application} from './application';
+
+export module Configuration {
     export enum ConfigurationType { ctFileManager, ctPlugin, ctValidator };
 
-    export interface IConfiguration<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> {
+    export interface IConfiguration<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
         type: ConfigurationType;
         installer(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void;
         label: string;
@@ -11,7 +13,7 @@
     export interface IPluginClass<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
         new (): Application.IPlugIn<TDocumentType, TStatusManager>;
     }
-    export class PluginConfiguration<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
+    export class PluginConfiguration<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
         public type = ConfigurationType.ctPlugin;
         public active: boolean = true;
         private plugin: Application.IBuilder<Application.IPlugIn<TDocumentType, TStatusManager>>;
@@ -35,7 +37,7 @@
     export interface IValidatorClass<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
         new (): Application.IValidator<TDocumentType, TStatusManager>;
     }
-    export class ValidatorConfiguration<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
+    export class ValidatorConfiguration<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
         public type = ConfigurationType.ctValidator;
         public active: boolean = true;
 
@@ -60,7 +62,7 @@
     export interface IFileManagerClass<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
         new (): Application.IFileManager<TDocumentType, TStatusManager>;
     }
-    export class FileManagerConfiguration<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
+    export class FileManagerConfiguration<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
         public type = ConfigurationType.ctFileManager;
         public active: boolean = true;
 
@@ -87,8 +89,8 @@
             return function () { return new type }
         }
     }
-    export class ConfigurationManager<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> {
-        constructor(public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) { }
+    export class ConfigurationManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
+        constructor(public app: Application.AbstractApplication<TDocumentType, TStatusManager>) { }
 
         protected configurations: IConfiguration<TDocumentType, TStatusManager>[] = [];
 

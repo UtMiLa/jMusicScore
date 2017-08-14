@@ -1,4 +1,3 @@
-module JApps {
 
     export module Application {
 
@@ -448,4 +447,3 @@ module JApps {
             }
         }*/
     }
-}

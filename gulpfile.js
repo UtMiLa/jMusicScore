@@ -1,12 +1,9 @@
 /// <binding BeforeBuild='default1' />
 var gulp = require('gulp');
-<<<<<<< HEAD
 var browserify = require("gulp-browserify");
 var concat = require('gulp-concat');
-=======
 var less = require('gulp-less');
 //var pegjs = require("gulp-pegjs");
->>>>>>> 86d3080f7d4a57b48d5e07a81eac8285ef643c57
 
 var gutil = require('gulp-util');
 var browserSync = require('browser-sync');
@@ -107,7 +104,6 @@ gulp.task('html', function () {
     return gulp.src(['*'+'/*.htm', '*'+'/*.html'])
         .pipe(gulp.dest('dist'));
 });
-
 
 
 
