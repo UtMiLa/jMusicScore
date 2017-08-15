@@ -126,7 +126,7 @@ gulp.task("watch", ["all"], function () {
         server: "."
     });
 
-    gulp.watch([ "source/**/**.ts", "test/**/*.ts"], ["all"]);
+    gulp.watch([ "**/*.ts", "test/**/*.ts"], ["all"]);
     gulp.watch("dist/*.js").on('change', browserSync.reload); 
 });
 
