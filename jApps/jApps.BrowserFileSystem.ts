@@ -1,6 +1,6 @@
-﻿import {Application} from './application';
+﻿//import {Application} from './application';
 
-
+namespace JApps {
 
     export module IO {
 
@@ -78,3 +78,4 @@
             }
         }
     }
+}

@@ -1,6 +1,6 @@
-import {Application} from './application';
+//import {Application} from './application';
 
-
+namespace JApps {
 
     export module Editors {
         export class KeybordInputPlugin<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IPlugIn<TDocumentType, TStatusManager> {
@@ -87,3 +87,4 @@ import {Application} from './application';
         }
 
     }
+}

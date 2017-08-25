@@ -42,7 +42,12 @@ var pegjsfunc = function (opts) {
     });
 };
 
-var appProj = ts.createProject("jApps/tsconfig.json", {  });
+var appProj = ts.createProject("jApps/tsconfig.json", { 
+    "module": "amd",
+    "moduleResolution": "node",
+    "outFile": "jApps.js"
+
+ });
 var jMusicScoreProj = ts.createProject("jMusicScore/tsconfig.json", { outFile: "jMusicScore/jMusicScore.js" });
 var noteEditorProj = ts.createProject("noteEditor/tsconfig.json", { outFile: "noteEditor/noteEditor.js" });
 var ckProj = ts.createProject("CKEditorPlugin/tsconfig.json", { outFile: "CKEditorPlugin/app.js" });
@@ -52,10 +57,13 @@ var tinyProj = ts.createProject("TinyMCEPlugin/tsconfig.json", { outFile: "TinyM
 gulp.task('jApps_ts', function () {
     return appProj.src()
         .pipe(appProj())
+        .pipe(gulp.dest("dist/jApps/jApps.js"));
+        /*return appProj.src()
+        .pipe(appProj())
         .pipe(gulp.dest("test"))
         .pipe(browserify())
         .pipe(concat('jApps.js'))
-        .pipe(gulp.dest("dist/jApps"));
+        .pipe(gulp.dest("dist/jApps"));*/
 });
 
 gulp.task('jMusicScore_ts', function () {
@@ -117,7 +125,6 @@ gulp.task('peg', function () {
 gulp.task('textmusic', ['peg', 'textmusic_ts']);
 
 gulp.task('all', ['jApps_ts', 'jMusicScore_ts', 'textmusic', 'noteEditor_ts','CKEditorPlugin_ts','TinyMCEPlugin_ts', 'html', 'css', 'less']);
-
 
 
 gulp.task("watch", ["all"], function () {
