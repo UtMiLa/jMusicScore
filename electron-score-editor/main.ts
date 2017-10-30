@@ -1,3 +1,11 @@
+// / <reference path="node_modules/@types/node/index.d.ts" />
+
+/*interface NodeRequire { (mod: string): any };
+declare var require: NodeRequire;
+declare var __dirname: string;
+//interface Process { platform: string };
+declare var process: Process;*/
+
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app

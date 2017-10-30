@@ -1,6 +1,6 @@
-/// <reference path="jApps/jApps.d.ts" />
-/// <reference path="jMusicScore/jMusicScore.d.ts" />
-/// <reference path="../JApps/Scripts/typings/jquery/jquery.d.ts" />
+// / <reference path="jApps/jApps.d.ts" />
+// / <reference path="jMusicScore/jMusicScore.d.ts" />
+// / <reference path="../JApps/Scripts/typings/jquery/jquery.d.ts" />
 //var JApps = import("jApps/jApps");
 
 module JMusicScore {
