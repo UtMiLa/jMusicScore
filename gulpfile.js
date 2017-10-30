@@ -1,3 +1,9 @@
+/*
+Todo:
+    lav npm libs i stedet for kopiering af filer
+    valgfri mellem modul-opbygning og browserfiler
+    typings under electron
+*/
 /// <binding BeforeBuild='default1' />
 var gulp = require('gulp');
 var browserify = require("gulp-browserify");
