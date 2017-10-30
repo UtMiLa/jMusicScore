@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "noImplicitAny": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "sourceMap": true
+    },
+    "include": [
+      "*.ts", 
+      "scripts/*.d.ts",
+      "jApps/*.d.ts",
+      "jMusicScore/*.d.ts"
+    ],
+    "exclude": [
+      "**/*.spec.ts"
+    ]
+  }

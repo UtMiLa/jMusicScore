@@ -21,6 +21,11 @@
             "type": "gulp",
             "task": "all",
             "problemMatcher": []
+        },
+        {
+            "type": "gulp",
+            "task": "electron_ts",
+            "problemMatcher": []
         }
     ]
 }

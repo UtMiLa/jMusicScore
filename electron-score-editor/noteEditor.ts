@@ -264,7 +264,7 @@ var JMusicScore;
             TestLoadSaved: { caption: "LoadSaved", action: function () { app.loadUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute },
             TestSaveSaved: { caption: "SaveSaved", action: function () { app.saveUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute }
         };
-        alert("Dav");
+        //alert("Dav");
         var jMusicMenuDef = {
             items: [
                 {
@@ -324,7 +324,7 @@ var JMusicScore;
         app.loadFromString(mus, 'JSON');
     });
 })(JMusicScore || (JMusicScore = {}));
-alert("Hallo");
+//alert("Hallo");
 var ScriptRunner;
 (function (ScriptRunner) {
     var ScriptRunnerPlugIn = (function () {
@@ -453,7 +453,7 @@ var ScriptRunner;
         }
     });
 })(ScriptRunner || (ScriptRunner = {}));
-alert("Finito");
+//alert("Finito");
 
 } catch(e){
     alert(e.message);

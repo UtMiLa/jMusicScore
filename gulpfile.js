@@ -53,11 +53,18 @@ var noteEditorProj = ts.createProject("noteEditor/tsconfig.json", { outFile: "no
 var ckProj = ts.createProject("CKEditorPlugin/tsconfig.json", { outFile: "CKEditorPlugin/app.js" });
 var txProj = ts.createProject("TextMusicEditor/tsconfig.json", { outFile: "TextMusicEditor/app.js" });
 var tinyProj = ts.createProject("TinyMCEPlugin/tsconfig.json", { outFile: "TinyMCEPlugin/app.js" });
+var electronProj = ts.createProject("electron-score-editor/tsconfig.json", { 
+    "module": "amd",
+    "moduleResolution": "node",
+    "outFile": "main.js"
+ });
 
 gulp.task('jApps_ts', function () {
     return appProj.src()
         .pipe(appProj())
-        .pipe(gulp.dest("dist/jApps/jApps.js"));
+        .pipe(gulp.dest("dist/jApps/jApps.js"))
+        .pipe(gulp.dest("electron-score-editor/jApps/jApps.js"));
+
         /*return appProj.src()
         .pipe(appProj())
         .pipe(gulp.dest("test"))
@@ -69,7 +76,14 @@ gulp.task('jApps_ts', function () {
 gulp.task('jMusicScore_ts', function () {
     return jMusicScoreProj.src()
         .pipe(jMusicScoreProj())
-        .pipe(gulp.dest("dist/jMusicScore"));
+        .pipe(gulp.dest("dist/jMusicScore"))
+        .pipe(gulp.dest("electron-score-editor/jMusicScore"));
+});
+
+gulp.task('electron_ts', function () {
+    return electronProj.src()
+        .pipe(electronProj())
+        .pipe(gulp.dest('electron-score-editor'));
 });
 
 gulp.task('noteEditor_ts', function () {
