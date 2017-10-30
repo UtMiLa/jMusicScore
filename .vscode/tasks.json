@@ -26,6 +26,11 @@
             "type": "gulp",
             "task": "electron_ts",
             "problemMatcher": []
+        },
+        {
+            "type": "gulp",
+            "task": "jMusicScore_ts",
+            "problemMatcher": []
         }
     ]
 }

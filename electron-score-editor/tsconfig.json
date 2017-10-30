@@ -7,7 +7,7 @@
     },
     "include": [
       "*.ts", 
-      "scripts/*.d.ts",
+      "../jApps/scripts/typings/*.d.ts",
       "jApps/*.d.ts",
       "jMusicScore/*.d.ts"
     ],
