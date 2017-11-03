@@ -1,7 +1,8 @@
-//const electron = require('electron')
-//const BrowserWindow = electron.BrowserWindow
+module menu{
+const electron = require('electron')
+const BrowserWindow = electron.BrowserWindow
 const Menu = electron.Menu
-const _app = electron.app
+const app = electron.app
 
 let template = [{
   label: 'Edit',
@@ -244,3 +245,4 @@ app.on('window-all-closed', function () {
   if (reopenMenuItem) reopenMenuItem.enabled = true
 })
 */
+}

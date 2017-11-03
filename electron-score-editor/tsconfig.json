@@ -9,6 +9,7 @@
       "*.ts", 
       "jApps/*.d.ts",
       "jMusicScore/*.d.ts",
+      "main-process/**/*.ts",
       "../japps/Scripts/typings/jqueryui/jqueryui.d.ts",
       "../japps/Scripts/typings/JQuery/JQuery.d.ts",
       "node_modules/@types/node/index.d.ts"

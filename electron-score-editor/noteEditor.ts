@@ -330,7 +330,7 @@ module JMusicScore {
             };
     
            
-            var menuman = new JApps.UI.JQUIMenuManager('#notetools5');
+            var menuman = new MenuManager.MenuManager('#notetools5');
             menuman.addActions(jMusicActions);
             menuman.setMenu(jMusicMenuDef);
     

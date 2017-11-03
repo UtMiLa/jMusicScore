@@ -12,10 +12,24 @@ const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
+const glob = require('glob')
 const path = require('path')
 const url = require('url')
+//const autoUpdater = require('./auto-updater')
 
-require('./menu.js');
+//require('./menu.js');
+
+
+loadDemos();
+
+// Require each JS file in the main-process dir
+function loadDemos () {
+  var files = glob.sync(path.join(__dirname, 'main-process/**/*.js'))
+  files.forEach(function (file: string) {
+    require(file)
+  })
+  //autoUpdater.updateMenu()
+}
 
 
 // Keep a global reference of the window object, if you don't, the window will
