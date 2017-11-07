@@ -7,7 +7,6 @@
     },
     "include": [
       "*.ts", 
-      "jApps/*.d.ts",
       "jMusicScore/*.d.ts",
       "main-process/**/*.ts",
       "../japps/Scripts/typings/jqueryui/jqueryui.d.ts",

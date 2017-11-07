@@ -5,7 +5,9 @@
     import {UI} from "../jApps/Japps.ui";
     import {FinaleUi} from "./FinaleEmulator";
     import {Players} from "./midiEditor";
-    
+
+    import {Application} from "../JApps/application";    
+
     export module JMusicScoreUi {
         /* Abstract toolkit */
 
@@ -18,8 +20,8 @@
             $container: JQuery;
         }
 
-        export class UiContainer<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) {
+        export class UiContainer<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager>) {
             }
 
             public $container: JQuery; // todo: ContainerType;
@@ -46,20 +48,20 @@
 
         /* tools using JQuery */
 
-        export class MenuPlugin<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> implements JApps.Application.IPlugIn<TDocumentType, TStatusManager> {
-            init(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) {
+        export class MenuPlugin<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IPlugIn<TDocumentType, TStatusManager> {
+            init(app: Application.AbstractApplication<TDocumentType, TStatusManager>) {
                 this.app = app;
                 var obj = this.getMenuObj(app);
                 this.menuAddItem(obj/*, 0*/);
             }
 
-            private app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>;
+            private app: Application.AbstractApplication<TDocumentType, TStatusManager>;
 
             getId(): string {
                 return "Menu";
             }
 
-            getMenuObj(app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>): IMenuDef {
+            getMenuObj(app: Application.AbstractApplication<TDocumentType, TStatusManager>): IMenuDef {
                 return null;
             }
 
@@ -148,8 +150,8 @@
             }
         }
 
-        export class Dialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> extends UiContainer<TDocumentType, TStatusManager> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) {
+        export class Dialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> extends UiContainer<TDocumentType, TStatusManager> {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager>) {
                 super(idPrefix, app);
                 this.createDialogElement();
             }
@@ -457,8 +459,8 @@
             }
         }
 
-        export class FileDialog<TDocumentType extends JApps.Application.IAppDoc, TStatusManager extends JApps.Application.IStatusManager> extends Dialog<TDocumentType, TStatusManager> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<TDocumentType, TStatusManager>) {
+        export class FileDialog<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> extends Dialog<TDocumentType, TStatusManager> {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<TDocumentType, TStatusManager>) {
                 super(idPrefix, app);
                 this.dialogId = "FileDialog";
                 this.dialogTitle = "Select file";
@@ -514,8 +516,8 @@
             }
         }
 
-        export class OpenFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager> extends FileDialog<DocumentType, StatusManager> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<DocumentType, StatusManager>) {
+        export class OpenFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager> extends FileDialog<DocumentType, StatusManager> {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager>) {
                 super(idPrefix, app);
                 this.dialogId = "OpenFileDialog";
                 this.dialogTitle = "Open file";
@@ -533,8 +535,8 @@
             }
         }
 
-        export class SaveFileDialog<DocumentType extends JApps.Application.IAppDoc, StatusManager extends JApps.Application.IStatusManager> extends FileDialog<DocumentType, StatusManager> {
-            constructor(public idPrefix: string, public app: JApps.Application.AbstractApplication<DocumentType, StatusManager>) {
+        export class SaveFileDialog<DocumentType extends Application.IAppDoc, StatusManager extends Application.IStatusManager> extends FileDialog<DocumentType, StatusManager> {
+            constructor(public idPrefix: string, public app: Application.AbstractApplication<DocumentType, StatusManager>) {
                 super(idPrefix, app);
                 this.dialogId = "SaveFileDialog";
                 this.dialogTitle = "Save file";
@@ -615,7 +617,7 @@
             constructor() {
                 super();
             }
-            getMenuObj(app: JApps.Application.AbstractApplication<Model.IScore, ScoreApplication.ScoreStatusManager>): IMenuDef {
+            getMenuObj(app: Application.AbstractApplication<Model.IScore, ScoreApplication.ScoreStatusManager>): IMenuDef {
                 return {
                     id: "FileMenu",
                     caption: "File",
@@ -1727,14 +1729,14 @@
             }
         }
 
-        export class PianoPlugIn implements ScoreApplication.IScorePlugin, JApps.Application.IFeedbackClient { // todo: change sizing of clientArea etc.
+        export class PianoPlugIn implements ScoreApplication.IScorePlugin, Application.IFeedbackClient { // todo: change sizing of clientArea etc.
             init(app: ScoreApplication.IScoreApplication) {
                 var $root = (<any>$('<div>').addClass('piano').appendTo('#footer'));
                 this.createPianoKeyboard($root, { tgWidth: 40 }, app);
                 app.FeedbackManager.registerClient(this);
             }
 
-            public changed(status: JApps.Application.IStatusManager, key: string, val: any) {
+            public changed(status: Application.IStatusManager, key: string, val: any) {
                 if (key === "pressKey") {
                     $('#tast' + (<Model.Pitch>val).toMidi()).addClass('down');
                     //$('.staffTitleArea:first').text('#tast' + (<Model.Pitch>val).toMidi());

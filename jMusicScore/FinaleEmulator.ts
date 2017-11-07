@@ -4,6 +4,7 @@
     import {Views, ScoreApplication} from "./jMusicScore.Views";
     import {UI} from "../jApps/Japps.ui";
     import {Validators} from "./validators";
+    import{Application} from "../jApps/application";
 
     export module FinaleUi {
 
@@ -470,8 +471,8 @@ Restore all pitch keys to normal register K (with Caps Lock)
             }
         }
 
-        class FinaleSmartEdit implements JApps.Application.IFeedbackClient, ScoreApplication.IScoreEventProcessor {
-            changed(status: JApps.Application.IStatusManager, key: string, val: any) {
+        class FinaleSmartEdit implements Application.IFeedbackClient, ScoreApplication.IScoreEventProcessor {
+            changed(status: Application.IStatusManager, key: string, val: any) {
                 if (key === "currentNote") {
                     // flyt denne til 
                 }

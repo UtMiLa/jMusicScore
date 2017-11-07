@@ -5,13 +5,15 @@ import {MusicSpacing} from "./jMusicScore.Spacing";
 import {emmentalerNotes} from "./emmentaler";
 import {Commands} from "./commands";
 
-    export module ScoreApplication {
-        export interface IScoreApplication extends JApps.Application.AbstractApplication<Model.IScore, ScoreStatusManager> { }
-        export interface IScorePlugin extends JApps.Application.IPlugIn<Model.IScore, ScoreStatusManager> { }
-        export interface IScoreEventProcessor extends JApps.Application.IEventProcessor<Model.IScore, ScoreStatusManager> { }
-        export interface IScoreDesigner extends JApps.Application.IDesigner<Model.IScore, ScoreStatusManager> { }
+import {Application} from "../JApps/application";
 
-        export interface IMessage extends JApps.Application.IMessage {
+    export module ScoreApplication {
+        export interface IScoreApplication extends Application.AbstractApplication<Model.IScore, ScoreStatusManager> { }
+        export interface IScorePlugin extends Application.IPlugIn<Model.IScore, ScoreStatusManager> { }
+        export interface IScoreEventProcessor extends Application.IEventProcessor<Model.IScore, ScoreStatusManager> { }
+        export interface IScoreDesigner extends Application.IDesigner<Model.IScore, ScoreStatusManager> { }
+
+        export interface IMessage extends Application.IMessage {
             note?: Model.INote;
             pitch?: Model.Pitch;
             head?: Model.INotehead;
@@ -23,12 +25,12 @@ import {Commands} from "./commands";
         }
 
 
-        export class ScoreStatusManager implements JApps.Application.IStatusManager {
+        export class ScoreStatusManager implements Application.IStatusManager {
             constructor() { }
 
-            private feedbackManager: JApps.Application.IFeedbackManager;
+            private feedbackManager: Application.IFeedbackManager;
 
-            public setFeedbackManager(f: JApps.Application.IFeedbackManager): void {
+            public setFeedbackManager(f: Application.IFeedbackManager): void {
                 this.feedbackManager = f;
             }
 
@@ -493,7 +495,7 @@ import {Commands} from "./commands";
 
         /** Responsible for making event handlers on DOM (SVG/HTML) sensors */
         export class DomCheckSensorsVisitor implements Model.IVisitor { // todo: remove event handlers when inactive
-            constructor(public sensorEngine: ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: JApps.Application.IEventReceiver) {
+            constructor(public sensorEngine: ISensorGraphicsEngine, private score: Model.IScore, private eventReceiver: Application.IEventReceiver) {
             }
 
             visitNoteHead(head: Model.INotehead, spacing: Model.INoteHeadSpacingInfo) {
@@ -1103,7 +1105,7 @@ import {Commands} from "./commands";
             }
         }
 
-        export class DomFeedbackClient implements JApps.Application.IFeedbackClient {
+        export class DomFeedbackClient implements Application.IFeedbackClient {
             constructor(private sensorEngine: Views.ISensorGraphicsEngine) { }
             changed(status: ScoreApplication.ScoreStatusManager, key: string, val: any) {
                 if (key === "currentNote" || key === "currentPitch") {
@@ -1809,14 +1811,14 @@ import {Commands} from "./commands";
             }
         }
 
-        class HintAreaDesigner implements ScoreApplication.IScoreDesigner, JApps.Application.IFeedbackClient {
+        class HintAreaDesigner implements ScoreApplication.IScoreDesigner, Application.IFeedbackClient {
             constructor(private app: ScoreApplication.IScoreApplication, private svgHelper: IHintAreaCreator) {
                 app.FeedbackManager.registerClient(this);
             }
 
             private staffButtons: IHintArea[] = [];
 
-            public changed(status: JApps.Application.IStatusManager, key: string, val: any) {
+            public changed(status: Application.IStatusManager, key: string, val: any) {
                 if (key === 'currentVoice') {
                     $('.voiceBtn')
                         .css('opacity', '0.5');
@@ -1950,7 +1952,7 @@ import {Commands} from "./commands";
         dialogs (note, head, voice, staff)       
         */
 
-        class SvgWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
+        class SvgWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             constructor(private svgHelper: SvgHelper) { }
 
             init(app: ScoreApplication.IScoreApplication) {

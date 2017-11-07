@@ -4,7 +4,7 @@ describe("Viewer", function() {
   
     
   beforeEach(function() {
-      app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager>(
+      app = <JMusicScore.ScoreApplication.IScoreApplication>new Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager>(
           //$("#application"),
           new JMusicScore.Model.ScoreElement(null),
           new JMusicScore.ScoreApplication.ScoreStatusManager());

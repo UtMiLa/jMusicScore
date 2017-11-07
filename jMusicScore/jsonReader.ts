@@ -6,10 +6,11 @@
     //import {MusicSpacing} from "./jMusicScore.Spacing";
     //import {emmentalerNotes} from "./emmentaler";
     //import {Commands} from "./commands";
-    
+    import {Application} from "../JApps/application";
+
     export module Json {
 
-        class JsonReader implements JApps.Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
+        class JsonReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
@@ -61,7 +62,7 @@
             }
         }
 
-        class JsonWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
+        class JsonWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             private app: ScoreApplication.IScoreApplication;
 
             init(app: ScoreApplication.IScoreApplication) { this.app = app; }

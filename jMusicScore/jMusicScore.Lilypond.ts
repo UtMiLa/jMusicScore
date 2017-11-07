@@ -10,7 +10,7 @@ import {ScoreApplication} from "./jMusicScore.Views";
 import {Validators} from "./validators";
 //import {UI} from "../jApps/Japps.ui";
 //    import {FinaleUi} from "./FinaleEmulator";
-
+import {Application} from "../JApps/application";
 
 //module JMusicScore {
 
@@ -110,7 +110,7 @@ import {Validators} from "./validators";
             }
         }
 
-        class LilypondReader implements JApps.Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
+        class LilypondReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             private app: ScoreApplication.IScoreApplication;
 
             init(app: ScoreApplication.IScoreApplication) {
@@ -142,7 +142,7 @@ import {Validators} from "./validators";
 
 
 
-        export class LilypondWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
+        export class LilypondWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             constructor() {
             }
 

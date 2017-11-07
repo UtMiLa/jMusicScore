@@ -7,13 +7,14 @@
     //import {MusicSpacing} from "./jMusicScore.Spacing";
     //import {emmentalerNotes} from "./emmentaler";
     //import {Commands} from "./commands";
+    import {Application} from "../JApps/application";
 
         export module Editors {
 
         export class MidiHelper {
-            constructor(private eventReceiver: JApps.Application.IEventReceiver) { }
+            constructor(private eventReceiver: Application.IEventReceiver) { }
 
-            private trigger(eventtype: string, event: JApps.Application.IMessage) {
+            private trigger(eventtype: string, event: Application.IMessage) {
                 //var eventtype: string = event.type;
                 this.eventReceiver.processEvent(eventtype.toLowerCase(), event);
             }
@@ -172,7 +173,7 @@
         export class MidiInputPlugin implements ScoreApplication.IScorePlugin {
             private static _midiHelper: MidiHelper;
 
-            public static getMidiHelper(app: JApps.Application.IEventReceiver): MidiHelper {
+            public static getMidiHelper(app: Application.IEventReceiver): MidiHelper {
                 if (!this._midiHelper) this._midiHelper = new MidiHelper(app);
                 return this._midiHelper;
             }

@@ -3,9 +3,10 @@
     import {Commands} from "./commands";
     import {Views, ScoreApplication} from "./jMusicScore.Views";
     //import {UI} from "../jApps/Japps.ui";
+    import {Application} from "../JApps/application";
 
     export module Validators {
-        export interface IScoreValidator extends JApps.Application.IValidator<Model.IScore, ScoreApplication.ScoreStatusManager> {}
+        export interface IScoreValidator extends Application.IValidator<Model.IScore, ScoreApplication.ScoreStatusManager> {}
 
         export class UpdateBarsValidator implements IScoreValidator {
             public validate(app: ScoreApplication.IScoreApplication) {

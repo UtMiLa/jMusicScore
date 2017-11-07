@@ -6,6 +6,7 @@
     import {Validators} from "./validators";
     //import {UI} from "../jApps/Japps.ui";
 //    import {FinaleUi} from "./FinaleEmulator";
+import {Application} from "../JApps/application";
 
     export module MusicXml {
 
@@ -129,7 +130,7 @@
             partStaves: Model.IStaff[];
         }
 
-        class MusicXmlReader implements JApps.Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
+        class MusicXmlReader implements Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             private app: ScoreApplication.IScoreApplication;
 
             init(app: ScoreApplication.IScoreApplication) {
@@ -638,7 +639,7 @@
 
 
 
-        export class MusicXmlWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
+        export class MusicXmlWriter implements Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             constructor() {
             }
 

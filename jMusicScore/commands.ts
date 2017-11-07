@@ -1,6 +1,7 @@
 ﻿//module JMusicScore {
     import {Model} from "./jMusicScore";
     import {Views, ScoreApplication} from "./jMusicScore.Views";
+    import{Application} from "../jApps/application";
 
     export module Commands {
 
@@ -120,7 +121,7 @@
 
         }
 
-        export interface IScoreCommand extends JApps.Application.ICommand<Model.IScore, ScoreApplication.ScoreStatusManager> {}
+        export interface IScoreCommand extends Application.ICommand<Model.IScore, ScoreApplication.ScoreStatusManager> {}
 
         export interface IMacroCommand {
             commandName: string;

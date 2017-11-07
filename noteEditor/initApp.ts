@@ -1,5 +1,6 @@
-﻿
-module JMusicScore {
+﻿import {Application} from "../JApps/application";
+
+export module JMusicScore {
 
     class MusicConfiguration extends JApps.Configuration.ConfigurationManager<Model.IScore, ScoreApplication.ScoreStatusManager> {
         constructor(app: ScoreApplication.IScoreApplication) {
@@ -31,7 +32,7 @@ module JMusicScore {
         }
     }
 
-    var app = <ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager>(
+    var app = <ScoreApplication.IScoreApplication>new Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager>(
         new Model.ScoreElement(null),
         new ScoreApplication.ScoreStatusManager());
 

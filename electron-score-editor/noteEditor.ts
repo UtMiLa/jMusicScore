@@ -1,9 +1,24 @@
 // / <reference path="jApps/jApps.d.ts" />
 // / <reference path="jMusicScore/jMusicScore.d.ts" />
 // / <reference path="../JApps/Scripts/typings/jquery/jquery.d.ts" />
-//var JApps = import("jApps/jApps");
+import{Application} from "../jApps/application";
+import{Configuration} from "../jApps/Configuration";
+import {ScoreApplication} from "../jMusicScore/jMusicScore.Views";
+import {Model} from "../jMusicScore/jMusicScore";
 
-module JMusicScore {
+import {MusicXml} from "../jMusicScore/jMusicScore.MusicXml";
+import {Lilypond} from "../jMusicScore/jMusicScore.Lilypond";
+import {Json} from "../jMusicScore/jsonReader";
+import {Validators} from "../jMusicScore/validators";
+import {GhostElements} from "../jMusicScore/ghostElements";
+
+
+const JApps = {
+    Configuration: Configuration,
+    Application: Application
+}
+
+export module JMusicScore {
     
         class MusicConfiguration extends JApps.Configuration.ConfigurationManager<Model.IScore, ScoreApplication.ScoreStatusManager> {
             constructor(app: ScoreApplication.IScoreApplication) {
@@ -11,16 +26,16 @@ module JMusicScore {
     
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("MusicXml", MusicXml.MusicXmlPlugin));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("Lilypond", Lilypond.LilypondPlugin));
-                this.addConfiguration(new JApps.Configuration.PluginConfiguration("JSON", Model.JsonPlugin));
-                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("Update Bars", Model.UpdateBarsValidator));
-                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("CreateTimelineValidator", Model.CreateTimelineValidator));
-                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("JoinNotesValidator", Model.JoinNotesValidator));
-                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("SplitNotesValidator", Model.SplitNotesValidator));
-                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("BeamValidator", Model.BeamValidator));
-                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("TieValidator", Model.TieValidator));
-                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateAccidentals", Model.UpdateAccidentalsValidator));
+                this.addConfiguration(new JApps.Configuration.PluginConfiguration("JSON", Json.JsonPlugin));
+                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("Update Bars", Validators.UpdateBarsValidator));
+                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("CreateTimelineValidator", Validators.CreateTimelineValidator));
+                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("JoinNotesValidator", Validators.JoinNotesValidator));
+                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("SplitNotesValidator", Validators.SplitNotesValidator));
+                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("BeamValidator", Validators.BeamValidator));
+                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("TieValidator", Validators.TieValidator));
+                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateAccidentals", Validators.UpdateAccidentalsValidator));
                 this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("GhostsValidator", GhostElements.GhostsValidator));
-                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateBarsValidator", Model.UpdateBarsValidator));
+                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateBarsValidator", Validators.UpdateBarsValidator));
     
                 this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Aspx handler", () => { return new JApps.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"); }));
                 this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("PHP handler", () => { return new JApps.IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
@@ -35,7 +50,7 @@ module JMusicScore {
             }
         }
     
-        var app = <ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager>(
+        var app = <ScoreApplication.IScoreApplication>new Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager>(
             new Model.ScoreElement(null),
             new ScoreApplication.ScoreStatusManager());
     
@@ -386,8 +401,8 @@ var JMusicScore;
             return _this;
         }
         return MusicConfiguration;
-    }(JApps.Configuration.ConfigurationManager));
-    var app = new JApps.Application.AbstractApplication(new JMusicScore.Model.ScoreElement(null), new JMusicScore.ScoreApplication.ScoreStatusManager());
+    }(Configuration.ConfigurationManager));
+    var app = new Application.AbstractApplication(new JMusicScore.Model.ScoreElement(null), new JMusicScore.ScoreApplication.ScoreStatusManager());
     var mus = {
         "id": "89", "t": "Score", "def": { "metadata": {} },
         "children": [
