@@ -1,4 +1,4 @@
-﻿module JApps.UI {
+﻿export module UI {
 
     export enum ActionType { execute, check, radio }
 

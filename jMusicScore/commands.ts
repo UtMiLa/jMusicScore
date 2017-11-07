@@ -1,5 +1,8 @@
-﻿module JMusicScore {
-    export module Model {
+﻿//module JMusicScore {
+    import {Model} from "./jMusicScore";
+    import {Views, ScoreApplication} from "./jMusicScore.Views";
+
+    export module Commands {
 
         export class MacroExporter {
             //todo: StemDirectionType, NoteDecorationKind, ClefDefinition, IMeterDefinition, IKeyDefinition
@@ -22,19 +25,19 @@
             static exportString(s: string): string {
                 return JSON.stringify(s); // `"${s}"`; // todo: escape "
             }
-            static exportPitch(pitch: Pitch): string {
+            static exportPitch(pitch: Model.Pitch): string {
                 return `new JMusicScore.Model.Pitch(${pitch.pitch},'${pitch.alteration}')`;
             }
-            static exportTimespan(timespan: TimeSpan): string {
+            static exportTimespan(timespan: Model.TimeSpan): string {
                 return `new JMusicScore.Model.TimeSpan(${timespan.numerator},${timespan.denominator})`;
             }
-            static exportTime(time: AbsoluteTime): string {
+            static exportTime(time: Model.AbsoluteTime): string {
                 return `new JMusicScore.Model.AbsoluteTime(${time.numerator},${time.denominator})`;
             }
-            static exportRational(rat: Rational): string {
+            static exportRational(rat: Model.Rational): string {
                 return `new JMusicScore.Model.Rational(${rat.numerator},${rat.denominator})`;
             }
-            static exportTuplet(tupletDef: TupletDef): any {
+            static exportTuplet(tupletDef: Model.TupletDef): any {
                 return `new JMusicScore.Model.TupletDef(${this.exportTimespan(tupletDef.fullTime)}, ${this.exportRational(tupletDef.fraction)})`;
             }
 
@@ -53,19 +56,19 @@
                     return "app.document";
                 }
                 if (elmName === "Staff") {
-                    index = (<Model.IStaff>elm).parent.staffElements.indexOf(<IStaff>elm);
+                    index = (<Model.IStaff>elm).parent.staffElements.indexOf(<Model.IStaff>elm);
                     return this.exportMusicElm(elm.parent) + '.staffElements[' + index + ']';
                 }
                 if (elmName === "Voice") {
-                    index = (<Model.IVoice>elm).parent.voiceElements.indexOf(<IVoice>elm);
+                    index = (<Model.IVoice>elm).parent.voiceElements.indexOf(<Model.IVoice>elm);
                     return this.exportMusicElm(elm.parent) + '.voiceElements[' + index + ']';
                 }
                 if (elmName === "Note") {
-                    index = (<Model.INote>elm).parent.noteElements.indexOf(<INote>elm);
+                    index = (<Model.INote>elm).parent.noteElements.indexOf(<Model.INote>elm);
                     return this.exportMusicElm(elm.parent) + '.noteElements[' + index + ']';
                 }
                 if (elmName === "Notehead") {
-                    index = (<Model.INotehead>elm).parent.noteheadElements.indexOf(<INotehead>elm);
+                    index = (<Model.INotehead>elm).parent.noteheadElements.indexOf(<Model.INotehead>elm);
                     return this.exportMusicElm(elm.parent) + '.noteheadElements[' + index + ']';
                 }
                 
@@ -92,13 +95,13 @@
                     } else {
                         if (arg.getElementName) {
                             // MusicElement
-                            return this.exportMusicElm(<IMusicElement>arg);
+                            return this.exportMusicElm(<Model.IMusicElement>arg);
                         } else {
                             // non-musicElement object
-                            if (arg instanceof Pitch) return this.exportPitch(arg);
-                            if (arg instanceof TimeSpan) return this.exportTimespan(arg);
-                            if (arg instanceof AbsoluteTime) return this.exportTime(arg);
-                            if (arg instanceof TupletDef) return this.exportTuplet(arg);
+                            if (arg instanceof Model.Pitch) return this.exportPitch(arg);
+                            if (arg instanceof Model.TimeSpan) return this.exportTimespan(arg);
+                            if (arg instanceof Model.AbsoluteTime) return this.exportTime(arg);
+                            if (arg instanceof Model.TupletDef) return this.exportTuplet(arg);
                             
                             return "OBJECT";
                         }
@@ -117,7 +120,7 @@
 
         }
 
-        export interface IScoreCommand extends JApps.Application.ICommand<IScore, ScoreApplication.ScoreStatusManager> {}
+        export interface IScoreCommand extends JApps.Application.ICommand<Model.IScore, ScoreApplication.ScoreStatusManager> {}
 
         export interface IMacroCommand {
             commandName: string;
@@ -163,7 +166,7 @@
 
             /* args:
             */
-            private memento: IMemento;
+            private memento: Model.IMemento;
 
             execute(app: ScoreApplication.IScoreApplication) {
                 this.memento = app.document.getMemento();
@@ -171,30 +174,30 @@
             }
 
             undo(app: ScoreApplication.IScoreApplication) {
-                app.document = <IScore>MusicElementFactory.recreateElement(null, this.memento);
+                app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, this.memento);
             }
         }
 
         export interface IAddNoteArgs {
             noteName: string; /* '1_4' */
-            noteTime: TimeSpan;
+            noteTime: Model.TimeSpan;
             rest: boolean;
             dots: number;
             grace: boolean;
-            pitches: Pitch[];
-            voice: IVoice;
-            absTime: AbsoluteTime;
-            beforeNote?: INote;
-            tuplet?: TupletDef;
+            pitches: Model.Pitch[];
+            voice: Model.IVoice;
+            absTime: Model.AbsoluteTime;
+            beforeNote?: Model.INote;
+            tuplet?: Model.TupletDef;
         }
         export class AddNoteCommand implements IScoreCommand {
             constructor(private args: IAddNoteArgs) { }
 
             // todo: fjern absTime eller beforeNote
-            private note: INote;
+            private note: Model.INote;
 
             public execute(app: ScoreApplication.IScoreApplication) {
-                this.note = Music.addNote(this.args.voice, this.args.rest ? NoteType.Rest : NoteType.Note, this.args.absTime, 'n' + this.args.noteName, this.args.noteTime,
+                this.note = Model.Music.addNote(this.args.voice, this.args.rest ? Model.NoteType.Rest : Model.NoteType.Note, this.args.absTime, 'n' + this.args.noteName, this.args.noteTime,
                     this.args.beforeNote, true, this.args.dots, this.args.tuplet);
                 if (this.args.grace) this.note.graceType = "normal";
 
@@ -210,13 +213,13 @@
         }
 
         export interface IDeleteNoteArgs {
-            note: INote;
+            note: Model.INote;
         }
         export class DeleteNoteCommand implements IScoreCommand {
             constructor(private args: IDeleteNoteArgs) { }
             
-            private memento: IMemento;
-            private voice: IVoice;
+            private memento: Model.IMemento;
+            private voice: Model.IVoice;
 
             execute(app: ScoreApplication.IScoreApplication) {
                 this.memento = this.args.note.getMemento();
@@ -225,19 +228,19 @@
             }
 
             public undo(app: ScoreApplication.IScoreApplication) {
-                var note = MusicElementFactory.recreateElement(this.voice, this.memento);
+                var note = Model.MusicElementFactory.recreateElement(this.voice, this.memento);
             }
 
         }
 
         export class DeleteNoteheadCommand implements IScoreCommand {
-            constructor(private args: { head:INotehead }) { }
+            constructor(private args: { head:Model.INotehead }) { }
 
             /* args:
             head
             */
-            private memento: IMemento;
-            private note: INote;
+            private memento: Model.IMemento;
+            private note: Model.INote;
 
             execute(app: ScoreApplication.IScoreApplication) {
                 var head = this.args.head;
@@ -247,12 +250,12 @@
             }
 
             undo(app: ScoreApplication.IScoreApplication) {
-                MusicElementFactory.recreateElement(this.note, this.memento);
+                Model.MusicElementFactory.recreateElement(this.note, this.memento);
             }
         }
 
         export class SetVoiceStemDirectionCommand implements IScoreCommand {
-            constructor(private args: { voice: IVoice; direction: StemDirectionType; }) { }
+            constructor(private args: { voice: Model.IVoice; direction: Model.StemDirectionType; }) { }
 
             private oldDirection: Model.StemDirectionType;
 
@@ -270,7 +273,7 @@
         }
 
         export class SetNoteStemDirectionCommand implements IScoreCommand {
-            constructor(private args: { note: INote; direction: any; }) { }
+            constructor(private args: { note: Model.INote; direction: any; }) { }
 
             /* args:
             note
@@ -288,13 +291,13 @@
                     note.setStemDirection(<Model.StemDirectionType>direction);
                 }
                 else if (direction === "UP") {
-                    note.setStemDirection(StemDirectionType.StemUp);
+                    note.setStemDirection(Model.StemDirectionType.StemUp);
                 }
                 else if (direction === "DOWN") {
-                    note.setStemDirection(StemDirectionType.StemDown);
+                    note.setStemDirection(Model.StemDirectionType.StemDown);
                 }
                 else {
-                    note.setStemDirection(StemDirectionType.StemFree);
+                    note.setStemDirection(Model.StemDirectionType.StemFree);
                 }
             }
 
@@ -305,11 +308,11 @@
         }
 
         export interface INoteDurationArgs {
-            note: INote;
+            note: Model.INote;
             noteId: string;
-            timeVal: TimeSpan;
+            timeVal: Model.TimeSpan;
             dots: number;
-            tuplet?: TupletDef;
+            tuplet?: Model.TupletDef;
         }
         export class SetNoteDurationCommand implements IScoreCommand {
             constructor(private args: INoteDurationArgs) { }
@@ -343,7 +346,7 @@
         }
 
         export class AddNoteheadCommand implements IScoreCommand {
-            constructor(private args: { note: INote; pitch: Pitch; }) { }
+            constructor(private args: { note: Model.INote; pitch: Model.Pitch; }) { }
 
             //private noteMemento: IMemento;
 
@@ -361,7 +364,7 @@
                 /*note.parent.removeChild(note); // todo: what if other commands in undo stack refer to note?
                 this.args.note = <Model.INote>Model.MusicElementFactory.RecreateElement(note.parent, this.noteMemento);*/
                 if (note.matchesPitch(pitch, true) || note.rest) {
-                    note.withHeads((head: INotehead) => {
+                    note.withHeads((head: Model.INotehead) => {
                         if (head.matchesPitch(pitch, false)) {
                             note.removeChild(head);
                         }
@@ -372,10 +375,10 @@
         }
 
         export class RemoveNoteheadCommand implements IScoreCommand {
-            constructor(private args: { head: INotehead; }) { }
+            constructor(private args: { head: Model.INotehead; }) { }
 
-            private head: INotehead;
-            private note: INote;
+            private head: Model.INotehead;
+            private note: Model.INote;
 
             public execute(app: ScoreApplication.IScoreApplication) {
                 var head = this.args.head;
@@ -399,13 +402,13 @@
         }
 
         export interface ISetPitchCommand {
-            head: INotehead;
-            pitch: Pitch;
+            head: Model.INotehead;
+            pitch: Model.Pitch;
         }
         export class SetPitchCommand implements IScoreCommand {
             constructor(private args: ISetPitchCommand) { }
 
-            private oldPitch: Pitch;
+            private oldPitch: Model.Pitch;
 
             public execute(app: ScoreApplication.IScoreApplication) {
                 this.oldPitch = this.args.head.pitch;
@@ -420,7 +423,7 @@
         }
 
         export class RaisePitchAlterationCommand implements IScoreCommand {
-            constructor(private args: { head: INotehead; absAlteration?: string; deltaAlteration?: number }) { }
+            constructor(private args: { head: Model.INotehead; absAlteration?: string; deltaAlteration?: number }) { }
 
             /* args:
             head (Element)
@@ -447,13 +450,13 @@
         }
 
         export class AddNoteDecorationCommand implements IScoreCommand {
-            constructor(private args: { note: INote; expression: NoteDecorationKind; placement: string; }) { }
+            constructor(private args: { note: Model.INote; expression: Model.NoteDecorationKind; placement: string; }) { }
 
-            private theDeco: INoteDecorationElement;
+            private theDeco: Model.INoteDecorationElement;
 
             public execute(app: ScoreApplication.IScoreApplication) {
                 var note = this.args.note;
-                this.theDeco = new NoteDecorationElement(note, this.args.expression);
+                this.theDeco = new Model.NoteDecorationElement(note, this.args.expression);
                 this.theDeco.placement = this.args.placement;
                 note.addChild(note.decorationElements, this.theDeco);
             }
@@ -468,10 +471,10 @@
         export class UpdateStaffCommand implements IScoreCommand {
             constructor(
                 private args: {
-                    staff: IStaff;
+                    staff: Model.IStaff;
                     index: number;
                     title: string;
-                    initClef?: ClefDefinition;
+                    initClef?: Model.ClefDefinition;
                 }) {
             }
 
@@ -484,7 +487,7 @@
             */
             private oldIndex: number;
             private oldTitle: string;
-            private oldClef: ClefDefinition;
+            private oldClef: Model.ClefDefinition;
 
             public execute(app: ScoreApplication.IScoreApplication) {
                 var staff = this.args.staff;
@@ -494,13 +497,13 @@
                     staff.title = this.args.title;
                 }
                 // staff order
-                ScoreElement.placeInOrder(app.document, staff, this.args.index);
+                Model.ScoreElement.placeInOrder(app.document, staff, this.args.index);
             }
 
             public undo(app: ScoreApplication.IScoreApplication) {
                 var staff = this.args.staff;
                 staff.title = this.oldTitle;
-                ScoreElement.placeInOrder(app.document, staff, this.oldIndex);
+                Model.ScoreElement.placeInOrder(app.document, staff, this.oldIndex);
             }
         }
 
@@ -508,7 +511,7 @@
             constructor(private args: {
                 index: number;
                 title: string;
-                initClef: ClefDefinition;
+                initClef: Model.ClefDefinition;
             }) { }
 
             /* args:
@@ -518,14 +521,14 @@
             // StaffType (TAB/singleline etc)
             */
 
-            private theStaff: IStaff;
+            private theStaff: Model.IStaff;
 
             public execute(app: ScoreApplication.IScoreApplication) {
                 var initClef = this.args.initClef;
                 this.theStaff = app.document.addStaff(initClef);
                 this.theStaff.title = this.args.title;
                 this.theStaff.addVoice();
-                ScoreElement.placeInOrder(app.document, this.theStaff, this.args.index);
+                Model.ScoreElement.placeInOrder(app.document, this.theStaff, this.args.index);
             }
 
             public undo(app: ScoreApplication.IScoreApplication) {
@@ -536,7 +539,7 @@
 
         export class TieNoteheadCommand implements IScoreCommand {
             constructor(private args: {
-                head: INotehead;
+                head: Model.INotehead;
                 forced?: boolean;
                 remove?: boolean;
                 toggle: boolean;
@@ -568,7 +571,7 @@
 
         export class TieNoteCommand implements IScoreCommand {
             constructor(private args: {
-                note: INote;
+                note: Model.INote;
                 forced?: boolean;
                 remove?: boolean;
                 toggle: boolean;
@@ -584,7 +587,7 @@
             public execute(app: ScoreApplication.IScoreApplication) {
                 var note = this.args.note;
                 var forced = this.args.forced || false;
-                note.withHeads((head: INotehead, index: number) => {
+                note.withHeads((head: Model.INotehead, index: number) => {
                     var remove = this.args.remove || (this.args.toggle && head.tie);
                     if (remove) {
                         //TieNoteheadCommand.RemoveTie(head);
@@ -609,9 +612,9 @@
             */
 
             public execute(app: ScoreApplication.IScoreApplication) {
-                var meter = <IMeterDefinition>this.args.meter;
-                var absTime = <AbsoluteTime>this.args.absTime;
-                var staff = <IStaff>this.args.staff;
+                var meter = <Model.IMeterDefinition>this.args.meter;
+                var absTime = <Model.AbsoluteTime>this.args.absTime;
+                var staff = <Model.IStaff>this.args.staff;
                 if (staff) {
                     // staff meter
                     staff.setMeter(meter, absTime);
@@ -625,9 +628,9 @@
 
         export class SetKeyCommand implements IScoreCommand { // todo: KeyDefinition
             constructor(private args: {
-                key: IKeyDefinition;
-                absTime: AbsoluteTime;
-                staff?: IStaff;
+                key: Model.IKeyDefinition;
+                absTime: Model.AbsoluteTime;
+                staff?: Model.IStaff;
             }) { }
 
             /* args:
@@ -650,9 +653,9 @@
 
         export class SetClefCommand implements IScoreCommand {
             constructor(private args: {
-                clef: ClefDefinition;
-                absTime: AbsoluteTime;
-                staff: IStaff;
+                clef: Model.ClefDefinition;
+                absTime: Model.AbsoluteTime;
+                staff: Model.IStaff;
             }) { }
 
             /* args:
@@ -675,4 +678,4 @@
         //Voice setStemDirection
         //ClefElement setclef
     }
-}
+//}

@@ -1,4 +1,11 @@
-﻿module JMusicScore {
+﻿//module JMusicScore {
+    import {Model} from "./jMusicScore";
+    //import {Commands} from "./commands";
+    import {ScoreApplication} from "./jMusicScore.Views";    
+    import {Validators} from "./validators";
+    //import {UI} from "../jApps/Japps.ui";
+//    import {FinaleUi} from "./FinaleEmulator";
+    
     export module GhostElements {
         
         export class GhostMeterElement extends Model.MusicElement<Model.IMeterSpacingInfo> implements Model.IMeter {
@@ -39,7 +46,7 @@
 
         //export class GhostVoiceElement { }
 
-        export class GhostsValidator implements Model.IScoreValidator {
+        export class GhostsValidator implements Validators.IScoreValidator {
             private addGhostMeter(staff: Model.IStaff, meter: Model.IMeter) {
                 // tjek om der er ghostMeter til denne kombination af meter og staff
                 var ghostMeter = new GhostMeterElement(staff, meter);
@@ -88,4 +95,4 @@
         }
 
     }
-}
+//}

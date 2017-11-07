@@ -1,4 +1,3 @@
-namespace JApps {
     export module Application {
 
         /** Every external plugin to application must implement this interface */
@@ -447,4 +446,3 @@ namespace JApps {
             }
         }*/
     }
-}

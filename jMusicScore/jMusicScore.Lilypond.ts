@@ -1,9 +1,18 @@
-﻿/// <reference path="jMusicScore.ts"/>
-/// <reference path="jMusicScore.UI.ts"/>
-/// <reference path="jMusicScore.Spacing.ts"/>
-/// <reference path="emmentaler.ts"/>
-/// <reference path="commands.ts"/>
-module JMusicScore {
+﻿// / <reference path="jMusicScore.ts"/>
+// / <reference path="jMusicScore.UI.ts"/>
+// / <reference path="jMusicScore.Spacing.ts"/>
+// / <reference path="emmentaler.ts"/>
+// / <reference path="commands.ts"/>
+
+import {Model} from "./jMusicScore";
+//import {Commands} from "./commands";
+import {ScoreApplication} from "./jMusicScore.Views";    
+import {Validators} from "./validators";
+//import {UI} from "../jApps/Japps.ui";
+//    import {FinaleUi} from "./FinaleEmulator";
+
+
+//module JMusicScore {
 
     /*
     Eksport: format
@@ -302,4 +311,4 @@ module JMusicScore {
             }
         }
     }
-}
+//}

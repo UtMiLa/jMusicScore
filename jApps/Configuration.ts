@@ -1,5 +1,5 @@
-﻿//import {Application} from './application';
-namespace JApps {
+﻿import {Application} from './application';
+
 export module Configuration {
     export enum ConfigurationType { ctFileManager, ctPlugin, ctValidator };
 
@@ -121,5 +121,4 @@ export module Configuration {
         }
     }
     
-}
 }

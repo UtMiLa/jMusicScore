@@ -1,7 +1,15 @@
-module JMusicScore {
-    export module Model {
+//module JMusicScore {
 
-        class JsonReader implements JApps.Application.IReaderPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager> {
+    import {Model} from "./jMusicScore";
+    //import {JMusicScoreUi} from "./jMusicScore.UI";
+    import {Views, ScoreApplication} from "./jMusicScore.Views";
+    //import {MusicSpacing} from "./jMusicScore.Spacing";
+    //import {emmentalerNotes} from "./emmentaler";
+    //import {Commands} from "./commands";
+    
+    export module Json {
+
+        class JsonReader implements JApps.Application.IReaderPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             init(app: ScoreApplication.IScoreApplication) {
                 this.app = app;
             }
@@ -34,7 +42,7 @@ module JMusicScore {
                 while (score.staffElements.length)
                     score.removeChild(score.staffElements[0], score.staffElements);
                 
-                this.app.document = <IScore>MusicElementFactory.recreateElement(null, data); // memento format                
+                this.app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, data); // memento format                
             }
         }
 
@@ -53,7 +61,7 @@ module JMusicScore {
             }
         }
 
-        class JsonWriter implements JApps.Application.IWriterPlugIn<ScoreElement, ScoreApplication.ScoreStatusManager> {
+        class JsonWriter implements JApps.Application.IWriterPlugIn<Model.ScoreElement, ScoreApplication.ScoreStatusManager> {
             private app: ScoreApplication.IScoreApplication;
 
             init(app: ScoreApplication.IScoreApplication) { this.app = app; }
@@ -85,4 +93,4 @@ module JMusicScore {
         }
         
     }
-}
+//}

@@ -1,4 +1,9 @@
-module JMusicScore {
+//module JMusicScore {
+import {Model} from "./jMusicScore";
+import {JMusicScoreUi} from "./jMusicScore.UI";
+import {MusicSpacing} from "./jMusicScore.Spacing";
+import {emmentalerNotes} from "./emmentaler";
+import {Commands} from "./commands";
 
     export module ScoreApplication {
         export interface IScoreApplication extends JApps.Application.AbstractApplication<Model.IScore, ScoreStatusManager> { }
@@ -171,9 +176,9 @@ module JMusicScore {
         }
     }
 
-    export module Model {
-        export interface ILongDecorationSpacingInfo extends ISpacingInfo {
-            render?: (deco: ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
+    export module MyModel {
+        export interface ILongDecorationSpacingInfo extends Model.ISpacingInfo {
+            render?: (deco: Model.ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
         }
     }
 
@@ -445,7 +450,7 @@ module JMusicScore {
                 // expr
             }
             static longDrawers: any[] = [TrillDrawer, CrescDrawer, CrescDrawer, SlurDrawer, BracketDrawer, TupletDrawer, OttavaDrawer];
-            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
+            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: MyModel.ILongDecorationSpacingInfo) {
                 // expr
                 if (spacing && ExpressionFactory.longDrawers[deco.type]) {
                     if (!spacing.render) spacing.render = ExpressionFactory.longDrawers[deco.type].Render;
@@ -911,7 +916,7 @@ module JMusicScore {
                             " z", 0, 0, 1, undefined, 'black', 'beam_'+beam.parent.id + '_' + beam.index);
                     }
             }
-            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: Model.ILongDecorationSpacingInfo) {
+            visitLongDecoration(deco: Model.ILongDecorationElement, spacing: MyModel.ILongDecorationSpacingInfo) {
                 if (spacing.render) spacing.render(deco, this.graphEngine);
             }
             visitNoteDecoration(deco: Model.INoteDecorationElement, spacing: Model.INoteDecorationSpacingInfo) {
@@ -2342,12 +2347,12 @@ module JMusicScore {
             public keyPressed(app: ScoreApplication.IScoreApplication, key: string): boolean {
                 if (key === 'DELETE') {
                     if (app.Status.currentNotehead) {
-                        app.executeCommand(new Model.DeleteNoteheadCommand({
+                        app.executeCommand(new Commands.DeleteNoteheadCommand({
                             head: app.Status.currentNotehead
                         }));
                     }
                     else if (app.Status.currentNote) {
-                        app.executeCommand(new Model.DeleteNoteCommand({
+                        app.executeCommand(new Commands.DeleteNoteCommand({
                             note: app.Status.currentNote
                         }));
                     }
@@ -2355,7 +2360,7 @@ module JMusicScore {
                 }
                 else if (key === '+') {
                     if (app.Status.currentNotehead) {
-                        app.executeCommand(new Model.RaisePitchAlterationCommand({
+                        app.executeCommand(new Commands.RaisePitchAlterationCommand({
                             head: app.Status.currentNotehead,
                             deltaAlteration: 1
                         }));
@@ -2364,7 +2369,7 @@ module JMusicScore {
                 else if (key === '-') // -
                 {
                     if (app.Status.currentNotehead) {
-                        app.executeCommand(new Model.RaisePitchAlterationCommand({
+                        app.executeCommand(new Commands.RaisePitchAlterationCommand({
                             head: app.Status.currentNotehead,
                             deltaAlteration: -1
                         }));
@@ -2372,7 +2377,7 @@ module JMusicScore {
                 }
                 else if (key === '=') {
                     if (app.Status.currentNotehead) {
-                        app.executeCommand(new Model.TieNoteheadCommand({
+                        app.executeCommand(new Commands.TieNoteheadCommand({
                             head: app.Status.currentNotehead,
                             toggle: true,
                             forced: false
@@ -2380,7 +2385,7 @@ module JMusicScore {
                     }
                     else
                         if (app.Status.currentNote) {
-                            app.executeCommand(new Model.TieNoteCommand({
+                            app.executeCommand(new Commands.TieNoteCommand({
                                 note: app.Status.currentNote,
                                 forced: false,
                                 toggle: true
@@ -2391,7 +2396,7 @@ module JMusicScore {
                     if (app.Status.currentNote) {
                         var k = NoteDecorations.getIdFromKey(key);
                         if (k) {
-                            app.executeCommand(new Model.AddNoteDecorationCommand({
+                            app.executeCommand(new Commands.AddNoteDecorationCommand({
                                 note: app.Status.currentNote,
                                 placement: "under",
                                 expression: k
@@ -2402,7 +2407,7 @@ module JMusicScore {
                             var note = app.Status.currentNote;
                             if (note) {
                                 //note.setStemDirection(key === "UP" ? Model.StemDirectionType.stemUp : Model.StemDirectionType.stemDown);
-                                app.executeCommand(new Model.SetNoteStemDirectionCommand({
+                                app.executeCommand(new Commands.SetNoteStemDirectionCommand({
                                     note: note,
                                     direction: key
                                 }));
@@ -2419,7 +2424,7 @@ module JMusicScore {
 
             public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 // note dialog
-                var dlg = new Ui.NoteDialog("ed", app);
+                var dlg = new JMusicScoreUi.NoteDialog("ed", app);
                 dlg.setNote(event.note).show();
                 return false;
             }
@@ -2447,7 +2452,7 @@ module JMusicScore {
                 var dots = app.Status.dots;
                 var grace = app.Status.grace;
 
-                var cmd = new Model.AddNoteCommand(
+                var cmd = new Commands.AddNoteCommand(
                     {
                         noteName: this.noteType,
                         noteTime: this.noteTime,
@@ -2479,7 +2484,7 @@ module JMusicScore {
                     if (!note.matchesOnePitch(pitch, true)) {
                         for (var i = 0; i < note.noteheadElements.length; i++) {
                             if (note.noteheadElements[i].matchesPitch(pitch, true)) {
-                                var cmd = new Model.RemoveNoteheadCommand(
+                                var cmd = new Commands.RemoveNoteheadCommand(
                                     {
                                         head: note.noteheadElements[i]
                                     });
@@ -2490,7 +2495,7 @@ module JMusicScore {
                     }
                 }
                 else {
-                    app.executeCommand(new Model.AddNoteheadCommand(
+                    app.executeCommand(new Commands.AddNoteheadCommand(
                         {
                             note: note,
                             pitch: pitch
@@ -2515,7 +2520,7 @@ module JMusicScore {
                 var dots = app.Status.dots;
                 var grace = app.Status.grace;
 
-                var cmd = new Model.AddNoteCommand(
+                var cmd = new Commands.AddNoteCommand(
                     {
                         noteName: this.noteType,
                         noteTime: this.noteTime,
@@ -2691,7 +2696,7 @@ module JMusicScore {
             public clicknote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 this.mouseoutnote(app, event);
                 var note = event.note;
-                app.executeCommand(new Model.DeleteNoteCommand({
+                app.executeCommand(new Commands.DeleteNoteCommand({
                     note: note
                 }));
                 return false;
@@ -2702,13 +2707,13 @@ module JMusicScore {
                 var head = event.head;
                 // todo: slet eneste head bør gøre note til pause
                 if (head.parent.matchesOnePitch(head.getPitch(), true) || head.parent.rest) {
-                    app.executeCommand(new Model.DeleteNoteCommand({
+                    app.executeCommand(new Commands.DeleteNoteCommand({
                         note: head.parent
                     }));
                 }
                 // Hvis node med mange heades: slet denne head
                 else if (head.parent.matchesPitch(head.getPitch(), true) || head.parent.rest) {
-                    app.executeCommand(new Model.DeleteNoteheadCommand({
+                    app.executeCommand(new Commands.DeleteNoteheadCommand({
                         head: head
                     }));
                 }                
@@ -2730,7 +2735,7 @@ module JMusicScore {
             public clickbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 var bar = event.bar;
 
-                var dlg = new Ui.MeterDialog("click", app);
+                var dlg = new JMusicScoreUi.MeterDialog("click", app);
                 dlg.setTime(bar.absTime).show();
 
                 return false;
@@ -2739,7 +2744,7 @@ module JMusicScore {
             public clickmeter(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 var meter = event.meter;
 
-                var dlg = new Ui.MeterDialog("click", app);
+                var dlg = new JMusicScoreUi.MeterDialog("click", app);
                 dlg.setTime(meter.absTime).setMeter(meter.definition).show();
 
                 return false;
@@ -2789,7 +2794,7 @@ module JMusicScore {
             public clickbar(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 var bar = event.bar;
 
-                var dlg = new Ui.KeyDialog("click", app);
+                var dlg = new JMusicScoreUi.KeyDialog("click", app);
                 dlg.setTime(bar.absTime).show();
 
                 return false;
@@ -2798,7 +2803,7 @@ module JMusicScore {
             public clickkey(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 var key = event.keySig;
 
-                var dlg = new Ui.KeyDialog("click", app);
+                var dlg = new JMusicScoreUi.KeyDialog("click", app);
                 dlg.setTime(key.absTime).setKey(key).show();
 
                 return false;
@@ -2849,7 +2854,7 @@ module JMusicScore {
             public clickbeforenote(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 var note = event.note;
 
-                var dlg = new JMusicScore.Ui.ClefDialog("click", app);
+                var dlg = new JMusicScoreUi.ClefDialog("click", app);
                 dlg.setTime(note.absTime).setStaff(note.parent.parent).show();
 
                 return false;
@@ -2858,7 +2863,7 @@ module JMusicScore {
             public clickclef(app: ScoreApplication.IScoreApplication, event: ScoreApplication.IMessage): boolean {
                 var clef = event.clef;
 
-                var dlg = new JMusicScore.Ui.ClefDialog("click", app);
+                var dlg = new JMusicScoreUi.ClefDialog("click", app);
                 dlg.setClef(clef).setTime(clef.absTime).setStaff(clef.parent).show();
 
                 return false;
@@ -2912,7 +2917,7 @@ module JMusicScore {
                 if (!useMusicFonts) {
                     this.setTranslation(x, y);
                 this.context.scale(scale, scale);
-                    this.drawPath(JMusicScore.emmentalerNotes[item], 'black', null);
+                    this.drawPath(emmentalerNotes[item], 'black', null);
                 this.context.scale(1 / scale, 1 / scale);
                     this.setTranslation(-x, -y);
                 }
@@ -3319,4 +3324,3 @@ module JMusicScore {
 
 
     }
-}

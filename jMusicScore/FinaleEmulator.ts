@@ -1,7 +1,13 @@
-﻿module JMusicScore {
+﻿//module JMusicScore {
+    import {Model} from "./jMusicScore";
+    import {Commands} from "./commands";
+    import {Views, ScoreApplication} from "./jMusicScore.Views";
+    import {UI} from "../jApps/Japps.ui";
+    import {Validators} from "./validators";
+
     export module FinaleUi {
 
-        class FillEmptySpaceValidator implements Model.IScoreValidator {
+        class FillEmptySpaceValidator implements Validators.IScoreValidator {
             public validate(app: ScoreApplication.IScoreApplication) {
                 var scoreDuration: Model.AbsoluteTime;
                 if (app.document.bars.length) {
@@ -202,14 +208,14 @@
                         else if (app.Status.currentPitch) {
                             // toggle notehead at insert point
                             if (app.Status.currentNotehead) {
-                                app.executeCommand(new Model.RemoveNoteheadCommand({ head: app.Status.currentNotehead }));
+                                app.executeCommand(new Commands.RemoveNoteheadCommand({ head: app.Status.currentNotehead }));
                                 app.Status.currentNotehead = undefined;
                             }
                             else {
                                 var staffContext = app.Status.currentNote.parent.parent.getStaffContext(app.Status.currentNote.absTime);
                                 var alt = staffContext.key.getFixedAlteration(app.Status.currentPitch.pitch);
                                 var pitch = new Model.Pitch(app.Status.currentPitch.pitch, alt);
-                                app.executeCommand(new Model.AddNoteheadCommand({
+                                app.executeCommand(new Commands.AddNoteheadCommand({
                                     note: app.Status.currentNote,
                                     pitch: pitch
                                 }));
@@ -219,7 +225,7 @@
                 }
                 else if (key === '+' || key === "NUMPAD_ADD" || key === 'S') {//Raise by a half step + (plus) or shift-S
                     if (app.Status.currentNotehead) {
-                        app.executeCommand(new Model.RaisePitchAlterationCommand({
+                        app.executeCommand(new Commands.RaisePitchAlterationCommand({
                             head: app.Status.currentNotehead,
                             deltaAlteration: 1
                         }));
@@ -230,7 +236,7 @@
                 }
                 else if (key === '-' || key === "NUMPAD_SUBTRACT" || key === 'F') {//Lower by a half step – (minus) or shift - F
                     if (app.Status.currentNotehead) {
-                        app.executeCommand(new Model.RaisePitchAlterationCommand({
+                        app.executeCommand(new Commands.RaisePitchAlterationCommand({
                             head: app.Status.currentNotehead,
                             deltaAlteration: -1
                         }));
@@ -241,7 +247,7 @@
                 }
                 else if (key === 'L' || key === "l") { //Flip stem in opposite direction L
                     if (app.Status.currentNote) {
-                        app.executeCommand(new Model.SetNoteStemDirectionCommand({
+                        app.executeCommand(new Commands.SetNoteStemDirectionCommand({
                             note: app.Status.currentNote,
                             direction: app.Status.currentNote.spacingInfo.rev ? "UP" : "DOWN"
                         }));
@@ -249,7 +255,7 @@
                 }
                 else if (key === 'CTRL-l' || key === 'ALT-l') { //Restore stem direction to “floating” status Ctrl - L: duer ikke - er shortcut for adressefeltet
                     if (app.Status.currentNote) {
-                        app.executeCommand(new Model.SetNoteStemDirectionCommand({
+                        app.executeCommand(new Commands.SetNoteStemDirectionCommand({
                             note: app.Status.currentNote,
                             direction: "FREE"
                         }));
@@ -257,7 +263,7 @@
                 }
                 else if (key === '9') {//Flip a note to its enharmonic equivalent 9
                     if (app.Status.currentNotehead) {
-                        app.executeCommand(new Model.SetPitchCommand({
+                        app.executeCommand(new Commands.SetPitchCommand({
                             head: app.Status.currentNotehead,
                             pitch: app.Status.currentNotehead.pitch.getEnharmonicPitch()
                         }));
@@ -265,7 +271,7 @@
                 }
                 else if (key === 'CTRL-9') {//todo: Flip enharmonic throughout measure Ctrl - 9(cursor on first note in measure)
                     if (app.Status.currentNotehead) {
-                        app.executeCommand(new Model.SetPitchCommand({
+                        app.executeCommand(new Commands.SetPitchCommand({
                             head: app.Status.currentNotehead,
                             pitch: app.Status.currentNotehead.pitch.getEnharmonicPitch()
                         }));
@@ -292,7 +298,7 @@
                                     pitches.push(app.Status.notesPressed[i]);
                                 }
                             }
-                            app.executeCommand(new Model.AddNoteCommand({
+                            app.executeCommand(new Commands.AddNoteCommand({
                                 //note: app.Status.currentNote,
                                 noteName: noteType.noteId.substr(1),
                                 noteTime: noteType.timeVal,
@@ -306,7 +312,7 @@
                             }));
                         }
                         else {
-                            app.executeCommand(new Model.SetNoteDurationCommand({
+                            app.executeCommand(new Commands.SetNoteDurationCommand({
                                 note: app.Status.currentNote,
                                 noteId: noteType.noteId,
                                 timeVal: noteType.timeVal,
@@ -345,7 +351,7 @@
                 else if (key === 'DELETE') {//Remove note, rest or chord delete
                     if (app.Status.currentNote) {
                         var nextNote = Model.Music.nextNote(app.Status.currentNote);
-                        app.executeCommand(new Model.DeleteNoteCommand({ note: app.Status.currentNote }));
+                        app.executeCommand(new Commands.DeleteNoteCommand({ note: app.Status.currentNote }));
                         app.Status.currentNote = nextNote;
                     }
                 }
@@ -355,7 +361,7 @@ Tie / untie to previous note Ctrl = (equals) or shift - T
 Flip a tie Ctrl - F
 Restore tie direction to automatic Ctrl - shift - F*/
                     if (app.Status.currentNotehead) {
-                        app.executeCommand(new Model.TieNoteheadCommand({
+                        app.executeCommand(new Commands.TieNoteheadCommand({
                             head: app.Status.currentNotehead,
                             toggle: true,
                             forced: false
@@ -363,7 +369,7 @@ Restore tie direction to automatic Ctrl - shift - F*/
                     }
                     else
                         if (app.Status.currentNote) {
-                            app.executeCommand(new Model.TieNoteCommand({
+                            app.executeCommand(new Commands.TieNoteCommand({
                                 note: app.Status.currentNote,
                                 forced: false,
                                 toggle: true
@@ -486,4 +492,4 @@ Restore all pitch keys to normal register K (with Caps Lock)
             keydown (app: ScoreApplication.ScoreApplication, event: Event): boolean { return false; }*/
         }
     }
-}
+//}

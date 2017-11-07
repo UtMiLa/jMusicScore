@@ -1,4 +1,4 @@
-module JMusicScore {
+//module JMusicScore {
     /** logical music definition classes and classes for music concepts */
     export module Model {
 
@@ -2541,4 +2541,4 @@ module JMusicScore {
         }
    }
 
-}
+//}
