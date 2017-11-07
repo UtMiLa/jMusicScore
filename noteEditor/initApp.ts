@@ -1,34 +1,47 @@
 ﻿import {Application} from "../JApps/application";
+import {Configuration} from "../JApps/Configuration";
+import {IO} from "../JApps/jApps.BrowserFileSystem";
+import {UI} from "../JApps/Japps.ui";
+import {Model} from "../jMusicScore/jMusicScore";
+import {MusicXml} from "../jMusicScore/jMusicScore.MusicXml";
+import {Lilypond} from "../jMusicScore/jMusicScore.Lilypond";
+import {ScoreApplication, Views, CanvasView, SvgView} from "../jMusicScore/jMusicScore.Views";
+import {Json} from "../jMusicScore/jsonReader";
+import {Validators} from "../jMusicScore/validators";
+import {GhostElements} from "../jMusicScore/ghostElements";
+import {JMusicScoreUi} from "../jMusicScore/jMusicScore.UI";
+import {Commands} from "../jMusicScore/commands";
+
 
 export module JMusicScore {
 
-    class MusicConfiguration extends JApps.Configuration.ConfigurationManager<Model.IScore, ScoreApplication.ScoreStatusManager> {
+    class MusicConfiguration extends Configuration.ConfigurationManager<Model.IScore, ScoreApplication.ScoreStatusManager> {
         constructor(app: ScoreApplication.IScoreApplication) {
             super(app);
 
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("MusicXml", MusicXml.MusicXmlPlugin));
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Lilypond", Lilypond.LilypondPlugin));
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("JSON", Model.JsonPlugin));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("Update Bars", Model.UpdateBarsValidator));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("CreateTimelineValidator", Model.CreateTimelineValidator));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("JoinNotesValidator", Model.JoinNotesValidator));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("SplitNotesValidator", Model.SplitNotesValidator));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("BeamValidator", Model.BeamValidator));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("TieValidator", Model.TieValidator));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateAccidentals", Model.UpdateAccidentalsValidator));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("GhostsValidator", GhostElements.GhostsValidator));
-            this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateBarsValidator", Model.UpdateBarsValidator));
+            this.addConfiguration(new Configuration.PluginConfiguration("MusicXml", MusicXml.MusicXmlPlugin));
+            this.addConfiguration(new Configuration.PluginConfiguration("Lilypond", Lilypond.LilypondPlugin));
+            this.addConfiguration(new Configuration.PluginConfiguration("JSON", Json.JsonPlugin));
+            this.addConfiguration(new Configuration.ValidatorConfiguration("Update Bars", Validators.UpdateBarsValidator));
+            this.addConfiguration(new Configuration.ValidatorConfiguration("CreateTimelineValidator", Validators.CreateTimelineValidator));
+            this.addConfiguration(new Configuration.ValidatorConfiguration("JoinNotesValidator",Validators.JoinNotesValidator));
+            this.addConfiguration(new Configuration.ValidatorConfiguration("SplitNotesValidator", Validators.SplitNotesValidator));
+            this.addConfiguration(new Configuration.ValidatorConfiguration("BeamValidator", Validators.BeamValidator));
+            this.addConfiguration(new Configuration.ValidatorConfiguration("TieValidator", Validators.TieValidator));
+            this.addConfiguration(new Configuration.ValidatorConfiguration("UpdateAccidentals", Validators.UpdateAccidentalsValidator));
+            this.addConfiguration(new Configuration.ValidatorConfiguration("GhostsValidator", GhostElements.GhostsValidator));
+            this.addConfiguration(new Configuration.ValidatorConfiguration("UpdateBarsValidator", Validators.UpdateBarsValidator));
 
-            this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Aspx handler", () => { return new JApps.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"); }));
-            this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("PHP handler", () => { return new JApps.IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
-            this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Local", () => { return new JApps.IO.LocalStorageFileManager("Local"); }));
+            this.addConfiguration(new Configuration.FileManagerConfiguration("Aspx handler", () => { return new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"); }));
+            this.addConfiguration(new Configuration.FileManagerConfiguration("PHP handler", () => { return new IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
+            this.addConfiguration(new Configuration.FileManagerConfiguration("Local", () => { return new IO.LocalStorageFileManager("Local"); }));
 
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView.HintAreaPlugin", SvgView.HintAreaPlugin));
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ToolbarPlugin", Ui.ToolbarPlugin));
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.FileMenuPlugin", Ui.FileMenuPlugin));
-            this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ExportMenuPlugin", Ui.ExportMenuPlugin));/**/
+            this.addConfiguration(new Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
+            this.addConfiguration(new Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
+            this.addConfiguration(new Configuration.PluginConfiguration("SvgView.HintAreaPlugin", SvgView.HintAreaPlugin));
+            this.addConfiguration(new Configuration.PluginConfiguration("Ui.ToolbarPlugin", JMusicScoreUi.ToolbarPlugin));
+            this.addConfiguration(new Configuration.PluginConfiguration("Ui.FileMenuPlugin", JMusicScoreUi.FileMenuPlugin));
+            this.addConfiguration(new Configuration.PluginConfiguration("Ui.ExportMenuPlugin", JMusicScoreUi.ExportMenuPlugin));/**/
         }
     }
 
@@ -114,9 +127,9 @@ export module JMusicScore {
         //app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
         conf.disableConfiguration("CanvasView");
         
-        app.addPlugin(new Ui.VoiceMenuPlugin(app));
+        app.addPlugin(new JMusicScoreUi.VoiceMenuPlugin(app));
         
-        app.addPlugin(new Ui.StavesMenuPlugin(app));
+        app.addPlugin(new JMusicScoreUi.StavesMenuPlugin(app));
 
         app.addPlugin(new JApps.Editors.KeybordInputPlugin());
         app.addPlugin(new Editors.MidiInputPlugin());
@@ -124,16 +137,16 @@ export module JMusicScore {
 
                 /** test **/
 
-        app.addPlugin(new Ui.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
-        app.addPlugin(new Ui.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function() { app.saveUsing('saved.xml', 'Server', 'JSON'); }));
-        app.addPlugin(new Ui.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function() {
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function() { app.saveUsing('saved.xml', 'Server', 'JSON'); }));
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function() {
             app.executeCommand({
                 execute: (app: ScoreApplication.IScoreApplication) => {},
                 undo: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function() { $('.overlay').toggle(); }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function() {
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function() { $('.overlay').toggle(); }));
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function() {
             var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
             var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
             note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.diff(note1.absTime), Model.LongDecorationType.Slur));
@@ -141,7 +154,7 @@ export module JMusicScore {
                 execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function() {
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function() {
             var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
             var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
             note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.diff(note1.absTime), Model.LongDecorationType.Cresc));
@@ -152,15 +165,15 @@ export module JMusicScore {
                 execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function() {
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function() {
             var staff1 = app.document.staffElements[0];
             staff1.setStaffExpression("Allegro", Model.AbsoluteTime.startTime);
             app.executeCommand({
                 execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function() {
-            var cmd = new Model.AddNoteCommand(
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function() {
+            var cmd = new Commands.AddNoteCommand(
                 {
                     noteName: '1_4',
                     noteTime: Model.TimeSpan.quarterNote,
@@ -174,7 +187,7 @@ export module JMusicScore {
                     tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
                 });
             app.executeCommand(cmd);
-            cmd = new Model.AddNoteCommand(
+            cmd = new Commands.AddNoteCommand(
                 {
                     noteName: '1_4',
                     noteTime: Model.TimeSpan.quarterNote,
@@ -188,7 +201,7 @@ export module JMusicScore {
                     tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
                 });
             app.executeCommand(cmd);
-            cmd = new Model.AddNoteCommand(
+            cmd = new Commands.AddNoteCommand(
                 {
                     noteName: '1_4',
                     noteTime: Model.TimeSpan.quarterNote,
@@ -205,13 +218,13 @@ export module JMusicScore {
         }));
 
         
-        app.addPlugin(new Ui.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function() {
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function() {
             app.document.withBars((bar: Model.IBar, index: number) => { app.document.removeChild(bar); });
             app.executeCommand({
                 execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function() {
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function() {
             app.document.withVoices(function(voice, index) {
                 voice.withNotes((note: Model.INote) => {
                     var staff = voice.parent;
@@ -226,14 +239,14 @@ export module JMusicScore {
                 execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
-        app.addPlugin(new Ui.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function() {
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function() {
             app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, app.document.getMemento());
             app.executeCommand({
                 execute: (app: ScoreApplication.IScoreApplication) => {}
             });
         }));
 
-        app.addPlugin(new Ui.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", () => {
+        app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", () => {
             var res: string[] = [];
             $.each((<any>app).undoStack, (i: number, e: any) => {
                 if (e.args) {
@@ -245,7 +258,7 @@ export module JMusicScore {
                     res.push(['app.executeCommand(new JMusicScore.Model.', macroDef.commandName, '({', keyValues.join(', '), '}));'].join(''));
                 } else res.push("null");
             });
-            new Ui.ShowTextDialog('menu', app).setText(res.join("\n")).show();
+            new JMusicScoreUi.ShowTextDialog('menu', app).setText(res.join("\n")).show();
         }));
         //app.addPlugin(new Ui.PianoPlugIn());
         app.addPlugin(new ScriptRunner.ScriptRunnerPlugIn());
@@ -254,7 +267,7 @@ export module JMusicScore {
         //app.AddPlugin(new Players.MidiPlayer());
         
         var jMusicActions: JApps.UI.ActionCollection = {
-            FileNew: { caption: "New", action: () => { app.executeCommand(new JMusicScore.Model.ClearScoreCommand({})); }, type: JApps.UI.ActionType.execute },
+            FileNew: { caption: "New", action: () => { app.executeCommand(new Commands.ClearScoreCommand({})); }, type: JApps.UI.ActionType.execute },
             FileLoad: { caption: "Load", action: () => { new JApps.Ui.OpenFileDialog('open', app).show(); }, type: JApps.UI.ActionType.execute },
             FileSaveAs: { caption: "SaveAs", action: () => { new JApps.Ui.SaveFileDialog('save', app).show(); }, type: JApps.UI.ActionType.execute },
             Voice: {
@@ -265,11 +278,11 @@ export module JMusicScore {
                 type: JApps.UI.ActionType.execute,
                 enabled: () => { return app.Status.currentVoice != undefined; }
             },
-            ExportSVG: { caption: "SVG", action: () => { new Ui.ShowTextDialog('menu', app).setText(app.saveToString('SVG')).show(); }, type: JApps.UI.ActionType.execute },
-            ExportJSON: { caption: "JSON", action: () => { new Ui.ShowTextDialog('menu', app).setText(app.saveToString('JSON')).show(); }, type: JApps.UI.ActionType.execute },
-            ExportLilypond: { caption: "Lilypond", action: () => { new Ui.ShowTextDialog('menu', app).setText(app.saveToString('Lilypond')).show(); }, type: JApps.UI.ActionType.execute },
-            ExportMusicXml: { caption: "MusicXml", action: () => { new Ui.ShowTextDialog('menu', app).setText(app.saveToString('MusicXML')).show(); }, type: JApps.UI.ActionType.execute },
-            Staves: { caption: "Staves", action: () => { new Ui.StavesDialog('menu', app).show(); }, type: JApps.UI.ActionType.execute },
+            ExportSVG: { caption: "SVG", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('SVG')).show(); }, type: JApps.UI.ActionType.execute },
+            ExportJSON: { caption: "JSON", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('JSON')).show(); }, type: JApps.UI.ActionType.execute },
+            ExportLilypond: { caption: "Lilypond", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('Lilypond')).show(); }, type: JApps.UI.ActionType.execute },
+            ExportMusicXml: { caption: "MusicXml", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('MusicXML')).show(); }, type: JApps.UI.ActionType.execute },
+            Staves: { caption: "Staves", action: () => { new JMusicScoreUi.StavesDialog('menu', app).show(); }, type: JApps.UI.ActionType.execute },
             TestLoadSaved: { caption: "LoadSaved", action: () => { app.loadUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute },
             TestSaveSaved: { caption: "SaveSaved", action: () => { app.saveUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute },
         };
