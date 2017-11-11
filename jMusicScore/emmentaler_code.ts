@@ -1,4 +1,4 @@
-﻿var emmentalerCode: { [ind:string]: string } = {
+﻿export var emmentalerCode: { [ind:string]: string } = {
     "rests.0": "\ue100",
     "rests.1": "\ue101",
     "rests.0o": "\ue102",

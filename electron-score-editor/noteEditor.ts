@@ -2,9 +2,16 @@
 // / <reference path="jMusicScore/jMusicScore.d.ts" />
 // / <reference path="../JApps/Scripts/typings/jquery/jquery.d.ts" />
 import{Application} from "../jApps/application";
+import{Editors as JAppsEditors} from "../jApps/keyboard";
 import{Configuration} from "../jApps/Configuration";
-import {ScoreApplication} from "../jMusicScore/jMusicScore.Views";
+import{IO} from "../jApps/jApps.BrowserFileSystem";
+import {ScoreApplication, SvgView, CanvasView, Editors} from "../jMusicScore/jMusicScore.Views";
 import {Model} from "../jMusicScore/jMusicScore";
+import {JMusicScoreUi} from "../jMusicScore/jMusicScore.UI";
+import {Commands} from "../jMusicScore/commands";
+import {Players} from "../jMusicScore/midiEditor";
+import {Editors as MidiEditors} from "../jMusicScore/midiIn";
+import {FinaleUi} from "../jMusicScore/FinaleEmulator";
 
 import {MusicXml} from "../jMusicScore/jMusicScore.MusicXml";
 import {Lilypond} from "../jMusicScore/jMusicScore.Lilypond";
@@ -12,10 +19,13 @@ import {Json} from "../jMusicScore/jsonReader";
 import {Validators} from "../jMusicScore/validators";
 import {GhostElements} from "../jMusicScore/ghostElements";
 
+import {UI} from "../jApps/Japps.ui";
+import {MenuManager} from "./main-process/menus/MenuManager";
 
 const JApps = {
     Configuration: Configuration,
-    Application: Application
+    Application: Application,
+    IO:IO
 }
 
 export module JMusicScore {
@@ -44,9 +54,9 @@ export module JMusicScore {
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView.HintAreaPlugin", SvgView.HintAreaPlugin));
-                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ToolbarPlugin", Ui.ToolbarPlugin));
-                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.FileMenuPlugin", Ui.FileMenuPlugin));
-                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ExportMenuPlugin", Ui.ExportMenuPlugin));/**/
+                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ToolbarPlugin", JMusicScoreUi.ToolbarPlugin));
+                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.FileMenuPlugin", JMusicScoreUi.FileMenuPlugin));
+                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ExportMenuPlugin", JMusicScoreUi.ExportMenuPlugin));/**/
             }
         }
     
@@ -132,26 +142,26 @@ export module JMusicScore {
             //app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
             conf.disableConfiguration("CanvasView");
             
-            app.addPlugin(new Ui.VoiceMenuPlugin(app));
+            app.addPlugin(new JMusicScoreUi.VoiceMenuPlugin(app));
             
-            app.addPlugin(new Ui.StavesMenuPlugin(app));
+            app.addPlugin(new JMusicScoreUi.StavesMenuPlugin(app));
     
-            app.addPlugin(new JApps.Editors.KeybordInputPlugin());
-            app.addPlugin(new Editors.MidiInputPlugin());
-            app.registerEventProcessor(new Editors.MidiEditor()); // "midiNoteOff", 
+            app.addPlugin(new JAppsEditors.KeybordInputPlugin());
+            app.addPlugin(new MidiEditors.MidiInputPlugin());
+            app.registerEventProcessor(new MidiEditors.MidiEditor()); // "midiNoteOff", 
     
                     /** test **/
     
-            app.addPlugin(new Ui.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
-            app.addPlugin(new Ui.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function() { app.saveUsing('saved.xml', 'Server', 'JSON'); }));
-            app.addPlugin(new Ui.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function() {
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function() { app.saveUsing('saved.xml', 'Server', 'JSON'); }));
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function() {
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {},
                     undo: (app: ScoreApplication.IScoreApplication) => {}
                 });
             }));
-            app.addPlugin(new Ui.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function() { $('.overlay').toggle(); }));
-            app.addPlugin(new Ui.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function() {
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function() { $('.overlay').toggle(); }));
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function() {
                 var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
                 var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
                 note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.diff(note1.absTime), Model.LongDecorationType.Slur));
@@ -159,7 +169,7 @@ export module JMusicScore {
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
             }));
-            app.addPlugin(new Ui.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function() {
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function() {
                 var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
                 var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
                 note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.diff(note1.absTime), Model.LongDecorationType.Cresc));
@@ -170,15 +180,15 @@ export module JMusicScore {
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
             }));
-            app.addPlugin(new Ui.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function() {
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function() {
                 var staff1 = app.document.staffElements[0];
                 staff1.setStaffExpression("Allegro", Model.AbsoluteTime.startTime);
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
             }));
-            app.addPlugin(new Ui.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function() {
-                var cmd = new Model.AddNoteCommand(
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function() {
+                var cmd = new Commands.AddNoteCommand(
                     {
                         noteName: '1_4',
                         noteTime: Model.TimeSpan.quarterNote,
@@ -192,7 +202,7 @@ export module JMusicScore {
                         tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
                     });
                 app.executeCommand(cmd);
-                cmd = new Model.AddNoteCommand(
+                cmd = new Commands.AddNoteCommand(
                     {
                         noteName: '1_4',
                         noteTime: Model.TimeSpan.quarterNote,
@@ -206,7 +216,7 @@ export module JMusicScore {
                         tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
                     });
                 app.executeCommand(cmd);
-                cmd = new Model.AddNoteCommand(
+                cmd = new Commands.AddNoteCommand(
                     {
                         noteName: '1_4',
                         noteTime: Model.TimeSpan.quarterNote,
@@ -223,13 +233,13 @@ export module JMusicScore {
             }));
     
             
-            app.addPlugin(new Ui.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function() {
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function() {
                 app.document.withBars((bar: Model.IBar, index: number) => { app.document.removeChild(bar); });
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
             }));
-            app.addPlugin(new Ui.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function() {
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function() {
                 app.document.withVoices(function(voice, index) {
                     voice.withNotes((note: Model.INote) => {
                         var staff = voice.parent;
@@ -244,18 +254,18 @@ export module JMusicScore {
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
             }));
-            app.addPlugin(new Ui.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function() {
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function() {
                 app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, app.document.getMemento());
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
             }));
     
-            app.addPlugin(new Ui.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", () => {
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", () => {
                 var res: string[] = [];
                 $.each((<any>app).undoStack, (i: number, e: any) => {
                     if (e.args) {
-                        var macroDef = Model.MacroExporter.makeMacro(e); //e.macro();
+                        var macroDef = Commands.MacroExporter.makeMacro(e); //e.macro();
                         var keyValues: string[] = [];
                         $.each(macroDef.args, (key: string, val: any) => {
                             keyValues.push(key + ': ' + val);
@@ -263,7 +273,7 @@ export module JMusicScore {
                         res.push(['app.executeCommand(new JMusicScore.Model.', macroDef.commandName, '({', keyValues.join(', '), '}));'].join(''));
                     } else res.push("null");
                 });
-                new Ui.ShowTextDialog('menu', app).setText(res.join("\n")).show();
+                new JMusicScoreUi.ShowTextDialog('menu', app).setText(res.join("\n")).show();
             }));
             //app.addPlugin(new Ui.PianoPlugIn());
             //app.addPlugin(new ScriptRunner.ScriptRunnerPlugIn());
@@ -271,27 +281,27 @@ export module JMusicScore {
             app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
             //app.AddPlugin(new Players.MidiPlayer());
             
-            var jMusicActions: JApps.UI.ActionCollection = {
-                FileNew: { caption: "New", action: () => { app.executeCommand(new JMusicScore.Model.ClearScoreCommand({})); }, type: JApps.UI.ActionType.execute },
-                FileLoad: { caption: "Load", action: () => { new JApps.Ui.OpenFileDialog('open', app).show(); }, type: JApps.UI.ActionType.execute },
-                FileSaveAs: { caption: "SaveAs", action: () => { new JApps.Ui.SaveFileDialog('save', app).show(); }, type: JApps.UI.ActionType.execute },
+            var jMusicActions: UI.ActionCollection = {
+                FileNew: { caption: "New", action: () => { app.executeCommand(new Commands.ClearScoreCommand({})); }, type: UI.ActionType.execute },
+                FileLoad: { caption: "Load", action: () => { new JMusicScoreUi.OpenFileDialog('open', app).show(); }, type: UI.ActionType.execute },
+                FileSaveAs: { caption: "SaveAs", action: () => { new JMusicScoreUi.SaveFileDialog('save', app).show(); }, type: UI.ActionType.execute },
                 Voice: {
                     caption: "Voice",
                     action: () => {
-                        new Ui.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).show();
+                        new JMusicScoreUi.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).show();
                     },
-                    type: JApps.UI.ActionType.execute,
+                    type: UI.ActionType.execute,
                     enabled: () => { return app.Status.currentVoice != undefined; }
                 },
-                ExportSVG: { caption: "SVG", action: () => { new Ui.ShowTextDialog('menu', app).setText(app.saveToString('SVG')).show(); }, type: JApps.UI.ActionType.execute },
-                ExportJSON: { caption: "JSON", action: () => { new Ui.ShowTextDialog('menu', app).setText(app.saveToString('JSON')).show(); }, type: JApps.UI.ActionType.execute },
-                ExportLilypond: { caption: "Lilypond", action: () => { new Ui.ShowTextDialog('menu', app).setText(app.saveToString('Lilypond')).show(); }, type: JApps.UI.ActionType.execute },
-                ExportMusicXml: { caption: "MusicXml", action: () => { new Ui.ShowTextDialog('menu', app).setText(app.saveToString('MusicXML')).show(); }, type: JApps.UI.ActionType.execute },
-                Staves: { caption: "Staves", action: () => { new Ui.StavesDialog('menu', app).show(); }, type: JApps.UI.ActionType.execute },
-                TestLoadSaved: { caption: "LoadSaved", action: () => { app.loadUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute },
-                TestSaveSaved: { caption: "SaveSaved", action: () => { app.saveUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute },
+                ExportSVG: { caption: "SVG", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('SVG')).show(); }, type: UI.ActionType.execute },
+                ExportJSON: { caption: "JSON", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('JSON')).show(); }, type: UI.ActionType.execute },
+                ExportLilypond: { caption: "Lilypond", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('Lilypond')).show(); }, type: UI.ActionType.execute },
+                ExportMusicXml: { caption: "MusicXml", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('MusicXML')).show(); }, type: UI.ActionType.execute },
+                Staves: { caption: "Staves", action: () => { new JMusicScoreUi.StavesDialog('menu', app).show(); }, type: UI.ActionType.execute },
+                TestLoadSaved: { caption: "LoadSaved", action: () => { app.loadUsing('saved.xml', 'Server', 'JSON'); }, type: UI.ActionType.execute },
+                TestSaveSaved: { caption: "SaveSaved", action: () => { app.saveUsing('saved.xml', 'Server', 'JSON'); }, type: UI.ActionType.execute },
             };
-            var jMusicMenuDef: JApps.UI.MenuDef = {
+            var jMusicMenuDef: UI.MenuDef = {
                 items: [
                     {
                         caption: "File",

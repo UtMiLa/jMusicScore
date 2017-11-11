@@ -85,8 +85,8 @@ export module Configuration {
     }
 
     export class MakeBuilder {
-        static make<T>(type): Application.IBuilder<T> {
-            return function () { return new type }
+        static make<T>(type: new () => any): Application.IBuilder<T> {
+            return function () { return new type(); }
         }
     }
     export class ConfigurationManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {

@@ -3,6 +3,7 @@ import {Model} from "./jMusicScore";
 import {JMusicScoreUi} from "./jMusicScore.UI";
 import {MusicSpacing} from "./jMusicScore.Spacing";
 import {emmentalerNotes} from "./emmentaler";
+import {emmentalerCode} from "./emmentaler_code";
 import {Commands} from "./commands";
 
 import {Application} from "../JApps/application";

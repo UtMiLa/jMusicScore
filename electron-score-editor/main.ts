@@ -17,10 +17,10 @@ const path = require('path')
 const url = require('url')
 //const autoUpdater = require('./auto-updater')
 
-//require('./menu.js');
+require('./noteEditor.js');
 
 
-loadDemos();
+//loadDemos();
 
 // Require each JS file in the main-process dir
 function loadDemos () {
