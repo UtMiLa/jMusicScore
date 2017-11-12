@@ -1,6 +1,7 @@
 ﻿//module JMusicScore {
 import {Model} from "./jMusicScore";    
-import {Views, ScoreApplication} from "./jMusicScore.Views";
+import {Views} from "./jMusicScore.Views";
+import { ScoreApplication } from "./jMusicScore.Application";
 
     /// Music spacing classes - independent of graphics methods
     export module MusicSpacing {

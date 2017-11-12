@@ -2,7 +2,8 @@
 
     import {Model} from "./jMusicScore";
     import {JMusicScoreUi} from "./jMusicScore.UI";
-    import {Views, ScoreApplication} from "./jMusicScore.Views";
+    import {Views} from "./jMusicScore.Views";
+    import { ScoreApplication } from "./jMusicScore.Application";
     import {UI} from "../jApps/Japps.ui";
     //import {MusicSpacing} from "./jMusicScore.Spacing";
     //import {emmentalerNotes} from "./emmentaler";

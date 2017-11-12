@@ -1,7 +1,8 @@
 ﻿//module JMusicScore {
     import {Model} from "./jMusicScore";
     import {Commands} from "./commands";
-    import {Views, ScoreApplication} from "./jMusicScore.Views";
+    import {Views} from "./jMusicScore.Views";
+    import { ScoreApplication } from "./jMusicScore.Application";
     //import {UI} from "../jApps/Japps.ui";
     import {Application} from "../JApps/application";
 

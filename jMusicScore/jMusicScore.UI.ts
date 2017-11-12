@@ -1,10 +1,12 @@
 //module JApps {
     import {Model} from "./jMusicScore";
     import {Commands} from "./commands";
-    import {Editors, Views, ScoreApplication} from "./jMusicScore.Views";
+    import {Editors} from "./jMusicScore.Editors";
+    import {Views} from "./jMusicScore.Views";
+    import { ScoreApplication } from "./jMusicScore.Application";
     import {UI} from "../jApps/Japps.ui";
     import {FinaleUi} from "./FinaleEmulator";
-    import {Players} from "./midiEditor";
+    //import {Players} from "./midiEditor";
 
     import {Application} from "../JApps/application";    
 
@@ -1545,7 +1547,7 @@
                             }
                         },
                     ],
-                },
+                }/*,
                 {
                     type: "Buttongroup",
                     id: "_play_operations",
@@ -1558,9 +1560,6 @@
                                 var player = new Players.MidiPlayer();
                                 player.playAll(app);
                             },
-                            /*validate: function (app: ScoreApplication.ScoreApplication): boolean {
-                                return app.canUndo();
-                            }*/
                         },
                         {
                             id: "pause",
@@ -1569,12 +1568,9 @@
                             onChecked: function (button: HTMLInputElement, app: ScoreApplication.IScoreApplication) {
 
                             },
-                            /*validate: function (app: ScoreApplication.ScoreApplication): boolean {
-                                return app.canRedo();
-                            }*/
                         },
                     ],
-                }
+                }*/
             ];
 
             public unregisterModes() {
