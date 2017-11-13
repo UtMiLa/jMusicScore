@@ -17,6 +17,10 @@ const path = require('path')
 const url = require('url')
 //const autoUpdater = require('./auto-updater')
 
+
+let $_ = require('../jApps/Scripts/jquery-3.1.1');
+
+
 require('./noteEditor.js');
 
 

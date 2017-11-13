@@ -1,16 +1,16 @@
-
 import{Application} from "../jApps/application";
-/*import{Editors as JAppsEditors} from "../jApps/keyboard";*/
+import{Editors as JAppsEditors} from "../jApps/keyboard";
 import{Configuration} from "../jApps/Configuration";
-/*import{IO} from "../jApps/jApps.BrowserFileSystem";*/
-import {SvgView, CanvasView} from "../jMusicScore/jMusicScore.Views";
+import{IO} from "../jApps/jApps.BrowserFileSystem";
+import {CanvasView} from "../jMusicScore/jMusicScore.CanvasView";
+import {SvgView} from "../jMusicScore/jMusicScore.SvgView";
 import {ScoreApplication} from "../jMusicScore/jMusicScore.Application";
 import {Editors} from "../jMusicScore/jMusicScore.Editors";
-/*import {Model} from "../jMusicScore/jMusicScore";
-/*import {JMusicScoreUi} from "../jMusicScore/jMusicScore.UI";
+import {Model} from "../jMusicScore/jMusicScore";
+import {JMusicScoreUi} from "../jMusicScore/jMusicScore.UI";
 import {Commands} from "../jMusicScore/commands";
-//import {Players} from "../jMusicScore/midiEditor";
-//import {Editors as MidiEditors} from "../jMusicScore/midiIn";
+import {Players} from "../jMusicScore/midiEditor";
+import {Editors as MidiEditors} from "../jMusicScore/midiIn";
 import {FinaleUi} from "../jMusicScore/FinaleEmulator";
 
 import {MusicXml} from "../jMusicScore/jMusicScore.MusicXml";
@@ -21,19 +21,18 @@ import {GhostElements} from "../jMusicScore/ghostElements";
 
 import {UI} from "../jApps/Japps.ui";
 import {MenuManager} from "./main-process/menus/MenuManager";
-*/
+
 const JApps = {
     Configuration: Configuration,
     Application: Application
     //IO:IO
-}
+};
+
+var $ = require('./Scripts/jquery-3.1.1.js');
+//$(()=> {alert("Hej");});
 
 export module JMusicScore {
     
-        class MusicConfiguration extends JApps.Configuration.ConfigurationManager<any, any> {
-            constructor(app: any) {
-                super(app);
-    /*
         class MusicConfiguration extends JApps.Configuration.ConfigurationManager<Model.IScore, ScoreApplication.ScoreStatusManager> {
             constructor(app: ScoreApplication.IScoreApplication) {
                 super(app);
@@ -51,11 +50,11 @@ export module JMusicScore {
                 this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("GhostsValidator", GhostElements.GhostsValidator));
                 this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateBarsValidator", Validators.UpdateBarsValidator));
     
-                this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Aspx handler", () => { return new JApps.IO.ServerFileManager("/Handler.ashx", "Server (ashx)"); }));
-                this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("PHP handler", () => { return new JApps.IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
-                this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Local", () => { return new JApps.IO.LocalStorageFileManager("Local"); }));
+                this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Aspx handler", () => { return new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"); }));
+                this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("PHP handler", () => { return new IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
+                this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Local", () => { return new IO.LocalStorageFileManager("Local"); }));
     
-                this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
+                /*this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView.HintAreaPlugin", SvgView.HintAreaPlugin));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ToolbarPlugin", JMusicScoreUi.ToolbarPlugin));
@@ -64,14 +63,14 @@ export module JMusicScore {
             }
         }
         
-        var app = new Application.AbstractApplication<any,any>(
+        /*var app = new Application.AbstractApplication<any,any>(
             {},
-            new ScoreApplication.ScoreStatusManager());
-    /*
+            new ScoreApplication.ScoreStatusManager());*/
+   
         var app = <ScoreApplication.IScoreApplication>new Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager>(
             new Model.ScoreElement(null),
             new ScoreApplication.ScoreStatusManager());
-    
+     
     
         var mus = {
             "id": "89", "t": "Score", "def": { "metadata": {} },
@@ -139,7 +138,7 @@ export module JMusicScore {
                         { "id": "153", "t": "Meter" }]
                 }]
         };
-    
+    /*
         $(function() {
     
             var conf = new MusicConfiguration(app);
@@ -375,3 +374,5 @@ export module JMusicScore {
             
         });*/
     } 
+
+

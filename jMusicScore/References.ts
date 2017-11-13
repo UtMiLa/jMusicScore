@@ -1,10 +1,10 @@
 ﻿/// <reference path="node_modules/japps/jApps.d.ts" />
 declare namespace JQueryUI {
-    interface ButtonOptions {
+    /*interface ButtonOptions {
         icon?: string;
         iconPosition?: string;
         showLabel?: boolean;
-    }
+    }*/
 
     interface Button extends Widget, ButtonOptions {
     }
