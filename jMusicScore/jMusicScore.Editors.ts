@@ -7,7 +7,7 @@ import {Commands} from "./commands";
 import { ScoreApplication } from "./jMusicScore.Application";
 import {SvgView} from "./jMusicScore.SvgView";
 
-export module Editors {
+export module MusicEditors {
 
     export class NoteDecorations {
         private static decorationKeyDefs: { [index: string]: Model.NoteDecorationKind } = {

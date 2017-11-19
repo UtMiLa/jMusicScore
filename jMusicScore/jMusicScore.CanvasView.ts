@@ -6,7 +6,7 @@ import {emmentalerCode} from "./emmentaler_code";
 import {Commands} from "./commands";
 import { ScoreApplication } from "./jMusicScore.Application";
 import {Application} from "../JApps/application";
-import {Editors} from "./jMusicScore.Editors";
+//import {MusicEditors} from "./jMusicScore.Editors";
 import {Views} from "./jMusicScore.Views";
 import {SvgView} from "./jMusicScore.SvgView";
 

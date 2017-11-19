@@ -5,7 +5,8 @@ import{IO} from "../jApps/jApps.BrowserFileSystem";
 import {CanvasView} from "../jMusicScore/jMusicScore.CanvasView";
 import {SvgView} from "../jMusicScore/jMusicScore.SvgView";
 import {ScoreApplication} from "../jMusicScore/jMusicScore.Application";
-import {Editors} from "../jMusicScore/jMusicScore.Editors";
+import {MusicEditors} from "../jMusicScore/jMusicScore.Editors";
+import {MusicToolbar} from "../jMusicScore/jMusicScore.Toolbar";
 import {Model} from "../jMusicScore/jMusicScore";
 import {JMusicScoreUi} from "../jMusicScore/jMusicScore.UI";
 import {Commands} from "../jMusicScore/commands";
@@ -28,7 +29,7 @@ const JApps = {
     //IO:IO
 };
 
-var $ = require('./Scripts/jquery-3.1.1.js');
+//var $ = require('./Scripts/jquery-3.1.1.js');
 //$(()=> {alert("Hej");});
 
 export module JMusicScore {
@@ -54,19 +55,15 @@ export module JMusicScore {
                 this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("PHP handler", () => { return new IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
                 this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Local", () => { return new IO.LocalStorageFileManager("Local"); }));
     
-                /*this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
+                this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView.HintAreaPlugin", SvgView.HintAreaPlugin));
-                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ToolbarPlugin", JMusicScoreUi.ToolbarPlugin));
+                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ToolbarPlugin", MusicToolbar.ToolbarPlugin));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.FileMenuPlugin", JMusicScoreUi.FileMenuPlugin));
-                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ExportMenuPlugin", JMusicScoreUi.ExportMenuPlugin));*/
+                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ExportMenuPlugin", JMusicScoreUi.ExportMenuPlugin));
             }
         }
         
-        /*var app = new Application.AbstractApplication<any,any>(
-            {},
-            new ScoreApplication.ScoreStatusManager());*/
-   
         var app = <ScoreApplication.IScoreApplication>new Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager>(
             new Model.ScoreElement(null),
             new ScoreApplication.ScoreStatusManager());
@@ -138,7 +135,7 @@ export module JMusicScore {
                         { "id": "153", "t": "Meter" }]
                 }]
         };
-    /*
+    
         $(function() {
     
             var conf = new MusicConfiguration(app);
@@ -147,7 +144,7 @@ export module JMusicScore {
             /* Menus */
             //app.addPlugin(new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")));
             //app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
-/*            conf.disableConfiguration("CanvasView");
+            conf.disableConfiguration("CanvasView");
             
             app.addPlugin(new JMusicScoreUi.VoiceMenuPlugin(app));
             
@@ -159,7 +156,7 @@ export module JMusicScore {
     
                     /** test **/
     
-/*            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
+            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
             app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function() { app.saveUsing('saved.xml', 'Server', 'JSON'); }));
             app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function() {
                 app.executeCommand({
@@ -372,7 +369,7 @@ export module JMusicScore {
     
             app.loadFromString(mus, 'JSON');
             
-        });*/
+        });
     } 
 
 

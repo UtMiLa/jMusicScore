@@ -7,7 +7,7 @@ import {emmentalerCode} from "./emmentaler_code";
 import {Commands} from "./commands";
 import { ScoreApplication } from "./jMusicScore.Application";
 import {Application} from "../JApps/application";
-import {Editors} from "./jMusicScore.Editors";
+import {MusicEditors} from "./jMusicScore.Editors";
 
 
     export module MyModel {
@@ -781,7 +781,7 @@ import {Editors} from "./jMusicScore.Editors";
                     }
                 }
                 else {
-                    var ref = Editors.NoteDecorations.getGlyph(decoId, deco.placement === "over");
+                    var ref = MusicEditors.NoteDecorations.getGlyph(decoId, deco.placement === "over");
 
                     if (ref) {
                         this.graphEngine.createMusicObject(null, ref, 0, 0, 1);

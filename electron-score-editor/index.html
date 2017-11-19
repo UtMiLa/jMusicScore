@@ -17,6 +17,8 @@
     <link href="app.css" rel="stylesheet">
     <link href="css/jMusicScore.css" rel="stylesheet">
     <script>
+        require('./noteEditor.js');
+        
         $(function () {
             var toolbox = $('<div>').addClass('toolbox').appendTo('#footer');
             for (var i = 0; i < 44; i++) {

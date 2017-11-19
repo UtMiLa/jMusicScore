@@ -18,10 +18,10 @@ const url = require('url')
 //const autoUpdater = require('./auto-updater')
 
 
-let $_ = require('../jApps/Scripts/jquery-3.1.1');
+//let $_ = require('../jApps/Scripts/jquery-3.1.1');
 
 
-require('./noteEditor.js');
+//require('./noteEditor.js');
 
 
 //loadDemos();

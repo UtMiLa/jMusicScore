@@ -17,7 +17,7 @@
     "gulp-mocha": "^4.3.1",
     "gulp-typescript": "^3.2.1",
     "gulp-util": "^3.0.8",
-    "mocha": "~3.5.0",
+    "mocha": "^3.5.3",
     "pegjs": "~0.10.0",
     "typescript": "^2.6.1"
   }
