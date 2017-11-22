@@ -1,17 +1,19 @@
-module menu{
-const electron = require('electron')
-const BrowserWindow = electron.BrowserWindow
-const Menu = electron.Menu
-const app = electron.app
+export function menu() {
+
+const electron = require('electron');
+//const BrowserWindow = electron.BrowserWindow
+const Menu = electron.remote.Menu;
+const app = electron.remote.app;
+console.log("Her er jeg");
 
 let template = [{
   label: 'Edit',
   submenu: [{
-    label: 'Undo',
+    label: 'Fortryd',
     accelerator: 'CmdOrCtrl+Z',
     role: 'undo'
   }, {
-    label: 'Redo',
+    label: 'Omgør',
     accelerator: 'Shift+CmdOrCtrl+Z',
     role: 'redo'
   }, {
@@ -43,7 +45,7 @@ let template = [{
         // on reload, start fresh and close any old
         // open secondary windows
         if (focusedWindow.id === 1) {
-          BrowserWindow.getAllWindows().forEach(function (win: any) {
+          electron.remote.BrowserWindow.getAllWindows().forEach(function (win: any) {
             if (win.id > 1) {
               win.close()
             }
@@ -92,7 +94,7 @@ let template = [{
           buttons: ['Ok'],
           message: 'This demo is for the Menu section, showing how to create a clickable menu item in the application menu.'
         }
-        electron.dialog.showMessageBox(focusedWindow, options, function () {})
+        electron.remote.dialog.showMessageBox(focusedWindow, options, function () {})
       }
     }
   }]
@@ -115,7 +117,7 @@ let template = [{
     enabled: false,
     key: 'reopenMenuItem',
     click: function () {
-      app.emit('activate')
+      //app.emit('activate')
     }
   }]
 }, {
@@ -124,7 +126,7 @@ let template = [{
   submenu: [{
     label: 'Learn More',
     click: function () {
-      electron.shell.openExternal('http://electron.atom.io')
+      electron.remote.shell.openExternal('http://electron.atom.io')
     }
   }]
 }]
@@ -132,7 +134,7 @@ let template = [{
 function addUpdateMenuItems (items: any[], position: number) {
   if ((<any>process).mas) return
 
-  const version = electron.app.getVersion()
+  const version = electron.remote.app.getVersion()
   let updateItems = [{
     label: `Version ${version}`,
     enabled: false
@@ -145,7 +147,7 @@ function addUpdateMenuItems (items: any[], position: number) {
     visible: false,
     key: 'checkForUpdate',
     click: function () {
-      require('electron').autoUpdater.checkForUpdates()
+      require('electron').remote.autoUpdater.checkForUpdates()
     }
   }, {
     label: 'Restart and Install Update',
@@ -153,7 +155,7 @@ function addUpdateMenuItems (items: any[], position: number) {
     visible: false,
     key: 'restartToUpdate',
     click: function () {
-      require('electron').autoUpdater.quitAndInstall()
+      require('electron').remote.autoUpdater.quitAndInstall()
     }
   }]
 
@@ -230,10 +232,10 @@ if (process.platform === 'win32') {
   addUpdateMenuItems(helpMenu, 0)
 }
 
-app.on('ready', function () {
+//app.on('ready', function () {
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
-})
+//})
 /*
 app.on('browser-window-created', function () {
   let reopenMenuItem = findReopenMenuItem()

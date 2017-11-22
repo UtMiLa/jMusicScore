@@ -23,6 +23,9 @@ import {GhostElements} from "../jMusicScore/ghostElements";
 import {UI} from "../jApps/Japps.ui";
 import {MenuManager} from "./main-process/menus/MenuManager";
 
+//import {menu} from "./main-process/menus/menu";
+//menu();
+
 const JApps = {
     Configuration: Configuration,
     Application: Application

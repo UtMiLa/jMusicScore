@@ -27,13 +27,13 @@ const url = require('url')
 //loadDemos();
 
 // Require each JS file in the main-process dir
-function loadDemos () {
-  var files = glob.sync(path.join(__dirname, 'main-process/**/*.js'))
+/*function loadDemos () {
+  var files = glob.sync(path.join(__dirname, 'main-process/** /*.js'))
   files.forEach(function (file: string) {
     require(file)
   })
   //autoUpdater.updateMenu()
-}
+}*/
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -42,7 +42,9 @@ let mainWindow: any;
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({width: 1300, height: 900})
+
+  mainWindow.toggleDevTools();
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
