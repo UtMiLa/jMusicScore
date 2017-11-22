@@ -62,8 +62,8 @@ export module JMusicScore {
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView.HintAreaPlugin", SvgView.HintAreaPlugin));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ToolbarPlugin", MusicToolbar.ToolbarPlugin));
-                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.FileMenuPlugin", JMusicScoreUi.FileMenuPlugin));
-                this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ExportMenuPlugin", JMusicScoreUi.ExportMenuPlugin));
+                //this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.FileMenuPlugin", JMusicScoreUi.FileMenuPlugin));
+                //this.addConfiguration(new JApps.Configuration.PluginConfiguration("Ui.ExportMenuPlugin", JMusicScoreUi.ExportMenuPlugin));
             }
         }
         
@@ -138,20 +138,51 @@ export module JMusicScore {
                         { "id": "153", "t": "Meter" }]
                 }]
         };
-    
+
         $(function() {
     
             var conf = new MusicConfiguration(app);
-    
+
+            
+            var jMusicActions: UI.ActionCollection = {
+                FileNew: { caption: "New", action: () => { app.executeCommand(new Commands.ClearScoreCommand({})); }, type: UI.ActionType.execute },
+                FileLoad: { caption: "Load", action: () => { new JMusicScoreUi.OpenFileDialog('open', app).show(); }, type: UI.ActionType.execute },
+                FileSaveAs: { caption: "SaveAs", action: () => { new JMusicScoreUi.SaveFileDialog('save', app).show(); }, type: UI.ActionType.execute },
+                Voice: {
+                    caption: "Voice",
+                    action: () => {
+                        new JMusicScoreUi.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).show();
+                    },
+                    type: UI.ActionType.execute,
+                    enabled: () => { return app.Status.currentVoice != undefined; }
+                },
+                ExportSVG: { caption: "SVG", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('SVG')).show(); }, type: UI.ActionType.execute },
+                ExportJSON: { caption: "JSON", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('JSON')).show(); }, type: UI.ActionType.execute },
+                ExportLilypond: { caption: "Lilypond", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('Lilypond')).show(); }, type: UI.ActionType.execute },
+                ExportMusicXml: { caption: "MusicXml", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('MusicXML')).show(); }, type: UI.ActionType.execute },
+                Staves: { caption: "Staves", action: () => { new JMusicScoreUi.StavesDialog('menu', app).show(); }, type: UI.ActionType.execute },
+                TestLoadSaved: { caption: "LoadSaved", action: () => { app.loadUsing('saved.xml', 'Server', 'JSON'); }, type: UI.ActionType.execute },
+                TestSaveSaved: { caption: "SaveSaved", action: () => { app.saveUsing('saved.xml', 'Server', 'JSON'); }, type: UI.ActionType.execute },
+            };
+
+//var actions: string[] = [];
+
+            function addMenuItem(a: string, b: string, c: string, d: string, e: () => void): void {
+                //app.addPlugin (new JMusicScoreUi.QuickMenuPlugin(a,b,c,d,e));
+                jMusicActions[a.replace("Menu", "Action")] = {
+                    caption: b, action: e, type: UI.ActionType.execute
+                }
+                //actions.push(a.replace("Menu", "Action"));
+            }
     
             /* Menus */
             //app.addPlugin(new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")));
             //app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
             conf.disableConfiguration("CanvasView");
             
-            app.addPlugin(new JMusicScoreUi.VoiceMenuPlugin(app));
+            //app.addPlugin(new JMusicScoreUi.VoiceMenuPlugin(app));
             
-            app.addPlugin(new JMusicScoreUi.StavesMenuPlugin(app));
+            //app.addPlugin(new JMusicScoreUi.StavesMenuPlugin(app));
     
             app.addPlugin(new JAppsEditors.KeybordInputPlugin());
             /*app.addPlugin(new MidiEditors.MidiInputPlugin());
@@ -159,24 +190,24 @@ export module JMusicScore {
     
                     /** test **/
     
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); }));
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function() { app.saveUsing('saved.xml', 'Server', 'JSON'); }));
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("UpdateAllMenu", "Update all", "TestMenu", "Test", function() {
+            addMenuItem("LoadSavedMenu", "Load Saved", "TestMenu", "Test", function() { app.loadUsing('saved.xml', 'Server', 'JSON'); });
+            addMenuItem("SaveSavedMenu", "Save Saved", "TestMenu", "Test", function() { app.saveUsing('saved.xml', 'Server', 'JSON'); });
+            addMenuItem("UpdateAllMenu", "Update all", "TestMenu", "Test", function() {
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {},
                     undo: (app: ScoreApplication.IScoreApplication) => {}
                 });
-            }));
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function() { $('.overlay').toggle(); }));
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestSlurMenu", "Create slur", "TestMenu", "Test", function() {
+            });
+            addMenuItem("TestHideHintMenu", "Hint show/hide", "TestMenu", "Test", function() { $('.overlay').toggle(); });
+            addMenuItem("TestSlurMenu", "Create slur", "TestMenu", "Test", function() {
                 var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
                 var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
                 note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.diff(note1.absTime), Model.LongDecorationType.Slur));
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
-            }));
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function() {
+            });
+            addMenuItem("TestCrescMenu", "Create cresc.", "TestMenu", "Test", function() {
                 var note1 = app.document.staffElements[0].voiceElements[0].noteElements[1];
                 var note2 = app.document.staffElements[0].voiceElements[0].noteElements[4];
                 note1.addChild(note1.longDecorationElements, new Model.NoteLongDecorationElement(note1, note2.absTime.diff(note1.absTime), Model.LongDecorationType.Cresc));
@@ -186,15 +217,15 @@ export module JMusicScore {
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
-            }));
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function() {
+            });
+            addMenuItem("TestStaffExpMenu", "Create Allegro", "TestMenu", "Test", function() {
                 var staff1 = app.document.staffElements[0];
                 staff1.setStaffExpression("Allegro", Model.AbsoluteTime.startTime);
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
-            }));
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("TripletMenu", "Add triplets", "TestMenu", "Test", function() {
+            });
+            addMenuItem("TripletMenu", "Add triplets", "TestMenu", "Test", function() {
                 var cmd = new Commands.AddNoteCommand(
                     {
                         noteName: '1_4',
@@ -237,16 +268,16 @@ export module JMusicScore {
                         tuplet: new Model.TupletDef(Model.TimeSpan.halfNote, new Model.Rational(2, 3))
                     });
                 app.executeCommand(cmd);
-            }));
+            });
     
             
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function() {
+            addMenuItem("ClearBarsMenu", "Recalc bars", "TestMenu", "Test", function() {
                 app.document.withBars((bar: Model.IBar, index: number) => { app.document.removeChild(bar); });
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
-            }));
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function() {
+            });
+            addMenuItem("DebugTextMenu", "Debug to lyrics", "TestMenu", "Test", function() {
                 app.document.withVoices(function(voice, index) {
                     voice.withNotes((note: Model.INote) => {
                         var staff = voice.parent;
@@ -260,15 +291,15 @@ export module JMusicScore {
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
-            }));
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("RecreateMenu", "Recreate score", "TestMenu", "Test", function() {
+            });
+            addMenuItem("RecreateMenu", "Recreate score", "TestMenu", "Test", function() {
                 app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, app.document.getMemento());
                 app.executeCommand({
                     execute: (app: ScoreApplication.IScoreApplication) => {}
                 });
-            }));
+            });
     
-            app.addPlugin(new JMusicScoreUi.QuickMenuPlugin("MacroMenu", "Export command stack", "TestMenu", "Test", () => {
+            addMenuItem("MacroMenu", "Export command stack", "TestMenu", "Test", () => {
                 var res: string[] = [];
                 $.each((<any>app).undoStack, (i: number, e: any) => {
                     if (e.args) {
@@ -281,33 +312,13 @@ export module JMusicScore {
                     } else res.push("null");
                 });
                 new JMusicScoreUi.ShowTextDialog('menu', app).setText(res.join("\n")).show();
-            }));
+            });
             //app.addPlugin(new Ui.PianoPlugIn());
             //app.addPlugin(new ScriptRunner.ScriptRunnerPlugIn());
     
             app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
             //app.AddPlugin(new Players.MidiPlayer());
-            
-            var jMusicActions: UI.ActionCollection = {
-                FileNew: { caption: "New", action: () => { app.executeCommand(new Commands.ClearScoreCommand({})); }, type: UI.ActionType.execute },
-                FileLoad: { caption: "Load", action: () => { new JMusicScoreUi.OpenFileDialog('open', app).show(); }, type: UI.ActionType.execute },
-                FileSaveAs: { caption: "SaveAs", action: () => { new JMusicScoreUi.SaveFileDialog('save', app).show(); }, type: UI.ActionType.execute },
-                Voice: {
-                    caption: "Voice",
-                    action: () => {
-                        new JMusicScoreUi.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).show();
-                    },
-                    type: UI.ActionType.execute,
-                    enabled: () => { return app.Status.currentVoice != undefined; }
-                },
-                ExportSVG: { caption: "SVG", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('SVG')).show(); }, type: UI.ActionType.execute },
-                ExportJSON: { caption: "JSON", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('JSON')).show(); }, type: UI.ActionType.execute },
-                ExportLilypond: { caption: "Lilypond", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('Lilypond')).show(); }, type: UI.ActionType.execute },
-                ExportMusicXml: { caption: "MusicXml", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('MusicXML')).show(); }, type: UI.ActionType.execute },
-                Staves: { caption: "Staves", action: () => { new JMusicScoreUi.StavesDialog('menu', app).show(); }, type: UI.ActionType.execute },
-                TestLoadSaved: { caption: "LoadSaved", action: () => { app.loadUsing('saved.xml', 'Server', 'JSON'); }, type: UI.ActionType.execute },
-                TestSaveSaved: { caption: "SaveSaved", action: () => { app.saveUsing('saved.xml', 'Server', 'JSON'); }, type: UI.ActionType.execute },
-            };
+
             var jMusicMenuDef: UI.MenuDef = {
                 items: [
                     {
@@ -356,12 +367,48 @@ export module JMusicScore {
                             {
                                 action: "TestSaveSaved",
                             },
+                            {
+                                action: "LoadSavedAction",
+                            },
+                            {
+                                action: "SaveSavedAction",
+                            },
+                            {
+                                action: "UpdateAllAction",
+                            },
+                            {
+                                action: "TestHideHintAction",
+                            },
+                            {
+                                action: "TestSlurAction",
+                            },
+                            {
+                                action: "TestCrescAction",
+                            },
+                            {
+                                action: "TestStaffExpAction",
+                            },
+                            {
+                                action: "TripletAction",
+                            },
+                            {
+                                action: "DebugTextAction",
+                            },
+                            {
+                                action: "ClearBarsAction",
+                            },
+                            {
+                                action: "RecreateAction",
+                            },
+                            {
+                                action: "MacroAction",
+                            },
                         ]
                     },
                 ],
             };
-    
-           
+//console.log(actions);
+
             var menuman = new MenuManager.MenuManager('#notetools5');
             menuman.addActions(jMusicActions);
             menuman.setMenu(jMusicMenuDef);
