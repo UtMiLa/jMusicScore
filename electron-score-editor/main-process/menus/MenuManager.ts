@@ -74,11 +74,16 @@ export module MenuManager{
             return $menuSpan;
         }*/
 
+        
+        isParentItem(menuDef: any): menuDef is UI.ParentMenuItemDef {
+            return menuDef.subItems != undefined;
+        }
+
 
         createMenu(menu: UI.MenuItemDef): any{
             let actionName = menu.action;
             let caption = "¤" + actionName + "¤";
-            if ((<UI.ParentMenuItemDef>menu).caption) {
+            if (this.isParentItem(menu)) {//if ((<UI.ParentMenuItemDef>menu).caption) {
                 caption = (<UI.ParentMenuItemDef>menu).caption;
             }
             var type: UI.ActionType;
@@ -98,9 +103,9 @@ export module MenuManager{
                     action.action();
                 };
             }
-            if ((<UI.ParentMenuItemDef>menu).subItems) {
-                for (var i = 0; i < (<UI.ParentMenuItemDef>menu).subItems.length; i++){
-                    let subItem = (<UI.ParentMenuItemDef>menu).subItems[i];
+            if (this.isParentItem(menu)) {
+                for (var i = 0; i < menu.subItems.length; i++){
+                    let subItem = menu.subItems[i];
                     //let subItemToAdd= { label: subitem.action };
                     obj.submenu.push(this.createMenu(subItem));
                 }
