@@ -23,6 +23,10 @@ import {Validators} from "../../../jMusicScore/validators";
 import {GhostElements} from "../../../jMusicScore/ghostElements";
 
 
+const electron = require('electron');
+//const BrowserWindow = electron.BrowserWindow
+const Menu = electron.remote.Menu;
+const app = electron.remote.app;
 
 
 export module MenuManager{
@@ -36,10 +40,10 @@ export module MenuManager{
             super();
         }
 
-        private createMenuButton(item: UI.ParentMenuItemDef): JQuery {
+        /*private createMenuButton(item: UI.ParentMenuItemDef): JQuery {
             var $menuSpan = $("<span>");
-            var $menuButton = $('<button class="ui-widget-header ui-corner-all ui-button ui-widget">').text(item.caption).appendTo($menuSpan);
-            var $menuList = $('<ul>').appendTo($menuSpan).menu().hide();
+            var $menuButton = $('<button class="ui-widget-header ui-corner-all ui-button ui-widget">').text(item.caption + "---").appendTo($menuSpan);
+            var $menuList = $('<ul style="color:red">').appendTo($menuSpan).menu().hide();
             $menuButton.on("click", function() {
                 $menuList.show().position({
                     my: "left top",
@@ -68,11 +72,66 @@ export module MenuManager{
                 };
             }
             return $menuSpan;
+        }*/
+
+        
+        isParentItem(menuDef: any): menuDef is UI.ParentMenuItemDef {
+            return menuDef.subItems != undefined;
+        }
+
+
+        createMenu(menu: UI.MenuItemDef): any{
+            let actionName = menu.action;
+            let caption = "¤" + actionName + "¤";
+            if (this.isParentItem(menu)) {//if ((<UI.ParentMenuItemDef>menu).caption) {
+                caption = (<UI.ParentMenuItemDef>menu).caption;
+            }
+            var type: UI.ActionType;
+            var action: UI.Action = null;
+            if (this._actions[actionName]) {
+                action = this._actions[actionName]
+                caption = action.caption;
+                type = action.type;
+            }
+            var obj: any = {
+                label:caption,
+                submenu: <any[]>[]
+            };
+
+            if (action){
+                obj.click = function (item: any, focusedWindow: any) {
+                    action.action();
+                };
+            }
+            if (this.isParentItem(menu)) {
+                for (var i = 0; i < menu.subItems.length; i++){
+                    let subItem = menu.subItems[i];
+                    //let subItemToAdd= { label: subitem.action };
+                    obj.submenu.push(this.createMenu(subItem));
+                }
+            }
+            else {
+                obj.submenu = undefined;
+            }
+            return obj;
         }
 
         setMenu(menuDef: UI.MenuDef): void {
+            //console.log("setMenu");
+            //console.log(menuDef);
             super.setMenu(menuDef);
-            var noItems = menuDef.items.length;
+
+            let template = [];
+            for(var i = 0; i < menuDef.items.length; i++){
+                template.push(this.createMenu(menuDef.items[i]));
+            }
+              
+            const menu = Menu.buildFromTemplate(template)
+            Menu.setApplicationMenu(menu)
+            
+
+
+            /*var noItems = menuDef.items.length;
             var $element = $(this.element);
             $element.addClass("controlgroup");
             $element.css({
@@ -105,16 +164,16 @@ export module MenuManager{
                         var $btn = $('<button class="ui-widget-header ui-corner-all ui-button ui-widget">').text(caption).click(action.action);
                         $btn.data("action", action);
                         $element.append($("<span>").append($btn.button()));
-                        /*if ((action && action.enabled && !action.enabled()) || !action) {
-                            $btn.button("option", "disabled", true);
-                        }*/
+//                        /*if ((action && action.enabled && !action.enabled()) || !action) {
+//                            $btn.button("option", "disabled", true);
+//                        }
                     }
                 }
             }
             $element.controlgroup();
             $element.click(() => {
                 this.updateMenuItems();
-            });
+            });*/
         }
 
         updateMenuItems() {
