@@ -1,7 +1,7 @@
 import{Application} from "../jApps/application";
 import{Editors as JAppsEditors} from "../jApps/keyboard";
 import{Configuration} from "../jApps/Configuration";
-import{IO} from "../jApps/jApps.BrowserFileSystem";
+//import{IO} from "../jApps/jApps.BrowserFileSystem";
 import {CanvasView} from "../jMusicScore/jMusicScore.CanvasView";
 import {SvgView} from "../jMusicScore/jMusicScore.SvgView";
 import {ScoreApplication} from "../jMusicScore/jMusicScore.Application";

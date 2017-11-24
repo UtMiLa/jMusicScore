@@ -192,17 +192,17 @@ body {
   border-right: solid black 3px;
 }
 #tast53 {
-  background-image: url(../images/symbol1/e_clefs.F_change.png);
+  background-image: url(../../jMusicScore/images/symbol1/e_clefs.F_change.png);
   background-position: -7px 32px;
   background-repeat: no-repeat;
 }
 #tast60 {
-  background-image: url(../images/symbol1/e_clefs.C_change.png);
+  background-image: url(../../jMusicScore/images/symbol1/e_clefs.C_change.png);
   background-position: -7px 32px;
   background-repeat: no-repeat;
 }
 #tast67 {
-  background-image: url(../images/symbol1/e_clefs.G_change.png);
+  background-image: url(../../jMusicScore/images/symbol1/e_clefs.G_change.png);
   background-position: -7px 32px;
   background-repeat: no-repeat;
 }
@@ -234,7 +234,7 @@ body {
   height: 38px;
 }
 .toolbarArea #notetools1 .ui-button .ui-icon {
-  background-image: url(../images/UIimages.png);
+  background-image: url(../../jMusicScore/images/UIimages.png);
   width: 33px;
   height: 40px;
   top: 0px;
