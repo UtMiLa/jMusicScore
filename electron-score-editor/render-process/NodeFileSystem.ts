@@ -1,83 +1,41 @@
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 
 import {Application} from '../../japps/application';
-//import {fs} from "fs";
+
 import fs = require("fs");
 
 
-    export module NodeFs {
+export module NodeFs {
 
-        /** Local file system file manager */
-        export class FsFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IFileManager<TDocumentType, TStatusManager> {
-            constructor(private id: string) {
-                // new ServerFileManager ("Handler.ashx")
-            }
-
-            init(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
-
-            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
-
-            getId(): string { return this.id; }
-
-            public getFileList(handler: (data: string[]) => void) {
-                /*$.ajax(this.ajaxUrl, {
-                    success: function (data: string) {
-                        var files = data.split('\n');
-                        handler(files);
-                    },
-                    cache: false
-                });*/
-            }
-
-            public loadFile(name: string, handler: (data: string, name: string) => void) {
-                /*$.ajax(this.ajaxUrl, {
-                    success: function (data: string) {
-                        handler(data, name);
-                    },
-                    data: { 'Name': name },
-                    cache: false
-                });*/
-            }
-
-            public saveFile(name: string, data: string, handler: (res: string) => void) {
-                /*$.ajax(this.ajaxUrl, {
-                    success: function (res: string) {
-                        handler(res);
-                    },
-                    type: 'POST',
-                    data: { 'Name': name, 'Data': data }
-                });*/
-            }
+    /** Local file system file manager */
+    export class FsFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IFileManager<TDocumentType, TStatusManager> {
+        constructor(private id: string) {
         }
 
-        /** Local storage file manager using the browser's local storage*//*
-        export class LocalStorageFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IFileManager<TDocumentType, TStatusManager> {
-            constructor(private id: string) {
-            }
+        init(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
 
-            init(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
+        exit(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
 
-            exit(app: Application.AbstractApplication<TDocumentType, TStatusManager>): void { }
+        getId(): string { return this.id; }
 
-            getId(): string { return this.id; }
+        public getFileList(handler: (data: string[]) => void) {
+            fs.readdir("C:\\udv", {}, (err, files: string[]) => {
+                handler(files);
+            });
+        }
 
-            public getFileList(handler: (data: string[]) => void) {
-                /*var a: string = 'file:' + this.id + ':';
-                var res: string[] = [];
-                for (var key in localStorage) {
-                    if (key.substr(0, a.length) === a) {
-                        res.push(key.substr(a.length));
-                    }
-                }
-                handler(res);*//*
-            }
+        public loadFile(name: string, handler: (data: string, name: string) => void) {
+            fs.readFile("C:\\udv\\" + name, (err, data: Buffer) => {
+                handler(data.toString(), name);
+            });
+        }
 
-            public loadFile(name: string, handler: (data: string, name: string) => void) {
-                handler(localStorage['file:' + this.id + ':' + name], name);
-            }
-
-            public saveFile(name: string, data: string, handler: (res: string) => void) {
-                localStorage['file:' + this.id + ':' + name] = data;
-            }
-        }*/
+        public saveFile(name: string, data: string, handler: (res: string) => void) {
+            fs.writeFile("C:\\udv\\" + name, data, (err) => {
+                if (err) throw err;
+                handler("saved");
+                console.log('The file has been saved!');
+                });
+        }
     }
+}
