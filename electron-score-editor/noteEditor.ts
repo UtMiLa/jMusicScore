@@ -22,6 +22,7 @@ import {GhostElements} from "../jMusicScore/ghostElements";
 
 import {UI} from "../jApps/Japps.ui";
 import {MenuManager} from "./main-process/menus/MenuManager";
+import {NodeFs} from "./render-process/NodeFileSystem";
 
 const JApps = {
     Configuration: Configuration,
@@ -54,6 +55,7 @@ export module JMusicScore {
                 this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Aspx handler", () => { return new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"); }));
                 this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("PHP handler", () => { return new IO.ServerFileManager("/Handler.php", "Server (PHP)"); }));
                 this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Local", () => { return new IO.LocalStorageFileManager("Local"); }));
+                this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("File", () => { return new NodeFs.FsFileManager("File");}));
     
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
                 this.addConfiguration(new JApps.Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
