@@ -4,14 +4,23 @@
   "description": "jMusicScore is a library of Typescript classes to represent, view and edit music scores.",
   "author": "John Ekberg",
   "license": "ISC",
-  "files": ["*.d.ts", "*.js" ],
+  "files": [
+    "*.d.ts",
+    "*.js"
+  ],
   "scripts": {
-      "preinstall": "npm install ../japps/"
+    "preinstall": "npm install ../japps/",
+    "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "main": "jMusicScore.js",
   "bugs": {
     "url": "https://github.com/UtMiLa/jMusicScore/issues"
   },
-  "homepage": "https://github.com/UtMiLa/jMusicScore#readme"
+  "homepage": "https://github.com/UtMiLa/jMusicScore#readme",
+  "dependencies": {
+    "@types/chai": "^4.0.5",
+    "@types/mocha": "^2.2.44",
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
+  }
 }
- 

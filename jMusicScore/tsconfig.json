@@ -2,9 +2,8 @@
     "compilerOptions": {
         "target": "es5",
         "sourceMap": true,
-        "module": "amd",
+        "module": "commonjs",
         "moduleResolution": "node",
-        "outFile": "jMusicScore.js",
         "isolatedModules": false,
         "jsx": "react",
         "experimentalDecorators": true,
@@ -21,10 +20,12 @@
     "jMusicScore.Spacing.ts", 
     "jMusicScore.Views.ts", 
     "*.ts", 
+    "test/*.ts", 
     "scripts/typings/*/*.d.ts"
   ],
   "exclude": [
     "**/*.spec.ts",
-    "*.d.ts"
+    "*.d.ts",
+    "Scripts/typings/jasmine/jasmine.d.ts"
   ]
 }

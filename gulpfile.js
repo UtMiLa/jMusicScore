@@ -54,7 +54,7 @@ var appProj = ts.createProject("jApps/tsconfig.json", {
     "outFile": "jApps.js"
 
  });
-var jMusicScoreProj = ts.createProject("jMusicScore/tsconfig.json", { outFile: "jMusicScore/jMusicScore.js" });
+var jMusicScoreProj = ts.createProject("jMusicScore/tsconfig.json", { /*outFile: "jMusicScore/jMusicScore.js"*/ });
 var noteEditorProj = ts.createProject("noteEditor/tsconfig.json", { outFile: "noteEditor/noteEditor.js" });
 var ckProj = ts.createProject("CKEditorPlugin/tsconfig.json", { outFile: "CKEditorPlugin/app.js" });
 var txProj = ts.createProject("TextMusicEditor/tsconfig.json", { outFile: "TextMusicEditor/app.js" });
