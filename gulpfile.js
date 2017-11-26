@@ -10,6 +10,7 @@ var browserify = require("gulp-browserify");
 var concat = require('gulp-concat');
 var less = require('gulp-less');
 //var pegjs = require("gulp-pegjs");
+var fs = require('fs');
 
 var gutil = require('gulp-util');
 var browserSync = require('browser-sync');
@@ -84,6 +85,14 @@ gulp.task('jMusicScore_ts', function () {
         .pipe(jMusicScoreProj())
         .pipe(gulp.dest("dist/jMusicScore"))
         .pipe(gulp.dest("electron-score-editor/jMusicScore"));
+});
+
+gulp.task('Browserify', function () {
+    gulp.src('./jMusicScore/jMusicScore.all.js')
+    .pipe(browserify({            
+            debug: true
+          }))          
+        .pipe(gulp.dest('dist/jMusicScore_b'));
 });
 
 gulp.task('electron_ts', function () {

@@ -31,6 +31,11 @@
             "type": "gulp",
             "task": "jMusicScore_ts",
             "problemMatcher": []
+        },
+        {
+            "type": "gulp",
+            "task": "Browserify",
+            "problemMatcher": []
         }
     ]
 }
