@@ -36,6 +36,11 @@
             "type": "gulp",
             "task": "Browserify",
             "problemMatcher": []
+        },
+        {
+            "type": "gulp",
+            "task": "noteEditor_ts",
+            "problemMatcher": []
         }
     ]
 }

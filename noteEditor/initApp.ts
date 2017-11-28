@@ -1,16 +1,26 @@
-﻿import {Application} from "../JApps/application";
-import {Configuration} from "../JApps/Configuration";
-import {IO} from "../JApps/jApps.BrowserFileSystem";
-import {UI} from "../JApps/Japps.ui";
+﻿import{Application} from "../jApps/application";
+import{Editors as JAppsEditors} from "../jApps/keyboard";
+import{Configuration} from "../jApps/Configuration";
+import{IO} from "../jApps/jApps.BrowserFileSystem";
+import {CanvasView} from "../jMusicScore/jMusicScore.CanvasView";
+import {SvgView} from "../jMusicScore/jMusicScore.SvgView";
+import {ScoreApplication} from "../jMusicScore/jMusicScore.Application";
+import {MusicEditors} from "../jMusicScore/jMusicScore.Editors";
+import {MusicToolbar} from "../jMusicScore/jMusicScore.Toolbar";
 import {Model} from "../jMusicScore/jMusicScore";
+import {JMusicScoreUi} from "../jMusicScore/jMusicScore.UI";
+import {Commands} from "../jMusicScore/commands";
+import {Players} from "../jMusicScore/midiEditor";
+import {Editors as MidiEditors} from "../jMusicScore/midiIn";
+import {FinaleUi} from "../jMusicScore/FinaleEmulator";
+
 import {MusicXml} from "../jMusicScore/jMusicScore.MusicXml";
 import {Lilypond} from "../jMusicScore/jMusicScore.Lilypond";
-import {ScoreApplication, Views, CanvasView, SvgView} from "../jMusicScore/jMusicScore.Views";
 import {Json} from "../jMusicScore/jsonReader";
 import {Validators} from "../jMusicScore/validators";
 import {GhostElements} from "../jMusicScore/ghostElements";
-import {JMusicScoreUi} from "../jMusicScore/jMusicScore.UI";
-import {Commands} from "../jMusicScore/commands";
+
+import {UI} from "../jApps/Japps.ui";
 
 
 export module JMusicScore {
@@ -39,9 +49,9 @@ export module JMusicScore {
             this.addConfiguration(new Configuration.PluginConfiguration("CanvasView", () => { return new CanvasView.CanvasViewer($('#svgArea'), $("#appContainer")); }));
             this.addConfiguration(new Configuration.PluginConfiguration("SvgView", () => { return new SvgView.SvgViewer($('#svgArea'), $("#appContainer")); }));
             this.addConfiguration(new Configuration.PluginConfiguration("SvgView.HintAreaPlugin", SvgView.HintAreaPlugin));
-            this.addConfiguration(new Configuration.PluginConfiguration("Ui.ToolbarPlugin", JMusicScoreUi.ToolbarPlugin));
+            this.addConfiguration(new Configuration.PluginConfiguration("Ui.ToolbarPlugin", MusicToolbar.ToolbarPlugin));
             this.addConfiguration(new Configuration.PluginConfiguration("Ui.FileMenuPlugin", JMusicScoreUi.FileMenuPlugin));
-            this.addConfiguration(new Configuration.PluginConfiguration("Ui.ExportMenuPlugin", JMusicScoreUi.ExportMenuPlugin));/**/
+            this.addConfiguration(new Configuration.PluginConfiguration("Ui.ExportMenuPlugin", JMusicScoreUi.ExportMenuPlugin));            
         }
     }
 
@@ -131,9 +141,9 @@ export module JMusicScore {
         
         app.addPlugin(new JMusicScoreUi.StavesMenuPlugin(app));
 
-        app.addPlugin(new JApps.Editors.KeybordInputPlugin());
-        app.addPlugin(new Editors.MidiInputPlugin());
-        app.registerEventProcessor(new Editors.MidiEditor()); // "midiNoteOff", 
+        app.addPlugin(new JAppsEditors.KeybordInputPlugin());
+        app.addPlugin(new MidiEditors.MidiInputPlugin());
+        app.registerEventProcessor(new MidiEditors.MidiEditor()); // "midiNoteOff", 
 
                 /** test **/
 
@@ -250,7 +260,7 @@ export module JMusicScore {
             var res: string[] = [];
             $.each((<any>app).undoStack, (i: number, e: any) => {
                 if (e.args) {
-                    var macroDef = Model.MacroExporter.makeMacro(e); //e.macro();
+                    var macroDef = Commands.MacroExporter.makeMacro(e); //e.macro();
                     var keyValues: string[] = [];
                     $.each(macroDef.args, (key: string, val: any) => {
                         keyValues.push(key + ': ' + val);
@@ -261,32 +271,32 @@ export module JMusicScore {
             new JMusicScoreUi.ShowTextDialog('menu', app).setText(res.join("\n")).show();
         }));
         //app.addPlugin(new Ui.PianoPlugIn());
-        app.addPlugin(new ScriptRunner.ScriptRunnerPlugIn());
+   //     app.addPlugin(new ScriptRunner.ScriptRunnerPlugIn());
 
         app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
         //app.AddPlugin(new Players.MidiPlayer());
         
-        var jMusicActions: JApps.UI.ActionCollection = {
-            FileNew: { caption: "New", action: () => { app.executeCommand(new Commands.ClearScoreCommand({})); }, type: JApps.UI.ActionType.execute },
-            FileLoad: { caption: "Load", action: () => { new JApps.Ui.OpenFileDialog('open', app).show(); }, type: JApps.UI.ActionType.execute },
-            FileSaveAs: { caption: "SaveAs", action: () => { new JApps.Ui.SaveFileDialog('save', app).show(); }, type: JApps.UI.ActionType.execute },
+        var jMusicActions: UI.ActionCollection = {
+            FileNew: { caption: "New", action: () => { app.executeCommand(new Commands.ClearScoreCommand({})); }, type: UI.ActionType.execute },
+            FileLoad: { caption: "Load", action: () => { new JMusicScoreUi.OpenFileDialog('open', app).show(); }, type: UI.ActionType.execute },
+            FileSaveAs: { caption: "SaveAs", action: () => { new JMusicScoreUi.SaveFileDialog('save', app).show(); }, type: UI.ActionType.execute },
             Voice: {
                 caption: "Voice",
                 action: () => {
-                    new Ui.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).show();
+                    new JMusicScoreUi.VoiceDialog('menu', app).setVoice(app.Status.currentVoice).show();
                 },
-                type: JApps.UI.ActionType.execute,
+                type: UI.ActionType.execute,
                 enabled: () => { return app.Status.currentVoice != undefined; }
             },
-            ExportSVG: { caption: "SVG", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('SVG')).show(); }, type: JApps.UI.ActionType.execute },
-            ExportJSON: { caption: "JSON", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('JSON')).show(); }, type: JApps.UI.ActionType.execute },
-            ExportLilypond: { caption: "Lilypond", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('Lilypond')).show(); }, type: JApps.UI.ActionType.execute },
-            ExportMusicXml: { caption: "MusicXml", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('MusicXML')).show(); }, type: JApps.UI.ActionType.execute },
-            Staves: { caption: "Staves", action: () => { new JMusicScoreUi.StavesDialog('menu', app).show(); }, type: JApps.UI.ActionType.execute },
-            TestLoadSaved: { caption: "LoadSaved", action: () => { app.loadUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute },
-            TestSaveSaved: { caption: "SaveSaved", action: () => { app.saveUsing('saved.xml', 'Server', 'JSON'); }, type: JApps.UI.ActionType.execute },
+            ExportSVG: { caption: "SVG", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('SVG')).show(); }, type: UI.ActionType.execute },
+            ExportJSON: { caption: "JSON", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('JSON')).show(); }, type: UI.ActionType.execute },
+            ExportLilypond: { caption: "Lilypond", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('Lilypond')).show(); }, type: UI.ActionType.execute },
+            ExportMusicXml: { caption: "MusicXml", action: () => { new JMusicScoreUi.ShowTextDialog('menu', app).setText(app.saveToString('MusicXML')).show(); }, type: UI.ActionType.execute },
+            Staves: { caption: "Staves", action: () => { new JMusicScoreUi.StavesDialog('menu', app).show(); }, type: UI.ActionType.execute },
+            TestLoadSaved: { caption: "LoadSaved", action: () => { app.loadUsing('saved.xml', 'Server', 'JSON'); }, type: UI.ActionType.execute },
+            TestSaveSaved: { caption: "SaveSaved", action: () => { app.saveUsing('saved.xml', 'Server', 'JSON'); }, type: UI.ActionType.execute },
         };
-        var jMusicMenuDef: JApps.UI.MenuDef = {
+        var jMusicMenuDef: UI.MenuDef = {
             items: [
                 {
                     caption: "File",
@@ -340,7 +350,7 @@ export module JMusicScore {
         };
 
        
-        var menuman = new JApps.UI.JQUIMenuManager('#notetools5');
+        var menuman = new UI.JQUIMenuManager('#notetools5');
         menuman.addActions(jMusicActions);
         menuman.setMenu(jMusicMenuDef);
 

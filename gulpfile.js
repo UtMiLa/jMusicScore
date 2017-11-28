@@ -56,7 +56,7 @@ var appProj = ts.createProject("jApps/tsconfig.json", {
 
  });
 var jMusicScoreProj = ts.createProject("jMusicScore/tsconfig.json", { /*outFile: "jMusicScore/jMusicScore.js"*/ });
-var noteEditorProj = ts.createProject("noteEditor/tsconfig.json", { outFile: "noteEditor/noteEditor.js" });
+var noteEditorProj = ts.createProject("noteEditor/tsconfig.json", { /*outFile: "noteEditor/noteEditor.js"*/ });
 var ckProj = ts.createProject("CKEditorPlugin/tsconfig.json", { outFile: "CKEditorPlugin/app.js" });
 var txProj = ts.createProject("TextMusicEditor/tsconfig.json", { outFile: "TextMusicEditor/app.js" });
 var tinyProj = ts.createProject("TinyMCEPlugin/tsconfig.json", { outFile: "TinyMCEPlugin/app.js" });
@@ -104,7 +104,10 @@ gulp.task('electron_ts', function () {
 gulp.task('noteEditor_ts', function () {
     return noteEditorProj.src()
         .pipe(noteEditorProj())
-        .pipe(gulp.dest("dist/noteEditor"));
+        .pipe(browserify({            
+            debug: true
+          }))          
+        .pipe(gulp.dest("noteEditor/jmusic"));
 });
 
 gulp.task('textmusic_ts', function () {
