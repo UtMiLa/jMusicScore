@@ -1,6 +1,7 @@
 require("../jApps/application");
 require("../jApps/keyboard");
 require("../jApps/Configuration");
+require("../jApps/Browser/jApps.Browser");
 require("../jApps/jApps.BrowserFileSystem");
 require("../jMusicScore/jMusicScore.CanvasView");
 require("../jMusicScore/jMusicScore.SvgView");

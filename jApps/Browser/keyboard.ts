@@ -1,4 +1,4 @@
-import {Application} from './application';
+import {Application} from '../application';
 
 
     export module Editors {
@@ -8,9 +8,9 @@ import {Application} from './application';
                     //if (document.activeElement && document.activeElement !== document.body && document.activeElement.tagName !== 'svg') return; // todo: svg element also gets focus
 
                     var theKeyCode = event.keyCode || event.which;
-                    var keyDefs = <any>$.ui.keyCode;
+                    var keyDefs: JQueryUI.KeyCode = $.ui.keyCode;
                     for (var key in keyDefs) {
-                        if (theKeyCode == keyDefs[key]) {
+                        if (theKeyCode == (<any>keyDefs)[key]) {
                             if (event.altKey) key = 'ALT-' + key;
                             if (event.shiftKey) key = 'SHIFT-' + key;
                             if (event.ctrlKey) key = 'CTRL-' + key;

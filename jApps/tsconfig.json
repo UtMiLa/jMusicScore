@@ -17,6 +17,7 @@
     },
   "include": [
     "*.ts", 
+    "Browser/*.ts", 
     "scripts/typings/*/*.d.ts"
   ],
   "exclude": [

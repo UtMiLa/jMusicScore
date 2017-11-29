@@ -2,9 +2,10 @@
 import {UI} from "../../../jApps/Japps.ui";
 
 import{Application} from "../../../jApps/application";
-import{Editors as JAppsEditors} from "../../../jApps/keyboard";
+import{Editors as JAppsEditors} from "../../../jApps/Browser/keyboard";
 import{Configuration} from "../../../jApps/Configuration";
-import{IO} from "../../../jApps/jApps.BrowserFileSystem";
+import{IO} from "../../../jApps/Browser/jApps.BrowserFileSystem";
+import{JAppsBrowser} from "../../../jApps/Browser/jApps.Browser";
 //import {MusicEditors} from "../../../jMusicScore/jMusicScore.Editors";
 import {CanvasView} from "../../../jMusicScore/jMusicScore.CanvasView";
 import {SvgView} from "../../../jMusicScore/jMusicScore.SvgView";

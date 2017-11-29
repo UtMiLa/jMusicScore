@@ -1,7 +1,8 @@
 ﻿import{Application} from "../jApps/application";
-import{Editors as JAppsEditors} from "../jApps/keyboard";
+import{Editors as JAppsEditors} from "../jApps/Browser/keyboard";
 import{Configuration} from "../jApps/Configuration";
-import{IO} from "../jApps/jApps.BrowserFileSystem";
+import{IO} from "../jApps/Browser/jApps.BrowserFileSystem";
+import{ JAppsBrowser} from "../jApps/Browser/jApps.Browser";
 import {CanvasView} from "../jMusicScore/jMusicScore.CanvasView";
 import {SvgView} from "../jMusicScore/jMusicScore.SvgView";
 import {ScoreApplication} from "../jMusicScore/jMusicScore.Application";
@@ -350,7 +351,7 @@ export module JMusicScore {
         };
 
        
-        var menuman = new UI.JQUIMenuManager('#notetools5');
+        var menuman = new JAppsBrowser.JQUIMenuManager('#notetools5');
         menuman.addActions(jMusicActions);
         menuman.setMenu(jMusicMenuDef);
 
