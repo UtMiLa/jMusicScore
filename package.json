@@ -20,5 +20,8 @@
     "mocha": "^3.5.3",
     "pegjs": "~0.10.0",
     "typescript": "^2.6.1"
+  },
+  "dependencies": {
+    "gulp-pegjs": "^0.1.0"
   }
 }

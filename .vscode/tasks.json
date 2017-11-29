@@ -41,6 +41,11 @@
             "type": "gulp",
             "task": "noteEditor_ts",
             "problemMatcher": []
+        },
+        {
+            "type": "gulp",
+            "task": "peg",
+            "problemMatcher": []
         }
     ]
 }

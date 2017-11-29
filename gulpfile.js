@@ -17,9 +17,9 @@ var browserSync = require('browser-sync');
 //var through = require('through2');
 //var assign = require('object-assign');
 
-var pegjs = require('pegjs');
+var pegjs = require('gulp-pegjs');
 var ts = require("gulp-typescript");
-
+/*
 var pegjsfunc = function (opts) {
     return through.obj(function (file, enc, cb) {
         if (file.isNull()) {
@@ -48,7 +48,7 @@ var pegjsfunc = function (opts) {
         cb();
     });
 };
-
+*/
 var appProj = ts.createProject("jApps/tsconfig.json", { 
     "module": "amd",
     "moduleResolution": "node",
@@ -150,6 +150,7 @@ gulp.task('html', function () {
 gulp.task('peg', function () {
     // place code for your default task here 
     return gulp.src(['*'+'/*.pegjs'])
+        .pipe(pegjs())
         //.pipe(pegjsfunc({ output: "source", trace: true, exportVar: "pegjs", format: "umd" }))
         .pipe(gulp.dest('dist'));
 });
