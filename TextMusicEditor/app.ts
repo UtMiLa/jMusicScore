@@ -1,7 +1,15 @@
-﻿declare var pegjs: any;
+﻿import { Model } from "../jmusicscore/jMusicScore";
+import { ScoreApplication } from "../jmusicscore/jMusicScore.Application";
+import { Application } from "../JApps/application";
+import { Validators } from "../jmusicscore/validators";
+import { GhostElements } from "../jmusicscore/ghostElements";
+import { SvgView } from "../jmusicscore/jMusicScore.SvgView";
+import { Commands } from "../jmusicscore/commands";
+
+declare var pegjs: any;
 
 class JSONCleaner {
-    public static cleanElement(type: string, element: JMusicScore.Model.IMemento) {
+    public static cleanElement(type: string, element: Model.IMemento) {
         switch (type) {
             case "Staff":
                 // for hver voice:
@@ -34,9 +42,9 @@ class JSONCleaner {
                 break;
         }
     }
-    public static clean(json: JMusicScore.Model.IMemento): JMusicScore.Model.IMemento {
+    public static clean(json: Model.IMemento): Model.IMemento {
         JSONCleaner.cleanElement(json.t, json);
-        var children = <JMusicScore.Model.IMemento[]>[];
+        var children = <Model.IMemento[]>[];
         if (json.children) {
             for (var i = 0; i < json.children.length; i++) {
                 children.push(JSONCleaner.clean(json.children[i]));
@@ -48,28 +56,28 @@ class JSONCleaner {
 }
 
 $(() => {
-    var app = <JMusicScore.ScoreApplication.IScoreApplication>new JApps.Application.AbstractApplication<JMusicScore.Model.ScoreElement, JMusicScore.ScoreApplication.ScoreStatusManager>(
+    var app = <ScoreApplication.IScoreApplication>new Application.AbstractApplication<Model.ScoreElement, ScoreApplication.ScoreStatusManager>(
         //$("#content"),
-        new JMusicScore.Model.ScoreElement(null),
-        new JMusicScore.ScoreApplication.ScoreStatusManager());
+        new Model.ScoreElement(null),
+        new ScoreApplication.ScoreStatusManager());
 
-    app.addValidator(new JMusicScore.Model.UpdateBarsValidator());
-    app.addValidator(new JMusicScore.Model.CreateTimelineValidator());
-    app.addValidator(new JMusicScore.Model.JoinNotesValidator());
-    app.addValidator(new JMusicScore.Model.SplitNotesValidator());
-    app.addValidator(new JMusicScore.Model.BeamValidator());
-    app.addValidator(new JMusicScore.Model.TieValidator());
-    app.addValidator(new JMusicScore.Model.UpdateAccidentalsValidator());
+    app.addValidator(new Validators.UpdateBarsValidator());
+    app.addValidator(new Validators.CreateTimelineValidator());
+    app.addValidator(new Validators.JoinNotesValidator());
+    app.addValidator(new Validators.SplitNotesValidator());
+    app.addValidator(new Validators.BeamValidator());
+    app.addValidator(new Validators.TieValidator());
+    app.addValidator(new Validators.UpdateAccidentalsValidator());
 
-    app.addValidator(new JMusicScore.GhostElements.GhostsValidator());
+    app.addValidator(new GhostElements.GhostsValidator());
 
     //app.addPlugin(new JMusicScore.CanvasView.CanvasViewer($('#svgArea')));
-    app.addPlugin(new JMusicScore.SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
+    app.addPlugin(new SvgView.SvgViewer($('#svgArea'), $("#appContainer")));
     $("#importmemento").click(() => {
         var txt = $("#jsoncode").val();
-        app.document = <JMusicScore.Model.IScore>JMusicScore.Model.MusicElementFactory.recreateElement(null, JSON.parse(txt)); // memento format
+        app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, JSON.parse(txt)); // memento format
         app.executeCommand({
-            execute: (app: JMusicScore.ScoreApplication.IScoreApplication) => { }
+            execute: (app: ScoreApplication.IScoreApplication) => { }
         });
     });
 
@@ -80,11 +88,11 @@ $(() => {
         var m = JSONCleaner.clean(res[0]);
         $("#json").text(JSON.stringify(res));
         $("#jsoncode").val(JSON.stringify(m));
-        app.document = <JMusicScore.Model.IScore>JMusicScore.Model.MusicElementFactory.recreateElement(null, m); // memento format
+        app.document = <Model.IScore>Model.MusicElementFactory.recreateElement(null, m); // memento format
             app.executeCommand({
-                execute: (app: JMusicScore.ScoreApplication.IScoreApplication) => { }
+                execute: (app: ScoreApplication.IScoreApplication) => { }
             });
-            var staff = app.document.addStaff(JMusicScore.Model.ClefDefinition.clefG);
+            var staff = app.document.addStaff(Model.ClefDefinition.clefG);
             var voice = staff.addVoice();
     
         /*var notes = text.split(/\s+/);
@@ -142,11 +150,11 @@ $(() => {
             }
         }
         //alert(s);*/
-            app.executeCommand(new JMusicScore.Model.AddNoteCommand({
+            app.executeCommand(new Commands.AddNoteCommand({
                 noteName: "1_4",
-                noteTime: new JMusicScore.Model.TimeSpan(1, 4),
+                noteTime: new Model.TimeSpan(1, 4),
                 grace: false,
-                pitches: [new JMusicScore.Model.Pitch(JMusicScore.Model.Pitch.noteNames.indexOf("c"), JMusicScore.Model.Pitch.intToStr(1))],
+                pitches: [new Model.Pitch(Model.Pitch.noteNames.indexOf("c"), Model.Pitch.intToStr(1))],
                 voice: voice,
                 absTime: voice.getEndTime(),
                 rest: false,
