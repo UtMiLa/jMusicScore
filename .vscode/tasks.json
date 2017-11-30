@@ -46,6 +46,11 @@
             "type": "gulp",
             "task": "peg",
             "problemMatcher": []
+        },
+        {
+            "type": "gulp",
+            "task": "textmusic_ts",
+            "problemMatcher": []
         }
     ]
 }
