@@ -13,7 +13,9 @@ function onMIDISuccess(midiAccess){
   midi = midiAccess;
   inputs = midi.inputs;
   outputs = midi.outputs;
-  setTimeout(testOutputs, 500);
+  testOutputs();
+  //setTimeout(testOutputs, 500);
+  testInputs();
 }
 
 function testOutputs(){
@@ -21,7 +23,7 @@ function testOutputs(){
   outputs.forEach(function(port){
     console.log('id:', port.id.toString(), 'manufacturer:', port.manufacturer, 'name:', port.name, 'version:', port.version);
     port.open();
-    if (port.name == "uMIDI/O22")
+    /*if (port.name == "uMIDI/O22")
       port.send([0x90, 60, 0x4f]);
     else if (port.name == "MIDIOUT2 (uMIDI/O22)")
       port.send([0x90, 61, 0x4f]);    
@@ -30,9 +32,9 @@ function testOutputs(){
       else if (port.name == "DUO-CAPTURE EX")
       port.send([0x90, 63, 0x4f]);
       else 
-      port.send([0x90, 67, 0x4f]);
+      port.send([0x90, 67, 0x4f]);*/
   });
-  setTimeout(stopOutputs, 1000);
+  //setTimeout(stopOutputs, 1000);
 }
 
 function stopOutputs(){
