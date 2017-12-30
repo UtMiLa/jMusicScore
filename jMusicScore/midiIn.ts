@@ -10,17 +10,49 @@
     //import {Commands} from "./commands";
     import {Application} from "../JApps/application";
 
-        export module Editors {
+    export module Editors {
 
-        export class MidiHelper {
+        export interface MidiInDevice{
+
+        }
+
+        export interface MidiOutDevice{
+
+        }
+        
+        /*export interface MidiInterface{
+            midiOpenIn(newMidiIn: MidiInDevice);
+            midiOpenOut(newMidiIn: MidiOutDevice);
+            midiInitialize();
+            midiSend(arg2: { code: number; a1: number; a2: number; });
+            midiCloseAll();
+            midiListInDevices(): MidiInDevice[];
+            midiListOutDevices(): MidiOutDevice[];
+        }*/
+
+        export abstract class MidiHelper /*implements MidiInterface*/ {
             constructor(private eventReceiver: Application.IEventReceiver) { }
 
-            private trigger(eventtype: string, event: Application.IMessage) {
+            // Kaldes lokalt - send event til applikation
+            protected trigger(eventtype: string, event: Application.IMessage) {
                 //var eventtype: string = event.type;
                 this.eventReceiver.processEvent(eventtype.toLowerCase(), event);
             }
 
-            private midiProc(t: number, a: number, b: number, c: number) {
+            protected midiInVars: {
+                current_in: any;
+                midiKeysPressed: number[];
+                currentChord: number[];
+            } = {
+                current_in: "0",
+                midiKeysPressed: [],
+                currentChord: []
+            };
+
+
+            // Ved midi-input: del op i cases
+            protected midiProc(t: number, a: number, b: number, c: number) {
+                //debugger;
                 this.trigger("rawMidiIn",
                     {
                         param1: a,
@@ -97,14 +129,132 @@
                     //str+="Pitch Wheel";
                 }
             }
+            
+
+            // Åbner midi og åbner input-kanal nr. newMidiIn. Initialiserer midiInVars
+            public abstract midiOpen(newMidiIn: any): any;
+             
+            // Sender midi-msg til hvilken kanal?
+            abstract midiSend(arg2: { code: number; a1: number; a2: number; }): void;
+
+            // Lukker alle MidiIn-devices
+            abstract midiClose(): void;
+
+            // Returnerer id'r for alle in-devices
+            abstract midiInList(): string[];
+
+            // in: der er sluppet en tangent
+            releaseKey(arg: number) {
+                var i: number;
+                while ((i = this.midiInVars.midiKeysPressed.indexOf(arg)) > -1) {
+                    this.midiInVars.midiKeysPressed.splice(i, 1);
+                }
+                if (this.midiInVars.midiKeysPressed.length == 0) {
+                    this.trigger("midiChordReleased", {
+                        chord: this.midiInVars.currentChord.sort()
+                    });
+                    //{ chord: this.midiInVars.currentChord.sort() });
+                    this.midiInVars.currentChord = [];
+                }
+            }
+
+            // in: der er trykket en tangent
+            pressKey(arg: number) {
+                this.midiInVars.currentChord.push(arg);
+                this.midiInVars.midiKeysPressed.push(arg);
+            }
+
+            // returnerer id for aktuelle input-device
+            get currentIn(): string {
+                return this.midiInVars.current_in;
+            }
+
+            // returnerer et array med alle aktuelt nedtrykkede tangenter
+            get keysPressed(): number[] {
+                return this.midiInVars.midiKeysPressed.sort();
+            }
+        }
+
+        export class WebMidiHelper extends MidiHelper {
+            private midi: any;
+
+            public midiOpen(newMidiIn: any): any {
+                (<any>navigator).requestMIDIAccess().then( ( midiAccess: any ) => this.onMIDISuccess(midiAccess), (msg: string) => this.onMIDIFailure(msg) );  
+                this.midiInVars.current_in = "0";
+            }
+
+            private onMIDISuccess( midiAccess: any ) {
+                console.log( "MIDI ready!" );
+                //debugger;
+                this.midi = midiAccess;  // store in the object instance
+
+                setTimeout(() =>
+                this.midi.inputs.forEach( (entry: any) => {entry.onmidimessage = ( event: any ) => {
+                    //var str = "MIDI message received at timestamp " + event.timestamp + "[" + event.data.length + " bytes]: ";
+                    //debugger;
+                    var args = [event.timeStamp, 0, 0, 0];
+                    for (var i=0; i<event.data.length; i++) {
+                      //str += "0x" + event.data[i].toString(16) + " ";
+                      if (event.data[i]) args[i+1] = event.data[i];
+                    }
+                    //console.log( str );
+                    //this.midiProc(...args)
+                    if (args[1] != 254) 
+                        this.midiProc.apply(this, args);
+                  };
+                }), 0);
+              }
+              
+              private onMIDIFailure(msg: string) {
+                console.log( "Failed to get MIDI access - " + msg );
+              }
+              
+
+
+            // Sender midi-msg til hvilken kanal?
+            midiSend(arg2: { code: number; a1: number; a2: number; }) {
+                
+            }
+
+            // Lukker alle MidiIn-devices
+            midiClose(): void {
+            }
+
+            // Returnerer id'r for alle in-devices
+            midiInList(): string[] {
+                var res: string[] = [];
+
+                this.midi.inputs.forEach((element: any) => {
+                    res.push(element.id);
+                });
+                /*for (var entry of this.midi.inputs) {
+                    var input = entry[1];
+                    res.push(input.id);
+                }*/
+                                
+                return res;
+            }
+
+        }
+
+        export class JazzMidiHelper extends MidiHelper {
+            /*constructor(private eventReceiver: Application.IEventReceiver) { }
+
+            // Kaldes lokalt - send event til applikation
+            private trigger(eventtype: string, event: Application.IMessage) {
+                //var eventtype: string = event.type;
+                this.eventReceiver.processEvent(eventtype.toLowerCase(), event);
+            }*/
+
 
             private jazz: any;
-            private midiInVars: {
+            /*private midiInVars: {
                 current_in: any;
                 midiKeysPressed: number[];
                 currentChord: number[];
-            };
+            };*/
 
+            // Åbner midi og åbner input-kanal nr. newMidiIn. Initialiserer midiInVars
             public midiOpen(newMidiIn: any): any {
                 if (!this.jazz) {
                     var r = $('<object>')
@@ -130,20 +280,24 @@
                 return this.jazz;
             }
 
+            // Sender midi-msg til hvilken kanal?
             midiSend(arg2: { code: number; a1: number; a2: number; }) {
                 this.jazz.MidiOut(arg2.code, arg2.a1, arg2.a2);
             }
 
+            // Lukker alle MidiIn-devices
             midiClose(): void {
                 this.jazz.MidiInClose();
                 this.midiInVars.current_in = '';
             }
 
+            // Returnerer id'r for alle in-devices
             midiInList(): string[] {
                 return this.jazz.MidiInList();
             }
 
-            releaseKey(arg: number) {
+            // in: der er sluppet en tangent
+            /*releaseKey(arg: number) {
                 var i: number;
                 while ((i = this.midiInVars.midiKeysPressed.indexOf(arg)) > -1) {
                     this.midiInVars.midiKeysPressed.splice(i, 1);
@@ -157,17 +311,21 @@
                 }
             }
 
+            // in: der er trykket en tangent
             pressKey(arg: number) {
                 this.midiInVars.currentChord.push(arg);
                 this.midiInVars.midiKeysPressed.push(arg);
             }
 
+            // returnerer id for aktuelle input-device
             get currentIn(): string {
                 return this.midiInVars.current_in;
             }
+
+            // returnerer et array med alle aktuelt nedtrykkede tangenter
             get keysPressed(): number[] {
                 return this.midiInVars.midiKeysPressed.sort();
-            }
+            }*/
         }
 
 
@@ -175,7 +333,7 @@
             private static _midiHelper: MidiHelper;
 
             public static getMidiHelper(app: Application.IEventReceiver): MidiHelper {
-                if (!this._midiHelper) this._midiHelper = new MidiHelper(app);
+                if (!this._midiHelper) this._midiHelper = new WebMidiHelper(app);
                 return this._midiHelper;
             }
 

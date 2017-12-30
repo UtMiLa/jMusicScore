@@ -145,6 +145,9 @@ export module JMusicScore {
     
             var conf = new MusicConfiguration(app);
 
+            app.addPlugin(new MidiEditors.MidiInputPlugin());
+            app.registerEventProcessor(new MidiEditors.MidiEditor()); // "midiNoteOff", 
+    
             
             var jMusicActions: UI.ActionCollection = {
                 FileNew: { caption: "New", action: () => { app.executeCommand(new Commands.ClearScoreCommand({})); }, type: UI.ActionType.execute },
@@ -315,7 +318,7 @@ export module JMusicScore {
                 });
                 new JMusicScoreUi.ShowTextDialog('menu', app).setText(res.join("\n")).show();
             });
-            //app.addPlugin(new Ui.PianoPlugIn());
+            app.addPlugin(new JMusicScoreUi.PianoPlugIn());
             //app.addPlugin(new ScriptRunner.ScriptRunnerPlugIn());
     
             app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
