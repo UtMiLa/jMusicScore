@@ -588,5 +588,32 @@
             }
         }
 
+        
+        export class CleanHiddenRestsValidator implements IScoreValidator {
+            public validate(app: ScoreApplication.IScoreApplication) {
+                app.document.withStaves((staff: Model.IStaff): void => {
+                    staff.withVoices((voice: Model.IVoice): void => {
+                        voice.withNotes((note: Model.INote): void => {
+                            if (note.NoteId === 'hidden') {
+                                do {                                    
+                                    var nextNote = Model.Music.nextNote(note);
+                                    if (!nextNote){
+                                        // remove?
+                                        break;
+                                    }
+                                    if (nextNote.NoteId === "hidden"){
+                                        // merge
+                                        note = Model.Music.mergeNoteWithNext(note, 1);
+                                    }
+                                    else break;
+                                }
+                                while (true);
+                            }
+                        });
+                    });
+                });
+            }
+        }
+
     }
 //}

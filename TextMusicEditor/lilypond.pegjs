@@ -10,6 +10,12 @@ Expression
   music:Music { return {mus: music}; } /
   notes:MusicElement+ { return {n: notes}; } /
   s:[ \t\n\r]+ { return undefined; } 
+  
+TransposeFunction
+    = "\\transpose" _ Note Note Music _ /
+    "\\modalTranspose" _ Note Note Music Music _
+RepeatFunction
+	= "\\repeat" _ "unfold" _ no:[0-9]+ _ Music {return {"t": "repeat"}; }
 Score
 	= "\\score" _ m:ScoreMusic { 
 		var res = {
@@ -42,14 +48,20 @@ Music
 			children: notes.reverse() // kommer underligt nok i omvendt rækkefølge
 		};
 	} /
-     "{" __ "<<" __ StaffExpression* ">>" __ "}"
+     "{" __ "<<" __ StaffExpression* ">>" __ "}"/
+    variable: VariableRef
 MusicElement
 	= Note /
+    transpose: TransposeFunction /
+    repeat: RepeatFunction /
     Chord /
     ClefDef /
     KeyDef /
     TimeDef /
-    Command
+    Command /
+    Music
+VariableRef
+	= "\\" name:[a-zA-Z]+ __
 Command
 	= "\\numericTimeSignature" _ /
     "~" _ /
@@ -116,7 +128,7 @@ Pitch "pitch"
 					return {
 						t: "Notehead",
 						def: {
-							p: JMusicScore.Model.Pitch.noteNames.indexOf(pit),
+							p: ['c', 'd', 'e', 'f', 'g', 'a', 'b'].indexOf(pit),
 							a: alteration,
 							forceAcc: false,
 							tie: false,
@@ -131,8 +143,8 @@ Octave "sup_quotes_sub_quotes"
 	= s:[\',]* { return s.join(""); }
     
 Relative "relative_music"
-	= rel:"\\relative" _ s:Note __ {
-  	return { rel: s }
+	= rel:"\\relative" _ s:Note __ m: Music {
+  	return { rel: s, mus: m }
     }
 Version
 	= version:"\\version" _ s:String {

@@ -54,6 +54,7 @@ export module JMusicScore {
                 this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateAccidentals", Validators.UpdateAccidentalsValidator));
                 this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("GhostsValidator", GhostElements.GhostsValidator));
                 this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("UpdateBarsValidator", Validators.UpdateBarsValidator));
+                this.addConfiguration(new JApps.Configuration.ValidatorConfiguration("CleanHiddenRestsValidator", Validators.CleanHiddenRestsValidator));
     
                 this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("File", () => { return new NodeFs.FsFileManager("File");}));
                 //this.addConfiguration(new JApps.Configuration.FileManagerConfiguration("Aspx handler", () => { return new IO.ServerFileManager("/Handler.ashx", "Server (ashx)"); }));
@@ -190,8 +191,6 @@ export module JMusicScore {
             //app.addPlugin(new JMusicScoreUi.StavesMenuPlugin(app));
     
             app.addPlugin(new JAppsEditors.KeybordInputPlugin());
-            /*app.addPlugin(new MidiEditors.MidiInputPlugin());
-            app.registerEventProcessor(new MidiEditors.MidiEditor()); // "midiNoteOff", */
     
                     /** test **/
     
@@ -322,7 +321,7 @@ export module JMusicScore {
             //app.addPlugin(new ScriptRunner.ScriptRunnerPlugIn());
     
             app.addPlugin(new FinaleUi.FinaleSmartEditPlugin());
-            //app.AddPlugin(new Players.MidiPlayer());
+            //app.addPlugin(new Players.MidiPlayer());
 
             var jMusicMenuDef: UI.MenuDef = {
                 items: [

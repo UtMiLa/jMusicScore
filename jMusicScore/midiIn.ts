@@ -187,7 +187,7 @@
                 console.log( "MIDI ready!" );
                 //debugger;
                 this.midi = midiAccess;  // store in the object instance
-
+                
                 setTimeout(() =>
                 this.midi.inputs.forEach( (entry: any) => {entry.onmidimessage = ( event: any ) => {
                     //var str = "MIDI message received at timestamp " + event.timestamp + "[" + event.data.length + " bytes]: ";
@@ -213,7 +213,9 @@
 
             // Sender midi-msg til hvilken kanal?
             midiSend(arg2: { code: number; a1: number; a2: number; }) {
-                
+                this.midi.outputs.forEach(function(port: any){
+                    port.send([arg2.code, arg2.a1, arg2.a2]);
+                });
             }
 
             // Lukker alle MidiIn-devices

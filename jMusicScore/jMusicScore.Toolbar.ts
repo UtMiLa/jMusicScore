@@ -6,6 +6,7 @@ import { ScoreApplication } from "./jMusicScore.Application";
 import {UI} from "../jApps/Japps.ui";
 import {FinaleUi} from "./FinaleEmulator";
 import {JMusicScoreUi} from "./jMusicScore.UI";
+import {Players} from "./midiEditor";
 
 export module MusicToolbar{
     export class JToolbar {
@@ -190,7 +191,7 @@ export module MusicToolbar{
                         }
                     },
                 ],
-            }/*,
+            },
             {
                 type: "Buttongroup",
                 id: "_play_operations",
@@ -213,7 +214,7 @@ export module MusicToolbar{
                         },
                     },
                 ],
-            }*/
+            }
         ];
 
         public unregisterModes() {
