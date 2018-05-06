@@ -1,0 +1,6 @@
+<div >            
+  <select id="sectionChooser" (change)="selectSection($event.target.value)">
+    <option  *ngFor="let section of model | mapToIterable">{{section.key}}</option>
+  </select>
+  <app-var-list [varObject]="selectedVar" [title]="'vars'" (selectedRef)="selectRef($event)"></app-var-list>
+</div>

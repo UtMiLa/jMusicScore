@@ -1,0 +1,44 @@
+<div>
+  <div style="max-height: 500px;overflow: scroll;float:left;">
+    <app-score-view></app-score-view>
+  </div>
+  <div style="float:left;">
+    <app-midi-player></app-midi-player>
+    <app-var-list [varObject]="model.scales" [title]="'Skalaer'" (selectedRef)="selectedRef($event)"></app-var-list>
+    
+    <app-var-list [varObject]="model.variables" (selectedRef)="selectedRef($event)"></app-var-list>
+    
+    <app-section-voice-list [model]="model.sections"  (selectedRef)="selectedRef($event)"></app-section-voice-list>
+  </div>
+</div>
+<app-music-editor [selectedObject]="selectedVar" ></app-music-editor>
+<app-structured-music [selectedObject]="selectedVar" ></app-structured-music>
+
+Opret manglende
+
+<p-panel header="Stemmer" [toggleable]="true">
+  <app-voice-list></app-voice-list>
+</p-panel>
+
+<p-panel header="Sektioner" [toggleable]="true">
+  <app-section-list></app-section-list>
+</p-panel>
+
+Todo:
+<ul>
+  <li>Opret stemme</li>
+  <li>Opret manglende stemmer</li>
+  <li>Send json</li>
+  <li>Send Ly</li>
+  <li>Vis billeder</li>
+  <li>Midi-link</li>
+  <li>Sektionsliste</li>
+  <li>Stemmeliste</li>
+</ul>
+
+<ul><li>Parse ly og vis grafisk</li>
+  <li>Vis i jMusic</li>
+  <li>Rediger grafisk</li>
+  <li>Find forekomster af variable</li>
+  <li>Vis kun aktuelle variable</li>
+</ul>
