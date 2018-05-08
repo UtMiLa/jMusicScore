@@ -9,13 +9,16 @@ import { parser } from '../datamodel/lilyparser';
 export class StructuredMusicComponent implements OnInit {
 
   constructor() { }
-  private _selectedObject: {key: string, value: string};
-
+  //private _selectedObject: {key: string, value: string};
+  @Input() private parsedObject: any;
+/*
   @Input() set selectedObject(value: {key: string, value: string}) {
     try{
-      this.parsedJson = JSON.stringify(parser.parse(value.value, {}));
+      this.parsedObject = parser.parse(value.value, {});
+      this.parsedJson = JSON.stringify(this.parsedObject);
     }
     catch(e){
+      this.parsedObject =[];
       this.parsedJson = e.message;
     }
 
@@ -27,7 +30,7 @@ export class StructuredMusicComponent implements OnInit {
   };
 
   parsedJson: string;
-
+*/
   ngOnInit() {
   }
 

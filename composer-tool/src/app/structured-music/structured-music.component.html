@@ -1,3 +1,13 @@
-<p>
-  {{parsedJson}}
-</p>
+<div [ngClass]="'elem elem-' + parsedObject.t">
+  <ng-container [ngSwitch]="parsedObject.t">
+      <div *ngSwitchCase="'Voice'">stemme</div>
+      <div *ngSwitchCase="'Meter'">takt</div>
+      <div *ngSwitchCase="'Note'">node</div>
+      <div *ngSwitchCase="'Notehead'">hode</div>
+      <div *ngSwitchDefault>ukendt: {{parsedObject.t}}</div>
+  </ng-container>  
+
+  <div *ngFor="let obj of parsedObject.children">
+       <app-structured-music [parsedObject]="obj"></app-structured-music>
+  </div>
+</div>
