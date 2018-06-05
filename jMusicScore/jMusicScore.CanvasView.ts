@@ -11,6 +11,50 @@ import {Views} from "./jMusicScore.Views";
 import {SvgView} from "./jMusicScore.SvgView";
 
     export module CanvasView {
+
+        interface hash {[key: string]: any };
+
+        class DomHelper {
+            static setAttribute(elm: HTMLElement, attr: hash) {
+                $(elm).attr(attr);
+            }
+
+            static getAttribute(elm: HTMLElement, key: string){
+                return $(elm).attr(key);
+            }
+
+            static setCss(elm: HTMLElement, attr: hash) {
+                $(elm).css(attr);
+            }
+
+            static getCss(elm: HTMLElement, key: string){
+                return $(elm).css(key);
+            }
+
+            static empty(elm: HTMLElement){
+                $(elm).empty();
+            }
+            
+            static remove(elm: HTMLElement){
+                $(elm).remove();
+            }
+            
+            static append(child: HTMLElement, parent: HTMLElement){
+                $(child).appendTo(parent);
+            }
+
+            static createCanvas(parent: HTMLElement): HTMLCanvasElement{
+                return <HTMLCanvasElement>$('<canvas>').appendTo(parent)[0];
+            }            
+
+            static createElement(tag: string, parent: HTMLElement, className: string, css: hash, attr: hash): HTMLElement{
+                var res = $('<'+tag+'>').appendTo(parent);
+                if (className) res.addClass(className);
+                if (css) res.css(css);
+                if (attr) res.attr(attr);
+                return res.length ? res[0] : null;
+            }
+        }
         
                 export class CanvasGraphicsEngine implements Views.IGraphicsEngine {
                     constructor(private canvas: HTMLCanvasElement) {
@@ -23,7 +67,8 @@ import {SvgView} from "./jMusicScore.SvgView";
                         this.context.translate(x, y);
                     }
                     public setSize(width: number, height: number) {
-                        $(this.canvas).attr({ height: height, width: width });
+                        //$(this.canvas).attr({ height: height, width: width });
+                        DomHelper.setAttribute(this.canvas, { height: height, width: width });
                     }
                     public beginDraw() {
                         this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -214,11 +259,11 @@ import {SvgView} from "./jMusicScore.SvgView";
         
                 class HtmlGraphicsEngine implements Views.IGraphicsEngine, Views.ISensorGraphicsEngine {
                     constructor(private root: HTMLElement, public idPrefix: string) {
-                        this.currentGroup = $(root);
+                        this.currentGroup = root;
                     }
         
-                    private groupStack: JQuery[] = [];
-                    private currentGroup: JQuery;
+                    private groupStack: HTMLElement[] = [];
+                    private currentGroup: HTMLElement;
         
                     public calcCoordinates(event: MouseEvent): Model.Point {
                         var offsetY = event.offsetY;
@@ -242,7 +287,27 @@ import {SvgView} from "./jMusicScore.SvgView";
                     hideCursor(): void { }
                     // InsertionPoint
                     showInsertionPoint(id: string, x: number, y: number): void {
-                        var $insertPoint = $('#insertionPoint');
+                        var insertPoint = document.getElementById("insertionPoint");
+                        var parent =  document.getElementById('htmlSensor_ed_' + id);
+
+                        if (!insertPoint){
+                            insertPoint = DomHelper.createElement("div", parent, "", {
+                                position: 'relative',
+                                'margin-left': '-4px',
+                                'margin-top': '-4px',
+                                width: '5px',
+                                height: '5px',
+                                border: 'solid blue 1px'
+                           }, {'id': 'insertionPoint'});
+                        }
+                        DomHelper.setCss(insertPoint, {
+                            top: y,
+                            left: x
+                        });
+                        DomHelper.append(insertPoint, parent);
+
+
+                        /*var $insertPoint = $('#insertionPoint');
                         if (!$insertPoint.length) {
                             $insertPoint = $('<div>').attr('id', 'insertionPoint').css({
                                 position: 'relative',
@@ -256,48 +321,64 @@ import {SvgView} from "./jMusicScore.SvgView";
                         $insertPoint.css({
                             top: y,
                             left: x
-                        }).appendTo('#htmlSensor_ed_' + id);
+                        }).appendTo('#htmlSensor_ed_' + id);*/
                     }
                     hideInsertionPoint(): void {
-                        $('#insertionPoint').remove();
+                        //$('#insertionPoint').remove();
+                        DomHelper.remove(document.getElementById("insertionPoint"));
                     }
         
                     public beginDraw() {
                         //this.scale = 1;
-                        $(this.root).empty();
-                        this.currentGroup = $(this.root);
+                        //$(this.root).empty();
+                        DomHelper.empty(this.root);
+                        this.currentGroup = this.root;
                         this.groupStack = [];
                     }
                     public endDraw() {
                         this.groupStack = [];
                     }
                     public setSize(width: number, height: number) {
-                        $(this.root).css({ height: height, width: width });
+                        //$(this.root).css({ height: height, width: width });
+                        DomHelper.setCss(this.root, { height: height, width: width });
                     }
                     public createMusicObject(parent: any, item: string, x: number, y: number, scale: number): any {
-                        var $img = $('<img>')
+                        /*var $img = $('<img>')
                             .attr('src', 'images/symbol1/' + item + '.png')
                             .css({ position: 'absolute', left: x, top: y })
                             .appendTo(this.currentGroup);
-                        return $img;
+                        return $img;*/
+                        return DomHelper.createElement("img", this.currentGroup, "", { position: 'absolute', left: x, top: y }, {'src': 'images/symbol1/' + item + '.png'});
                     }
                     createPathObject(path: string, x: number, y: number, scale: number, stroke: string, fill: string, id: string = null): any {
                     }
                     createRectObject(id: any, x: number, y: number, w: number, h: number, className: string): any {
-                        var $rect = $('<div>')
-                            .css({ position: 'absolute', left: x, top: y, width: w, height: h/*, border: 'solid blue thin'*/ })
+                        /*var $rect = $('<div>')
+                            .css({ position: 'absolute', left: x, top: y, width: w, height: h/*, border: 'solid blue thin'* / })
                             //.css({ position: 'absolute', 'margin-top': y, 'margin-left': x, left: 0, top: 0, width: w, height: h, border: 'solid blue thin' })
                             .attr('id', this.idPrefix + id)
                             .appendTo(this.currentGroup);
-                        return $rect;
+                        return $rect;*/
+                        var rect = DomHelper.createElement("div", this.currentGroup, className, 
+                            { position: 'absolute', left: x, top: y, width: w, height: h, border: 'solid blue thin' },
+                            {'id': this.idPrefix + id}
+                        );
+                        return rect;
                     }
                     public drawText(id: string, text: string, x: number, y: number, justify: string): any { }
                     beginGroup(id: string, x: number, y: number, scale: number, className: string): any {
-                        var $group = $('<div>').addClass(className).attr('id', this.idPrefix + id).appendTo(this.currentGroup);
+                        /*var $group = $('<div>').addClass(className).attr('id', this.idPrefix + id).appendTo(this.currentGroup);
                         $group.css({ position: "absolute", left: x, top: y, transform: "scale(" + scale + "," + scale + ")" });
-                        this.groupStack.push($group);
-                        this.currentGroup = $group;
-                        return $group;
+                        this.groupStack.push($group[0]);
+                        this.currentGroup = $group[0];
+                        return $group;*/
+                        var group = DomHelper.createElement("div", this.currentGroup, className, 
+                            { position: "absolute", left: x, top: y, transform: "scale(" + scale + "," + scale + ")" },
+                            {'id': this.idPrefix + id}
+                        );
+                        this.groupStack.push(group);
+                        this.currentGroup = group;
+                        return group;
                     }
                     endGroup(group: any) {
                         this.groupStack.pop();
@@ -311,12 +392,17 @@ import {SvgView} from "./jMusicScore.SvgView";
                         this.root = root;
         
                         this.allLayer = <HTMLElement>document.createElement("div");
-                        $(this.allLayer).attr('id', "MusicLayer_");
+                        //$(this.allLayer).attr('id', "MusicLayer_");
+                        DomHelper.setAttribute(this.allLayer, {'id': "MusicLayer_"});
                         this.root.appendChild(this.allLayer);
         
-                        var $canvas = $('<canvas>').attr({ 'id': 'musicCanvas', 'width': '600px', 'height': '600px' }).appendTo('#svgArea');
-                        this.music = <HTMLCanvasElement>$canvas[0];
-        
+                        //var $canvas = $('<canvas>');
+                        //$canvas.appendTo('#svgArea');
+                        //$canvas.attr({ 'id': 'musicCanvas', 'width': '600px', 'height': '600px' });
+
+                        this.music = DomHelper.createCanvas(document.getElementById("svgArea")) //<HTMLCanvasElement>$canvas[0];
+                        DomHelper.setAttribute(this.music, { 'id': 'musicCanvas', 'width': '600px', 'height': '600px' });
+                        
                         this.editLayer = document.createElement("div");
         
                         this.allLayer.appendChild(this.music);
