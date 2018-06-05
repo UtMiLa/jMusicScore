@@ -14,13 +14,14 @@ import {SvgView} from "./jMusicScore.SvgView";
 
         interface hash {[key: string]: any };
 
-        class DomHelper {
+        class DomHelper { // bruger kun jQuery til at sætte/hente css, empty, sætte attr og  $(this.root).height(300);
             static setAttribute(elm: HTMLElement, attr: hash) {
-                $(elm).attr(attr);
+                $(elm).attr(attr);                
             }
 
-            static getAttribute(elm: HTMLElement, key: string){
-                return $(elm).attr(key);
+            static getAttribute(elm: HTMLElement, key: string): string {
+                return elm.getAttribute(key);
+                //return $(elm).attr(key);
             }
 
             static setCss(elm: HTMLElement, attr: hash) {
@@ -28,6 +29,7 @@ import {SvgView} from "./jMusicScore.SvgView";
             }
 
             static getCss(elm: HTMLElement, key: string){
+                //return elm.get
                 return $(elm).css(key);
             }
 
@@ -36,23 +38,28 @@ import {SvgView} from "./jMusicScore.SvgView";
             }
             
             static remove(elm: HTMLElement){
-                $(elm).remove();
+                elm.remove();
+                //$(elm).remove();
             }
             
             static append(child: HTMLElement, parent: HTMLElement){
-                $(child).appendTo(parent);
+                parent.appendChild(child);
+                //$(child).appendTo(parent);
             }
 
-            static createCanvas(parent: HTMLElement): HTMLCanvasElement{
-                return <HTMLCanvasElement>$('<canvas>').appendTo(parent)[0];
-            }            
+            static findByClass(parent: HTMLElement, className: string): HTMLElement{
+                return <HTMLElement>parent.querySelector("." + className);
+                /*var res = $(parent).find("." + className);
+                if (res.length) return res[0];
+                return null;*/
+            }
 
             static createElement(tag: string, parent: HTMLElement, className: string, css: hash, attr: hash): HTMLElement{
-                var res = $('<'+tag+'>').appendTo(parent);
-                if (className) res.addClass(className);
-                if (css) res.css(css);
-                if (attr) res.attr(attr);
-                return res.length ? res[0] : null;
+                var res = document.createElement(tag);// $('<'+tag+'>').appendTo(parent);
+                if (className) res.className = className;
+                if (css) this.setCss(res, css);
+                if (attr) this.setAttribute(res, attr);
+                return res;
             }
         }
         
@@ -400,8 +407,9 @@ import {SvgView} from "./jMusicScore.SvgView";
                         //$canvas.appendTo('#svgArea');
                         //$canvas.attr({ 'id': 'musicCanvas', 'width': '600px', 'height': '600px' });
 
-                        this.music = DomHelper.createCanvas(document.getElementById("svgArea")) //<HTMLCanvasElement>$canvas[0];
-                        DomHelper.setAttribute(this.music, { 'id': 'musicCanvas', 'width': '600px', 'height': '600px' });
+                        this.music = <HTMLCanvasElement>DomHelper.createElement("canvas", document.getElementById("svgArea"), "", null, { 'id': 'musicCanvas', 'width': '600px', 'height': '600px' });
+                        //.createCanvas() //<HTMLCanvasElement>$canvas[0];
+                        //DomHelper.setAttribute(this.music, { 'id': 'musicCanvas', 'width': '600px', 'height': '600px' });
                         
                         this.editLayer = document.createElement("div");
         
@@ -488,23 +496,30 @@ import {SvgView} from "./jMusicScore.SvgView";
         
         
                 export class CanvasViewer implements ScoreApplication.IScorePlugin {
-                    constructor(private $root: JQuery, public container: JQuery) {
+                    private root: HTMLElement;
+                    private container: HTMLElement;
+                    constructor($root: JQuery, public $container: JQuery) {
+                        this.root = $root.length ? $root[0] : null;
+                        this.container = $container[0];
                     }
         
                     private canvasHelper: CanvasHelper;
         
                     public init(app: ScoreApplication.IScoreApplication) {
                         //var $svg = app.container.find('.svgArea');
-                        if (!this.$root.length) {
-                            var $clientArea = this.container.find('.clientArea');
-                            if (!$clientArea.length) {
-                                $clientArea = $('<div>').attr('class', 'clientArea').appendTo(this.container);
+                        if (!this.root) {
+                            //var $clientArea = this.container.find('.clientArea');
+                            var clientArea = DomHelper.findByClass(this.container, 'clientArea');
+                            if (!clientArea) {
+                                clientArea = DomHelper.createElement("div", this.container, "clientArea", null, null);
+                                //$('<div>').attr('class', 'clientArea').appendTo(this.container);
                             }
-                            this.$root = $('<div>').attr('class', 'svgArea').appendTo($clientArea);
+                            this.root = DomHelper.createElement("div", clientArea, "svgArea", null, null);                             
+                            //this.$root = $('<div>').attr('class', 'svgArea').appendTo($clientArea);
                         }
-                        this.$root.height(300);
+                        $(this.root).height(300);
         
-                        this.canvasHelper = new CanvasHelper(document, this.$root[0]);
+                        this.canvasHelper = new CanvasHelper(document, this.root);
         
                         app.addDesigner(new MusicSpacing.SpacingDesigner());
                         app.addDesigner(new Views.ExpressionRenderer());
