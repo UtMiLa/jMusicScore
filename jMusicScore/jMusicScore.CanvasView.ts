@@ -14,9 +14,15 @@ import {SvgView} from "./jMusicScore.SvgView";
 
         interface hash {[key: string]: any };
 
-        class DomHelper { // bruger kun jQuery til at sætte/hente css, empty, sætte attr og  $(this.root).height(300);
+        class DomHelper { // bruger kun jQuery til at sætte/hente css, sætte attr og  $(this.root).height(300); og i calcCoordinates
             static setAttribute(elm: HTMLElement, attr: hash) {
-                $(elm).attr(attr);                
+
+                for (var key in attr) {
+                    if (attr.hasOwnProperty(key)) {
+                      elm.setAttribute(key, attr[key]);
+                    }
+                  }
+                //$(elm).attr(attr);                
             }
 
             static getAttribute(elm: HTMLElement, key: string): string {
@@ -33,8 +39,17 @@ import {SvgView} from "./jMusicScore.SvgView";
                 return $(elm).css(key);
             }
 
+            static setHeight(elm: HTMLElement, height: number){
+                $(elm).height(height);
+            }
+
             static empty(elm: HTMLElement){
-                $(elm).empty();
+                //$(elm).empty();
+                for (var elem = elm.firstChild; elem; elem = elem.nextSibling ) {
+                    if ( elem.nodeType < 6 ) {
+                        return false;
+                    }
+                }
             }
             
             static remove(elm: HTMLElement){
@@ -494,7 +509,28 @@ import {SvgView} from "./jMusicScore.SvgView";
                     }
                 }
         
+                export class CanvasQuickPainter {
+                    public paintOnCanvas(score: Model.IScore, canvas: HTMLCanvasElement){
+                        var canvasHelper = new CanvasHelper(document, canvas);
         
+                        var visitor = new Views.PrefixVisitor(new Views.RedrawVisitor(canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
+                        //canvasHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
+                        canvasHelper.MusicGraphicsHelper.beginDraw();
+                        score.visitAll(visitor);
+                        canvasHelper.MusicGraphicsHelper.endDraw();
+        
+                        /*if (!this.checkSensors) {
+                            this.checkSensors = new Views.DomCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.document, app);
+                            //app.FeedbackManager.registerClient(this.checkSensors);
+                        }
+        
+                        var visitor = new Views.PrefixVisitor(this.checkSensors, svgHelper.EditGraphicsHelper, 'ed_');*/
+                        /*canvasHelper.EditGraphicsHelper.beginDraw();
+                        score.visitAll(visitor);
+                        canvasHelper.EditGraphicsHelper.endDraw();*/
+                    }
+                }
+                
                 export class CanvasViewer implements ScoreApplication.IScorePlugin {
                     private root: HTMLElement;
                     private container: HTMLElement;
@@ -517,7 +553,8 @@ import {SvgView} from "./jMusicScore.SvgView";
                             this.root = DomHelper.createElement("div", clientArea, "svgArea", null, null);                             
                             //this.$root = $('<div>').attr('class', 'svgArea').appendTo($clientArea);
                         }
-                        $(this.root).height(300);
+                        //$(this.root).height(300);
+                        DomHelper.setHeight(this.root, 300);
         
                         this.canvasHelper = new CanvasHelper(document, this.root);
         
