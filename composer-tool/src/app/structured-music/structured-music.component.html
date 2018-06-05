@@ -2,8 +2,8 @@
   <ng-container [ngSwitch]="parsedObject.t">
       <div *ngSwitchCase="'Voice'">stemme</div>
       <div *ngSwitchCase="'Meter'">takt</div>
-      <div *ngSwitchCase="'Note'">node</div>
-      <div *ngSwitchCase="'Notehead'">hode</div>
+      <div *ngSwitchCase="'Note'">node {{parsedObject.def.time.num}}/{{parsedObject.def.time.den}}</div>
+      <div *ngSwitchCase="'Notehead'">{{parsedObject.def.p}}{{parsedObject.def.a}}</div>
       <div *ngSwitchDefault>ukendt: {{parsedObject.t}}</div>
   </ng-container>  
 

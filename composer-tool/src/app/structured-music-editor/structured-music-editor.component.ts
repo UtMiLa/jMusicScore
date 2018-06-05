@@ -10,12 +10,12 @@ export class StructuredMusicEditorComponent implements OnInit {
 
 
   constructor() { }
-  private _selectedObject: {key: string, value: string};
+  private _selectedObject: {name: string, parent: {}};
   private parsedObject: any;
 
-  @Input() set selectedObject(value: {key: string, value: string}) {
+  @Input() set selectedObject(value: {name: string, parent: {}}) {
     try{
-      this.parsedObject = parser.parse(value.value, {});
+      this.parsedObject = parser.parse(value.parent[value.name], {});
       this.parsedJson = JSON.stringify(this.parsedObject);
     }
     catch(e){

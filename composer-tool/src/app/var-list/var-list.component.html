@@ -1,5 +1,5 @@
 <p-panel header="{{title}}" [toggleable]="true">
-  <div>{{varlist.test}}</div>
+  <div>{{varlist?.test}}</div>
   <ul>
     <li *ngFor="let variable of varlist" (click)="select(variable)" [class.selected]="variable.selected">{{variable.key}}</li>
   </ul>

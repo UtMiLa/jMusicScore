@@ -9,9 +9,11 @@ export class MusicEditorComponent implements OnInit {
 
   constructor() { }
 
-  private _selectedObject: {key: string, value: string};
+  private _selectedObject: {name: string, parent: {}};
 
-  @Input() set selectedObject(value: {key: string, value: string}) {
+  @Input() set selectedObject(value: {name: string, parent: {}}) {
+    //console.log(value);
+    if (value && value.parent)
     this._selectedObject = value;
   };
 

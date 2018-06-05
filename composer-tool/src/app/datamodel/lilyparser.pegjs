@@ -1,3 +1,12 @@
+/*
+Todo:
+
+ordentlig time på note
+skelne mellem tone og r og s
+parse ~ efter node
+
+*/
+
 File
 	= ex:Expression * { return ex; }
     

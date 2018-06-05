@@ -14,14 +14,25 @@ export class AppComponent {
   }
   selectedVar: any = {};
   model: IModel;
+  imageFiles: string[];
 
-  selectedRef(variable){
+  selectedRef(variableDef){
     //console.log(variable);
-    this.selectedVar = variable;
+    this.selectedVar = variableDef;
+  }
+
+  saveModel(){
+    this.musicProvider.saveModel(this.model).subscribe((data: string[]) => {
+      //console.log(data);
+      this.imageFiles = data;
+    });
   }
 
   ngOnInit() {
-    this.model=this.musicProvider.getModel();
+    this.musicProvider.getModel().subscribe((data: IModel) => {
+      //console.log(data);
+      this.model = data;
+    });
   }
 
 }

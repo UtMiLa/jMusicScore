@@ -1,39 +1,37 @@
 <div>
-  <div style="max-height: 500px;overflow: scroll;float:left;">
-    <app-score-view></app-score-view>
-  </div>
-  <div style="float:left;">
-    <app-midi-player></app-midi-player>
-    <app-var-list [varObject]="model.scales" [title]="'Skalaer'" (selectedRef)="selectedRef($event)"></app-var-list>
-    
-    <app-var-list [varObject]="model.variables" (selectedRef)="selectedRef($event)"></app-var-list>
-    
-    <app-section-voice-list [model]="model.sections"  (selectedRef)="selectedRef($event)"></app-section-voice-list>
+    <div style="float:left;">
+        <app-midi-player></app-midi-player>
+        <app-var-list [varObject]="model?.scales" [title]="'Skalaer'" (selectedRef)="selectedRef($event)"></app-var-list>
+        
+        <app-var-list [varObject]="model?.variables" (selectedRef)="selectedRef($event)"></app-var-list>
+        
+        <app-section-voice-list [model]="model"  (selectedRef)="selectedRef($event)"></app-section-voice-list>
+        <p-panel header="Stemmer" [toggleable]="true">
+            <app-voice-list  [voices]="model?.voices"></app-voice-list>
+          </p-panel>
+          
+          <p-panel header="Sektioner" [toggleable]="true">
+            <app-section-list [sections]="model?.voices.sections"></app-section-list>
+          </p-panel>
+          
+                </div>
+  <div style="max-height: 800px;overflow: scroll;float:left;">
+    <button (click)="saveModel()">Gem til server</button>
+    <app-music-editor [selectedObject]="selectedVar" ></app-music-editor>
+    <app-structured-music-editor [selectedObject]="selectedVar" ></app-structured-music-editor>
+    <app-score-view [files]="imageFiles"></app-score-view>
   </div>
 </div>
-<app-music-editor [selectedObject]="selectedVar" ></app-music-editor>
-<app-structured-music-editor [selectedObject]="selectedVar" ></app-structured-music-editor>
-
-Opret manglende
-
-<p-panel header="Stemmer" [toggleable]="true">
-  <app-voice-list></app-voice-list>
-</p-panel>
-
-<p-panel header="Sektioner" [toggleable]="true">
-  <app-section-list></app-section-list>
-</p-panel>
 
 Todo:
 <ul>
   <li>Opret stemme</li>
   <li>Opret manglende stemmer</li>
-  <li>Send json</li>
   <li>Send Ly</li>
-  <li>Vis billeder</li>
   <li>Midi-link</li>
-  <li>Sektionsliste</li>
-  <li>Stemmeliste</li>
+  <li>Sektionsliste: gem  i model</li>
+  <li>Slå sektioner til og fra</li>
+  <li>Stemmeliste: gem  i model</li>
 </ul>
 
 <ul><li>Parse ly og vis grafisk</li>

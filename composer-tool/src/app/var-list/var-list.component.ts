@@ -70,7 +70,7 @@ export class VarListComponent implements OnInit {
     }
     if (!variable) return;
     variable.selected = true;
-    this.selectedRef.emit(variable);
+    this.selectedRef.emit({parent: this._varObject, name: variable.key });
   }
 
   @Output() selectedRef = new EventEmitter<any>();

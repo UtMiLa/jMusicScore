@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms'; 
 
+import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { ScoreViewComponent } from './score-view/score-view.component';
 import { VarListComponent } from './var-list/var-list.component';
@@ -17,7 +18,10 @@ import { MapToIterable } from './map-to-iterable';
 //import {AccordionModule} from 'primeng/accordion';
 
 import {PanelModule} from 'primeng/panel';
+import {GalleriaModule} from 'primeng/galleria';
+
 import { StructuredMusicComponent } from './structured-music/structured-music.component';
+import { JmusicScoreViewComponent } from './jmusic-score-view/jmusic-score-view.component';
 
 
 @NgModule({
@@ -32,13 +36,16 @@ import { StructuredMusicComponent } from './structured-music/structured-music.co
     MusicEditorComponent,
     StructuredMusicEditorComponent,
     MapToIterable,
-    StructuredMusicComponent
+    StructuredMusicComponent,
+    JmusicScoreViewComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     PanelModule,
-    FormsModule
+    GalleriaModule,
+    FormsModule,
+    HttpClientModule
   ],
   providers: [MusicProviderService],
   bootstrap: [AppComponent]
