@@ -700,6 +700,7 @@ import {MusicEditors} from "./jMusicScore.Editors";
             }
             visitNote(note: Model.INote, noteSpacing: Model.INoteSpacingInfo) {
                 // note stem
+                //console.log("note");
                 if (!note.rest) {
                     var dirFactor = noteSpacing.rev ? -1 : 1;
                     this.graphEngine.createPathObject("m " + noteSpacing.stemX + "," + noteSpacing.stemRootY
@@ -804,6 +805,7 @@ import {MusicEditors} from "./jMusicScore.Editors";
                 KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef.definition, 0, 0);
             }
             visitStaff(staff: Model.IStaff, spacing: Model.IStaffSpacingInfo) {
+                //console.log("staff");
                 for (var i = 0; i < 5; i++) {
                     this.graphEngine.createPathObject("m 0," + i * spacing.staffSpace * 2 + " l " + spacing.staffLength + ",0", 0, 0, 1, '#888', undefined, 'staffline' + staff.id + ' ' + i);
                 }

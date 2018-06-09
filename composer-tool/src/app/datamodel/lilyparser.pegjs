@@ -2,7 +2,6 @@
 Todo:
 
 ordentlig time på note
-skelne mellem tone og r og s
 parse ~ efter node
 
 */
@@ -54,13 +53,14 @@ Music
 			def: {
 				stem: "dir"
 			},
-			children: notes.reverse() // kommer underligt nok i omvendt rækkefølge
+			children: notes // kommer underligt nok i omvendt rækkefølge
 		};
 	} /
      "{" __ "<<" __ StaffExpression* ">>" __ "}"/
     variable: VariableRef
 MusicElement
 	= Note /
+    Rest /
     transpose: TransposeFunction /
     repeat: RepeatFunction /
     Chord /
@@ -100,7 +100,17 @@ TimeDef "command_element_time"
     
 StaffExpression
 	= "\\new" _ "Staff" __ m:Music __ { return m }     
-    
+Rest
+	= [rs] o:Octave d:Duration? __ { return {
+                    t: "Note",
+					def: {
+						time: { num: 1, den: 4 },
+						abs: {num:0, den:1},
+						noteId: "n1_4",
+                        rest: true
+					},
+					children: []
+					}}
 Note 
 	= p:Pitch o:Octave d:Duration? __ { return {
                     t: "Note",
@@ -126,7 +136,7 @@ Duration
 Dots 
 	= "."+
 Pitch "pitch"
-	= pit:[a-hrs] i:Inflection? { 
+	= pit:[a-h] i:Inflection? { 
 				    var alteration = 0;
 					switch (i) {
                         case "is": alteration = "x"; break;

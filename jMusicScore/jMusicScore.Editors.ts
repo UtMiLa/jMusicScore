@@ -5,7 +5,7 @@ import {emmentalerNotes} from "./emmentaler";
 import {emmentalerCode} from "./emmentaler_code";
 import {Commands} from "./commands";
 import { ScoreApplication } from "./jMusicScore.Application";
-import {SvgView} from "./jMusicScore.SvgView";
+//import {SvgView} from "./jMusicScore.SvgView";
 
 export module MusicEditors {
 
@@ -715,7 +715,7 @@ export module MusicEditors {
         constructor(public context: string) { }
 
         public init(app: ScoreApplication.IScoreApplication) {
-            SvgView.SvgEditorManager.activateAllVoiceSensors(app.document, this.context, false);
+            //SvgView.SvgEditorManager.activateAllVoiceSensors(app.document, this.context, false);
         }
 
         public exit(app: ScoreApplication.IScoreApplication) {
@@ -774,7 +774,7 @@ export module MusicEditors {
         constructor(public context: string) { }
 
         public init(app: ScoreApplication.IScoreApplication) {
-            SvgView.SvgEditorManager.activateAllVoiceSensors(app.document, this.context, false);
+            //SvgView.SvgEditorManager.activateAllVoiceSensors(app.document, this.context, false);
         }
 
         public exit(app: ScoreApplication.IScoreApplication) {
@@ -833,7 +833,7 @@ export module MusicEditors {
         constructor(public context: string) { }
 
         public init(app: ScoreApplication.IScoreApplication) {
-            SvgView.SvgEditorManager.activateAllVoiceSensors(app.document, this.context, true);
+//            SvgView.SvgEditorManager.activateAllVoiceSensors(app.document, this.context, true);
             // Activate BeforeNote, AfterNote, clef
         }
 

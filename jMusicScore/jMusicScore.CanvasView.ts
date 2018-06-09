@@ -8,7 +8,7 @@ import { ScoreApplication } from "./jMusicScore.Application";
 import {Application} from "../JApps/application";
 //import {MusicEditors} from "./jMusicScore.Editors";
 import {Views} from "./jMusicScore.Views";
-import {SvgView} from "./jMusicScore.SvgView";
+import {Validators} from "./validators";
 
     export module CanvasView {
 
@@ -99,7 +99,7 @@ import {SvgView} from "./jMusicScore.SvgView";
                     public endDraw() {
                     }
                     public createMusicObject(id: string, item: string, x: number, y: number, scale: number): any {
-                        var useMusicFonts = true;
+                        var useMusicFonts = false;
                         if (!useMusicFonts) {
                             this.setTranslation(x, y);
                         this.context.scale(scale, scale);
@@ -508,11 +508,74 @@ import {SvgView} from "./jMusicScore.SvgView";
         
                     }
                 }
+
+
+
+
+                class QuickCanvasHelper {
+                    constructor(private svgDocument: Document, canvas: HTMLCanvasElement) {
+                        //this.root = root;
+        
+                        //this.allLayer = <HTMLElement>document.createElement("div");
+                        //$(this.allLayer).attr('id', "MusicLayer_");
+                        //DomHelper.setAttribute(this.allLayer, {'id': "MusicLayer_"});
+                        //this.root.appendChild(this.allLayer);
+        
+                        //var $canvas = $('<canvas>');
+                        //$canvas.appendTo('#svgArea');
+                        //$canvas.attr({ 'id': 'musicCanvas', 'width': '600px', 'height': '600px' });
+
+                        this.music = canvas;//<HTMLCanvasElement>DomHelper.createElement("canvas", document.getElementById("svgArea"), "", null, { 'id': 'musicCanvas', 'width': '600px', 'height': '600px' });
+                        //.createCanvas() //<HTMLCanvasElement>$canvas[0];
+                        //DomHelper.setAttribute(this.music, { 'id': 'musicCanvas', 'width': '600px', 'height': '600px' });
+                        
+                        /*this.editLayer = document.createElement("div");
+        
+                        this.allLayer.appendChild(this.music);
+                        this.allLayer.appendChild(this.editLayer);*/
+        
+                        this._MusicGraphicsHelper = new CanvasGraphicsEngine(this.music);
+                        //this._EditGraphicsHelper = new HtmlGraphicsEngine(this.editLayer, 'htmlSensor_');
+                    }
+        
+                    public music: HTMLCanvasElement;
+                    //public root: HTMLElement;
+                    //public editLayer: HTMLElement;
+                    //public allLayer: HTMLElement;
+        
+                    private _MusicGraphicsHelper: Views.IGraphicsEngine;
+                    private _EditGraphicsHelper: Views.ISensorGraphicsEngine;
+                    public get MusicGraphicsHelper(): Views.IGraphicsEngine { return this._MusicGraphicsHelper; }
+                    public get EditGraphicsHelper(): Views.ISensorGraphicsEngine { return this._EditGraphicsHelper; }
+        
+                    /*public addStaffButton(y: number, staff: Model.IStaff): SVGHintArea {
+                        var svgHintArea = new SVGHintArea(this.svg, staff.parent.spacingInfo.scale, y, staff);
+                        return svgHintArea;
+                    }*/
+        
+                    public createRectElement(): HTMLElement {
+                        return document.createElement("div");
+                    }
+        
+                    public createGroupElement(): HTMLElement {
+                        return document.createElement("div");
+                    }
+                }
+        
+
         
                 export class CanvasQuickPainter {
                     public paintOnCanvas(score: Model.IScore, canvas: HTMLCanvasElement){
-                        var canvasHelper = new CanvasHelper(document, canvas);
+                        var canvasHelper = new QuickCanvasHelper(document, canvas);
         
+
+                        var timelineValidator = new Validators.CreateTimelineValidator();
+                        var app = <any>{document: score, plugins: [], readers: [], writers: [], fileManagers:[], validators: [], designers: [], editors: [],
+                            feedbackManager: null, FeedbackManager: null, status: null, Status: null};
+
+                        timelineValidator.validate(app);
+                        var spacer = new MusicSpacing.SpacingDesigner();
+                        spacer.validate(app);
                         var visitor = new Views.PrefixVisitor(new Views.RedrawVisitor(canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
                         //canvasHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
                         canvasHelper.MusicGraphicsHelper.beginDraw();
@@ -570,7 +633,7 @@ import {SvgView} from "./jMusicScore.SvgView";
                         }
                         app.AddWriter(new CanvasWriter(this.canvasHelper));
                         */
-                        app.FeedbackManager.registerClient(new SvgView.DomFeedbackClient(this.canvasHelper.EditGraphicsHelper));
+                        //app.FeedbackManager.registerClient(new SvgView.DomFeedbackClient(this.canvasHelper.EditGraphicsHelper));
                     }
         
                     public getId(): string {

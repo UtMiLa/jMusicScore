@@ -2,7 +2,10 @@
   "name": "japps",
   "version": "1.0.0",
   "description": "framework for in-browser apps",
-  "files": ["japps.d.ts", "japps.js" ],
+  "files": [
+    "japps.d.ts",
+    "japps.js"
+  ],
   "main": "japps.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

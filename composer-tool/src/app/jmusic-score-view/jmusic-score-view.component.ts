@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 import { Model } from '../../../../jMusicScore/jMusicScore';
+/*declare var jquery:any;
+declare var $ :any;*/
 import { CanvasView } from '../../../../jMusicScore/jMusicScore.CanvasView';
 
 @Component({
@@ -98,10 +100,12 @@ export class JmusicScoreViewComponent implements OnInit {
 
   @Input() set memento(value: Model.IMemento) {
     try{
-    console.log(value);
+    //console.log(value);
 
     var voiceMemento = value[0].mus;
-    var staffMemento = {def:{}, t:"Staff", children:[voiceMemento], id: '2'};
+    //voiceMemento.children = 
+    voiceMemento.children.reverse();
+    var staffMemento = {def:{}, t:"Staff", children:[{ "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, voiceMemento], id: '2'};
     var scoreMemento = {def:{}, t:"Score", children:[staffMemento], id: '3' };
     //var scoreMemento = this.mus;
     //var score = new Model.ScoreElement(null);
@@ -120,15 +124,15 @@ export class JmusicScoreViewComponent implements OnInit {
 
     //var divElm = null;
     try{
-    console.log(score);
-    console.log(this.canvas.nativeElement);
+    //console.log(this.mus);
+    //console.log(this.canvas.nativeElement);
     this.painter.paintOnCanvas(score, this.canvas.nativeElement);}
     catch(e1){
       console.log(e1); 
     }
   }
   catch(e){
-    console.log("Fejlede");
+    //console.log("Fejlede");
     this.theScore = null;
     this.theScoreMemento = "";
     this._memento = null;
