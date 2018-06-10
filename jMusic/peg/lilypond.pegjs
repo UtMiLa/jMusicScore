@@ -1,4 +1,6 @@
 /*
+node ..\..\node_modules\pegjs\bin\pegjs -o ..\dist\peg\lilypond.js lilypond.pegjs
+
 Todo:
 
 ordentlig time på note

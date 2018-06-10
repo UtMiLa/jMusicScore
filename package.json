@@ -8,6 +8,7 @@
   "author": "",
   "license": "",
   "devDependencies": {
+    "@types/pegjs": "^0.10.1",
     "browser-sync": "~2.18.13",
     "chai": "~4.1.1",
     "gulp": "^3.9.1",
@@ -18,10 +19,11 @@
     "gulp-typescript": "^3.2.1",
     "gulp-util": "^3.0.8",
     "mocha": "^3.5.3",
-    "pegjs": "~0.10.0",
+    "pegjs": "^0.10.0",
     "typescript": "^2.6.1"
   },
   "dependencies": {
-    "gulp-pegjs": "^0.1.0"
+    "gulp-pegjs": "^0.1.0",
+    "pegjs-require": "^2.0.0"
   }
 }

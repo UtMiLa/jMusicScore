@@ -15,8 +15,8 @@ export var parser =
     this.location = location;
     this.name     = "SyntaxError";
 
-    if (typeof Error.captureStackTrace === "function") {
-      Error.captureStackTrace(this, peg$SyntaxError);
+    if (typeof (<any>Error).captureStackTrace === "function") {
+      (<any>Error).captureStackTrace(this, peg$SyntaxError);
     }
   }
 
