@@ -12,3 +12,13 @@ export interface IFileConverter {
     read(data: any): IScore;
     write(score: IScore): string;
 }
+
+
+
+
+export interface IGraphicsEngine {}
+export interface IVisitorIterator {}
+export interface IScoreDesigner {
+    design(document: IScore): void;
+}
+export interface IScoreApplication {}
