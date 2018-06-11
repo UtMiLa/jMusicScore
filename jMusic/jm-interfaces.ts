@@ -21,4 +21,3 @@ export interface IVisitorIterator {}
 export interface IScoreDesigner {
     design(document: IScore): void;
 }
-export interface IScoreApplication {}
