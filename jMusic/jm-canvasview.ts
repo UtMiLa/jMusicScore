@@ -11,7 +11,6 @@ import { Validators } from './jm-refiners';
 
         class DomHelper { // bruger kun jQuery til at sætte/hente css, sætte attr og  $(this.root).height(300); og i calcCoordinates
             static setAttribute(elm: HTMLElement, attr: hash) {
-
                 for (var key in attr) {
                     if (attr.hasOwnProperty(key)) {
                       elm.setAttribute(key, attr[key]);
@@ -26,7 +25,14 @@ import { Validators } from './jm-refiners';
             }
 
             static setCss(elm: HTMLElement, attr: hash) {
-                $(elm).css(attr);
+                let css = "";
+                for (var key in attr) {
+                    if (attr.hasOwnProperty(key)) {
+                      css += `${key}: ${attr[key]};`;
+                    }
+                }
+                this.setAttribute(elm, {"style": css});
+                //$(elm).css(attr);
             }
 
             static getCss(elm: HTMLElement, key: string){

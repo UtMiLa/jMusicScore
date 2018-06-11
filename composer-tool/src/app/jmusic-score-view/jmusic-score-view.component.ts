@@ -1,6 +1,9 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 import { MusicElementFactory, IScore, IMemento, ScoreElement, ClefDefinition, NoteType, AbsoluteTime,
     TimeSpan, Music } from '../../../../jMusic/jm-model';
+
+    import { CanvasView } from '../../../../jMusic/jm-CanvasView';    
+
 // import { Model } from '../../../../jMusicScore/jMusicScore';
 // import { CanvasView } from '../../../../jMusicScore/jMusicScore.CanvasView';
 
@@ -108,11 +111,11 @@ export class JmusicScoreViewComponent implements OnInit {
 
 
   private parsedObject: any;
-//  private painter: CanvasView.CanvasQuickPainter;
+  private painter: CanvasView.CanvasQuickPainter;
 
   @Input() set memento(value: IMemento) {
     try {
-    // console.log(value);
+     console.log(value);
 
     const voiceMemento = value[0].mus;
     voiceMemento.children.reverse();
@@ -131,7 +134,7 @@ export class JmusicScoreViewComponent implements OnInit {
     this.theScoreMemento = JSON.stringify(memento);
 
     this._memento = value;
-/*
+
 
     //var divElm = null;
     try{
@@ -140,7 +143,7 @@ export class JmusicScoreViewComponent implements OnInit {
     this.painter.paintOnCanvas(score, this.canvas.nativeElement);}
     catch(e1){
       console.log(e1);
-    }*/
+    }
   } catch (e) {
     // console.log("Fejlede");
     this.theScore = null;
@@ -165,7 +168,7 @@ export class JmusicScoreViewComponent implements OnInit {
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);
 
-//    this.painter = new CanvasView.CanvasQuickPainter();
+    this.painter = new CanvasView.CanvasQuickPainter();
   }
 
 }
