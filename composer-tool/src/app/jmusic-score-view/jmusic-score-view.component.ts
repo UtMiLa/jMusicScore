@@ -1,8 +1,6 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 import { Model } from '../../../../jMusicScore/jMusicScore';
-/*declare var jquery:any;
-declare var $ :any;*/
-import { CanvasView } from '../../../../jMusicScore/jMusicScore.CanvasView';
+// import { CanvasView } from '../../../../jMusicScore/jMusicScore.CanvasView';
 
 @Component({
   selector: 'app-jmusic-score-view',
@@ -96,7 +94,7 @@ export class JmusicScoreViewComponent implements OnInit {
 
 
   private parsedObject: any;
-  private painter: CanvasView.CanvasQuickPainter;
+//  private painter: CanvasView.CanvasQuickPainter;
 
   @Input() set memento(value: Model.IMemento) {
     try{
@@ -120,7 +118,7 @@ export class JmusicScoreViewComponent implements OnInit {
     this.theScoreMemento = JSON.stringify(memento);
 
     this._memento = value;
-
+/*
 
     //var divElm = null;
     try{
@@ -129,7 +127,7 @@ export class JmusicScoreViewComponent implements OnInit {
     this.painter.paintOnCanvas(score, this.canvas.nativeElement);}
     catch(e1){
       console.log(e1); 
-    }
+    }*/
   }
   catch(e){
     //console.log("Fejlede");
@@ -155,7 +153,7 @@ export class JmusicScoreViewComponent implements OnInit {
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);
 
-    this.painter = new CanvasView.CanvasQuickPainter();
+//    this.painter = new CanvasView.CanvasQuickPainter();
   }
 
 }
