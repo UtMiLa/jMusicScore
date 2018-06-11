@@ -37,7 +37,7 @@ import { Validators } from './jm-refiners';
 
             static getCss(elm: HTMLElement, key: string){
                 //return elm.get
-                return $(elm).css(key);
+                return $(elm).css(key); 
             }
 
             static setHeight(elm: HTMLElement, height: number){

@@ -1,4 +1,4 @@
-export var parser = 
+/* var parser = 
 (function() {
   "use strict";
 
@@ -2407,3 +2407,4 @@ export var parser =
     parse:       peg$parse
   };
 })();
+*/

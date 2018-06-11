@@ -7,6 +7,20 @@ ordentlig time på note
 parse ~ [ ] .  efter node
 
 */
+{
+	var lastTime = 4;
+  function theTime(d){
+    //this.lastTime = 4;
+   		if (d) { 
+        let dur = d.dur.join("");
+        lastTime = +dur;
+      }
+    return lastTime;//this.lastTime;
+  } 	
+
+}
+
+
 
 File
 	= ex:Expression * { return ex; }
@@ -103,33 +117,39 @@ TimeDef "command_element_time"
 StaffExpression
 	= "\\new" _ "Staff" __ m:Music __ { return m }     
 Rest
-	= [rs] o:Octave d:Duration? __ { return {
+	= [rs] o:Octave d:Duration? __ { 
+		var lastDur = theTime(d);
+		return {
                     t: "Note",
 					def: {
-						time: { num: 1, den: 4 },
+						time: { num: 1, den: lastDur },
 						abs: {num:0, den:1},
-						noteId: "n1_4",
+						noteId: "n1_" + lastDur,
                         rest: true
 					},
 					children: []
 					}}
 Note 
-	= p:Pitch o:Octave d:Duration? __ { return {
+	= p:Pitch o:Octave d:Duration? __ { 
+   		var lastDur = theTime(d);
+		return {
                     t: "Note",
 					def: {
-						time: { num: 1, den: 4 },
+						time: { num: 1, den: lastDur },
 						abs: {num:0, den:1},
-						noteId: "n1_4",
+						noteId: "n1_" + lastDur,
 					},
 					children: [p]
 					}}
 Chord
-	= "<" n:(Note+) ">" d:Duration? __ { return {
+	= "<" n:(Note+) ">" d:Duration? __ { 
+		var lastDur = theTime(d);
+		return {
 					t: "Note",
 					def: {
-						time: { num: 1, den: 4 },
+						time: { num: 1, den: lastDur },
 						abs: {num:0, den:1},
-						noteId: "n1_4",
+						noteId: "n1_" + lastDur,
 					},
 					children: function(n){ var arr = []; for (var i = 0; i < n.length; i++) {arr.push(n[i].children[0]); } return arr; }(n)
 					}; }
