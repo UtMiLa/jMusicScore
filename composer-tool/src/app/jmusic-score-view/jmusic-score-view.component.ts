@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
-import { Model } from '../../../../jMusicScore/jMusicScore';
+import { MusicElementFactory, IScore, IMemento, ScoreElement, ClefDefinition, NoteType, AbsoluteTime, 
+    TimeSpan, Music } from '../../../../jMusic/jm-model';
+// import { Model } from '../../../../jMusicScore/jMusicScore';
 // import { CanvasView } from '../../../../jMusicScore/jMusicScore.CanvasView';
 
 @Component({
@@ -11,9 +13,9 @@ export class JmusicScoreViewComponent implements OnInit {
 
   constructor() { }
 
-  theScore: Model.IScore;
+  theScore: IScore;
   theScoreMemento: string;
-  _memento: Model.IMemento;
+  _memento: IMemento;
 
 
 
@@ -96,7 +98,7 @@ export class JmusicScoreViewComponent implements OnInit {
   private parsedObject: any;
 //  private painter: CanvasView.CanvasQuickPainter;
 
-  @Input() set memento(value: Model.IMemento) {
+  @Input() set memento(value: IMemento) {
     try{
     //console.log(value);
 
@@ -108,7 +110,7 @@ export class JmusicScoreViewComponent implements OnInit {
     //var scoreMemento = this.mus;
     //var score = new Model.ScoreElement(null);
     //var score = Model.ScoreElement.createFromMemento(null, <any>scoreMemento);
-    var score = <Model.ScoreElement>Model.MusicElementFactory.recreateElement(null, <any>scoreMemento);
+    var score = <ScoreElement>MusicElementFactory.recreateElement(null, <any>scoreMemento);
 
     /*var staff = score.addStaff(Model.ClefDefinition.clefCAlto);
     var voice = staff.addVoice();
@@ -143,12 +145,12 @@ export class JmusicScoreViewComponent implements OnInit {
   
   @ViewChild('theCanvas') canvas: ElementRef;
 
-
+  
   ngOnInit() {
-    var score = new Model.ScoreElement(null);
-    var staff = score.addStaff(Model.ClefDefinition.clefCAlto);
+    var score = new ScoreElement(null);
+    var staff = score.addStaff(ClefDefinition.clefCAlto);
     var voice = staff.addVoice();
-    var note = Model.Music.addNote(voice, Model.NoteType.Note, new Model.AbsoluteTime(1,4), "n1_4",  Model.TimeSpan.quarterNote);
+    var note = Music.addNote(voice, NoteType.Note, new AbsoluteTime(1,4), "n1_4",  TimeSpan.quarterNote);
     var memento = score.getMemento(true);
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);
