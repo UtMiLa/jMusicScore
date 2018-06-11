@@ -6,7 +6,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, LedgerLineSpacingInfo,
     ILongDecorationSpacingInfo, ClefType, ITimedEvent, Music, NoteDecorationKind, Pitch, StemDirectionType } from "./jm-model";
 
-import  { IGraphicsEngine , IVisitorIterator, IScoreDesigner, IScoreApplication } from './jm-interfaces';
+import  { IGraphicsEngine , IVisitorIterator, IScoreDesigner } from './jm-interfaces';
     
         /// Music spacing classes - independent of graphics methods
         export module MusicSpacing {
