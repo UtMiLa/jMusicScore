@@ -130,7 +130,7 @@ Rest
 					children: []
 					}}
 Note 
-	= p:Pitch o:Octave d:Duration? __ { 
+	= p:Pitch d:Duration? __ { 
    		var lastDur = theTime(d);
 		return {
                     t: "Note",
@@ -158,7 +158,7 @@ Duration
 Dots 
 	= "."+
 Pitch "pitch"
-	= pit:[a-h] i:Inflection? { 
+	= pit:[a-h] i:Inflection? o:Octave { 
 				    var alteration = 0;
 					switch (i) {
                         case "is": alteration = "x"; break;
@@ -166,10 +166,17 @@ Pitch "pitch"
                         case "es": case "s": alteration = "b"; break;
                         case "eses": case "ses": alteration = "bb"; break;
                     }
+                    var octave = 0;
+                    for (var i = 0; i < o.length; i++) {
+                    	switch(o[i]){
+                        	case "'": octave += 7; break;
+                        	case ",": octave -= 7; break;
+                        }
+                    }
 					return {
 						t: "Notehead",
 						def: {
-							p: ['c', 'd', 'e', 'f', 'g', 'a', 'b'].indexOf(pit),
+							p: ['c', 'd', 'e', 'f', 'g', 'a', 'b'].indexOf(pit) + octave,
 							a: alteration,
 							forceAcc: false,
 							tie: false,

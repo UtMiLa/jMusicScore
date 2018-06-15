@@ -152,7 +152,7 @@ export class JmusicScoreViewComponent implements OnInit {
 }
 
   get memento() {
-    return this._memento;
+    return this.theScore;
   }
 
   @ViewChild('theCanvas') canvas: ElementRef;
