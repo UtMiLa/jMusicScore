@@ -37,11 +37,19 @@ import { Validators } from './jm-refiners';
 
             static getCss(elm: HTMLElement, key: string){
                 //return elm.get
-                return $(elm).css(key); 
+                var style = this.getAttribute(elm, "style");
+                if (!style) return null;
+                var styles = style.split(";");
+                for (var i = 0; i < styles.length; i++){
+                    var theSplit = styles[i].split(":");
+                    if (theSplit.length === 2 && theSplit[0] == key) return theSplit[1];
+                }
+                return null;
             }
 
             static setHeight(elm: HTMLElement, height: number){
-                $(elm).height(height);
+                //$(elm).height(height);
+                this.setAttribute(elm, {height: height});
             }
 
             static empty(elm: HTMLElement){
