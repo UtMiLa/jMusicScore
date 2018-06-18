@@ -1,5 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { LilyPondConverter } from '../../../../jMusic/dist/jm-lilypond';
+import { LilyPondConverter } from '../../../../jMusic/jm-lilypond';
+
+// declare  function require(path: string): any;
+// const LilyPondConverter = require('../../../../jMusic/dist/peg/jm-lilypond.js');
 
 @Component({
   selector: 'app-structured-music-editor',
@@ -14,13 +17,12 @@ export class StructuredMusicEditorComponent implements OnInit {
   private parsedObject: any;
 
   @Input() set selectedObject(value: {name: string, parent: {}}) {
-    try{
-      let parser = new LilyPondConverter();
+    try {
+      const parser = new LilyPondConverter();
       this.parsedObject = parser.read(value.parent[value.name]);
-      this.parsedJson = null;//JSON.stringify(this.parsedObject);
-    }
-    catch(e){
-      this.parsedObject =[];
+      this.parsedJson = null; // JSON.stringify(this.parsedObject);
+    } catch (e) {
+      this.parsedObject = [];
       this.parsedJson = e.message;
     }
 
@@ -29,7 +31,7 @@ export class StructuredMusicEditorComponent implements OnInit {
 
   get selectedObject() {
     return this._selectedObject;
-  };
+  }
 
   parsedJson: string;
 

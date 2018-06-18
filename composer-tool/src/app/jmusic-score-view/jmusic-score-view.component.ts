@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 import { MusicElementFactory, IScore, IMemento, ScoreElement, ClefDefinition, NoteType, AbsoluteTime,
     TimeSpan, Music } from '../../../../jMusic/jm-model';
-import { CanvasView } from '../../../../jMusic/jm-CanvasView';    
+import { CanvasView } from '../../../../jMusic/jm-CanvasView';
 
 // import { Model } from '../../../../jMusicScore/jMusicScore';
 // import { CanvasView } from '../../../../jMusicScore/jMusicScore.CanvasView';
@@ -135,12 +135,12 @@ export class JmusicScoreViewComponent implements OnInit {
     this._memento = memento;
 
 
-    //var divElm = null;
-    try{
-    //console.log(this.mus);
-    //console.log(this.canvas.nativeElement);
-    this.painter.paintOnCanvas(score, this.canvas.nativeElement);}
-    catch(e1){
+    // var divElm = null;
+    try {
+    // console.log(this.mus);
+    // console.log(this.canvas.nativeElement);
+    this.painter.paintOnCanvas(score, this.canvas.nativeElement);
+    } catch (e1) {
       console.log(e1);
     }
   } catch (e) {
@@ -151,8 +151,8 @@ export class JmusicScoreViewComponent implements OnInit {
   }
 }
 
-  get memento() {
-    return this._memento;
+  get memento(): IScore {
+    return this.theScore;
   }
 
   @ViewChild('theCanvas') canvas: ElementRef;
