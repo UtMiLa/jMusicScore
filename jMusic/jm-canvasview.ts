@@ -37,11 +37,61 @@ import { Validators } from './jm-refiners';
 
             static getCss(elm: HTMLElement, key: string){
                 //return elm.get
-                return $(elm).css(key); 
+                var style = this.getAttribute(elm, "style"); 
+                if (!style) return null; 
+                var styles = style.split(";"); 
+                for (var i = 0; i < styles.length; i++){ 
+                    var theSplit = styles[i].split(":"); 
+                    if (theSplit.length === 2 && theSplit[0] == key) return theSplit[1]; 
+                } 
+                return null; 
+
+                /* 
+ 
+                var elem = elm, name = key, extra = null, styles = null; 
+                var val, num, hooks, 
+                    origName = camelCase( name ), 
+                    isCustomProp = rcustomProp.test( name ); 
+         
+                // Make sure that we're working with the right name. We don't 
+                // want to modify the value if it is a CSS custom property 
+                // since they are user-defined. 
+                if ( !isCustomProp ) { 
+                    name = finalPropName( origName ); 
+                } 
+         
+                // Try prefixed name followed by the unprefixed name 
+                hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ]; 
+         
+                // If a hook was provided get the computed value from there 
+                if ( hooks && "get" in hooks ) { 
+                    val = hooks.get( elem, true, extra ); 
+                } 
+         
+                // Otherwise, if a way to get the computed value exists, use that 
+                if ( val === undefined ) { 
+                    val = curCSS( elem, name, styles ); 
+                } 
+         
+                // Convert "normal" to computed value 
+                if ( val === "normal" && name in cssNormalTransform ) { 
+                    val = cssNormalTransform[ name ]; 
+                } 
+         
+                // Make numeric if forced or a qualifier was provided and val looks numeric 
+                if ( extra === "" || extra ) { 
+                    num = parseFloat( val ); 
+                    return extra === true || isFinite( num ) ? num || 0 : val; 
+                } 
+         
+                return val; 
+ 
+*/ 
             }
 
-            static setHeight(elm: HTMLElement, height: number){
-                $(elm).height(height);
+            static setHeight(elm: HTMLElement, height: number){                
+                //$(elm).height(height); 
+                this.setAttribute(elm, {height: height}); 
             }
 
             static empty(elm: HTMLElement){
@@ -78,8 +128,28 @@ import { Validators } from './jm-refiners';
                 return res;
             }
 
-            static getOffset(elm: HTMLElement) { 
-                return $(elm).offset();
+            static getOffset(elem: HTMLElement) { 
+                var rect, win; 
+ 
+                if ( !elem ) { 
+                    return; 
+                } 
+ 
+                // Return zeros for disconnected and hidden (display: none) elements (gh-2310) 
+                // Support: IE <=11 only 
+                // Running getBoundingClientRect on a 
+                // disconnected node in IE throws an error 
+                if ( !elem.getClientRects().length ) { 
+                    return { top: 0, left: 0 }; 
+                } 
+ 
+                // Get document-relative position by adding viewport scroll to viewport-relative gBCR 
+                rect = elem.getBoundingClientRect(); 
+                win = elem.ownerDocument.defaultView; 
+                return { 
+                    top: rect.top + win.pageYOffset, 
+                    left: rect.left + win.pageXOffset 
+                }; 
             }
         }
         
