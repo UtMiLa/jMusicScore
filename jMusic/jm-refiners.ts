@@ -10,7 +10,7 @@ import { IVisitorIterator, IScoreDesigner, IScoreRefiner } from './jm-interfaces
 import { NoteDecorations } from './jm-glyph-details';
 import {emmentalerNotes} from "./fonts/emmentaler";
 import {fontCodePoints} from "./fonts/font-codepoints";
-import {Views} from "./jm-views";
+//import {} from "./jm-views";
 import {IScorePlugin, IScoreApplication} from "./jm-application";
 
 //module JMusicScore {

@@ -1232,18 +1232,17 @@ import  { IGraphicsEngine , IVisitorIterator, IScoreDesigner } from './jm-interf
                 }
             }
     
-            /*export function absolutePos(elm: IMusicElement, x: number, y: number): Point {
+            export function absolutePos(elm: IMusicElement, x: number, y: number): Point {
                 x *= elm.spacingInfo.scale;
                 y *= elm.spacingInfo.scale;
                 x += elm.spacingInfo.offset.x;
                 y += elm.spacingInfo.offset.y;
                 if (elm.parent) {
-                    return this.absolutePos(elm.parent, x, y);
+                    return absolutePos(elm.parent, x, y);
                 }
                 else {
                     return new Point(x, y);
                 }
-            }*/
-    
+            }    
         }
     //}

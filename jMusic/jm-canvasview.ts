@@ -2,7 +2,7 @@ import { IScore, Point } from "./jm-model";
 import {MusicSpacing} from "./jm-spacing";
 import {emmentalerNotes} from "./fonts/emmentaler";
 import {fontCodePoints} from "./fonts/font-codepoints";
-import {Views} from "./jm-views";
+import { IGraphicsEngine, ISensorGraphicsEngine, PrefixVisitor, RedrawVisitor } from "./jm-views";
 import { Validators } from './jm-refiners';
 
     export module CanvasView {
@@ -153,7 +153,7 @@ import { Validators } from './jm-refiners';
             }
         }
         
-                export class CanvasGraphicsEngine implements Views.IGraphicsEngine {
+                export class CanvasGraphicsEngine implements IGraphicsEngine {
                     constructor(private canvas: HTMLCanvasElement) {
                         this.context = canvas.getContext('2d');
                     }
@@ -354,7 +354,7 @@ import { Validators } from './jm-refiners';
         
         
         
-                class HtmlGraphicsEngine implements Views.IGraphicsEngine, Views.ISensorGraphicsEngine {
+                class HtmlGraphicsEngine implements IGraphicsEngine, ISensorGraphicsEngine {
                     constructor(private root: HTMLElement, public idPrefix: string) {
                         this.currentGroup = root;
                     }
@@ -516,10 +516,10 @@ import { Validators } from './jm-refiners';
                     public editLayer: HTMLElement;
                     public allLayer: HTMLElement;
         
-                    private _MusicGraphicsHelper: Views.IGraphicsEngine;
-                    private _EditGraphicsHelper: Views.ISensorGraphicsEngine;
-                    public get MusicGraphicsHelper(): Views.IGraphicsEngine { return this._MusicGraphicsHelper; }
-                    public get EditGraphicsHelper(): Views.ISensorGraphicsEngine { return this._EditGraphicsHelper; }
+                    private _MusicGraphicsHelper: IGraphicsEngine;
+                    private _EditGraphicsHelper: ISensorGraphicsEngine;
+                    public get MusicGraphicsHelper(): IGraphicsEngine { return this._MusicGraphicsHelper; }
+                    public get EditGraphicsHelper(): ISensorGraphicsEngine { return this._EditGraphicsHelper; }
         
                     /*public addStaffButton(y: number, staff: IStaff): SVGHintArea {
                         var svgHintArea = new SVGHintArea(this.svg, staff.parent.spacingInfo.scale, y, staff);
@@ -618,10 +618,10 @@ import { Validators } from './jm-refiners';
                     //public editLayer: HTMLElement;
                     //public allLayer: HTMLElement;
         
-                    private _MusicGraphicsHelper: Views.IGraphicsEngine;
-                    private _EditGraphicsHelper: Views.ISensorGraphicsEngine;
-                    public get MusicGraphicsHelper(): Views.IGraphicsEngine { return this._MusicGraphicsHelper; }
-                    public get EditGraphicsHelper(): Views.ISensorGraphicsEngine { return this._EditGraphicsHelper; }
+                    private _MusicGraphicsHelper: IGraphicsEngine;
+                    private _EditGraphicsHelper: ISensorGraphicsEngine;
+                    public get MusicGraphicsHelper(): IGraphicsEngine { return this._MusicGraphicsHelper; }
+                    public get EditGraphicsHelper(): ISensorGraphicsEngine { return this._EditGraphicsHelper; }
         
                     /*public addStaffButton(y: number, staff: IStaff): SVGHintArea {
                         var svgHintArea = new SVGHintArea(this.svg, staff.parent.spacingInfo.scale, y, staff);
@@ -651,7 +651,7 @@ import { Validators } from './jm-refiners';
                         timelineValidator.refine(score);
                         var spacer = new MusicSpacing.SpacingDesigner();
                         spacer.design(score);
-                        var visitor = new Views.PrefixVisitor(new Views.RedrawVisitor(canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
+                        var visitor = new PrefixVisitor(new RedrawVisitor(canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
                         //canvasHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
                         canvasHelper.MusicGraphicsHelper.beginDraw();
                         score.visitAll(visitor);

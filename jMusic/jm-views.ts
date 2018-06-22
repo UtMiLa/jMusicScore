@@ -1,5 +1,5 @@
-import { IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, 
-    IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo,
+import { IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, Music,
+    IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, ILongDecorationSpacingInfo,
     IKeyDefinition, IClefSpacingInfo, Point, ClefDefinition, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
@@ -8,22 +8,29 @@ import { IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter,
 import {MusicSpacing} from "./jm-spacing";
 import { IVisitorIterator, IScoreDesigner } from './jm-interfaces';
 import { NoteDecorations } from './jm-glyph-details';
+import { IEventReceiver } from "./jap-application";
 
-    /*import {emmentalerNotes} from "./emmentaler";
-    import {emmentalerCode} from "./emmentaler_code";
-    import {Commands} from "./commands";
-    import { ScoreApplication } from "./jMusicScore.Application";
-    import {Application} from "../JApps/application";
-    import {MusicEditors} from "./jMusicScore.Editors";*/
-    
+
+class DOMHelper {
+    constructor(private elm: HTMLElement) {}
+    mouseout(eventHandler: (event: any) => void) { return this; }
+    mouseover(eventHandler: (event: any) => void) { return this; }
+    mousemove(eventHandler: (event: any) => void) { return this; }
+    click(eventHandler: (event: any) => void) { return this; }
+
+}
+function $(elm: HTMLElement): DOMHelper {
+    return new DOMHelper(elm);
+}
+
     
         export module MyModel {
             export interface ILongDecorationSpacingInfo extends ISpacingInfo {
-                render?: (deco: ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
+                render?: (deco: ILongDecorationElement, ge: IGraphicsEngine) => void;
             }
         }
     
-        export module Views {
+        
             export interface IBaseGraphicsEngine {
                 setSize(width: number, height: number): void;
                 beginDraw(): void;
@@ -332,9 +339,9 @@ import { NoteDecorations } from './jm-glyph-details';
                 }
             }
     
-            /** Responsible for making event handlers on DOM (SVG/HTML) sensors */  /*
+            /** Responsible for making event handlers on DOM (SVG/HTML) sensors */  
             export class DomCheckSensorsVisitor implements IVisitor { // todo: remove event handlers when inactive
-                constructor(public sensorEngine: ISensorGraphicsEngine, private score: IScore, private eventReceiver: Application.IEventReceiver) {
+                constructor(public sensorEngine: ISensorGraphicsEngine, private score: IScore, private eventReceiver: IEventReceiver) {
                 }
     
                 visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) {
@@ -633,11 +640,11 @@ import { NoteDecorations } from './jm-glyph-details';
                     }
                     
                 }
-                * /
+                */
     
             }
     
-    */
+    
     
             export class RedrawVisitor implements IVisitor {
                 constructor(private graphEngine: IGraphicsEngine) { }
@@ -839,6 +846,6 @@ import { NoteDecorations } from './jm-glyph-details';
             }
     
     
-        }
+        
     
     
