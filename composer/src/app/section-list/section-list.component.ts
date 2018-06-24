@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { ISectionsDef } from '../datamodel/model';
 
 @Component({
   selector: 'app-section-list',
@@ -8,6 +9,8 @@ import { Component, OnInit } from '@angular/core';
 export class SectionListComponent implements OnInit {
 
   constructor() { }
+
+  @Input() sections: ISectionsDef;
 
   ngOnInit() {
   }

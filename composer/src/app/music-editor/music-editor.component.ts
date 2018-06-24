@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-music-editor',
@@ -8,6 +8,18 @@ import { Component, OnInit } from '@angular/core';
 export class MusicEditorComponent implements OnInit {
 
   constructor() { }
+
+  private _selectedObject: {name: string, parent: {}};
+
+  @Input() set selectedObject(value: {name: string, parent: {}}) {
+    //console.log(value);
+    if (value && value.parent)
+    this._selectedObject = value;
+  };
+
+  get selectedObject() {
+    return this._selectedObject;
+  };
 
   ngOnInit() {
   }

@@ -1,3 +1,8 @@
-<p>
-  var-list works!
-</p>
+<p-panel header="{{title}}" [toggleable]="true">
+  <div>{{varlist?.test}}</div>
+  <ul>
+    <li *ngFor="let variable of varlist" (click)="select(variable)" [class.selected]="variable.selected">{{variable.key}}</li>
+  </ul>
+  <input type="text" #newVar />
+  <button (click)="addVar(newVar)">Tilføj</button>
+</p-panel>

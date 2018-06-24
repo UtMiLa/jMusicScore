@@ -1,3 +1,7 @@
-<p>
-  section-voice-list works!
-</p>
+<div >            
+  <select (change)="selectSection($event.target.value)">
+    <option  *ngFor="let section of model?.sections | mapToIterable">{{section.key}}</option>
+  </select>
+  <input type="button" value="Opret manglende stemmer"  (click)="createMissing()"/>
+  <app-var-list [varObject]="selectedVar" [title]="'vars'" (selectedRef)="selectRef($event)"></app-var-list>
+</div>
