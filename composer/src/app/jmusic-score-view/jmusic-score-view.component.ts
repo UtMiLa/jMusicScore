@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 import { MusicElementFactory, IScore, IMemento, ScoreElement, ClefDefinition, NoteType, AbsoluteTime,
-    TimeSpan, Music } from '../../../../jMusic/jm-model';
+    TimeSpan, Music, RegularKeyDefinition } from '../../../../jMusic/jm-model';
 import { CanvasView } from '../../../../jMusic/jm-CanvasView';    
+import { Key } from 'protractor';
 
 // import { Model } from '../../../../jMusicScore/jMusicScore';
 // import { CanvasView } from '../../../../jMusicScore/jMusicScore.CanvasView';
@@ -114,20 +115,12 @@ export class JmusicScoreViewComponent implements OnInit {
 
   @Input() set memento(value: IScore) {
     try {
-     //console.log(value);
 
-    /*const voiceMemento = value[0].mus;
-    voiceMemento.children.reverse();
-    const staffMemento = {def: {}, t: "Staff", children: [
-        { "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } },
-        voiceMemento
-    ], id: '2'};
-    const scoreMemento = {def: {}, t: "Score", children: [staffMemento], id: '3' };*/
-    const score = value; /**ScoreElement>MusicElementFactory.recreateElement(null, <any>scoreMemento);*/
-
-    /*var staff = score.addStaff(Model.ClefDefinition.clefCAlto);
-    var voice = staff.addVoice();
-    var note = Model.Music.addNote(voice, Model.NoteType.Note, new Model.AbsoluteTime(1,4), "n1_4",  Model.TimeSpan.quarterNote);*/
+    const score = value;
+    
+    let key = new RegularKeyDefinition("b", 1);
+    score.setKey(key, AbsoluteTime.startTime);
+    
     const memento = score.getMemento(true);
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);

@@ -645,10 +645,12 @@ import { Validators } from './jm-refiners';
         
 
                         var timelineValidator = new Validators.CreateTimelineValidator();
-                        /*var app = <any>{document: score, plugins: [], readers: [], writers: [], fileManagers:[], validators: [], designers: [], editors: [],
-                            feedbackManager: null, FeedbackManager: null, status: null, Status: null};*/
-
                         timelineValidator.refine(score);
+
+                        var accidentalValidator = new Validators.UpdateAccidentalsValidator();              
+                        accidentalValidator.refine(score);
+
+
                         var spacer = new MusicSpacing.SpacingDesigner();
                         spacer.design(score);
                         var visitor = new PrefixVisitor(new RedrawVisitor(canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
