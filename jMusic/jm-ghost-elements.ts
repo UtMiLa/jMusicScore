@@ -1,5 +1,6 @@
-import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, AbsoluteTime,
-    IVisitor, HorizPosition, IVoice, IStaff, IScore } from "./jm-model";
+import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, AbsoluteTime, Point,
+    IVisitor, HorizPosition, IVoice, IStaff, IScore, ITimedEvent, IEventContainer,
+    IMemento, Music, MusicElementFactory } from "./jm-model";
 import { IScoreRefiner } from "./jm-interfaces";
 
         export class GhostMeterElement extends MusicElement<IMeterSpacingInfo> implements IMeter {
@@ -85,3 +86,98 @@ import { IScoreRefiner } from "./jm-interfaces";
                 });
             }
         }
+
+
+export class VariableSpacing {
+    offset: Point;
+    width: number;
+    height: number;
+    left: number;
+    top: number;
+    scale: number;
+    preWidth: number;
+}
+export class VariableRef extends MusicElement<VariableSpacing> implements ITimedEvent, IEventContainer {
+    absTime: AbsoluteTime;    
+    private name: string;
+    private ref: IVoice;
+    
+    getElementName(): string {
+        return "VariableRef";
+    }
+    debug(): string {
+        return "VariableRef " + this.name;
+    }
+    getSortOrder: () => number;
+    getVoice(): IVoice {
+        return null;
+    }
+    getStaff(): IStaff {
+        return null;
+    }
+    spacingInfo: VariableSpacing;
+    getHorizPosition(): HorizPosition {
+        throw new Error("Method not implemented.");
+    }
+    /*changed(): void {
+        throw new Error("Method not implemented.");
+    }
+    moved(): void {
+        throw new Error("Method not implemented.");
+    }*/
+    id: string;
+    parent: IMusicElement;
+    inviteVisitor(spacer: IVisitor): void {
+        this.ref.inviteVisitor(spacer);
+    }
+    /*addChild(list: IMusicElement[], theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
+        throw new Error("Cannot add children to variable.");
+    }
+    removeChild(theChild: IMusicElement, list?: IMusicElement[]): void {
+        throw new Error("Cannot add children to variable.");
+    }
+    remove(): void {
+        throw new Error("Method not implemented.");
+    }*/
+    /*setProperty(name: string, value: any): void {
+        throw new Error("Method not implemented.");
+    }
+    getProperty(name: string) {
+        throw new Error("Method not implemented.");
+    }*/
+    getEvents(): ITimedEvent[] {
+        return this.ref.getEvents();
+    }
+
+    static createFromMemento(parent: IVoice, memento: IMemento): VariableRef {
+        var varRef: VariableRef = new VariableRef(parent);
+        if (memento.def && memento.def.name) { 
+            varRef.name = name; 
+            varRef.ref = <IVoice>MusicElementFactory.recreateElement(null,
+                {
+                "id": "131", "t": "Voice", "def": { "stem": 2 },
+                "children": [
+                    { "id": "103", "t": "Note", "def": { "time": { "num": 1, "den": 8 },
+                    "abs": { "num": 1, "den": 4 }, "noteId": "n1_8" },
+                     "children": [{ "id": "104", "t": "Notehead", "def": { "p": 4, "a": "" } },
+                      { "id": "157", "t": "TextSyllable", "def": { "text": "på " } }] },
+                    { "id": "105", "t": "Note", "def": { "time": { "num": 1, "den": 8 },
+                    "abs": { "num": 3, "den": 8 }, "noteId": "n1_8" }, "children": [
+                        { "id": "106", "t": "Notehead", "def": { "p": 6, "a": "" } },
+                         { "id": "158", "t": "TextSyllable", "def": { "text": "teks-" } }] }
+                ]
+            });
+        }
+        if (parent) parent.addChild(parent.noteElements, varRef); // todo: at index
+        return varRef;
+    }
+
+    public doGetMemento(): any {
+        var val = { t: "VariableRef", def: { name: this.name} };
+        return val;
+    }
+
+    static register(){
+        MusicElementFactory.register("Variable", VariableRef);
+    }
+}

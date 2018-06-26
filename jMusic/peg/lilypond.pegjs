@@ -86,7 +86,7 @@ MusicElement
     Command /
     Music
 VariableRef
-	= "\\" name:[a-zA-Z]+ __
+	= "\\" name:[a-zA-Z]+ __ { return { t: "Variable", def: {name: name.join('')}}; }
 Command
 	= "\\numericTimeSignature" _ /
     "~" _ /

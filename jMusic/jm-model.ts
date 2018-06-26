@@ -2501,29 +2501,34 @@
         }
 
         export interface IMusicElementCreator { createFromMemento: (parent: any, memento: any) => IMusicElement }
+
+
+
+        var mementoCreators: { [i: string]: IMusicElementCreator } = {
+            "Score": ScoreElement,
+            "Staff": StaffElement,
+            "Voice": VoiceElement,
+            "Note": NoteElement,
+            "Notehead": NoteheadElement,
+            "Pitch": NoteheadElement,
+            "Meter": MeterElement,
+            "Key": KeyElement,
+            "Clef": ClefElement,
+            "NoteDecoration": NoteDecorationElement,
+            "NoteLongDecoration": NoteLongDecorationElement,
+            "TextSyllable": TextSyllableElement,
+            "Bar": BarElement,
+            "StaffExpression": StaffExpression
+        };
+
+
         export class MusicElementFactory {
-            private static mementoCreators: { [i: string]: IMusicElementCreator } = {
-                "Score": ScoreElement,
-                "Staff": StaffElement,
-                "Voice": VoiceElement,
-                "Note": NoteElement,
-                "Notehead": NoteheadElement,
-                "Pitch": NoteheadElement,
-                "Meter": MeterElement,
-                "Key": KeyElement,
-                "Clef": ClefElement,
-                "NoteDecoration": NoteDecorationElement,
-                "NoteLongDecoration": NoteLongDecorationElement,
-                "TextSyllable": TextSyllableElement,
-                "Bar": BarElement,
-                "StaffExpression": StaffExpression
-            };
             static register(key: string, creator: IMusicElementCreator) {
-                this.mementoCreators[key] = creator;
+                mementoCreators[key] = creator;
             }
             public static recreateElement(parent: IMusicElement, memento: IMemento): IMusicElement {
                 var res: IMusicElement;
-                var creator = this.mementoCreators[memento.t];
+                var creator = mementoCreators[memento.t];
                 if (creator) {
                     res = creator.createFromMemento(parent, memento);
                     var children = memento.children;
