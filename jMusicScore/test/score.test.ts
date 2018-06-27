@@ -104,20 +104,20 @@ var initScore: any = { "id": "2", "t": "Score", "def": { "metadata": {} }, "chil
             });
 
             it("should return a getStaffContext(100) with a correct clef", function () {
-                expect(staff.getStaffContext(absTime).clef.definition.clefCode).to.equal(Model.ClefType.ClefG);
+                expect(staff.getStaffContext(absTime).clef.clefCode).to.equal(Model.ClefType.ClefG);
                 staff.setClef(Model.ClefDefinition.clefF, absTime1_5);
-                expect(staff.getStaffContext(absTime).clef.definition.clefCode).to.equal(Model.ClefType.ClefG);
+                expect(staff.getStaffContext(absTime).clef.clefCode).to.equal(Model.ClefType.ClefG);
                 staff.setClef(Model.ClefDefinition.clefF, absTimeHalf);
-                expect(staff.getStaffContext(absTime).clef.definition.clefCode).to.equal(Model.ClefType.ClefF);
+                expect(staff.getStaffContext(absTime).clef.clefCode).to.equal(Model.ClefType.ClefF);
             });
 
             it("should return a getStaffContext(100) with a correct key", function () {
                 staff.setKey(new Model.RegularKeyDefinition('', 0), Model.AbsoluteTime.startTime);
-                expect((staff.getStaffContext(absTime).key.definition).debug()).to.equal('0 ');
+                expect((staff.getStaffContext(absTime).key).debug()).to.equal('0 ');
                 staff.setKey(new Model.RegularKeyDefinition('x', 2), absTime1_5);
-                expect((staff.getStaffContext(absTime).key.definition).debug()).to.equal('0 ');
+                expect((staff.getStaffContext(absTime).key).debug()).to.equal('0 ');
                 staff.setKey(new Model.RegularKeyDefinition('x', 2), absTimeHalf);
-                expect((staff.getStaffContext(absTime).key.definition).debug()).to.equal('2 x');
+                expect((staff.getStaffContext(absTime).key).debug()).to.equal('2 x');
             });
 
             it("should return a getStaffContext(100) with a correct meter", function () {

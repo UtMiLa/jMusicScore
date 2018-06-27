@@ -1,6 +1,8 @@
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, AbsoluteTime, Point,
-    IVisitor, HorizPosition, IVoice, IStaff, IScore, ITimedEvent, IEventContainer,
-    IMemento, Music, MusicElementFactory } from "./jm-model";
+    IVisitor, HorizPosition, IVoice, IStaff, IScore, ITimedEvent, IEventContainer, IClef,
+    IMemento, Music, MusicElementFactory, StaffContext, ClefDefinition, ClefType, RegularKeyDefinition, RegularMeterDefinition, TimeSpan, ClefElement,
+    KeyElement, 
+    MeterElement} from "./jm-model";
 import { IScoreRefiner } from "./jm-interfaces";
 
         export class GhostMeterElement extends MusicElement<IMeterSpacingInfo> implements IMeter {
@@ -87,7 +89,11 @@ import { IScoreRefiner } from "./jm-interfaces";
             }
         }
 
-
+/*todo:
+MusicSnippetElement skal være forfader til voice og variable, og løsrevet fra staff
+StaffContext skal kun have oplysninger om definitionerne, ikke om staff/parent
+Alle gennemløb af events/noder m.m. skal ske rekursivt: en node eller anden enkeltevent returnerer sig selv, en snippet returnerer en liste af events
+*/
 export class VariableSpacing {
     offset: Point;
     width: number;
@@ -147,6 +153,16 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
     }*/
     getEvents(): ITimedEvent[] {
         return this.ref.getEvents();
+    }
+
+    getStaffContext(absoluteTime: AbsoluteTime) {
+        return new StaffContext(
+            new ClefDefinition(ClefType.ClefG, 4),
+            new RegularKeyDefinition("b", 0),
+            new RegularMeterDefinition(4,4),
+            AbsoluteTime.startTime,
+            0, 
+            TimeSpan.noTime );
     }
 
     static createFromMemento(parent: IVoice, memento: IMemento): VariableRef {

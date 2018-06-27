@@ -587,13 +587,14 @@
 
 
         export class StaffContext {
-            constructor(public clef: IClef, public key: IKey, public meter: IMeter, public barNo: number, public timeInBar: TimeSpan) {
+            constructor(public clef: ClefDefinition, public key: IKeyDefinition, public meter: IMeterDefinition, public meterTime: AbsoluteTime, public barNo: number, public timeInBar: TimeSpan) {
             }
 
             public equals(staffContext: StaffContext): boolean {
-                return this.clef.definition.eq(staffContext.clef.definition)
-                    && this.key.definition.eq(staffContext.key.definition)
-                    && this.meter.definition.eq(staffContext.meter.definition)
+                return this.clef.eq(staffContext.clef)
+                    && this.key.eq(staffContext.key)
+                    && this.meter.eq(staffContext.meter)
+                    && this.meterTime.eq(staffContext.meterTime)
                     && this.barNo === staffContext.barNo && this.timeInBar.eq(staffContext.timeInBar);
             }
         }
@@ -730,7 +731,7 @@
                 var deltaBars = Math.floor((absTime.diff(oldTime)).divide(oldMeasureTime));
                 barNo += deltaBars;
                 timeInBar = absTime.diff(oldTime).sub(oldMeasureTime.multiplyScalar(deltaBars));
-                return new StaffContext(clef, key, meter, barNo, timeInBar);
+                return new StaffContext(clef.definition, key.definition, meter.definition, meter.absTime, barNo, timeInBar);
             }
             public getMeterElements(): IMeter[] {
                 return this.meterElements;

@@ -204,7 +204,7 @@ export class DomFeedbackClient implements IFeedbackClient {
 
 
 }
-
+/*
 export class SvgViewer implements IScorePlugin {
     constructor(private $svg: JQuery, public container: JQuery) {
     }
@@ -250,7 +250,7 @@ export class SvgViewer implements IScorePlugin {
     }
 
 }
-
+*/
 /********************************* PRIVATE CLASSES ******************************************/
 
 class SvgGraphicsEngine implements IGraphicsEngine, ISensorGraphicsEngine {
@@ -590,7 +590,7 @@ export interface IHintArea {
 export interface IHintAreaCreator {
     addStaffButton(y: number, staff: IStaff): IHintArea;
 }
-
+/*
 class HintArea {
     constructor(private svgParent: JQuery, private scale: number, private y: number, private staff: IStaff) {
         this.buttonElement = this.createButton();
@@ -855,7 +855,7 @@ class HintAreaDesigner implements IScoreDesigner, IFeedbackClient {
         });
     }
 }
-
+*/
 class TimelineDesigner implements IScoreDesigner {
     constructor(private svgHelper: SvgHelper) {                
     }
@@ -958,7 +958,7 @@ Todo:
 set current note/head after inserting/editing
 dialogs (note, head, voice, staff)       
 */
-
+/*
 class SvgWriter implements IWriterPlugIn<ScoreElement, ScoreStatusManager> {
     constructor(private svgHelper: SvgHelper) { }
 
@@ -992,7 +992,7 @@ class SvgWriter implements IWriterPlugIn<ScoreElement, ScoreStatusManager> {
         return xml;
     }
 }
-
+*/
 export class SvgEditorManager {
     public static activateVoiceSensors(voice: IVoice, context: string, activate: boolean) {
         //todo: ActivateVoiceSensors

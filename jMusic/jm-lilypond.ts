@@ -1,7 +1,7 @@
 import { IFileConverter } from './jm-interfaces';
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, AbsoluteTime, MusicElementFactory,
     IVisitor, HorizPosition, IVoice, IStaff, IScore, TimeSpan, IKey, IClef, PitchClass, INote, INotehead, ScoreElement } from "./jm-model";
-import { parse } from './peg/lilypond.js';
+import { parse } from './peg/lilypond';
 
 export class LilyPondConverter implements IFileConverter {    
     read(data: any): IScore{

@@ -1,5 +1,6 @@
 /*
-node ..\..\node_modules\pegjs\bin\pegjs -o ..\dist\peg\lilypond.js lilypond.pegjs
+node ..\..\node_modules\pegjs\bin\pegjs -o .\lilypond.js lilypond.pegjs
+copy lilypond.js ..\dist\jMusic\peg\lilypond.js 
 
 Todo:
 

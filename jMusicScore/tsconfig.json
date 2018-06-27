@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "sourceMap": true,
+        "sourceMap": false,
         "module": "commonjs",
         "moduleResolution": "node",
         "isolatedModules": false,
         "jsx": "react",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "declaration": true,
+        "declaration": false,
         "noImplicitAny": false,
         "removeComments": true,
         "noLib": false,

@@ -204,7 +204,7 @@
                                     var bestNotes: Model.TimeSpan[];
                                     var staffContext = staff.getStaffContext(note.absTime);
                                     if (staffContext.meter) {
-                                        var nextAbsTime = staffContext.meter.nextBar(note.absTime);
+                                        var nextAbsTime = staffContext.meter.nextBar(note.absTime, staffContext.meterTime);
                                         var beforeSplit = noNotes;
                                         var afterSplit = 0;
                                         if (note.absTime.add(tiedNoteTotalDuration).gt(nextAbsTime)) {
@@ -329,7 +329,7 @@
                         voice.withNotes((note: Model.INote, index: number): void => {
                             var staffContext = staff.getStaffContext(note.absTime);
                             if (staffContext.meter) {
-                                var nextAbsTime = staffContext.meter.nextBar(note.absTime);                                
+                                var nextAbsTime = staffContext.meter.nextBar(note.absTime, staffContext.meterTime);                                
                                 if (note.absTime.add(note.getTimeVal()).gt(nextAbsTime)) {
                                     this.splitNote(note, nextAbsTime);
                                 }
@@ -391,7 +391,7 @@
                     // Check if current group is to end
                     //var splitTime = 4 % staffContext.timeInBar.denominator === 0);
                     if (!staffContext.meter) return;
-                    var nextB = staffContext.meter.nextBoundary(note.absTime);
+                    var nextB = staffContext.meter.nextBoundary(note.absTime, staffContext.meterTime);
                     var splitTime = nextB.eq(note.absTime);
                     if (firstNotes.length && (!quarterNote.gt(note.timeVal) || splitTime || note.rest)) {
                         // End group

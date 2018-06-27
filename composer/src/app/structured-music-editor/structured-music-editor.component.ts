@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { LilyPondConverter } from '../../../../jMusic/dist/jm-lilypond';
+import { LilyPondConverter } from '../../../../jMusic/jm-lilypond';
 
 @Component({
   selector: 'app-structured-music-editor',

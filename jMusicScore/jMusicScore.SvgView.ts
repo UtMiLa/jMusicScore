@@ -716,9 +716,9 @@ import {Views} from "./jMusicScore.Views";
         
                         this.onScroll(null);
                         var staffContext = this.staff.getStaffContext(Model.AbsoluteTime.startTime);
-                        if (staffContext.clef) this.setClef(staffContext.clef.definition);
-                        if (staffContext.meter) this.setMeter(staffContext.meter.definition);
-                        if (staffContext.key) this.setKey(staffContext.key.definition, staffContext.clef.definition);
+                        if (staffContext.clef) this.setClef(staffContext.clef);
+                        if (staffContext.meter) this.setMeter(staffContext.meter);
+                        if (staffContext.key) this.setKey(staffContext.key, staffContext.clef);
                         return $btnDiv[0];
                     }
         
