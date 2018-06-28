@@ -365,7 +365,7 @@ function $(elm: HTMLElement): DOMHelper {
                     var evRec = this.eventReceiver;
                     var me = this.sensorEngine;
                     var staffContext = note.parent.parent.getStaffContext(note.absTime);
-                    var clefDefinition = staffContext.clef.definition;
+                    var clefDefinition = staffContext.clef;
                     var rectLeft = -7;
                     var rectTop = -20;
                     var rectTopBefore = -30;
@@ -805,7 +805,7 @@ function $(elm: HTMLElement): DOMHelper {
                 }
                 visitKey(key: IKey, spacing: IKeySpacingInfo) {
                     var staffContext = key.parent.getStaffContext(key.absTime);
-                    KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef.definition, 0, 0);
+                    KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef, 0, 0);
                 }
                 visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) {
                     //console.log("staff");

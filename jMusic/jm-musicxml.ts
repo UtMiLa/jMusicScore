@@ -437,14 +437,14 @@ export class MusicXmlConverter implements IFileConverter {
                         var staffContext = staff.getStaffContext(absTimeLastBar);
                         if (staffContext.meter && j > 0) {
                             // Check whether last bar time is equal to meter time
-                            var nextBar = staffContext.meter.nextBar(absTimeLastBar);
+                            var nextBar = staffContext.meter.nextBar(absTimeLastBar, staffContext.meterTime);
                             if (!nextBar.eq(context.absTime)) {
                                 if (j === 1) {
                                     // Create offset meter in last bar
-                                    var defi = <RegularMeterDefinition>staffContext.meter.definition;
+                                    var defi = <RegularMeterDefinition>staffContext.meter;
                                     this.document.setMeter(new OffsetMeterDefinition(defi.numerator, defi.denominator, context.absTime.diff(absTimeLastBar)), absTimeLastBar);
                                     staffContext = staff.getStaffContext(absTimeLastBar);
-                                    nextBar = staffContext.meter.nextBar(absTimeLastBar);
+                                    nextBar = staffContext.meter.nextBar(absTimeLastBar, staffContext.meterTime);
                                 }
                                 else {
                                     context.absTime = nextBar;// todo: check
@@ -492,7 +492,7 @@ export class MusicXmlConverter implements IFileConverter {
                                         }
                                         else {
                                             var oldClef = context.partStaves[iClef].getStaffContext(context.absTime).clef;
-                                            if (!oldClef.definition.eq(clefDef)) {
+                                            if (!oldClef.eq(clefDef)) {
                                                 context.partStaves[iClef].setClef(clefDef, context.absTime);
                                             }
                                         }
@@ -886,7 +886,7 @@ export class MusicXmlConverter implements IFileConverter {
                 // key
                 if (updateKey) {
                     var keyDef = staffContext.key;
-                    var regularDefinition = <RegularKeyDefinition>keyDef.definition; // todo: change when NonStandardKeyDefinition is implemented
+                    var regularDefinition = <RegularKeyDefinition>keyDef; // todo: change when NonStandardKeyDefinition is implemented
                     var key = this.s('key', this.s('fifths', "" + (regularDefinition.acci === 'b' ? -regularDefinition.number : regularDefinition.number)));
                     attributes.appendChild(key);
                 }
@@ -894,7 +894,7 @@ export class MusicXmlConverter implements IFileConverter {
                 // time
                 if (updateMeter) {
                     var timeDef = staffContext.meter;
-                    var definition: any = timeDef.definition;
+                    var definition: any = timeDef;
                     if (definition.numerator) {
                         var time = this.s('time', this.s('beats', "" + definition.numerator), this.s('beat-type', "" + definition.denominator));
                     attributes.appendChild(time);
@@ -903,7 +903,7 @@ export class MusicXmlConverter implements IFileConverter {
 
                 // clef
                 if (updateClef) {
-                    var clefDef = staffContext.clef.definition;//MusicXmlWriter.clefDefs[staffContext.clef.clefCode];
+                    var clefDef = staffContext.clef;//MusicXmlWriter.clefDefs[staffContext.clef.clefCode];
                     var clef = this.s('clef', this.s('sign', clefDef.clefName().toUpperCase()), this.s('line', 6 - clefDef.clefLine));
                     attributes.appendChild(clef);
                 }

@@ -1,8 +1,4 @@
-﻿/// <reference path="../node_modules/@types/mocha/index.d.ts" />
-/// <reference path="../node_modules/@types/chai/index.d.ts" />
-/// <reference path="../jMusicScore.d.ts" />
-
-import {Model} from "../jMusicScore";
+﻿import {Model} from "../jMusicScore";
 import {Validators} from "../Validators";
 import {Commands} from "../commands";
 import {Json} from "../jsonReader";

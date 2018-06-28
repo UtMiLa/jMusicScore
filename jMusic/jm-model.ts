@@ -730,7 +730,13 @@
                 var deltaBars = Math.floor((absTime.diff(oldTime)).divide(oldMeasureTime));
                 barNo += deltaBars;
                 timeInBar = absTime.diff(oldTime).sub(oldMeasureTime.multiplyScalar(deltaBars));
-                return new StaffContext(clef.definition, key.definition, meter.definition, meter.absTime, barNo, timeInBar);
+                return new StaffContext(
+                    clef ? clef.definition : undefined, 
+                    key ? key.definition : undefined, 
+                    meter ? meter.definition : undefined,
+                    meter ? meter.absTime : AbsoluteTime.startTime,
+                    barNo,
+                    timeInBar);
             }
             public getMeterElements(): IMeter[] {
                 return this.meterElements;
