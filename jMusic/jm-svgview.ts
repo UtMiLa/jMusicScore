@@ -3,14 +3,18 @@ import {emmentalerNotes} from "./fonts/emmentaler";
 import {fontCodePoints} from "./fonts/font-codepoints";
 import { MeterDrawer, KeyDrawer, PrefixVisitor, RedrawVisitor, IGraphicsEngine, ISensorGraphicsEngine } from "./jm-views";
 import { Validators } from './jm-refiners';
-import { IMusicElement, ClefType, IMeterSpacingInfo, IMeterDefinition, IMeter, ScoreElement, StaffContext,
-    IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, NoteType, HorizPosition,
-    IKeyDefinition, IClefSpacingInfo, Point, ClefDefinition, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
+import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
+    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
+    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
+import { IMusicElement,  IMeterSpacingInfo, IMeter, ScoreElement, 
+    IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, 
+    IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, NoteDecorationKind,
-    LongDecorationType, TimeSpan, AbsoluteTime, Pitch, Rational, TupletDef, NoteDecorationElement, TextSyllableElement, StemDirectionType,
-    NoteLongDecorationElement, ITimedEvent, Music, RegularMeterDefinition, RegularKeyDefinition, OffsetMeterDefinition } from "./jm-model";    
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, 
+    NoteDecorationElement, TextSyllableElement, 
+    NoteLongDecorationElement, ITimedEvent, Music } from "./jm-model";    
 import { IFeedbackClient } from './jap-application';
 import { IWriterPlugIn, IReaderPlugIn } from './jap-application';
 import {  IScoreApplication, ScoreStatusManager, IScorePlugin, IScoreDesigner } from './jm-application';

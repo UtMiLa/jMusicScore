@@ -1,6 +1,11 @@
 import {Application} from "../JApps/application";
-import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, AbsoluteTime, MusicElementFactory, Pitch, IBar, TupletDef,
-    IVisitor, HorizPosition, IVoice, IStaff, IScore, TimeSpan, IKey, IClef, PitchClass, INote, INotehead, ScoreElement } from "./jm-model";
+import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
+    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
+    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
+
+import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory, IBar,
+    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, INotehead, ScoreElement } from "./jm-model";
 
     export interface IScoreApplication extends Application.AbstractApplication<IScore, ScoreStatusManager> { }
     export interface IScorePlugin extends Application.IPlugIn<IScore, ScoreStatusManager> { }

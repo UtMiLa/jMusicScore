@@ -1,6 +1,10 @@
-import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, AbsoluteTime, Point,
-    IVisitor, HorizPosition, IVoice, IStaff, IScore, ITimedEvent, IEventContainer, IClef,
-    IMemento, Music, MusicElementFactory, StaffContext, ClefDefinition, ClefType, RegularKeyDefinition, RegularMeterDefinition, TimeSpan, ClefElement,
+import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
+    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
+    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
+import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,  Point,
+    IVisitor, IVoice, IStaff, IScore, ITimedEvent, IEventContainer, IClef,
+    Music, MusicElementFactory, ClefElement,
     KeyElement, 
     MeterElement} from "./jm-model";
 import { IScoreRefiner } from "./jm-interfaces";

@@ -1,12 +1,16 @@
-import { IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, AbsoluteTime, Music, TimeSpan,
+import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
+    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
+    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
+import { IMusicElement, IMeterSpacingInfo,  IMeter, Music, 
     IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, BeamElement, ITimedEvent,
-    IKeyDefinition, IClefSpacingInfo, Point, ClefDefinition, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
+    IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, NoteDecorationKind,
-    LongDecorationType } from "./jm-model";    
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey
+     } from "./jm-model";    
 import {MusicSpacing} from "./jm-spacing";
-import { IVisitorIterator, IScoreDesigner, IScoreRefiner } from './jm-interfaces';
+import { IScoreDesigner, IScoreRefiner } from './jm-interfaces';
 import { NoteDecorations } from './jm-glyph-details';
 import {emmentalerNotes} from "./fonts/emmentaler";
 import {fontCodePoints} from "./fonts/font-codepoints";

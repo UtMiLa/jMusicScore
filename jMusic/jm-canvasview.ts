@@ -1,7 +1,7 @@
 import { IScore, Point } from "./jm-model";    
-import {MusicSpacing} from "./jm-spacing";
-import {emmentalerNotes} from "./fonts/emmentaler";
-import {fontCodePoints} from "./fonts/font-codepoints";
+import { MusicSpacing } from "./jm-spacing";
+import { emmentalerNotes } from "./fonts/emmentaler";
+import { fontCodePoints } from "./fonts/font-codepoints";
 import { IGraphicsEngine, ISensorGraphicsEngine, PrefixVisitor, RedrawVisitor } from "./jm-views";
 import { Validators } from './jm-refiners';
 

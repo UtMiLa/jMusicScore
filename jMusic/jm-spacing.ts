@@ -1,12 +1,16 @@
-import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, AbsoluteTime,
-    IVisitor, HorizPosition, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo,
-    IKeyDefinition, IClefSpacingInfo, Point, ClefDefinition, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
+import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
+    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
+    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
+import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, 
+        IVisitor,  IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo,
+    IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, LedgerLineSpacingInfo,
-    ILongDecorationSpacingInfo, ClefType, ITimedEvent, Music, NoteDecorationKind, Pitch, StemDirectionType } from "./jm-model";
+    ILongDecorationSpacingInfo, ITimedEvent, Music } from "./jm-model";
 
-import  { IGraphicsEngine , IVisitorIterator, IScoreDesigner } from './jm-interfaces';
+import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
         /// Music spacing classes - independent of graphics methods
         export module MusicSpacing {
@@ -788,7 +792,7 @@ import  { IGraphicsEngine , IVisitorIterator, IScoreDesigner } from './jm-interf
     
             }
     
-            class SpacingFactory implements IVisitorIterator, IVisitor {
+            class SpacingFactory implements IVisitorIterator<IMusicElement>, IVisitor {
                 visitPre(element: IMusicElement): (element: IMusicElement) => void {
                     element.inviteVisitor(this);
                     return null;

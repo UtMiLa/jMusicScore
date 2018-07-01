@@ -1,13 +1,16 @@
-import { IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, ScoreElement, StaffContext,
-    IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, NoteType, PitchClass, ClefType,
-    IKeyDefinition, IClefSpacingInfo, Point, ClefDefinition, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
+import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
+    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
+    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from '../jm-base'
+import { IMusicElement, IMeterSpacingInfo,  IMeter, ScoreElement, 
+    IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, 
+     IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, NoteDecorationKind,
-    LongDecorationType, TimeSpan, AbsoluteTime, Pitch, Rational, TupletDef, NoteDecorationElement, TextSyllableElement, StemDirectionType,
-    NoteLongDecorationElement, ITimedEvent, Music, RegularMeterDefinition, RegularKeyDefinition, OffsetMeterDefinition } from "../jm-model";  
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, 
+    NoteDecorationElement, TextSyllableElement, 
+    NoteLongDecorationElement, ITimedEvent, Music } from "../jm-model";  
 
-import  { IGraphicsEngine , IVisitorIterator, IScoreDesigner } from '../jm-interfaces';
 import  { IScoreApplication, ScoreStatusManager } from '../jm-application';
 import  { AbstractApplication } from '../jap-application';
 import  { MusicSpacing } from '../jm-spacing';

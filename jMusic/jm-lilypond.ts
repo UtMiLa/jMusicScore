@@ -1,6 +1,11 @@
 import { IFileConverter } from './jm-interfaces';
-import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeterDefinition, IMeter, AbsoluteTime, MusicElementFactory,
-    IVisitor, HorizPosition, IVoice, IStaff, IScore, TimeSpan, IKey, IClef, PitchClass, INote, INotehead, ScoreElement } from "./jm-model";
+import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
+    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
+    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
+
+import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory,
+    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, INotehead, ScoreElement } from "./jm-model";
 import { parse } from './peg/lilypond';
 
 export class LilyPondConverter implements IFileConverter {    

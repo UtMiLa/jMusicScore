@@ -1,4 +1,4 @@
-import { NoteDecorationKind } from "./jm-model";
+import { NoteDecorationKind } from "./jm-base";
 
 
 export class NoteDecorations {
