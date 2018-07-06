@@ -4,7 +4,6 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 
-
         // todo: Spacers out of this file
         // todo: NoteId away
 
@@ -1957,7 +1956,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     if (children) {
                         for (var i = 0; i < children.length; i++) {
                             var child = children[i];
-                            var elm = MusicElementFactory.recreateElement(res, child);
+                            if (child) {
+                                MusicElementFactory.recreateElement(res, child);
+                            }
                         }
                     }
                 }

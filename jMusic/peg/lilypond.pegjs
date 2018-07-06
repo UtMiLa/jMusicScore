@@ -6,6 +6,10 @@ Todo:
 
 ordentlig time på note
 parse ~ [ ] .  efter node
+s1*7/8
+variable
+\modalTranspose og \transpose
+\time
 
 */
 {
@@ -34,6 +38,7 @@ Expression
   things: ScoreThings /
   music:Music { return {mus: music}; } /
   notes:MusicElement+ { return {n: notes}; } /
+  comment:Comment { return {t:"Comment", def: comment}; }  /
   s:[ \t\n\r]+ { return undefined; } 
   
 TransposeFunction
@@ -111,7 +116,7 @@ Mode
 	= "\\major" / "\\minor"
     
 TimeDef "command_element_time"
-	= "\\time" _ s:[0-9]+ "/" d:[0-9]+ _ { 
+	= "\\time" _ s:Integer "/" d:Integer _ { 
 	return {"t":"Meter","def":{"abs":{"num":0,"den":1},"def":{"t":"Regular","num":s,"den":d}}};
 	}
     
@@ -205,7 +210,8 @@ Include
     }    
 String
 	= "\"" s:StringChar* "\"" { return s.join(""); }
-
+Integer
+	= n:[0-9]+ { return +n.join(''); }
 StringChar
 	= StringEscape c:. { return c; }
     /
@@ -221,5 +227,5 @@ __ "optional_whitespace"
 	= s:(WhitespaceItem*) { return {"WS": s}; }
 
 WhitespaceItem
-	= [ \t\n\r]+ / Comment
+	= [ \t\n\r]+
     

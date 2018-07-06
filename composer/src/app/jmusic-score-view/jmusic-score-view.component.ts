@@ -20,7 +20,7 @@ export class JmusicScoreViewComponent implements OnInit {
   _memento: IMemento;
 
 
-
+/*
   mus = {
     "id": "89", "t": "Score", "def": { "metadata": {} },
     "children": [
@@ -28,7 +28,7 @@ export class JmusicScoreViewComponent implements OnInit {
         { "id": "169", "t": "Bar", "def": { "abs": { "num": 7, "den": 4 } } },
         { "id": "92", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } },
         { "id": "93", "t": "Meter", "def": { "abs": { "num": 1, "den": 1 }, "def": { "t": "Regular", "num": 3, "den": 4 } } },
-        /*{
+        / *{
             "id": "94", "t": "Staff",
             "children": [
                 { "id": "95", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } },
@@ -82,7 +82,7 @@ export class JmusicScoreViewComponent implements OnInit {
                 { "id": "151", "t": "Meter" },
                 { "id": "163", "t": "StaffExpression", "def": { "text": "Allegro", "abs": { "num": 0, "den": 1 } } }
             ]
-        },*/
+        },* /
         {
             "id": "134", "t": "Staff",
             "children": [
@@ -105,7 +105,7 @@ export class JmusicScoreViewComponent implements OnInit {
     ]
 };
 
-
+*/
 
 
 
@@ -139,6 +139,7 @@ export class JmusicScoreViewComponent implements OnInit {
     }
   } catch (e) {
     // console.log("Fejlede");
+    console.log(e);
     this.theScore = null;
     this.theScoreMemento = "";
     this._memento = null;

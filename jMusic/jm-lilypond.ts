@@ -11,11 +11,18 @@ import { parse } from './peg/lilypond';
 export class LilyPondConverter implements IFileConverter {    
     read(data: any): IScore{
         var parsed = parse(data);
-        var voiceMemento = parsed[0].mus; // tjek om mus er voice eller noget andet
-        voiceMemento.children.reverse();
-        var staffMemento = {def:{}, t:"Staff", children:[{ "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, voiceMemento], id: '2'};
-        var scoreMemento = {def:{}, t:"Score", children:[staffMemento], id: '3' };
+        var scoreMemento = <any>{def:{}, t:"Score", children:[], id: '3' };
+
+        for (var i = 0; i < parsed.length; i++){
+            if (!parsed[i]) continue;
+            var voiceMemento = parsed[i].mus; // tjek om mus er voice eller noget andet
+            if (!voiceMemento) continue;
+            voiceMemento.children.reverse();
+            var staffMemento = {def:{}, t:"Staff", children:[{ "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, voiceMemento], id: '2'};
+            scoreMemento.children.push(staffMemento);
+        }
         var score = <IScore>MusicElementFactory.recreateElement(null, scoreMemento);
+
     
         return score;
     }
