@@ -23,8 +23,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
 /**************************************************** MusicElement stuff ****************************************************/
         export interface IMusicElement {
-            changed(): void;
-            moved(): void;/**/
+            //changed(): void;
+            //moved(): void;/**/
             id: string;
 
             parent: IMusicElement;
@@ -66,8 +66,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 spacer.visitDefault(this, this._spacingInfo);
             }
 
-            public changed() { }
-            public moved() { }
+            /*public changed() { }
+            public moved() { }*/
 
             private childLists: IMusicElement[][] = [];
             private properties: { [index: string]: any; } = {};
@@ -406,8 +406,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 this.addChild(this.staffElements, staff);
                 var clef: IClef = new ClefElement(staff, clefDef);
                 staff.addChild(staff.clefElements, clef);
-                for (var i = 0; i < this.bars.length; i++)
-                    this.bars[i].changed();
+                /*for (var i = 0; i < this.bars.length; i++)
+                    this.bars[i].changed();*/
                 return staff;
             }
             /*private getChild(i: number): IStaff {
@@ -624,7 +624,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     }
                 }
                 var meterRef = new MeterElement(this, meter, absTime);
-                meterRef.changed();
+                //meterRef.changed();
                 this.addChild(this.meterElements, meterRef);
             }
             public setStaffExpression(type: string, absTime: AbsoluteTime): IStaffExpression {
@@ -654,7 +654,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     return;
                 }
                 var clefRef = new ClefElement(this, type, absTime);
-                clefRef.changed();
+                //clefRef.changed();
                 this.addChild(this.clefElements, clefRef);
             }
             public setKey(key: IKeyDefinition, absTime: AbsoluteTime) {
@@ -666,7 +666,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     }
                 }
                 var keyRef = new KeyElement(this, key, absTime);
-                keyRef.changed();
+                //keyRef.changed();
                 this.addChild(this.keyElements, keyRef);
             }
         }
@@ -763,7 +763,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public setStemDirection(dir: StemDirectionType) {
                 if (this.stemDirection != dir) {
                     this.stemDirection = dir;
-                    this.changed();
+                //    this.changed();
                 }
             }
             public getEvents(fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
@@ -827,12 +827,12 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             public getElementName() { return "Clef"; }
 
-            public makeSureExists() {
-                this.changed();
-            }
+            /*public makeSureExists() {
+                //this.changed();
+            }*/
             public setClef(clef: ClefDefinition) {
                 this.definition = clef;
-                this.changed();
+                //this.changed();
             }
             public pitchToStaffLine(pitch: Pitch): number {
                 return this.definition.pitchToStaffLine(pitch);
@@ -1201,7 +1201,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             setDots(no: number) {
                 if (no != this.dotNo) {
                     this.dotNo = no;
-                    this.changed();
+                    //this.changed();
                 }
             }
 
@@ -1223,7 +1223,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     this.rest = newRest;
                     //if (!this.rest) {
                     // fjern pause og tilføj hals 
-                    this.changed();
+                 //   this.changed();
                     //}
                 }
             }
@@ -1235,7 +1235,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public setStemDirection(dir: StemDirectionType) {
                 if (this.stemDirection != dir) {
                     this.stemDirection = dir;
-                    this.changed();
+             //       this.changed();
                 }
             }
             /*setRev(force: boolean, newRev: boolean) {
@@ -1264,7 +1264,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     //newpitch.setPitch(pitch);
                     //newpitch.setDots(this.dotNo);
                     this.addChild(this.noteheadElements, newpitch);
-                    this.changed();
+                //    this.changed();
                     return newpitch;
                 }
             }
@@ -1336,10 +1336,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             setPitch(pitch: Pitch) {
                 this.pitch = pitch;
-                this.moved();
+        //        this.moved();
             }
             recalc() {
-                this.changed();
+        //        this.changed();
             }
             public getAccidental(): string { // todo: use StaffContext.Key
                 if (this.forceAccidental || this.showAccidental) {
@@ -1494,7 +1494,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public set Text(id: string) {
                 if (this.text !== id) {
                     this.text = id
-                    this.changed();
+                //    this.changed();
                 }
             }
             public getElementName(): string { return "TextSyllable"; }

@@ -128,17 +128,17 @@ describe("Score", function () {
 
         it("should return a getStaffContext(100) with a correct meter", function () {
             document.setMeter(meterDef4_4, AbsoluteTime.startTime);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('[4/4]');
+            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('4/4');
             staff.setMeter(meterDef5_2, AbsoluteTime.startTime);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('[5/2]');
+            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('5/2');
             staff.setMeter(meterDef3_8, absTimeHalf);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('[3/8]');
+            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('3/8');
             document.setMeter(meterDef7_16, absTimeHalf);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('[3/8]');
+            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('3/8');
             document.setMeter(meterDef7_16, absTimeHalfPlus);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('[3/8]');
+            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('3/8');
             (<any>staff).meterElements = <any>[];
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('[7/16]');
+            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('7/16');
         });
 
     });
