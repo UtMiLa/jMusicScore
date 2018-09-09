@@ -1,6 +1,6 @@
 /*
-node ..\..\node_modules\pegjs\bin\pegjs -o .\lilypond.js lilypond.pegjs
-copy lilypond.js ..\dist\jMusic\peg\lilypond.js 
+node ..\node_modules\pegjs\bin\pegjs -o .\peg\lilypond.js .\peg\lilypond.pegjs
+copy .\peg\lilypond.js .\dist\jMusic\peg\lilypond.js 
 
 Todo:
 
@@ -16,11 +16,15 @@ variable
 	var lastTime = 4;
   function theTime(d){
     //this.lastTime = 4;
-   		if (d) { 
-        let dur = d.dur.join("");
-        lastTime = +dur;
+   	if (d) { 
+        if (d.dur == "\\brevis") {
+        	lastTime = { num: 2, den: 1 };
+        } else {
+	        let dur = d.dur.join("");
+        	lastTime = { num: 1, den: +dur };
+        }
       }
-    return lastTime;//this.lastTime;
+    return { num: lastTime.num, den: lastTime.den };
   } 	
 
 }
@@ -95,7 +99,6 @@ VariableRef
 	= "\\" name:[a-zA-Z]+ __ { return { t: "Variable", def: {name: name.join('')}}; }
 Command
 	= "\\numericTimeSignature" _ /
-    "~" _ /
     "[" __ /
     "]" __ /
     "\\(" __ /
@@ -128,43 +131,50 @@ Rest
 		return {
                     t: "Note",
 					def: {
-						time: { num: 1, den: lastDur },
+						time: lastDur,
 						abs: {num:0, den:1},
 						noteId: "n1_" + lastDur,
+                        dots: d && d.dots ? d.dots.length : undefined,
                         rest: true
 					},
 					children: []
 					}}
 Note 
-	= p:Pitch d:Duration? __ { 
+	= p:Pitch d:Duration? tie:"~"? __ { 
    		var lastDur = theTime(d);
+        if (tie) p.def.tie = true;
 		return {
                     t: "Note",
 					def: {
-						time: { num: 1, den: lastDur },
+						time: lastDur,
 						abs: {num:0, den:1},
 						noteId: "n1_" + lastDur,
+                        dots: d && d.dots ? d.dots.length : undefined
 					},
 					children: [p]
 					}}
 Chord
-	= "<" n:(Note+) ">" d:Duration? __ { 
+	= "<" n:(Pitch MultiPitch*) ">" d:Duration? __ { 
 		var lastDur = theTime(d);
 		return {
 					t: "Note",
 					def: {
-						time: { num: 1, den: lastDur },
+						time: lastDur,
 						abs: {num:0, den:1},
 						noteId: "n1_" + lastDur,
+                        dots: d && d.dots ? d.dots.length : undefined
 					},
-					children: function(n){ var arr = []; for (var i = 0; i < n.length; i++) {arr.push(n[i].children[0]); } return arr; }(n)
+                    n: n,
+					children: function(n){ var arr = [n[0]];  for (var i = 0; i < n[1].length; i++) {arr.push(n[1][i]); } return arr; }(n)
 					}; }
+MultiPitch
+	= _ p:Pitch { return p; }
 Duration
-	= d:([0-9]+) dot:Dots? { return { dur: d, dots: dot } }
+	= d:([0-9]+ / "\\brevis") dot:Dots? { return { dur: d, dots: dot } }
 Dots 
 	= "."+
 Pitch "pitch"
-	= pit:[a-h] i:Inflection? o:Octave { 
+	= pit:[a-h] i:Inflection? o:Octave tie:"~"? { 
 				    var alteration = 0;
 					switch (i) {
                         case "is": alteration = "x"; break;
@@ -185,13 +195,13 @@ Pitch "pitch"
 							p: ['c', 'd', 'e', 'f', 'g', 'a', 'b'].indexOf(pit) + octave,
 							a: alteration,
 							forceAcc: false,
-							tie: false,
+							tie: tie? true : false,
 							tieForced: false
 						}
 					};
 				}
 Inflection
-	= "s" / "f" / "is" / "es"
+	= "s" / "f" / "isis" / "eses" / "is" / "es"
     
 Octave "sup_quotes_sub_quotes"
 	= s:[\',]* { return s.join(""); }
