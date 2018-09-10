@@ -135,7 +135,8 @@ Rest
 						abs: {num:0, den:1},
 						noteId: "n1_" + lastDur,
                         dots: d && d.dots ? d.dots.length : undefined,
-                        rest: true
+                        rest: true,
+                        mul: d ? d.mul : undefined
 					},
 					children: []
 					}}
@@ -149,7 +150,8 @@ Note
 						time: lastDur,
 						abs: {num:0, den:1},
 						noteId: "n1_" + lastDur,
-                        dots: d && d.dots ? d.dots.length : undefined
+                        dots: d && d.dots ? d.dots.length : undefined,
+                        mul: d ? d.mul : undefined
 					},
 					children: [p]
 					}}
@@ -162,7 +164,8 @@ Chord
 						time: lastDur,
 						abs: {num:0, den:1},
 						noteId: "n1_" + lastDur,
-                        dots: d && d.dots ? d.dots.length : undefined
+                        dots: d && d.dots ? d.dots.length : undefined,
+                        mul: d ? d.mul : undefined
 					},
                     n: n,
 					children: function(n){ var arr = [n[0]];  for (var i = 0; i < n[1].length; i++) {arr.push(n[1][i]); } return arr; }(n)
@@ -170,9 +173,12 @@ Chord
 MultiPitch
 	= _ p:Pitch { return p; }
 Duration
-	= d:([0-9]+ / "\\brevis") dot:Dots? { return { dur: d, dots: dot } }
+	= d:([0-9]+ / "\\brevis") dot:Dots? mul:Multiplier? { return { dur: d, dots: dot, mul: mul } }    
 Dots 
 	= "."+
+Multiplier
+	= "*" num:Integer "/" den:Integer { return {num:num, den:den}; }
+	/ "*" num:Integer { return {num:num, den:1}; }
 Pitch "pitch"
 	= pit:[a-h] i:Inflection? o:Octave tie:"~"? { 
 				    var alteration = 0;

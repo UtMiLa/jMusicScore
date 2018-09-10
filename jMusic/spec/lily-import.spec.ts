@@ -15,10 +15,11 @@ describe("Lilypond Import", function () {
         return parsedObject;
     }
 
-    var document;
+    //var document;
     beforeEach(function () {
-        document = new ScoreElement(null);
+        //document = new ScoreElement(null);
     });
+
     it("should correctly import pitches", function () {
         var input = "{ c4 d e f g a b c'}";
 
@@ -30,6 +31,7 @@ describe("Lilypond Import", function () {
             expect(note.noteheadElements[0].pitch.pitch).toEqual(i);
         }
     });
+
     it("should correctly import note octaves", function () {
         var input = "{ c'''4 c'' c' c c, c,, c,,,}";
 
@@ -42,6 +44,7 @@ describe("Lilypond Import", function () {
             expect(note.noteheadElements[0].pitch.pitch).toEqual(21 - 7 * i);
         }
     });
+
     it("should correctly import note pitches with accidentals", function () {
         var input = "{ ceses4 ces c cis cisis }";
 
@@ -85,6 +88,7 @@ describe("Lilypond Import", function () {
             expect(note.dotNo).toEqual(results[i]);
         }
     });
+
     it("should correctly import note ties", function () {
         var input = "{ c4~ c16}";
 
@@ -95,6 +99,7 @@ describe("Lilypond Import", function () {
         let note = parsedObject.staffElements[0].voiceElements[0].noteElements[0]
         expect(note.noteheadElements[0].tie).toEqual(true);
     });
+
     it("should correctly import chords", function () {
         var input = "{ c4 <c e g>8 <c f a>4 }";
 
@@ -132,12 +137,90 @@ describe("Lilypond Import", function () {
         expect(hidden.rest).toEqual(true);
     });
 
-    /*xit("should correctly insert time changes", function () {});
-    xit("should beam notes correctly", function () {});
-    xit("should correctly insert variables", function () {});
-    xit("should correctly import repeats", function () {});
-    xit("should correctly import multiplied rest values", function () {});
-    xit("should correctly import transposed subgroups", function () {});*/
+    it("should correctly insert time changes", function () {
+        var input = "{ c4 \\time 4/8 c4 }";
+
+        let parsedObject = loadFromLily(input, 1, 1);
+          
+        let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+        expect(notes.length).toEqual(2);
+
+        // test Meter object
+console.log(notes);
+    });
+    it("should beam notes correctly", function () {
+        var input = "{ c8[ d e] f g[ a] }";
+
+        let parsedObject = loadFromLily(input, 1, 1);
+          
+        let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+        expect(notes.length).toEqual(6);
+
+        //test beaming
+    });
+    xit("should correctly insert variables", function () {
+        let hutlifut = loadFromLily("d4 e4", 1, 1);
+
+        var input = "{ c4 \\hutlifut c4 }";
+
+        let parsedObject = loadFromLily(input, 1, 1);
+
+        //parsedObject.variables["hutlifut"] = hutlifut;
+          
+        let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+        expect(notes.length).toEqual(2);
+
+        // test var
+    });
+    xit("should correctly import repeats", function () {
+        let hutlifut = loadFromLily("d4 e4", 1, 1);
+
+        var input = "{ \\repeat unfold 19 \\hutlifut }";
+
+        let parsedObject = loadFromLily(input, 1, 1);
+          
+        //parsedObject.variables["hutlifut"] = hutlifut;
+
+        let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+        expect(notes.length).toEqual(2);
+
+        // test repeat
+    });
+    it("should correctly import multiplied rest values", function () {
+
+        var input = "{ r1*7/8  }";
+
+        let parsedObject = loadFromLily(input, 1, 1);
+          
+        let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+        expect(notes.length).toEqual(1);
+
+        // test rest type and length
+        expect(notes[0].timeVal.toString()).toEqual("7/8");
+    });
+    xit("should correctly import modally transposed subgroups", function () {
+        var diatonicScale = loadFromLily("c4 d e f g a b", 1, 1);
+
+        var input = "{ \\modalTranspose e c \\diatonicScale { c4 e g b d f a } }";
+
+        let parsedObject = loadFromLily(input, 1, 1);
+        //parsedObject.variables["diatonicScale"] = diatonicScale;
+          
+        let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+        expect(notes.length).toEqual(1);
+
+        // test values
+    });
+    xit("should correctly import modally transposed subgroups", function () {
+        var input = "{ \\transpose e c { c4 e g b d f a } }";
+
+        let parsedObject = loadFromLily(input, 1, 1);
+          
+        let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+        expect(notes.length).toEqual(1);
+
+        // test values
+    });
 });
 
 

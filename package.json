@@ -15,14 +15,14 @@
     "gulp": "^3.9.1",
     "gulp-browserify": "~0.5.1",
     "gulp-concat": "~2.6.1",
-    "gulp-less": "^3.3.2",
+    "gulp-less": "^3.5.0",
     "gulp-mocha": "^4.3.1",
     "gulp-typescript": "^3.2.1",
     "gulp-util": "^3.0.8",
-    "jasmine": "^3.1.0",
+    "jasmine": "^3.2.0",
     "mocha": "^3.5.3",
     "pegjs": "^0.10.0",
-    "typescript": "^2.6.1"
+    "typescript": "^2.9.2"
   },
   "dependencies": {
     "gulp-pegjs": "^0.1.0",
