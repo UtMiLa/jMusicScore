@@ -127,6 +127,7 @@ StaffExpression
 Rest
 	= [rs] o:Octave d:Duration? __ { 
 		var lastDur = theTime(d);
+        var mul;
 		return {
                     t: "Note",
 					def: {
@@ -134,10 +135,12 @@ Rest
 						abs: {num:0, den:1},
 						noteId: "n" + lastDur.num + "_" + lastDur.den,
                         dots: d && d.dots ? d.dots.length : undefined,
-                        rest: true
+                        rest: true,
+                        tuplet: d ? d.mul : undefined
 					},
 					children: []
-					}}
+				}
+		}
 Note 
 	= p:Pitch d:Duration? tie:"~"? __ { 
    		var lastDur = theTime(d);
@@ -148,7 +151,8 @@ Note
 						time: lastDur,
 						abs: {num:0, den:1},
 						noteId: "n" + lastDur.num + "_" + lastDur.den,
-                        dots: d && d.dots ? d.dots.length : undefined
+                        dots: d && d.dots ? d.dots.length : undefined,
+                        tuplet: d ? d.mul : undefined
 					},
 					children: [p]
 					}}
@@ -171,7 +175,8 @@ Chord
 						time: lastDur,
 						abs: {num:0, den:1},
 						noteId: "n" + lastDur.num + "_" + lastDur.den,
-                        dots: d && d.dots ? d.dots.length : undefined
+                        dots: d && d.dots ? d.dots.length : undefined,
+                        tuplet: d ? d.mul : undefined
 					},
                     n: n,
 					children: childItems
@@ -179,9 +184,12 @@ Chord
 MultiPitch
 	= _ p:Pitch { return p; }
 Duration
-	= d:([0-9]+ / "\\brevis") dot:Dots? { return { dur: d, dots: dot } }
+	= d:([0-9]+ / "\\brevis") dot:Dots? mul:Multiplier? { return { dur: d, dots: dot, mul: mul } }    
 Dots 
 	= "."+
+Multiplier
+	= "*" num:Integer "/" den:Integer { return {num:num, den:den}; }
+	/ "*" num:Integer { return {num:num, den:1}; }
 Pitch "pitch"
 	= pit:[a-h] i:Inflection? o:Octave tie:"~"? { 
 				    var alteration = 0;

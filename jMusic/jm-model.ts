@@ -727,6 +727,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         class VoiceElement extends MusicElement<IVoiceSpacingInfo> implements IVoice {
             constructor(public parent: IStaff) {
                 super(parent);
+                this.meterElements = { push: (meter: MeterElement) => { parent.addChild(parent.meterElements, meter); } };
             }
 
             static createFromMemento(parent: IStaff, memento: IMemento): IVoice {
@@ -750,6 +751,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             public noteElements: INote[] = [];
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
+            public meterElements;
 
             public withNotes(f: (note: INote, index: number) => void) {
                 for (var i = 0; i < this.noteElements.length; i++) {
