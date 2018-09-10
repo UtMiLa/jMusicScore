@@ -4,8 +4,7 @@ copy .\peg\lilypond.js .\dist\jMusic\peg\lilypond.js
 
 Todo:
 
-ordentlig time på note
-parse ~ [ ] .  efter node
+parse [ ] efter node
 s1*7/8
 variable
 \modalTranspose og \transpose
@@ -133,7 +132,7 @@ Rest
 					def: {
 						time: lastDur,
 						abs: {num:0, den:1},
-						noteId: "n1_" + lastDur,
+						noteId: "n" + lastDur.num + "_" + lastDur.den,
                         dots: d && d.dots ? d.dots.length : undefined,
                         rest: true
 					},
@@ -148,24 +147,34 @@ Note
 					def: {
 						time: lastDur,
 						abs: {num:0, den:1},
-						noteId: "n1_" + lastDur,
+						noteId: "n" + lastDur.num + "_" + lastDur.den,
                         dots: d && d.dots ? d.dots.length : undefined
 					},
 					children: [p]
 					}}
 Chord
-	= "<" n:(Pitch MultiPitch*) ">" d:Duration? __ { 
+	= "<" n:(Pitch MultiPitch*) ">" d:Duration? tie:"~"? __ { 
 		var lastDur = theTime(d);
+		if (tie) {
+			n[0].tie  = true;
+		}
+		var childItems = [n[0]];
+		for (var i = 0; i < n[1].length; i++) {
+			if (tie) {
+				n[1][i].tie  = true;
+			}
+			childItems.push(n[1][i]); 
+		}
 		return {
 					t: "Note",
 					def: {
 						time: lastDur,
 						abs: {num:0, den:1},
-						noteId: "n1_" + lastDur,
+						noteId: "n" + lastDur.num + "_" + lastDur.den,
                         dots: d && d.dots ? d.dots.length : undefined
 					},
                     n: n,
-					children: function(n){ var arr = [n[0]];  for (var i = 0; i < n[1].length; i++) {arr.push(n[1][i]); } return arr; }(n)
+					children: childItems
 					}; }
 MultiPitch
 	= _ p:Pitch { return p; }
