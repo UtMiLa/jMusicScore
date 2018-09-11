@@ -188,6 +188,34 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
+
+        export class TimedEventElement {
+            constructor(public element: MusicElement<ISpacingInfo>, public absTime: AbsoluteTime){
+
+            }
+            getTotalTime(): TimeSpan {
+                return TimeSpan.noTime;
+            }
+            getEvents(): TimedEventElement[] {
+                return [this];
+            }
+        }
+
+        export class TimedEventStream extends TimedEventElement {
+            events: TimedEventElement[] = [];
+            getTotalTime(): TimeSpan {
+                return TimeSpan.noTime;
+            }
+            getEvents(): TimedEventElement[] {
+                let res = [];
+                for (let i = 0; i < this.events.length; i++){
+                    let element = new TimedEventElement(this.events[i].element, this.events[i].absTime.add(this.absTime.diff(AbsoluteTime.startTime)));
+                    res.push(element);
+                }
+                return res;
+            }            
+        }
+
         export interface ITimedEvent extends IMusicElement {
             absTime: AbsoluteTime;
             getElementName(): string;
@@ -205,6 +233,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             80	ChangeKey
             90	ChangeMeter
             95  GraceNotes ?
+            99  StaffExpression
             100	Note
             */
             getVoice(): IVoice;
@@ -751,7 +780,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             public noteElements: INote[] = [];
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
-            public meterElements;
+            public meterElements: { push: (meter: MeterElement) => void; };
 
             public withNotes(f: (note: INote, index: number) => void) {
                 for (var i = 0; i < this.noteElements.length; i++) {
