@@ -188,34 +188,6 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
-
-        export class TimedEventElement {
-            constructor(public element: MusicElement<ISpacingInfo>, public absTime: AbsoluteTime){
-
-            }
-            getTotalTime(): TimeSpan {
-                return TimeSpan.noTime;
-            }
-            getEvents(): TimedEventElement[] {
-                return [this];
-            }
-        }
-
-        export class TimedEventStream extends TimedEventElement {
-            events: TimedEventElement[] = [];
-            getTotalTime(): TimeSpan {
-                return TimeSpan.noTime;
-            }
-            getEvents(): TimedEventElement[] {
-                let res = [];
-                for (let i = 0; i < this.events.length; i++){
-                    let element = new TimedEventElement(this.events[i].element, this.events[i].absTime.add(this.absTime.diff(AbsoluteTime.startTime)));
-                    res.push(element);
-                }
-                return res;
-            }            
-        }
-
         export interface ITimedEvent extends IMusicElement {
             absTime: AbsoluteTime;
             getElementName(): string;
