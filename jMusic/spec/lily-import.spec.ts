@@ -198,6 +198,16 @@ describe("Lilypond Import", function () {
         // test rest type and length
         expect(notes[0].getTimeVal().toString()).toEqual("7/8");
     });
+    xit("should allow nested sequences", function () {
+        var input = "{ c4 d {e f} }";
+
+        let parsedObject = loadFromLily(input, 1, 1);
+          
+        let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+        expect(notes.length).toEqual(3);
+
+        // test values
+    });
     xit("should correctly import modally transposed subgroups", function () {
         var diatonicScale = loadFromLily("c4 d e f g a b", 1, 1);
 

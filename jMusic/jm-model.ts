@@ -789,6 +789,82 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 else return AbsoluteTime.startTime;
             }
         }
+
+
+        export interface ISequence extends IEventContainer, IMusicElement {
+            noteElements: INote[];
+            parent: IVoice | ISequence;
+            withNotes(f: (note: INote, index: number) => void): void;
+            getStemDirection(): StemDirectionType;
+            setStemDirection(dir: StemDirectionType): void;
+            getEvents(fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
+            getEndTime(): AbsoluteTime;
+            removeChild(child: INote): void;
+        }
+
+        // SequenceElement
+        class SequenceElement extends MusicElement<ISpacingInfo> implements ISequence {
+            constructor(public parent: IVoice | ISequence) {
+                super(parent);
+            }
+
+            static createFromMemento(parent: IStaff, memento: IMemento): IVoice {
+                var voice: IVoice = new VoiceElement(parent);
+                if (memento.def && memento.def.stem) { voice.setStemDirection(memento.def.stem); }
+                if (parent) parent.addChild(parent.voiceElements, voice); // todo: at index
+                return voice;
+            }
+
+            public doGetMemento(): any {
+                var val: any;
+                if (this.stemDirection) {
+                    val = { stem: this.stemDirection };
+                }
+                return val;
+            }
+
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitDefault(this, this.spacingInfo);
+            }
+
+            public noteElements: INote[] = [];
+            private stemDirection: StemDirectionType = StemDirectionType.StemFree;
+
+            public withNotes(f: (note: INote, index: number) => void) {
+                for (var i = 0; i < this.noteElements.length; i++) {
+                    f(this.noteElements[i], i);
+                }
+            }
+            public getStemDirection(): StemDirectionType {
+                return this.stemDirection;
+            }
+            public setStemDirection(dir: StemDirectionType) {
+                if (this.stemDirection != dir) {
+                    this.stemDirection = dir;
+                //    this.changed();
+                }
+            }
+            public getEvents(fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
+                var events: ITimedEvent[] = [];
+                if (!fromTime) fromTime = AbsoluteTime.startTime;
+                if (!toTime) toTime = AbsoluteTime.infinity;
+                this.withNotes((note: INote, index: number) => {
+                    if (!fromTime.gt(note.absTime) && toTime.gt(note.absTime)) {
+                        events.push(note);
+                    }
+                });
+                return events;
+            }
+            public getElementName() { return "Sequence"; }
+
+            public getEndTime(): AbsoluteTime {
+                if (this.noteElements.length) {
+                    var lastNote = this.noteElements[this.noteElements.length - 1];
+                    return lastNote.absTime.add(lastNote.getTimeVal());
+                }
+                else return AbsoluteTime.startTime;
+            }
+        }
         export interface IClef extends ITimedEvent {
             parent: IStaff;
             definition: ClefDefinition;            
@@ -1934,6 +2010,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             "Voice": VoiceElement,
             "Note": NoteElement,
             "Notehead": NoteheadElement,
+            "Sequence": SequenceElement,
             "Pitch": NoteheadElement,
             "Meter": MeterElement,
             "Key": KeyElement,

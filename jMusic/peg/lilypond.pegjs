@@ -45,8 +45,8 @@ Expression
   s:[ \t\n\r]+ { return undefined; } 
   
 TransposeFunction
-    = "\\transpose" _ Note Note Music _ /
-    "\\modalTranspose" _ Note Note Music Music _
+    = "\\transpose" _ Pitch _ Pitch _ Music _ /
+    "\\modalTranspose" _ Pitch _ Pitch _ Music Music _
 RepeatFunction
 	= "\\repeat" _ "unfold" _ no:[0-9]+ _ Music {return {"t": "repeat"}; }
 Score
@@ -73,16 +73,18 @@ ScoreThings
 		children: [m]
 	}; }
 Music
+	= Sequence /
+    "{" __ "<<" __ StaffExpression* ">>" __ "}" /
+    variable: VariableRef
+Sequence
 	= "{" __ notes:MusicElement* __ "}" { return {
-			t: "Voice",
+			t: "Sequence",
 			def: {
 				stem: "dir"
 			},
 			children: notes // kommer underligt nok i omvendt rækkefølge
 		};
-	} /
-     "{" __ "<<" __ StaffExpression* ">>" __ "}"/
-    variable: VariableRef
+	} 
 MusicElement
 	= Note /
     Rest /
@@ -93,6 +95,7 @@ MusicElement
     KeyDef /
     TimeDef /
     Command /
+    Sequence /
     Music
 VariableRef
 	= "\\" name:[a-zA-Z]+ __ { return { t: "Variable", def: {name: name.join('')}}; }
