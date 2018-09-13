@@ -728,7 +728,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         class VoiceElement extends MusicElement<IVoiceSpacingInfo> implements IVoice {
             constructor(public parent: IStaff) {
                 super(parent);
-                this.meterElements = { push: (meter: MeterElement) => { parent.addChild(parent.meterElements, meter); } };
+                //this.meterElements = { push: (meter: MeterElement) => { parent.addChild(parent.meterElements, meter); } };
+                this.addChild([], this.sequence);
             }
 
             static createFromMemento(parent: IStaff, memento: IMemento): IVoice {
@@ -750,17 +751,20 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 visitor.visitVoice(this, this.spacingInfo);
             }
 
-            private noteElements: INote[] = [];
+            private sequence = new SequenceElement(this);
+
+            //private noteElements: INote[] = [];
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
-            public meterElements: { push: (meter: MeterElement) => void; };
+            //public meterElements: { push: (meter: MeterElement) => void; };
 
             public getNoteElements(): INote[] {
-                return this.noteElements;
+                return this.sequence.noteElements;
             }
             public withNotes(f: (note: INote, index: number) => void) {
-                for (var i = 0; i < this.noteElements.length; i++) {
-                    f(this.noteElements[i], i);
-                }
+                this.sequence.withNotes(f);
+                /*for (var i = 0; i < this.sequence.noteElements.length; i++) {
+                    f(this.sequence.noteElements[i], i);
+                }*/
             }
             public getStemDirection(): StemDirectionType {
                 return this.stemDirection;
@@ -785,8 +789,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public getElementName() { return "Voice"; }
 
             public getEndTime(): AbsoluteTime {
-                if (this.noteElements.length) {
-                    var lastNote = this.noteElements[this.noteElements.length - 1];
+                let noteElements = this.getNoteElements();
+                if (noteElements.length) {
+                    var lastNote = noteElements[noteElements.length - 1];
                     return lastNote.absTime.add(lastNote.getTimeVal());
                 }
                 else return AbsoluteTime.startTime;
