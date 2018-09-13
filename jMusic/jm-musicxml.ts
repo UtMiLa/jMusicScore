@@ -216,7 +216,8 @@ export class MusicXmlConverter implements IFileConverter {
                 }
                 var note: INote;
                 if (chord) {
-                    note = voice.noteElements[voice.noteElements.length - 1];
+                    var noteElements = voice.getNoteElements();
+                    note = noteElements[noteElements.length - 1];
                 }
                 else {
                     note = Music.addNote(voice, rest ? NoteType.Rest : NoteType.Note, context.absTime, 'n' + noteName, noteTime, null, true, dots, tupletdef);

@@ -714,7 +714,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
 
         export interface IVoice extends IEventContainer, IMusicElement {
-            noteElements: INote[];
+            getNoteElements(): INote[];
             parent: IStaff;
             withNotes(f: (note: INote, index: number) => void): void;
             getStemDirection(): StemDirectionType;
@@ -750,10 +750,13 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 visitor.visitVoice(this, this.spacingInfo);
             }
 
-            public noteElements: INote[] = [];
+            private noteElements: INote[] = [];
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
             public meterElements: { push: (meter: MeterElement) => void; };
 
+            public getNoteElements(): INote[] {
+                return this.noteElements;
+            }
             public withNotes(f: (note: INote, index: number) => void) {
                 for (var i = 0; i < this.noteElements.length; i++) {
                     f(this.noteElements[i], i);
@@ -1704,17 +1707,19 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             static prevNote(note: INote): INote {
                 var voice = note.parent;
-                var i = voice.noteElements.indexOf(note);
+                var noteElements = voice.getNoteElements();
+                var i = noteElements.indexOf(note);
                 if (i > 0) {
-                    return voice.noteElements[i - 1];
+                    return noteElements[i - 1];
                 }
                 return null;
             }
             static nextNote(note: INote): INote { // (noteIndex >= note.parent.noteElements.length) ? null : note.parent.noteElements[noteIndex + 1];
                 var voice = note.parent;
-                var i = voice.noteElements.indexOf(note);
-                if (i >= 0 && i < voice.noteElements.length - 1) {
-                    return voice.noteElements[i + 1];
+                var noteElements = voice.getNoteElements();
+                var i = noteElements.indexOf(note);
+                if (i >= 0 && i < noteElements.length - 1) {
+                    return noteElements[i + 1];
                 }
                 return null;
             }
@@ -1843,8 +1848,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
             static findNote(voice: IVoice, absTime: AbsoluteTime): INote {
                 var res: INote;
-                for (var i = 0; i < voice.noteElements.length; i++) {
-                    var note = voice.noteElements[i];
+                var noteElements = voice.getNoteElements();
+
+                for (var i = 0; i < noteElements.length; i++) {
+                    var note = noteElements[i];
                     if (note.absTime.add(note.getTimeVal()).gt(absTime)) {
                         return note;
                     }
@@ -1904,7 +1911,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     restNote.setParent(voice);
                     restNote.setRest(true);
                     restNote.absTime = AbsoluteTime.startTime;
-                    voice.addChild(voice.noteElements, restNote, null, false);
+                    voice.addChild(voice.getNoteElements(), restNote, null, false); // todo: change
                 }
                 var oldNote: INote = beforeNote;
                 if (!oldNote && voiceTime.gt(absTime)) {
@@ -1923,7 +1930,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     }
                 }
                 note.dotNo = dots;
-                voice.addChild(voice.noteElements, note, oldNote);
+                voice.addChild(voice.getNoteElements(), note, oldNote); // todo: change
                 if (noteType === NoteType.Rest) {
                     note.setRest(true);
                 }

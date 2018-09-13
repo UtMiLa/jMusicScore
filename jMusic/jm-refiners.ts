@@ -453,9 +453,11 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 this.updateBeams(voice);
             }
 
-            private checkSyncopeBeaming(voice: IVoice) {             
-                for (var iNote = 0; iNote < voice.noteElements.length; iNote++) {
-                    var note: INote = voice.noteElements[iNote];
+            private checkSyncopeBeaming(voice: IVoice) {   
+                var noteElements = voice.getNoteElements();
+          
+                for (var iNote = 0; iNote < noteElements.length; iNote++) {
+                    var note: INote = noteElements[iNote];
                     var staffContext = voice.parent.getStaffContext(note.absTime);
                     var beamspan = note.getBeamspan();
                     for (var i = 1; i < beamspan.length; i++) {
@@ -466,7 +468,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                             var noteTime = note.timeVal;
                             var res = absTime.diff(AbsoluteTime.startTime).modulo(note.timeVal.multiplyScalar(2));
                             // todo: check if last in beam group
-                            var firstNote = voice.noteElements[iNote + beamspan[0] + 1];
+                            var firstNote = noteElements[iNote + beamspan[0] + 1];
                             var lastInBeamGroup = beamspan[0] + firstNote.getBeamspan()[0] === 0;
                             var syncopation = (res.numerator !== 0);
                             if (syncopation || lastInBeamGroup) {
@@ -480,8 +482,10 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
 
             private updateBeams(voice: IVoice) {
                 var beams: IBeam[] = [];
-                for (var iNote = 0; iNote < voice.noteElements.length; iNote++) {
-                    var note: INote = voice.noteElements[iNote];
+                var noteElements = voice.getNoteElements();
+
+                for (var iNote = 0; iNote < noteElements.length; iNote++) {
+                    var note: INote = noteElements[iNote];
                     var beamspan = note.getBeamspan();
                     for (var i = 0; i < beamspan.length; i++) {
                         if (beamspan[i] > 0 || beamspan[i] === -1) {
@@ -497,7 +501,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                                         toNote = undefined;
                                     }
                                     else {
-                                        toNote = voice.noteElements[iNote + beamspan[i] - 1];
+                                        toNote = noteElements[iNote + beamspan[i] - 1];
                                     }
                                     // update beam
                                     if (note.Beams[i].toNote !== toNote) {
@@ -523,7 +527,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                                     toNote = undefined;
                                 }
                                 else {
-                                    toNote = voice.noteElements[iNote + beamspan[i] - 1];
+                                    toNote = noteElements[iNote + beamspan[i] - 1];
                                 }
                                 note.Beams[i] = new BeamElement(note, toNote, i); // todo: toNote
                                 beams[i] = note.Beams[i];

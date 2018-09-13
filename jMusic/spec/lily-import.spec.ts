@@ -25,9 +25,9 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            expect(parsedObject.staffElements[0].voiceElements[0].noteElements.length).toEqual(8);
+            expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(8);
             for(var i = 0; i < 8; i++){
-                let note = parsedObject.staffElements[0].voiceElements[0].noteElements[i];
+                let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[i];
                 expect(note.noteheadElements[0].pitch.pitch).toEqual(i);
             }
         });
@@ -37,10 +37,10 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            expect(parsedObject.staffElements[0].voiceElements[0].noteElements.length).toEqual(7);
+            expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(7);
 
             for(var i = 0; i < 7; i++){
-                let note = parsedObject.staffElements[0].voiceElements[0].noteElements[i];
+                let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[i];
                 expect(note.noteheadElements[0].pitch.pitch).toEqual(21 - 7 * i);
             }
         });
@@ -50,11 +50,11 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            expect(parsedObject.staffElements[0].voiceElements[0].noteElements.length).toEqual(5);
+            expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(5);
             let results: any[] = ['bb', 'b', 0, 'x', 'xx'];
 
             for(var i = 0; i < 5; i++){
-                let note = parsedObject.staffElements[0].voiceElements[0].noteElements[i];
+                let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[i];
                 expect(note.noteheadElements[0].pitch.alteration).toEqual(results[i]);
             }
         });
@@ -64,10 +64,10 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            expect(parsedObject.staffElements[0].voiceElements[0].noteElements.length).toEqual(8);
+            expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(8);
             var value = new TimeSpan(2,1);
             for(var i = 0; i < 8; i++){
-                let note = parsedObject.staffElements[0].voiceElements[0].noteElements[i];
+                let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[i];
                 //console.log(note.timeVal);
                 expect(note.timeVal.eq(value)).toEqual(true);
                 value = value.divideScalar(2);
@@ -79,12 +79,12 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            expect(parsedObject.staffElements[0].voiceElements[0].noteElements.length).toEqual(6);
+            expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(6);
 
             let results = [0, 1, 2, 3, 1, 1];
 
             for(var i = 0; i < 6; i++){
-                let note = parsedObject.staffElements[0].voiceElements[0].noteElements[i];
+                let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[i];
                 expect(note.dotNo).toEqual(results[i]);
             }
         });
@@ -94,9 +94,9 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            expect(parsedObject.staffElements[0].voiceElements[0].noteElements.length).toEqual(2);
+            expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(2);
 
-            let note = parsedObject.staffElements[0].voiceElements[0].noteElements[0]
+            let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[0]
             expect(note.noteheadElements[0].tie).toEqual(true);
         });
 
@@ -105,12 +105,12 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            expect(parsedObject.staffElements[0].voiceElements[0].noteElements.length).toEqual(3);
+            expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(3);
 
-            let note = parsedObject.staffElements[0].voiceElements[0].noteElements[0];
+            let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[0];
             expect(note.noteheadElements.length).toEqual(1);
 
-            note = parsedObject.staffElements[0].voiceElements[0].noteElements[1];
+            note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[1];
             expect(note.noteheadElements.length).toEqual(3);
             expect(note.noteheadElements[0].pitch.pitch).toEqual(0);
             expect(note.noteheadElements[1].pitch.pitch).toEqual(2);
@@ -122,17 +122,17 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            expect(parsedObject.staffElements[0].voiceElements[0].noteElements.length).toEqual(4);
+            expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(4);
 
-            let note = parsedObject.staffElements[0].voiceElements[0].noteElements[0];
+            let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[0];
             expect(note.noteheadElements.length).toEqual(1);
             expect(note.rest).toEqual(false);
 
-            let rest = parsedObject.staffElements[0].voiceElements[0].noteElements[1];
+            let rest = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[1];
             expect(rest.noteheadElements.length).toEqual(0);
             expect(rest.rest).toEqual(true);
 
-            let hidden = parsedObject.staffElements[0].voiceElements[0].noteElements[2];
+            let hidden = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[2];
             expect(hidden.noteheadElements.length).toEqual(0);
             expect(hidden.rest).toEqual(true);
         });
@@ -142,7 +142,7 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+            let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
             expect(notes.length).toEqual(2);
 
             // test Meter object
@@ -153,7 +153,7 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+            let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
             expect(notes.length).toEqual(6);
 
             //test beaming
@@ -163,7 +163,7 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+            let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
             expect(notes.length).toEqual(3);
 
             // test values
@@ -177,7 +177,7 @@ describe("Lilypond Import", function () {
 
             //parsedObject.variables["hutlifut"] = hutlifut;
             
-            let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+            let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
             expect(notes.length).toEqual(2);
 
             // test var
@@ -191,7 +191,7 @@ describe("Lilypond Import", function () {
             
             //parsedObject.variables["hutlifut"] = hutlifut;
 
-            let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+            let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
             expect(notes.length).toEqual(2);
 
             // test repeat
@@ -202,7 +202,7 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+            let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
             expect(notes.length).toEqual(1);
 
             // test rest type and length
@@ -216,7 +216,7 @@ describe("Lilypond Import", function () {
             let parsedObject = loadFromLily(input, 1, 1);
             //parsedObject.variables["diatonicScale"] = diatonicScale;
             
-            let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+            let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
             expect(notes.length).toEqual(1);
 
             // test values
@@ -226,7 +226,7 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            let notes = parsedObject.staffElements[0].voiceElements[0].noteElements;
+            let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
             expect(notes.length).toEqual(1);
 
             // test values

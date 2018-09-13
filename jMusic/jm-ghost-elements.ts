@@ -188,7 +188,7 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
                 ]
             });
         }
-        if (parent) parent.addChild(parent.noteElements, varRef); // todo: at index
+        if (parent) parent.addChild(parent.getNoteElements(), varRef); // todo: at index - ændres
         return varRef;
     }
 
