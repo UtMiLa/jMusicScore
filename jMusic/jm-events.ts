@@ -121,34 +121,3 @@ export class TimedEventStream extends TimedEventElement implements IMusicElement
     }            
 }
 
-
-
-class NullVisitor implements IVisitor, IVisitorIterator<IMusicElement> {
-    visitPre(element: IMusicElement): (element: IMusicElement) => void {
-        element.inviteVisitor(this);
-        return null;
-    }
-
-    visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) { }
-    visitNote(note: INote, spacing: INoteSpacingInfo) { }
-    visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) { }
-    visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo) { }
-    visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
-    visitClef(clef: IClef, spacing: IClefSpacingInfo) { }
-    visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) { }
-    visitKey(key: IKey, spacing: IKeySpacingInfo) { }
-    visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) { }
-    visitScore(score: IScore, spacing: IScoreSpacingInfo) { }
-    visitTextSyllable(textSyllable: ITextSyllableElement, spacing: ITextSyllableSpacingInfo) { }
-    visitBar(bar: IBar, spacing: IBarSpacingInfo) { }
-    visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) { }
-    visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void { }
-
-    visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
-}
-
-export class NoteVisitor extends NullVisitor {
-    visitNote(note: INote, spacing: INoteSpacingInfo): void {
-        throw new Error("Method not implemented.");
-    }
-}

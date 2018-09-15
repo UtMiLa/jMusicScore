@@ -168,7 +168,7 @@ describe("Lilypond Import", function () {
 
             // test values
         });
-        xit("should correctly insert variables", function () {
+        /*xit("should correctly insert variables", function () {
             let hutlifut = loadFromLily("d4 e4", 1, 1);
 
             var input = "{ c4 \\hutlifut c4 }";
@@ -230,7 +230,7 @@ describe("Lilypond Import", function () {
             expect(notes.length).toEqual(1);
 
             // test values
-        });
+        });*/
     });
 });
 

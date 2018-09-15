@@ -753,19 +753,25 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             private sequence = new SequenceElement(this);
 
-            //private noteElements: INote[] = [];
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
             //public meterElements: { push: (meter: MeterElement) => void; };
 
             public getNoteElements(): INote[] {
-                return this.sequence.noteElements;
+                let res: INote[] = [];
+                this.withNotes((note, index) => {res.push(note);})
+                return res;
             }
             public withNotes(f: (note: INote, index: number) => void) {
-                this.sequence.withNotes(f);
-                /*for (var i = 0; i < this.sequence.noteElements.length; i++) {
-                    f(this.sequence.noteElements[i], i);
-                }*/
+                this.visitAll(new NoteVisitor(f));
             }
+
+            public addChild(list: IMusicElement[], theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false): boolean {
+                if (theChild.getElementName() === "Note") {
+                    return this.sequence.addChild(this.sequence.noteElements, theChild, before, removeOrig);    
+                }
+                return super.addChild(list, theChild, before, removeOrig);
+            }
+
             public getStemDirection(): StemDirectionType {
                 return this.stemDirection;
             }
@@ -839,9 +845,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
 
             public withNotes(f: (note: INote, index: number) => void) {
-                for (var i = 0; i < this.noteElements.length; i++) {
-                    f(this.noteElements[i], i);
-                }
+                this.visitAll(new NoteVisitor(f));
             }
             public getStemDirection(): StemDirectionType {
                 return this.stemDirection;
@@ -2057,4 +2061,40 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 return res;
             }
         }
-   
+   /***************** Visitors ***************** */
+
+
+
+   class NullVisitor implements IVisitor, IVisitorIterator<IMusicElement> {
+    visitPre(element: IMusicElement): (element: IMusicElement) => void {
+        element.inviteVisitor(this);
+        return null;
+    }
+
+    visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) { }
+    visitNote(note: INote, spacing: INoteSpacingInfo) { }
+    visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) { }
+    visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo) { }
+    visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
+    visitClef(clef: IClef, spacing: IClefSpacingInfo) { }
+    visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) { }
+    visitKey(key: IKey, spacing: IKeySpacingInfo) { }
+    visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) { }
+    visitScore(score: IScore, spacing: IScoreSpacingInfo) { }
+    visitTextSyllable(textSyllable: ITextSyllableElement, spacing: ITextSyllableSpacingInfo) { }
+    visitBar(bar: IBar, spacing: IBarSpacingInfo) { }
+    visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) { }
+    visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void { }
+
+    visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
+}
+
+export class NoteVisitor extends NullVisitor {
+    constructor(private callback: (node:INote, index: number, spacing: INoteSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitNote(note: INote, spacing: INoteSpacingInfo): void {
+        this.callback(note, this.no++, spacing);
+    }
+}   
