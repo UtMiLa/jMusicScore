@@ -368,27 +368,32 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
             
             public withStaves(f: (staff: IStaff, index: number) => void) {
-                for (var i = 0; i < this.staffElements.length; i++) {
+                this.visitAll(new StaffVisitor(f));
+
+                /*for (var i = 0; i < this.staffElements.length; i++) {
                     f(this.staffElements[i], i);
-                }
+                }*/
             }
 
             public withVoices(f: (voice: IVoice, index: number) => void) {
-                this.withStaves((staff: IStaff, index: number): void => {
+                this.visitAll(new VoiceVisitor(f));
+                /*this.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices(f);
-                });
+                });*/
             }
 
             public withMeters(f: (meter: IMeter, index: number) => void) {
-                for (var i = 0; i < this.meterElements.length; i++) {
+                this.visitAll(new MeterVisitor(f));
+                /*for (var i = 0; i < this.meterElements.length; i++) {
                     f(this.meterElements[i], i);
-                }
+                }*/
             }
 
             public withBars(f: (bar: IBar, index: number) => void) {
-                for (var i = 0; i < this.bars.length; i++) {
+                this.visitAll(new BarVisitor(f));
+                /*for (var i = 0; i < this.bars.length; i++) {
                     f(this.bars[i], i);
-                }
+                }*/
             }
 
             public removeBars(f: (bar: IBar, index: number) => boolean) {
@@ -503,31 +508,36 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
             public withVoices(f: (voice: IVoice, index: number) => void) {
-                for (var i = 0; i < this.voiceElements.length; i++) {
+                this.visitAll(new VoiceVisitor(f));
+                /*for (var i = 0; i < this.voiceElements.length; i++) {
                     f(this.voiceElements[i], i);
-                }
+                }*/
             }
 
             public withKeys(f: (key: IKey, index: number) => void) {
-                for (var i = 0; i < this.keyElements.length; i++) {
+                this.visitAll(new KeyVisitor(f));
+                /*for (var i = 0; i < this.keyElements.length; i++) {
                     f(this.keyElements[i], i);
-                }
+                }*/
             }
 
             public withMeters(f: (meter: IMeter, index: number) => void) {
-                for (var i = 0; i < this.meterElements.length; i++) {
+                this.visitAll(new MeterVisitor(f));
+                /*for (var i = 0; i < this.meterElements.length; i++) {
                     f(this.meterElements[i], i);
-                }
+                }*/
             }
 
             public withClefs(f: (clef: IClef, index: number) => void) {
-                for (var i = 0; i < this.clefElements.length; i++) {
+                this.visitAll(new ClefVisitor(f));
+                /*for (var i = 0; i < this.clefElements.length; i++) {
                     f(this.clefElements[i], i);
-                }
+                }*/
             }
 
             public withTimedEvents(f: (ev: ITimedEvent, index: number) => void): void {
-                for (var i = 0; i < this.keyElements.length; i++) {
+                this.visitAll(new TimedEventVisitor(f));
+                /*for (var i = 0; i < this.keyElements.length; i++) {
                     f(this.keyElements[i], i);
                 }
                 for (var i = 0; i < this.meterElements.length; i++) {
@@ -538,7 +548,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 }
                 for (var i = 0; i < this.expressions.length; i++) {
                     f(this.expressions[i], i);
-                }
+                }*/
             }
 
             public getStaffContext(absTime: AbsoluteTime): StaffContext {
@@ -1237,27 +1247,31 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getElementName() { return "Note"; }
 
             public withHeads(f: (head: INotehead, index: number) => void) {
-                for (var i = 0; i < this.noteheadElements.length; i++) {
+                this.visitAll(new NoteHeadVisitor(f));
+                /*for (var i = 0; i < this.noteheadElements.length; i++) {
                     f(this.noteheadElements[i], i);
-                }
+                }*/
             }
 
             public withDecorations(f: (deco: INoteDecorationElement, index: number) => void) {
-                for (var i = 0; i < this.decorationElements.length; i++) {
+                this.visitAll(new NoteDecorationVisitor(f));
+                /*for (var i = 0; i < this.decorationElements.length; i++) {
                     f(this.decorationElements[i], i);
-                }
+                }*/
             }
 
             public withLongDecorations(f: (deco: ILongDecorationElement, index: number) => void) {
-                for (var i = 0; i < this.longDecorationElements.length; i++) {
+                this.visitAll(new LongDecorationVisitor(f));
+                /*for (var i = 0; i < this.longDecorationElements.length; i++) {
                     f(this.longDecorationElements[i], i);
-                }
+                }*/
             }
 
             public withSyllables(f: (syll: ITextSyllableElement, index: number) => void) {
-                for (var i = 0; i < this.syllableElements.length; i++) {
+                this.visitAll(new TextSyllableVisitor(f));
+                /*for (var i = 0; i < this.syllableElements.length; i++) {
                     f(this.syllableElements[i], i);
-                }
+                }*/
             }
 
             public getBeamspan(): number[] {
@@ -2098,3 +2112,124 @@ export class NoteVisitor extends NullVisitor {
         this.callback(note, this.no++, spacing);
     }
 }   
+
+
+export class StaffVisitor extends NullVisitor {
+    constructor(private callback: (node:IStaff, index: number, spacing: IStaffSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitStaff(note: IStaff, spacing: IStaffSpacingInfo): void {
+        this.callback(note, this.no++, spacing);
+    }
+}   
+
+export class BarVisitor extends NullVisitor {
+    constructor(private callback: (bar:IBar, index: number, spacing: IBarSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitBar(bar: IBar, spacing: IBarSpacingInfo): void {
+        this.callback(bar, this.no++, spacing);
+    }
+}   
+
+export class VoiceVisitor extends NullVisitor {
+    constructor(private callback: (voice:IVoice, index: number, spacing: IVoiceSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo): void {
+        this.callback(voice, this.no++, spacing);
+    }
+}   
+
+export class NoteHeadVisitor extends NullVisitor {
+    constructor(private callback: (node:INotehead, index: number, spacing: INoteHeadSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitNoteHead(notehead: INotehead, spacing: INoteHeadSpacingInfo): void {
+        this.callback(notehead, this.no++, spacing);
+    }
+}   
+
+export class MeterVisitor extends NullVisitor {
+    constructor(private callback: (node:IMeter, index: number, spacing: IMeterSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitMeter(meter: IMeter, spacing: IMeterSpacingInfo): void {
+        this.callback(meter, this.no++, spacing);
+    }
+}   
+
+export class KeyVisitor extends NullVisitor {
+    constructor(private callback: (node:IKey, index: number, spacing: IKeySpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitKey(key: IKey, spacing: IKeySpacingInfo): void {
+        this.callback(key, this.no++, spacing);
+    }
+}   
+
+export class ClefVisitor extends NullVisitor {
+    constructor(private callback: (node:IClef, index: number, spacing: IClefSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitClef(clef: IClef, spacing: IClefSpacingInfo): void {
+        this.callback(clef, this.no++, spacing);
+    }
+}   
+
+export class TimedEventVisitor extends NullVisitor {
+    constructor(private callback: (node:ITimedEvent, index: number, spacing: ISpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitKey(key: IKey, spacing: ISpacingInfo): void {
+        this.callback(key, this.no++, spacing);
+    }
+    visitMeter(meter: IMeter, spacing: IMeterSpacingInfo): void {
+        this.callback(meter, this.no++, spacing);
+    }
+    visitClef(clef: IClef, spacing: IClefSpacingInfo): void {
+        this.callback(clef, this.no++, spacing);
+    }
+    visitStaffExpression(exp: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void {
+        this.callback(exp, this.no++, spacing);
+    }
+}   
+
+export class NoteDecorationVisitor extends NullVisitor {
+    constructor(private callback: (node:INoteDecorationElement, index: number, spacing: INoteDecorationSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitNoteDecoration(clef: INoteDecorationElement, spacing: INoteDecorationSpacingInfo): void {
+        this.callback(clef, this.no++, spacing);
+    }
+}   
+
+export class LongDecorationVisitor extends NullVisitor {
+    constructor(private callback: (node:ILongDecorationElement, index: number, spacing: ILongDecorationSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitLongDecoration(clef: ILongDecorationElement, spacing: ILongDecorationSpacingInfo): void {
+        this.callback(clef, this.no++, spacing);
+    }
+}   
+
+export class TextSyllableVisitor extends NullVisitor {
+    constructor(private callback: (node:ITextSyllableElement, index: number, spacing: ITextSyllableSpacingInfo) => void) {
+        super()
+    }
+    no: number = 0;
+    visitTextSyllable(clef: ITextSyllableElement, spacing: ITextSyllableSpacingInfo): void {
+        this.callback(clef, this.no++, spacing);
+    }
+}   
+
