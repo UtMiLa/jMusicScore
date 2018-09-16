@@ -5,7 +5,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory, IBar,
-    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, INotehead, ScoreElement } from "./jm-model";
+    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement } from "./jm-model";
 
     export interface IScoreApplication extends Application.AbstractApplication<IScore, ScoreStatusManager> { }
     export interface IScorePlugin extends Application.IPlugIn<IScore, ScoreStatusManager> { }
@@ -34,7 +34,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFact
         }
 
         private _currentPitch: Pitch;
-        private _currentNote: INote;
+        private _currentNote: IVoiceNote;
         private _currentNotehead: INotehead;
         private _currentVoice: IVoice;
         private _currentStaff: IStaff;
@@ -71,8 +71,8 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFact
                 else this.currentNotehead = undefined;
             }
         }
-        public get currentNote(): INote { return this._currentNote; }
-        public set currentNote(v: INote) {
+        public get currentNote(): IVoiceNote { return this._currentNote; }
+        public set currentNote(v: IVoiceNote) {
             if (this._currentNote !== v) {
                 this._currentNote = v;
                 if (v) {

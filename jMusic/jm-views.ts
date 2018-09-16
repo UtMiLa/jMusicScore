@@ -3,7 +3,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 import { IMusicElement, IMeterSpacingInfo, IMeter, Music,
-    IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, ILongDecorationSpacingInfo,
+    IVisitor, IVoice, IVoiceNote, IStaff, IScore, ILongDecorationElement, ISpacingInfo, ILongDecorationSpacingInfo,
      IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
@@ -365,7 +365,7 @@ function $(elm: HTMLElement): DOMHelper {
                             evRec.processEvent("clickhead", { head: head });
                         });
                 }
-                visitNote(note: INote, noteSpacing: INoteSpacingInfo) {
+                visitNote(note: IVoiceNote, noteSpacing: INoteSpacingInfo) {
                     var evRec = this.eventReceiver;
                     var me = this.sensorEngine;
                     var staffContext = note.parent.parent.getStaffContext(note.absTime);

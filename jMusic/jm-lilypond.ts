@@ -5,7 +5,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory,
-    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, INotehead, ScoreElement } from "./jm-model";
+    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement } from "./jm-model";
 import { parse } from './peg/lilypond';
 
 export class LilyPondConverter implements IFileConverter {    
@@ -180,7 +180,7 @@ class LilypondHelper {
         for (var i = 0; i < events.length; i++) {
             var ev = events[i];
             if (ev.getElementName() === "Note") {
-                res += this.getNoteAsLilypond(<INote>ev);
+                res += this.getNoteAsLilypond(<IVoiceNote>ev);
             }
             else if (ev.getElementName() === "Clef") {
                 res += this.getClefAsLilypond(<IClef>ev);

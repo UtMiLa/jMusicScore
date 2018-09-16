@@ -4,7 +4,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 import { IMusicElement, IMeterSpacingInfo,  IMeter, Music, 
     IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, BeamElement, ITimedEvent,
-    IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
+    IClefSpacingInfo, Point, INotehead, INote, IVoiceNote, ITimedVoiceEvent, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey
@@ -116,7 +116,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 var pitchClassChanges: string[] = [];
 
                 // for each staff:
-                var scoreEvents: ITimedEvent[] = score.getEvents(true);
+                var scoreEvents: ITimedVoiceEvent[] = score.getEvents(true);
                 score.withStaves((staff: IStaff, index: number): void => {
                     // get events (bar lines + notes + keys changes) sorted by absTime from all voices
                     var events = staff.getEvents();
@@ -140,7 +140,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                         // if note:
                         else if (event.getElementName() === "Note") {
                             // for each pitch:
-                            var note = <INote>event;
+                            var note = <IVoiceNote>event;
                             note.withHeads((head: INotehead, index: number): void => {
                                 var alteration = head.pitch.alteration;
                                 alteration = alteration ? alteration : "n";
@@ -186,7 +186,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 });
             }
         }
-
+/*
         export class JoinNotesValidator implements IScoreValidator {
             public refine(score: IScore) {
                 score.withStaves((staff: IStaff): void => {
@@ -265,7 +265,8 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 });
             }
         }
-
+*/
+/*
         export class SplitNotesValidator implements IScoreValidator { //todo: tjek om der skiftes taktart inden noden ophører
 
             public static bestNoteValues(time: TimeSpan): Array<TimeSpan> {
@@ -280,16 +281,6 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 }
                 if (runningTime.eq(time)) { return [runningTime]; }
                 
-                /* try dots ?
-                var dotTime = runningTime / 2;
-                var totalDotTime = 0;
-                var noDots = 0;
-                while (runningTime + totalDotTime >= time) {
-                    if (runningTime + totalDotTime === time) { return [runningTime + totalDotTime]; }
-                    totalDotTime += dotTime;
-                    dotTime /= 2;
-                    noDots++;
-                }*/
 
                 return [runningTime].concat(SplitNotesValidator.bestNoteValues(time.sub(runningTime)));
             }
@@ -310,33 +301,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                                     }
                                     var notes = timeFirstNotes.concat(timeLastNotes);
                                     Music.splitNote(note, notes);
-                /*var absTime = note.absTime;
-                var nextNote = Music.nextNote(note);
-                                    note.timeVal = notes[0];
-                if (note.NoteId !== 'hidden')
-                    note.NoteId = Music.calcNoteId(note.timeVal);
-                                    var alreadyAutojoin = note.getProperty('autojoin');
-                note.setProperty('autojoin', note.absTime);
-                                    note.dotNo = 0;
-                note.withHeads((head: INotehead, index: number) => {
-                                        head.tie = true;
-                                    });
-                                    for (var i = 1; i < notes.length; i++) {
-                    absTime = absTime.add(notes[i-1]);
-                    var newNote = Music.addNote(note.parent,
-                        note.NoteId === 'hidden' ? NoteType.Placeholder : note.rest ? NoteType.Rest : NoteType.Note,
-                        absTime, note.NoteId, notes[i]);
-
-                                        // copy heads but not expressions and text
-                                        var join = alreadyAutojoin || i < notes.length - 1;
-                                        newNote.setProperty('autojoin', join);
-                    note.withHeads((head: INotehead, index: number) => {
-                                            var newHead = newNote.setPitch(head.pitch);
-                                            // tie heads
-                                            newHead.tie = join;
-                                            newHead.setProperty('autojoin', join);
-                                        });
-                }*/
+        
                                     }
             
                                     
@@ -356,7 +321,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 });
             }
         }
-
+*/
         export class BeamValidator implements IScoreValidator {
             public refine(score: IScore) {
                 score.withStaves((staff: IStaff) => {
@@ -609,7 +574,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
             }
         }
 
-        
+  /*      
         export class CleanHiddenRestsValidator implements IScoreValidator {
             public refine(score: IScore) {
                 score.withStaves((staff: IStaff): void => {
@@ -635,6 +600,6 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 });
             }
         }
-
+*/
     }
 //}

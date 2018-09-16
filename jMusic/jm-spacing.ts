@@ -3,7 +3,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, 
-        IVisitor,  IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo,
+        IVisitor,  IVoice, IVoiceNote, IStaff, IScore, ILongDecorationElement, ISpacingInfo,
     IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
@@ -11,7 +11,9 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,
     ILongDecorationSpacingInfo, ITimedEvent, Music } from "./jm-model";
 
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
-    
+//todo: pitchToStaffLine skal ikke kaldes med <any>
+
+
         /// Music spacing classes - independent of graphics methods
         export module MusicSpacing {
     
@@ -442,7 +444,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     spacing.graceScale = head.parent.spacingInfo.graceScale;
     
                     spacing.offset.y = head.parent.rest ? 
-                    Metrics.restY : NoteSpacer.pitchToStaffLine(head.pitch, head.parent) * Metrics.pitchYFactor;
+                    Metrics.restY : NoteSpacer.pitchToStaffLine(head.pitch, <any>head.parent) * Metrics.pitchYFactor;
     
     
                     if (head.tie) {
@@ -646,7 +648,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                visitNote(note: INote, spacing: INoteSpacingInfo) {
+                visitNote(note: IVoiceNote, spacing: INoteSpacingInfo) {
                     //(<NoteSpacingInfo>spacing).calcMetrics(note);
                     spacing.preWidth = MinimalSpacer.doGetPreWidth(note);
                     spacing.width = MinimalSpacer.doGetWidth(note);
@@ -1036,16 +1038,16 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return no;
                 }
     
-                public static pitchToStaffLine(pitch: Pitch, note: INote) {
+                public static pitchToStaffLine(pitch: Pitch, note: IVoiceNote) {
                     var clef = note.parent.parent.getStaffContext(note.absTime).clef;
                     return clef.pitchToStaffLine(pitch);
                 }
-                public static staffLineToPitch(line: number, note: INote) {
+                public static staffLineToPitch(line: number, note: IVoiceNote) {
                     var clef = note.parent.parent.getStaffContext(note.absTime).clef;
                     return clef.staffLineToPitch(line);
                 }
     
-                public static recalcPitches(note: INote) {
+                public static recalcPitches(note: IVoiceNote) {
                     var noteSpacing = note.spacingInfo;
     
                     var lowPitch = 99;
@@ -1231,7 +1233,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     else {
                         spacingInfo.offset.x = spacingInfo.displacement ? Metrics.pitchXDisplacement : Metrics.pitchXNoDisplacement;
                     }
-                    spacingInfo.offset.y = headElm.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, headElm.parent) * Metrics.pitchYFactor;
+                    spacingInfo.offset.y = headElm.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, <any>headElm.parent) * Metrics.pitchYFactor;
                     //if (displayData.ref) displayData.ref.setAttribute("transform", "translate(" + spacingInfo.center.x + "," + spacingInfo.center.y + ")");                
                 }
             }

@@ -8,7 +8,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 import { IMusicElement,  IMeterSpacingInfo, IMeter, ScoreElement, 
-    IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, 
+    IVisitor, IVoice, IVoiceNote, IStaff, IScore, ILongDecorationElement, ISpacingInfo, 
     IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
@@ -134,7 +134,7 @@ export class DomFeedbackClient implements IFeedbackClient {
             }
         } // todo: note?
         else if (key === "currentNote") {
-            var note = <INote>val;
+            var note = <IVoiceNote>val;
             if (note) {
                 this.showNoteCursor(note.id, note.parent, note.getHorizPosition(), new Pitch(0, ''));
             }

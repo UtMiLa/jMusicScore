@@ -208,17 +208,20 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             99  StaffExpression
             100	Note
             */
+            //spacingInfo: ISpacingInfo;
+            getHorizPosition(): HorizPosition;
+        }
+
+        export interface ITimedVoiceEvent extends ITimedEvent {
             getVoice(): IVoice;
             getStaff(): IStaff;
-            spacingInfo: ISpacingInfo;
-            getHorizPosition(): HorizPosition;
         }
 
         export interface IEventContainer {
             getEvents(): ITimedEvent[];
         }
 
-        export interface IBar extends ITimedEvent {
+        export interface IBar extends ITimedVoiceEvent {
             parent: IScore;
             absTime: AbsoluteTime;
             spacingInfo: IBarSpacingInfo;
@@ -272,7 +275,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             clear(): void;
             findBar(absTime: AbsoluteTime): IBar;
-            getEvents(ignoreStaves?: boolean): ITimedEvent[];
+            getEvents(ignoreStaves?: boolean): ITimedVoiceEvent[];
             withStaves(f: (staff: IStaff, index: number) => void): void;
             withVoices(f: (voice: IVoice, index: number) => void): void;
             withBars(f: (bar: IBar, index: number) => void): void;
@@ -355,8 +358,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 }
             }
 
-            public getEvents(ignoreStaves = false): ITimedEvent[] {
-                var events: ITimedEvent[] = [];
+            public getEvents(ignoreStaves = false): ITimedVoiceEvent[] {
+                var events: ITimedVoiceEvent[] = [];
                 if (!ignoreStaves) {
                     this.withStaves((staff: IStaff) => {
                         events = events.concat(staff.getEvents());
@@ -465,7 +468,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getStaffContext(absTime: AbsoluteTime): StaffContext;
             //getMeterElements(): IMeter[];
             getKeyElements(): IKey[];
-            getEvents(fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
+            getEvents(fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
             addVoice(): IVoice;
             //setMeter(meter: MeterDefinition, absTime: AbsoluteTime): void;
             getParent(): IScore;
@@ -535,7 +538,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 }*/
             }
 
-            public withTimedEvents(f: (ev: ITimedEvent, index: number) => void): void {
+            public withTimedEvents(f: (ev: ITimedVoiceEvent, index: number) => void): void {
                 this.visitAll(new TimedEventVisitor(f));
                 /*for (var i = 0; i < this.keyElements.length; i++) {
                     f(this.keyElements[i], i);
@@ -600,8 +603,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public getKeyElements(): IKey[] {
                 return this.keyElements;
             }
-            public getEvents(fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
-                var events: ITimedEvent[] = [];
+            public getEvents(fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
+                var events: ITimedVoiceEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
 
@@ -609,7 +612,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     events = events.concat(voice.getEvents(fromTime, toTime));
                 });
 
-                var f = (elm: ITimedEvent, index: number) => {
+                var f = (elm: ITimedVoiceEvent, index: number) => {
                     if (elm.absTime.ge(fromTime) && toTime.gt(elm.absTime)) events.push(elm);
                 }
 
@@ -682,7 +685,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
-        export interface IStaffExpression extends ITimedEvent {
+        export interface IStaffExpression extends ITimedVoiceEvent {
             parent: IStaff;
             text: string;
         }
@@ -729,9 +732,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             withNotes(f: (note: INote, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
-            getEvents(fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
+            getEvents(fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
             getEndTime(): AbsoluteTime;
             removeChild(child: INote): void;
+            getSequence(id: string): ISequence;
         }
 
         // VoiceElement
@@ -763,6 +767,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             private sequence = new SequenceElement(this);
 
+            public getSequence(id: string): ISequence { //todo: multi sqeuences
+                return this.sequence;
+            }
+
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
             //public meterElements: { push: (meter: MeterElement) => void; };
 
@@ -771,7 +779,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 this.withNotes((note, index) => {res.push(note);})
                 return res;
             }
-            public withNotes(f: (note: INote, index: number) => void) {
+            public withNotes(f: (note: IVoiceNote, index: number) => void) {
                 this.visitAll(new NoteVisitor(f));
             }
 
@@ -791,11 +799,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 //    this.changed();
                 }
             }
-            public getEvents(fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
-                var events: ITimedEvent[] = [];
+            public getEvents(fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
+                var events: ITimedVoiceEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
-                this.withNotes((note: INote, index: number) => {
+                this.withNotes((note: IVoiceNote, index: number) => {
                     if (!fromTime.gt(note.absTime) && toTime.gt(note.absTime)) {
                         events.push(note);
                     }
@@ -823,6 +831,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             setStemDirection(dir: StemDirectionType): void;
             getEvents(fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
             getEndTime(): AbsoluteTime;
+            getNoteElements(): INote[];
             removeChild(child: INote): void;
         }
 
@@ -852,6 +861,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
             public noteElements: INote[] = [];
+            public getNoteElements() { return this.noteElements };
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
 
             public withNotes(f: (note: INote, index: number) => void) {
@@ -887,7 +897,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 else return AbsoluteTime.startTime;
             }
         }
-        export interface IClef extends ITimedEvent {
+        export interface IClef extends ITimedVoiceEvent {
             parent: IStaff;
             definition: ClefDefinition;            
             pitchToStaffLine(pitch: Pitch): number;
@@ -947,7 +957,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getStaff(): IStaff { return this.parent; }
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
         }
-        export interface IKey extends ITimedEvent {
+        export interface IKey extends ITimedVoiceEvent {
             parent: IStaff;
             definition: IKeyDefinition;
             getFixedAlteration(pitch: number): string;
@@ -1003,7 +1013,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getStaff(): IStaff { return this.parent; }
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
         }
-        export interface IMeter extends ITimedEvent {
+        export interface IMeter extends ITimedVoiceEvent {
             parent: IMusicElement;
             definition: IMeterDefinition;
 
@@ -1094,7 +1104,6 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
         export interface INote extends ITimedEvent {
-            parent: IVoice;
             NoteId: string;
             timeVal: TimeSpan;
             noteheadElements: INotehead[];
@@ -1130,16 +1139,139 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             setRest(newRest: boolean): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
+            getPrev(): INote;
+            getNext(): INote;
         }
 
-        class NoteElement extends MusicElement<INoteSpacingInfo> implements INote {
-            constructor(public parent: IVoice, private noteId: string, public timeVal: TimeSpan) {
+        export interface IVoiceNote extends INote {
+            parent: IVoice;
+            getVoice(): IVoice;
+            getStaff(): IStaff;
+        }
+
+        export interface ISequenceNote extends INote {
+            parent: ISequence;
+        }
+
+        class NoteProxy extends MusicElement<INoteSpacingInfo> implements IVoiceNote {
+
+            constructor(private note: INote, public parent: IVoice){
+                super(parent);
+            }
+
+            getVoice() {return this.parent; }
+            getStaff() {return this.parent.parent; }
+
+            get NoteId(): string { return this.note.NoteId; }            
+            get timeVal(): TimeSpan { return this.note.timeVal; }
+            get noteheadElements(): INotehead[] { return this.note.noteheadElements; }
+            get decorationElements(): INoteDecorationElement[] { return this.note.decorationElements; }
+            get longDecorationElements(): ILongDecorationElement[] { return this.note.longDecorationElements; }
+            get syllableElements(): ITextSyllableElement[] { return this.note.syllableElements; }
+            get tupletDef(): TupletDef { return this.note.tupletDef; }
+            get dotNo(): number { return this.note.dotNo; }
+            get rest(): boolean { return this.note.rest; }
+            get graceType(): string { return this.note.graceType; }
+            get Beams(): IBeam[] { return this.note.Beams; }
+            withHeads(f: (head: INotehead, index: number) => void): void {
+                this.note.withHeads(f);
+            }
+            withDecorations(f: (deco: INoteDecorationElement, index: number) => void): void {
+                this.note.withDecorations(f);
+            }
+            withLongDecorations(f: (deco: ILongDecorationElement, index: number) => void): void {
+                this.note.withLongDecorations(f);
+            }
+            withSyllables(f: (syll: ITextSyllableElement, index: number) => void): void {
+                this.note.withSyllables(f);
+            }
+            getBeamspan(): number[] {
+                return this.note.getBeamspan();
+            }
+            setBeamspan(beamspan: number[]): void {
+                throw new Error("May not change note.");
+            }
+            setDots(no: number): void {
+                throw new Error("May not change note.");
+            }
+            matchesOnePitch(pitch: Pitch, ignoreAlteration: boolean): boolean {
+                throw new Error("Method not implemented.");
+            }
+            matchesPitch(pitch: Pitch, ignoreAlteration: boolean): boolean {
+                throw new Error("Method not implemented.");
+            }
+            setPitch(pitch: Pitch): INotehead {
+                throw new Error("Method not implemented.");
+            }
+            getTimeVal(): TimeSpan {
+                throw new Error("Method not implemented.");
+            }
+            setRest(newRest: boolean): void {
+                throw new Error("Method not implemented.");
+            }
+            getStemDirection(): StemDirectionType {
+                throw new Error("Method not implemented.");
+            }
+            setStemDirection(dir: StemDirectionType): void {
+                throw new Error("Method not implemented.");
+            }
+            get absTime(): AbsoluteTime { return this.note.absTime; }
+            get getSortOrder(): () => number { return this.note.getSortOrder; }
+            getHorizPosition(): HorizPosition {
+                throw new Error("Method not implemented.");
+            }
+
+
+            getPrev(): INote {
+                var seq = this.parent;
+                var noteElements = seq.getNoteElements();
+                var i = noteElements.indexOf(this);
+                if (i > 0) {
+                    return noteElements[i - 1];
+                }
+                return null;
+            }
+            getNext(): INote{
+                var seq = this.parent;
+                var noteElements = seq.getNoteElements();
+                var i = noteElements.indexOf(this);
+                if (i >= 0 && i < noteElements.length - 1) {
+                    return noteElements[i + 1];
+                }
+                return null;
+            }
+
+
+        }
+
+        class NoteElement extends MusicElement<INoteSpacingInfo> implements ISequenceNote {
+            constructor(public parent: ISequence, private noteId: string, public timeVal: TimeSpan) {
                 super(parent);
                 if (!noteId && timeVal) {
                     this.noteId = Music.calcNoteId(timeVal);
 //                    if (!this.noteId) this.noteId = "hidden";
                 }
             }
+
+            getPrev(): INote {
+                var voice = this.parent;
+                var noteElements = voice.getNoteElements();
+                var i = noteElements.indexOf(this);
+                if (i > 0) {
+                    return noteElements[i - 1];
+                }
+                return null;
+            }
+            getNext(): INote{
+                var voice = this.parent;
+                var noteElements = voice.getNoteElements();
+                var i = noteElements.indexOf(this);
+                if (i >= 0 && i < noteElements.length - 1) {
+                    return noteElements[i + 1];
+                }
+                return null;
+            }
+
             static createFromMemento(parent: IVoice, memento: IMemento): INote {
                 //var timeVal = TimeSpan.createFromMemento(memento.def.time);
                 //var note: INote = new NoteElement(parent, memento.def.noteId, timeVal);
@@ -1161,7 +1293,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 if (parent) {//parent.addChild(parent.noteElements, note); // todo: at index
                     var noteType: NoteType = memento.def.hidden ? NoteType.Placeholder : memento.def.rest ? NoteType.Rest : NoteType.Note;
                     var beforeNote: INote = null;
-                    var note = Music.addNote(parent, noteType, AbsoluteTime.createFromMemento(memento.def.abs), memento.def.noteId,
+                    var note = Music.addNoteToVoice(parent, noteType, AbsoluteTime.createFromMemento(memento.def.abs), memento.def.noteId,
                         TimeSpan.createFromMemento(memento.def.time), beforeNote, true, memento.def.dots, tupletDef);
                     if (memento.def.grace) { note.graceType = memento.def.grace; }
                     if (memento.def.stem) { note.setStemDirection(memento.def.stem); }
@@ -1200,9 +1332,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             tupletDef: TupletDef;            
 
-            getVoice(): IVoice { return this.parent; }
+            /*getVoice(): IVoice { return this.parent; }
 
-            getStaff(): IStaff { return this.parent.parent; }
+            getStaff(): IStaff { return this.parent.parent; }*/
 
             getHorizPosition(): HorizPosition {
                 return new HorizPosition(this.absTime, this.getSortOrder()); // todo: grace note position
@@ -1729,25 +1861,27 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }*/
 
             static prevNote(note: INote): INote {
-                var voice = note.parent;
+                /*var voice = note.parent;
                 var noteElements = voice.getNoteElements();
                 var i = noteElements.indexOf(note);
                 if (i > 0) {
                     return noteElements[i - 1];
                 }
-                return null;
+                return null;*/
+                return note.getPrev();
             }
             static nextNote(note: INote): INote { // (noteIndex >= note.parent.noteElements.length) ? null : note.parent.noteElements[noteIndex + 1];
-                var voice = note.parent;
+                /*var voice = note.parent;
                 var noteElements = voice.getNoteElements();
                 var i = noteElements.indexOf(note);
                 if (i >= 0 && i < noteElements.length - 1) {
                     return noteElements[i + 1];
                 }
-                return null;
+                return null;*/
+                return note.getNext();
             }
 
-            public static changeNoteDuration(note: INote, nominalDuration: TimeSpan, actualDuration: TimeSpan): INote {
+            public static changeNoteDuration(note: ISequenceNote, nominalDuration: TimeSpan, actualDuration: TimeSpan): ISequenceNote {
                 if (note.getTimeVal().eq(actualDuration) && note.timeVal.eq(nominalDuration)) return; // no change
 
                 //note.timeVal = nominalDuration;
@@ -1795,7 +1929,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 return note1;
             }
 
-            public static splitNote(note: INote, notes: TimeSpan[]): void {
+            public static splitNote(note: ISequenceNote, notes: TimeSpan[]): void {
                 if (notes.length <= 1) return;
                 var absTime = note.absTime;
                 var nextNote = Music.nextNote(note);
@@ -1824,7 +1958,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             }
 
-            public static mergeNoteWithNext(note: INote, no: number = 1): INote {
+            public static mergeNoteWithNext(note: ISequenceNote, no: number = 1): ISequenceNote {
                 var nextNotes: INote[] = [];
                 var nextNote = Music.nextNote(note);
                 var time = note.getTimeVal();
@@ -1869,9 +2003,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 }
                 return null;
             }
-            static findNote(voice: IVoice, absTime: AbsoluteTime): INote {
+            static findNote(sequence: ISequence, absTime: AbsoluteTime): INote {
                 var res: INote;
-                var noteElements = voice.getNoteElements();
+                var noteElements = sequence.noteElements;
 
                 for (var i = 0; i < noteElements.length; i++) {
                     var note = noteElements[i];
@@ -1879,7 +2013,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                         return note;
                     }
                 }
-                voice.withNotes((note: INote) => {
+                sequence.withNotes((note: INote) => {
                     if (absTime.ge(note.absTime) && note.absTime.add(note.timeVal).gt(absTime)) {
                         res = note;
                     }
@@ -1888,14 +2022,14 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
             /** Check if absTime is in an area with unfinished tuplets and return the current tuplet fraction at this absTime */
-            static inTupletArea(voice: IVoice, absTime: AbsoluteTime): Rational {
+            static inTupletArea(sequence: ISequence, absTime: AbsoluteTime): Rational {
                 // Find first note in the bar
                 // todo: maybe add support for tuplets crossing bar lines
-                var staffContext = voice.parent.getStaffContext(absTime);
-                var barBegin: AbsoluteTime = absTime.sub(staffContext.timeInBar);
-                var firstNoteInBar: INote = Music.findNote(voice, barBegin);
+                //var staffContext = sequence.parent.getStaffContext(absTime);
+                var barBegin: AbsoluteTime = absTime/*.sub(staffContext.timeInBar)*/;
+                var firstNoteInBar: INote = Music.findNote(sequence, barBegin);
                 if (firstNoteInBar) {
-                    var tupletFraction: Rational = null;
+                    //var tupletFraction: Rational = null;
                     var note = firstNoteInBar;
                     while (note && !note.absTime.ge(absTime)) {
                         if (note.tupletDef) { // todo: nested tuplets
@@ -1916,30 +2050,36 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 return null;
             }
 
+            static addNoteToVoice(voice: IVoice, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null, segmentId: string = null): IVoiceNote {            
+                let segment = voice.getSequence(segmentId);
+                let seqNote = this.addNote(segment, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);
+                return new NoteProxy(seqNote, voice);
+            }
+
             /** Add a note to voice at a specified absTime */
-            static addNote(voice: IVoice, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): INote {
-                var note = new NoteElement(voice, noteId, timeVal);
+            static addNote(sequence: ISequence, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): ISequenceNote {
+                var note = new NoteElement(sequence, noteId, timeVal);
                 note.absTime = absTime;
 
                 note.tupletDef = tuplet;
 
-                var fraction = Music.inTupletArea(voice, absTime);
+                var fraction = Music.inTupletArea(sequence, absTime);
                 if (fraction) {
                     note.tupletDef = new TupletDef(null, fraction);
                 }
-                var voiceTime = voice.getEndTime();
+                var voiceTime = sequence.getEndTime();
                 if (absTime.gt(voiceTime)) {
                     // add placeholders between voiceTime and absTime
                     var restNote = new NoteElement(null, 'hidden', absTime.diff(voiceTime));
-                    restNote.setParent(voice);
+                    restNote.setParent(sequence);
                     restNote.setRest(true);
                     restNote.absTime = AbsoluteTime.startTime;
-                    voice.addChild(voice.getNoteElements(), restNote, null, false); // todo: change
+                    sequence.addChild(sequence.noteElements, restNote, null, false); // todo: change
                 }
                 var oldNote: INote = beforeNote;
                 if (!oldNote && voiceTime.gt(absTime)) {
                     // find note at absTime
-                    oldNote = Music.findNote(voice, absTime);
+                    oldNote = Music.findNote(sequence, absTime);
                     // if placeholder shorten it
                     if (oldNote) { // todo: shorten placeholder
                         if (oldNote.NoteId === "hidden") {
@@ -1953,7 +2093,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     }
                 }
                 note.dotNo = dots;
-                voice.addChild(voice.getNoteElements(), note, oldNote); // todo: change
+                sequence.addChild(sequence.noteElements, note, oldNote); // todo: change
                 if (noteType === NoteType.Rest) {
                     note.setRest(true);
                 }
@@ -1982,7 +2122,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
             }
 
-            public static compareEventsByVoice(a: ITimedEvent, b: ITimedEvent) {
+            public static compareEventsByVoice(a: ITimedVoiceEvent, b: ITimedVoiceEvent) {
                 var va = a.getVoice();
                 var vb = b.getVoice();
                 if (va !== null && vb !== null && va === vb) {
@@ -2104,11 +2244,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 }
 
 export class NoteVisitor extends NullVisitor {
-    constructor(private callback: (node:INote, index: number, spacing: INoteSpacingInfo) => void) {
+    constructor(private callback: (node:IVoiceNote, index: number, spacing: INoteSpacingInfo) => void) {
         super()
     }
     no: number = 0;
-    visitNote(note: INote, spacing: INoteSpacingInfo): void {
+    visitNote(note: IVoiceNote, spacing: INoteSpacingInfo): void {
         this.callback(note, this.no++, spacing);
     }
 }   
@@ -2185,7 +2325,7 @@ export class ClefVisitor extends NullVisitor {
 }   
 
 export class TimedEventVisitor extends NullVisitor {
-    constructor(private callback: (node:ITimedEvent, index: number, spacing: ISpacingInfo) => void) {
+    constructor(private callback: (node:ITimedVoiceEvent, index: number, spacing: ISpacingInfo) => void) {
         super()
     }
     no: number = 0;

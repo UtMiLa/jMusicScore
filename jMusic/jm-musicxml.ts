@@ -6,7 +6,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
 import { IMusicElement, IMeterSpacingInfo, IMeter, ScoreElement,
     IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, 
-    IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
+    IClefSpacingInfo, Point, INotehead, INote, IVoiceNote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, 
@@ -220,7 +220,7 @@ export class MusicXmlConverter implements IFileConverter {
                     note = noteElements[noteElements.length - 1];
                 }
                 else {
-                    note = Music.addNote(voice, rest ? NoteType.Rest : NoteType.Note, context.absTime, 'n' + noteName, noteTime, null, true, dots, tupletdef);
+                    note = Music.addNoteToVoice(voice, rest ? NoteType.Rest : NoteType.Note, context.absTime, 'n' + noteName, noteTime, null, true, dots, tupletdef, null);
                     /*new NoteElement(null, 'n' + noteName, noteTime);
                     note.setParent(voice);
                     note.setRest(rest);
@@ -677,7 +677,7 @@ export class MusicXmlConverter implements IFileConverter {
                             updateMeter = true;
                         }
                         else if (event.getElementName() === "Note") {
-                            var note = <INote>event;
+                            var note = <IVoiceNote>event;
                             if (!note.absTime.eq(absTime)) {
                                 // insert forward/back
                                 if (absTime.gt(note.absTime)) {
@@ -703,7 +703,7 @@ export class MusicXmlConverter implements IFileConverter {
                 }
             }
 
-            private addNote(measure: Element, note: INote) {
+            private addNote(measure: Element, note: IVoiceNote) {
                 var noteXml = this.addChildElement(measure, 'note');
 
                 if (note.rest) {
@@ -746,7 +746,7 @@ export class MusicXmlConverter implements IFileConverter {
                 */
             }
 
-            private addNoteAttributes(noteXml: Element, note: INote, head: INotehead, chord: boolean = false) {
+            private addNoteAttributes(noteXml: Element, note: IVoiceNote, head: INotehead, chord: boolean = false) {
                 /* todo:
                     voice
                     beam
