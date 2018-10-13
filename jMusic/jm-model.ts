@@ -73,7 +73,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             public getElementName() { return "Element"; }
 
-            public addChild(list: IMusicElement[], theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false) {
+            public addChild(list: IMusicElement[], theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false) : void{
                 var index = this.childLists.indexOf(list);
                 if (index >= 0) {
                     //this.childLists[index];
@@ -84,7 +84,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
                 if (before) {
                     var i = list.indexOf(before);
-                    if (i < 0) return false;
+                    if (i < 0) return /*false*/;
                     if (removeOrig) {
                         before.remove();
                         list.splice(i, 1, theChild);
@@ -783,11 +783,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 this.visitAll(new NoteVisitor(f));
             }
 
-            public addChild(list: IMusicElement[], theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false): boolean {
+            public addChild(list: IMusicElement[], theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false): void {
                 if (theChild.getElementName() === "Note") {
-                    return this.sequence.addChild(this.sequence.noteElements, theChild, before, removeOrig);    
+                    /*return*/ this.sequence.addChild(this.sequence.noteElements, theChild, before, removeOrig);    
                 }
-                return super.addChild(list, theChild, before, removeOrig);
+                /*return*/ super.addChild(list, theChild, before, removeOrig);
             }
 
             public getStemDirection(): StemDirectionType {
@@ -1159,9 +1159,14 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 super(parent);
             }
 
+            addChild(childList: IMusicElement[], child: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
+                this.note.addChild(childList, child, before, removeOrig);
+            }
+
             getVoice() {return this.parent; }
             getStaff() {return this.parent.parent; }
 
+            get spacingInfo(): INoteSpacingInfo { return this.note.spacingInfo; }  // todo: proxy skal eje spacinginfo          
             get NoteId(): string { return this.note.NoteId; }            
             get timeVal(): TimeSpan { return this.note.timeVal; }
             get noteheadElements(): INotehead[] { return this.note.noteheadElements; }

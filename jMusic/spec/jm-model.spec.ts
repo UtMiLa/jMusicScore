@@ -54,6 +54,14 @@ describe("Score", function () {
         it("should have 11 notes in first voice", function () {
             expect(document.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(11);
         });
+        it("should enumerate 11 notes in first voice", function () {
+            let i = 0;
+            document.staffElements[0].voiceElements[0].withNotes((note, index) => {
+                i++;
+            });
+            expect(i).toEqual(11);
+        });
+
     });
 
     describe("when a g clef staff is added to an empty score", function () {

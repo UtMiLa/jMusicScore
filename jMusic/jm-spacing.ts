@@ -1037,13 +1037,19 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                     return no;
                 }
+
+                private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffContext{
+                    if ((<any>elm).getStaffContext) return (<any>elm).getStaffContext(time);
+                    if (!elm.parent) return undefined;
+                    return this.getStaffContext(elm.parent, time);
+                }
     
                 public static pitchToStaffLine(pitch: Pitch, note: IVoiceNote) {
-                    var clef = note.parent.parent.getStaffContext(note.absTime).clef;
+                    var clef = this.getStaffContext(note, note.absTime).clef;
                     return clef.pitchToStaffLine(pitch);
                 }
                 public static staffLineToPitch(line: number, note: IVoiceNote) {
-                    var clef = note.parent.parent.getStaffContext(note.absTime).clef;
+                    var clef = this.getStaffContext(note, note.absTime).clef;
                     return clef.staffLineToPitch(line);
                 }
     

@@ -3,8 +3,8 @@ import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 import { IMemento, ClefDefinition, NoteType, AbsoluteTime, TimeSpan, RegularKeyDefinition } from '../../../../jMusic/jm-base';
 import { MusicElementFactory, IScore, ScoreElement, Music } from '../../../../jMusic/jm-model';
 
-import { CanvasView } from '../../../../jMusic/jm-CanvasView';    
-import { VariableRef } from '../../../../jMusic/jm-ghost-elements';    
+import { CanvasView } from '../../../../jMusic/jm-CanvasView';
+import { VariableRef } from '../../../../jMusic/jm-ghost-elements';
 
 @Component({
   selector: 'app-jmusic-score-view',
@@ -114,34 +114,34 @@ export class JmusicScoreViewComponent implements OnInit {
 
   @Input() set memento(value: IScore) {
     try {
-        //console.log(MusicElementFactory.mementoCreators);
+        // console.log(MusicElementFactory.mementoCreators);
 
     const score = value;
-    
-    let key = new RegularKeyDefinition("b", 1);
+
+    const key = new RegularKeyDefinition('b', 1);
     score.setKey(key, AbsoluteTime.startTime);
-    
+
     const memento = score.getMemento(true);
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);
 
     this._memento = memento;
 
-    //console.log(MusicElementFactory.mementoCreators);
+    // console.log(MusicElementFactory.mementoCreators);
 
-    //var divElm = null;
-    try{
-    //console.log(this.mus);
-    //console.log(this.canvas.nativeElement);
-    this.painter.paintOnCanvas(score, this.canvas.nativeElement);}
-    catch(e1){
+    // var divElm = null;
+    try {
+        // console.log(this.mus);
+        // console.log(this.canvas.nativeElement);
+        this.painter.paintOnCanvas(score, this.canvas.nativeElement);
+    } catch (e1) {
       console.log(e1);
     }
   } catch (e) {
     // console.log("Fejlede");
     console.log(e);
     this.theScore = null;
-    this.theScoreMemento = "";
+    this.theScoreMemento = '';
     this._memento = null;
   }
 }
@@ -155,17 +155,17 @@ export class JmusicScoreViewComponent implements OnInit {
 
   ngOnInit() {
     VariableRef.register();
-    //console.log(MusicElementFactory.mementoCreators);
+    // console.log(MusicElementFactory.mementoCreators);
 
     const score = new ScoreElement(null);
     const staff = score.addStaff(ClefDefinition.clefCAlto);
     const voice = staff.addVoice();
-    const note = Music.addNote(voice, NoteType.Note, new AbsoluteTime(1, 4), "n1_4",  TimeSpan.quarterNote);
+    const note = Music.addNote(voice.getSequence('0'), NoteType.Note, new AbsoluteTime(1, 4), 'n1_4',  TimeSpan.quarterNote);
     const memento = score.getMemento(true);
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);
     this.painter = new CanvasView.CanvasQuickPainter();
-    //console.log(MusicElementFactory.mementoCreators);
+    // console.log(MusicElementFactory.mementoCreators);
   }
 
 }
