@@ -841,11 +841,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 super(parent);
             }
 
-            static createFromMemento(parent: IStaff, memento: IMemento): IVoice {
-                var voice: IVoice = new VoiceElement(parent);
-                if (memento.def && memento.def.stem) { voice.setStemDirection(memento.def.stem); }
-                if (parent) parent.addChild(parent.voiceElements, voice); // todo: at index
-                return voice;
+            static createFromMemento(parent: IVoice, memento: IMemento): ISequence {
+                var seq: ISequence = new SequenceElement(parent);
+                //if (memento.def && memento.def.stem) { voice.setStemDirection(memento.def.stem); }
+                if (parent) parent.addChild(parent.getSequence('').noteElements, seq); // todo: at index
+                return seq;
             }
 
             public doGetMemento(): any {
