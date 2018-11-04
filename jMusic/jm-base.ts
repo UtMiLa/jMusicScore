@@ -615,7 +615,7 @@ export class Pitch {
     }
     static alterationInts = ['bb', 'b', '', 'x', 'xx'];
     static noteNames = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
-    static alterations: { [index: string]: string } = { 'bb': 'eses', 'b': 'es', 'n': '', 'x': 'is', 'xx': 'isis', '': '' };
+    static alterations: { [index: string]: string } = { 'bb': 'eses', 'b': 'es', 'n': '', 'x': 'is', 'xx': 'isis', '': '', '0': '' };
     static octaves = [',,,,,', ',,,,', ',,,', ',,', ',', '', "'", "''", "'''", "''''", "'''''", "''''''"];
     public debug(): string {
         var noteName = Pitch.noteNames[(this.pitch + 98) % 7];

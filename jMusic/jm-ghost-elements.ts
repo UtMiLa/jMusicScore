@@ -110,7 +110,7 @@ export class VariableSpacing {
 export class VariableRef extends MusicElement<VariableSpacing> implements ITimedEvent, IEventContainer {
     absTime: AbsoluteTime;    
     private name: string;
-    private ref: IVoice;
+    private ref: ISequence;
     
     getElementName(): string {
         return "VariableRef";
@@ -173,18 +173,42 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
         var varRef: VariableRef = new VariableRef(parent);
         if (memento.def && memento.def.name) { 
             varRef.name = name; 
-            varRef.ref = <IVoice>MusicElementFactory.recreateElement(null,
+            varRef.ref = <ISequence>MusicElementFactory.recreateElement(null,
                 {
-                "id": "131", "t": "Voice", "def": { "stem": 2 },
+                "id": "131", "t": "Sequence", "def": { "stem": 2 },
                 "children": [
-                    { "id": "103", "t": "Note", "def": { "time": { "num": 1, "den": 8 },
-                    "abs": { "num": 1, "den": 4 }, "noteId": "n1_8" },
+                    /*{ "id": "103", "t": "Note", "def": { "time": { "num": 1, "den": 8 },
+                    "noteId": "n1_8" },
                      "children": [{ "id": "104", "t": "Notehead", "def": { "p": 4, "a": "" } },
                       { "id": "157", "t": "TextSyllable", "def": { "text": "på " } }] },
                     { "id": "105", "t": "Note", "def": { "time": { "num": 1, "den": 8 },
-                    "abs": { "num": 3, "den": 8 }, "noteId": "n1_8" }, "children": [
+                    "noteId": "n1_8" }, "children": [
                         { "id": "106", "t": "Notehead", "def": { "p": 6, "a": "" } },
-                         { "id": "158", "t": "TextSyllable", "def": { "text": "teks-" } }] }
+                         { "id": "158", "t": "TextSyllable", "def": { "text": "teks-" } }] }*/
+                    /*     { "id": "11", "t": "Note",
+                         "def": { "time": { "num": 1, "den": 8 }, "noteId": "n1_8" },
+                         "children": [{
+                                 "id": "12",
+                                 "t": "Notehead",
+                                 "def": {
+                                     "p": 2,
+                                     "a": ""
+                                 }
+                             }
+                         ]
+                     },
+                     { "id": "12", "t": "Note",
+                         "def": { "time": { "num": 1, "den": 4 }, "noteId": "n1_8" },
+                         "children": [{
+                                 "id": "12",
+                                 "t": "Notehead",
+                                 "def": {
+                                     "p": 3,
+                                     "a": ""
+                                 }
+                             }
+                         ]
+                     }        */                 
                 ]
             });
         }

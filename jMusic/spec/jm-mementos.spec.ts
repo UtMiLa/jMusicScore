@@ -73,7 +73,6 @@ describe("Mementos", function () {
         expect(elm.noteheadElements[0].pitch.pitch.toString()).toEqual("e");
     });*/
 
-
     it("should create a voice with one note", function () {
         const data = <any>{ "id": "2", "t": "Voice", "def": { "metadata": {} }, "children": [{ "id": "11", "t": "Note",
         "def": { "time": { "num": 1, "den": 8 }, "abs": {"num": 0, "den": 1 }, "noteId": "n1_8" },
@@ -97,5 +96,98 @@ describe("Mementos", function () {
         expect(note.noteheadElements[0].getElementName()).toEqual("Notehead");
         expect(note.noteheadElements[0].pitch.debug()).toEqual("e'");
     });
+
+    it("should create a voice with two notes", function () {
+        const data = <any>{ "id": "2", "t": "Voice", "def": { "metadata": {} }, "children": [
+            { "id": "11", "t": "Note",
+                "def": { "time": { "num": 1, "den": 8 }, "noteId": "n1_8" },
+                "children": [{
+                        "id": "12",
+                        "t": "Notehead",
+                        "def": {
+                            "p": 2,
+                            "a": ""
+                        }
+                    }
+                ]
+            },
+            { "id": "12", "t": "Note",
+                "def": { "time": { "num": 1, "den": 4 }, "noteId": "n1_8" },
+                "children": [{
+                        "id": "12",
+                        "t": "Notehead",
+                        "def": {
+                            "p": 3,
+                            "a": ""
+                        }
+                    }
+                ]
+            }
+        ] };
+        const elm: any = MusicElementFactory.recreateElement(null, data);
+        expect(elm.getElementName()).toEqual("Voice");
+        expect(elm.getNoteElements().length).toEqual(2);
+        const note1 = <INote>elm.getNoteElements()[0];
+        expect(note1.getElementName()).toEqual("Note");
+        expect(note1.timeVal.toString()).toEqual("1/8");
+        expect(note1.noteheadElements.length).toEqual(1);
+        expect(note1.noteheadElements[0].getElementName()).toEqual("Notehead");
+        expect(note1.noteheadElements[0].pitch.debug()).toEqual("e'");
+
+        const note2 = <INote>elm.getNoteElements()[1];
+        expect(note2.getElementName()).toEqual("Note");
+        expect(note2.timeVal.toString()).toEqual("1/4");
+        expect(note2.noteheadElements.length).toEqual(1);
+        expect(note2.noteheadElements[0].getElementName()).toEqual("Notehead");
+        expect(note2.noteheadElements[0].pitch.debug()).toEqual("f'");
+    });
+
+
+
+    it("should create a sequence with two notes", function () {
+        const data = <any>{ "id": "2", "t": "Sequence", "def": {  }, "children": [
+            { "id": "11", "t": "Note",
+                "def": { "time": { "num": 1, "den": 8 }, "noteId": "n1_8" },
+                "children": [{
+                        "id": "12",
+                        "t": "Notehead",
+                        "def": {
+                            "p": 2,
+                            "a": ""
+                        }
+                    }
+                ]
+            },
+            { "id": "12", "t": "Note",
+                "def": { "time": { "num": 1, "den": 4 }, "noteId": "n1_8" },
+                "children": [{
+                        "id": "12",
+                        "t": "Notehead",
+                        "def": {
+                            "p": 3,
+                            "a": ""
+                        }
+                    }
+                ]
+            }
+        ] };
+        const elm: any = MusicElementFactory.recreateElement(null, data);
+        expect(elm.getElementName()).toEqual("Sequence");
+        expect(elm.getNoteElements().length).toEqual(2);
+        const note1 = <INote>elm.getNoteElements()[0];
+        expect(note1.getElementName()).toEqual("Note");
+        expect(note1.timeVal.toString()).toEqual("1/8");
+        expect(note1.noteheadElements.length).toEqual(1);
+        expect(note1.noteheadElements[0].getElementName()).toEqual("Notehead");
+        expect(note1.noteheadElements[0].pitch.debug()).toEqual("e'");
+
+        const note2 = <INote>elm.getNoteElements()[1];
+        expect(note2.getElementName()).toEqual("Note");
+        expect(note2.timeVal.toString()).toEqual("1/4");
+        expect(note2.noteheadElements.length).toEqual(1);
+        expect(note2.noteheadElements[0].getElementName()).toEqual("Notehead");
+        expect(note2.noteheadElements[0].pitch.debug()).toEqual("f'");
+    });
+
 
 });

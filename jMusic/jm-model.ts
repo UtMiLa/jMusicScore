@@ -1298,7 +1298,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 if (parent) {//parent.addChild(parent.noteElements, note); // todo: at index
                     var noteType: NoteType = memento.def.hidden ? NoteType.Placeholder : memento.def.rest ? NoteType.Rest : NoteType.Note;
                     var beforeNote: INote = null;
-                    var note = Music.addNoteToVoice(parent, noteType, AbsoluteTime.createFromMemento(memento.def.abs), memento.def.noteId,
+                    var absTime = memento.def.abs ? AbsoluteTime.createFromMemento(memento.def.abs) : null;
+                    var note = Music.addNoteToVoice(parent, noteType, absTime, memento.def.noteId,
                         TimeSpan.createFromMemento(memento.def.time), beforeNote, true, memento.def.dots, tupletDef);
                     if (memento.def.grace) { note.graceType = memento.def.grace; }
                     if (memento.def.stem) { note.setStemDirection(memento.def.stem); }
@@ -2063,6 +2064,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             /** Add a note to voice at a specified absTime */
             static addNote(sequence: ISequence, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): ISequenceNote {
+                if (!absTime){
+                    absTime = sequence.getEndTime();
+                }
                 var note = new NoteElement(sequence, noteId, timeVal);
                 note.absTime = absTime;
 

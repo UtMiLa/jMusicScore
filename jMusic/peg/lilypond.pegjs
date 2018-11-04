@@ -82,7 +82,7 @@ Sequence
 			def: {
 				stem: "dir"
 			},
-			children: notes // kommer underligt nok i omvendt rækkefølge
+			children: notes.reverse() // kommer underligt nok i omvendt rækkefølge
 		};
 	} 
 MusicElement
@@ -202,7 +202,7 @@ Pitch "pitch"
                         case "es": case "s": alteration = "b"; break;
                         case "eses": case "ses": alteration = "bb"; break;
                     }
-                    var octave = 0;
+                    var octave = 7;
                     for (var i = 0; i < o.length; i++) {
                     	switch(o[i]){
                         	case "'": octave += 7; break;

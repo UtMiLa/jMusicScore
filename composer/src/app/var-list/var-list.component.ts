@@ -8,68 +8,68 @@ import { IVarList } from '../datamodel/model';
 })
 export class VarListComponent implements OnInit {
 
-  constructor() { 
+  constructor() {
 
   }
 
-  varlist: {key:string, value: string, selected:boolean}[];
+  varlist: {key: string, value: string, selected: boolean}[];
 
 
   _varObject: IVarList;
 
 
   @Input()
-  set varObject(varObject: IVarList){
+  set varObject(varObject: IVarList) {
     console.log(varObject);
     this._varObject = varObject;
     this.setVarList();
   }
 
-  get varObject(): IVarList{
+  get varObject(): IVarList {
     return this._varObject;
   }
 
 
-  setVarList(){
-    var a = [];
-    for (var key in this.varObject) {
+  setVarList() {
+    const a = [];
+    for (const key in this.varObject) {
       if (this.varObject.hasOwnProperty(key)) {
-        a.push({key:key, value: this.varObject[key], selected: false});
+        a.push({key: key, value: this.varObject[key], selected: false});
       }
     }
     this.varlist = a;
   }
 
-  addVar(newVar: HTMLInputElement){
-    let varName = newVar.value;
-    if (this.varObject[varName]){
-      alert(varName + " findes i forvejen");
+  addVar(newVar: HTMLInputElement) {
+    const varName = newVar.value;
+    if (this.varObject[varName]) {
+      alert(varName + ' findes i forvejen');
       return;
     }
 
-    this.varObject[varName] = "{}";
+    this.varObject[varName] = '{}';
     this.select(null);
-    this.varlist.push({key:varName, value: "{}", selected: true});
-    
-    newVar.value = "";
+    this.varlist.push({key: varName, value: '{}', selected: true});
+
+    newVar.value = '';
   }
 
-  //@Input()
-  //varType: string = "variables";
+  // @Input()
+  // varType: string = "variables";
 
   ngOnInit() {
-    //this.varObject=this.musicProvider.getVariables(this.varType);
-    //this.setVarList();
+    // this.varObject=this.musicProvider.getVariables(this.varType);
+    // this.setVarList();
   }
   @Input()
-  title: string = "Variable";
+  title = 'Variable';
 
-  select(variable){
-    //console.log(variable);
-    for (var i = 0; i < this.varlist.length;i++) {
-      this.varlist[i].selected = false;      
+  select(variable) {
+    // console.log(variable);
+    for (let i = 0; i < this.varlist.length; i++) {
+      this.varlist[i].selected = false;
     }
-    if (!variable) return;
+    if (!variable) { return; }
     variable.selected = true;
     this.selectedRef.emit({parent: this._varObject, name: variable.key });
   }
