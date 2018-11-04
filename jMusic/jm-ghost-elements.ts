@@ -5,7 +5,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,  Point,
     IVisitor, IVoice, IStaff, IScore, ITimedEvent, IEventContainer, IClef,
     Music, MusicElementFactory, ClefElement,
-    KeyElement, 
+    KeyElement, ISequence,
     MeterElement} from "./jm-model";
 import { IScoreRefiner } from "./jm-interfaces";
 

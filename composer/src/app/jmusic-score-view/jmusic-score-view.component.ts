@@ -160,7 +160,7 @@ export class JmusicScoreViewComponent implements OnInit {
     const score = new ScoreElement(null);
     const staff = score.addStaff(ClefDefinition.clefCAlto);
     const voice = staff.addVoice();
-    const note = Music.addNote(voice.getSequence('0'), NoteType.Note, new AbsoluteTime(1, 4), 'n1_4',  TimeSpan.quarterNote);
+    const note = voice.getSequence('0').addNote(NoteType.Note, new AbsoluteTime(1, 4), 'n1_4',  TimeSpan.quarterNote);
     const memento = score.getMemento(true);
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);
