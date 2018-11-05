@@ -2120,7 +2120,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
             static addNoteToVoiceX(voice: IVoice, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null, segmentId: string = null): IVoiceNote {            
-                return voice.addNote(noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet, segmentId)
+                return voice.addNote(noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet, segmentId);
             }
 
             /** Add a note to voice at a specified absTime */

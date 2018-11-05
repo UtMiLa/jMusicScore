@@ -220,7 +220,7 @@ export class MusicXmlConverter implements IFileConverter {
                     note = noteElements[noteElements.length - 1];
                 }
                 else {
-                    note = Music.addNoteToVoice(voice, rest ? NoteType.Rest : NoteType.Note, context.absTime, 'n' + noteName, noteTime, null, true, dots, tupletdef, null);
+                    note = voice.addNote(rest ? NoteType.Rest : NoteType.Note, context.absTime, 'n' + noteName, noteTime, null, true, dots, tupletdef, null);
                     /*new NoteElement(null, 'n' + noteName, noteTime);
                     note.setParent(voice);
                     note.setRest(rest);

@@ -96,7 +96,7 @@ import { Validators } from './jm-refiners';
 
             static empty(elm: HTMLElement){
                 //$(elm).empty();
-                for (var elem = elm.firstChild; elem; elem = elem.nextSibling ) {
+                for (var elem: Node = elm.firstChild; elem; elem = elem.nextSibling ) {
                     if ( elem.nodeType < 6 ) {
                         return false;
                     }

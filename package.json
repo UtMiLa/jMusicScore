@@ -8,7 +8,7 @@
   "author": "",
   "license": "",
   "devDependencies": {
-    "@types/jasmine": "^2.8.8",
+    "@types/jasmine": "^2.8.9",
     "@types/pegjs": "^0.10.1",
     "browser-sync": "~2.18.13",
     "chai": "~4.1.1",
@@ -19,7 +19,7 @@
     "gulp-mocha": "^4.3.1",
     "gulp-typescript": "^3.2.1",
     "gulp-util": "^3.0.8",
-    "jasmine": "^3.2.0",
+    "jasmine": "^3.3.0",
     "mocha": "^3.5.3",
     "pegjs": "^0.10.0",
     "typescript": "^2.9.2"
