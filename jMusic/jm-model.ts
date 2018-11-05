@@ -737,6 +737,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             removeChild(child: INote): void;
             getSequence(id: string): ISequence;
             addNote(noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): IVoiceNote;
+            addEvent(event: ITimedEvent);
         }
 
         // VoiceElement
@@ -822,6 +823,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 else return AbsoluteTime.startTime;
             }
 
+            public addEvent(event: ITimedEvent) {
+                this.sequence.addEvent(event);
+            }
+
+
             public addNote(noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): IVoiceNote{
                 let segment = this.getSequence(segmentId);
                 let seqNote = segment.addNote(noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);
@@ -840,6 +846,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getEndTime(): AbsoluteTime;
             getNoteElements(): INote[];
             removeChild(child: INote): void;
+            addEvent(event: ITimedEvent);
             addNote(noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef): ISequenceNote;
         }
 
@@ -903,6 +910,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     return lastNote.absTime.add(lastNote.getTimeVal());
                 }
                 else return AbsoluteTime.startTime;
+            }
+
+
+            public addEvent(event: ITimedEvent){
+                this.noteElements.push(<INote>event);
             }
 
 

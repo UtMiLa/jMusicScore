@@ -155,6 +155,15 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
     getProperty(name: string) {
         throw new Error("Method not implemented.");
     }*/
+
+    public visitAll(visitor: IVisitorIterator<IMusicElement>) {
+        var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
+        this.ref.visitAll(visitor);
+        if (postFun) {
+            postFun(this);
+        }
+    }
+
     getEvents(): ITimedEvent[] {
         return this.ref.getEvents();
     }
@@ -185,7 +194,7 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
                     "noteId": "n1_8" }, "children": [
                         { "id": "106", "t": "Notehead", "def": { "p": 6, "a": "" } },
                          { "id": "158", "t": "TextSyllable", "def": { "text": "teks-" } }] }*/
-                    /*     { "id": "11", "t": "Note",
+                         { "id": "11", "t": "Note",
                          "def": { "time": { "num": 1, "den": 8 }, "noteId": "n1_8" },
                          "children": [{
                                  "id": "12",
@@ -208,11 +217,12 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
                                  }
                              }
                          ]
-                     }        */                 
+                     }                         
                 ]
             });
         }
-        if (parent) parent.addChild(parent.getNoteElements(), varRef); // todo: at index - ændres
+        
+        if (parent) parent.addEvent(varRef); // todo: at index - ændres
         return varRef;
     }
 
