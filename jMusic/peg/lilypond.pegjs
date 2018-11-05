@@ -135,7 +135,6 @@ Rest
                     t: "Note",
 					def: {
 						time: lastDur,
-						abs: {num:0, den:1},
 						noteId: "n" + lastDur.num + "_" + lastDur.den,
                         dots: d && d.dots ? d.dots.length : undefined,
                         rest: true,
@@ -152,7 +151,6 @@ Note
                     t: "Note",
 					def: {
 						time: lastDur,
-						abs: {num:0, den:1},
 						noteId: "n" + lastDur.num + "_" + lastDur.den,
                         dots: d && d.dots ? d.dots.length : undefined,
                         tuplet: d ? d.mul : undefined
@@ -176,7 +174,6 @@ Chord
 					t: "Note",
 					def: {
 						time: lastDur,
-						abs: {num:0, den:1},
 						noteId: "n" + lastDur.num + "_" + lastDur.den,
                         dots: d && d.dots ? d.dots.length : undefined,
                         tuplet: d ? d.mul : undefined
