@@ -163,7 +163,7 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            let noteArray = parsedObject.staffElements[0].voiceElements[0].getSequence('').noteElements[0].noteElements;
+            let noteArray = (<any>parsedObject.staffElements[0].voiceElements[0].getSequence('').noteElements[0]).noteElements;
             expect(noteArray.length).toEqual(3);
 
             let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
