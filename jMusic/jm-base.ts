@@ -559,6 +559,8 @@ export class PitchClass {
 
 /**
     * Pitch including alterations
+    * Middle C = C4 = c' = midi 60 = pitch 0
+    * Octave up = +7
     */
 export class Pitch {
     constructor(public pitch: number, public alteration: string) {

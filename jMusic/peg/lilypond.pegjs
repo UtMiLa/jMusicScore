@@ -199,7 +199,7 @@ Pitch "pitch"
                         case "es": case "s": alteration = "b"; break;
                         case "eses": case "ses": alteration = "bb"; break;
                     }
-                    var octave = 7;
+                    var octave = -7;
                     for (var i = 0; i < o.length; i++) {
                     	switch(o[i]){
                         	case "'": octave += 7; break;

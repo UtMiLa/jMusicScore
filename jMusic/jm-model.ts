@@ -737,7 +737,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             removeChild(child: INote): void;
             getSequence(id: string): ISequence;
             addNote(noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): IVoiceNote;
-            addEvent(event: ITimedEvent);
+            addEvent(event: ITimedEvent): void;
         }
 
         // VoiceElement
@@ -846,7 +846,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getEndTime(): AbsoluteTime;
             getNoteElements(): INote[];
             removeChild(child: INote): void;
-            addEvent(event: ITimedEvent);
+            addEvent(event: ITimedEvent): void;
             addNote(noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef): ISequenceNote;
         }
 
@@ -857,9 +857,23 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
             static createFromMemento(parent: IVoice, memento: IMemento): ISequence {
-                var seq: ISequence = new SequenceElement(parent);
+                var seq = new SequenceElement(parent);
                 //if (memento.def && memento.def.stem) { voice.setStemDirection(memento.def.stem); }
-                if (parent) parent.addChild(parent.getSequence('').noteElements, seq); // todo: at index
+                if (parent) {
+                    if (parent.getElementName() === "Staff") {
+                        let voice = new VoiceElement(<IStaff><any>parent);
+                        //voice.setSequence(seq);
+                        voice.addChild(voice.getSequence('').noteElements, seq);
+                        seq.parent = voice;
+                        parent.addChild((<IStaff><any>parent).voiceElements, voice);
+                    }
+                    else if ((<ISequence><any>parent).noteElements) {
+                        parent.addChild((<ISequence><any>parent).noteElements, seq); // todo: at index
+                    }
+                    else {
+                        parent.addChild(parent.getSequence('').noteElements, seq); // todo: at index
+                    }
+                }
                 return seq;
             }
 

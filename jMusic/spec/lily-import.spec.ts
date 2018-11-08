@@ -28,7 +28,7 @@ describe("Lilypond Import", function () {
             expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(8);
             for(var i = 0; i < 8; i++){
                 let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[i];
-                expect(note.noteheadElements[0].pitch.pitch).toEqual(i);
+                expect(note.noteheadElements[0].pitch.pitch).toEqual(i-7);
             }
         });
 
@@ -41,7 +41,7 @@ describe("Lilypond Import", function () {
 
             for(var i = 0; i < 7; i++){
                 let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements()[i];
-                expect(note.noteheadElements[0].pitch.pitch).toEqual(21 - 7 * i);
+                expect(note.noteheadElements[0].pitch.pitch).toEqual(14 - 7 * i);
             }
         });
 
@@ -101,7 +101,7 @@ describe("Lilypond Import", function () {
         });
 
         it("should correctly import chords", function () {
-            var input = "{ c4 <c e g>8 <c f a>4 }";
+            var input = "{ c'4 <c' e' g'>8 <c' f' a'>4 }";
 
             let parsedObject = loadFromLily(input, 1, 1);
             
@@ -163,8 +163,11 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
+            let noteArray = parsedObject.staffElements[0].voiceElements[0].getSequence('').noteElements[0].noteElements;
+            expect(noteArray.length).toEqual(3);
+
             let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
-            expect(notes.length).toEqual(3);
+            expect(notes.length).toEqual(4);
 
             // test values
         });
