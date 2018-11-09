@@ -23,7 +23,7 @@ export class TimedEventElement implements IMusicElement {
     getElementName(): string {
         throw new Error("Method not implemented.");
     }
-    addChild(list: IMusicElement[], theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
+    addChild(theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
         throw new Error("Method not implemented.");
     }
     removeChild(theChild: IMusicElement, list?: IMusicElement[]): void {
@@ -72,7 +72,7 @@ export class TimedEventStream extends TimedEventElement implements IMusicElement
     getElementName(): string {
         throw new Error("Method not implemented.");
     }
-    addChild(list: IMusicElement[], theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
+    addChild(theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
         throw new Error("Method not implemented.");
     }
     removeChild(theChild: IMusicElement, list?: IMusicElement[]): void {

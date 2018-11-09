@@ -245,7 +245,7 @@ export class MusicXmlConverter implements IFileConverter {
 
                 if (!chord) {
                     for (var i = 0; i < notat.decos.length; i++) {
-                        note.addChild(note.decorationElements, new NoteDecorationElement(note, notat.decos[i]));
+                        note.addChild( new NoteDecorationElement(note, notat.decos[i]));
                     }
                 }
 
@@ -255,7 +255,7 @@ export class MusicXmlConverter implements IFileConverter {
                     var text = MusicXmlHelper.getChildValue(<Element>lyricsElms[i], "text", "");
                     if (syllabic === "begin" || syllabic === "middle") text += '-';
                     var syllElm = new TextSyllableElement(note, text);
-                    note.addChild(note.syllableElements, syllElm);
+                    note.addChild(syllElm);
                 }
 
                 if (direction === "down") { note.setStemDirection(StemDirectionType.StemDown); }
@@ -412,7 +412,7 @@ export class MusicXmlConverter implements IFileConverter {
                                 var fromNote = fromSlur.note;
                                 var nd = new NoteLongDecorationElement(fromNote, note.absTime.diff(fromNote.absTime), LongDecorationType.Slur);
                                 nd.placement = fromSlur.placement;
-                                fromNote.addChild(fromNote.longDecorationElements, nd);
+                                fromNote.addChild(nd);
                             }
                         }
                     }

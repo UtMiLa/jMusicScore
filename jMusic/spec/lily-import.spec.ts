@@ -163,11 +163,18 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            let noteArray = (<any>parsedObject.staffElements[0].voiceElements[0].getSequence('').noteElements[0]).noteElements;
-            expect(noteArray.length).toEqual(3);
+            let noteArray = ((<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).children[0].noteElements);
+            expect(noteArray.length).toEqual(2);
+
+            let childArray = (<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).children[0].children;
+            expect(childArray.length).toEqual(3);
 
             let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements();
             expect(notes.length).toEqual(4);
+            expect(notes[0].debug()).toEqual('Nn1_4(c ) ');
+            expect(notes[1].debug()).toEqual('Nn1_4(d ) ');
+            expect(notes[2].debug()).toEqual('Nn1_4(e ) ');
+            expect(notes[3].debug()).toEqual('Nn1_4(f ) ');
 
             // test values
         });

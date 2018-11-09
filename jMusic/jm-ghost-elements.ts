@@ -50,7 +50,7 @@ import { IScoreRefiner } from "./jm-interfaces";
                 // tjek om der er ghostMeter til denne kombination af meter og staff
                 var ghostMeter = new GhostMeterElement(staff, meter);
                 //staff.setMeter(meter.num, meter.denum, meter.absTime);
-                staff.addChild(staff.meterElements, ghostMeter);
+                staff.addChild(ghostMeter);
             }
 
             public refine(document: IScore) {

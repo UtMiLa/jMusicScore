@@ -31,8 +31,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             //setSpacingInfo(info: ISpacingInfo): void;
             inviteVisitor(spacer: IVisitor): void;
             getElementName(): string;
-            addChild(list: IMusicElement[], theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void;
-            removeChild(theChild: IMusicElement, list?: IMusicElement[]): void;
+            addChild(theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void;
+            removeChild(theChild: IMusicElement): void;
             debug(): string;
             remove(): void;
             setProperty(name: string, value: any): void;
@@ -68,19 +68,28 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             /*public changed() { }
             public moved() { }*/
 
-            private childLists: IMusicElement[][] = [];
+            protected children: IMusicElement[] = [];
             private properties: { [index: string]: any; } = {};
 
             public getElementName() { return "Element"; }
 
-            public addChild(list: IMusicElement[], theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false) : void{
-                var index = this.childLists.indexOf(list);
+            getSpecialElements<T extends IMusicElement>(elementName: string): T[] {
+                let res: T[] = [];
+                for (var i = 0; i < this.children.length; i++) {
+                    if (this.children[i].getElementName() === elementName) res.push(<T>this.children[i]);
+                }
+                return res;
+            }
+
+            public addChild(theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false) : void{
+                /*var index = this.childLists.indexOf(list);
                 if (index >= 0) {
                     //this.childLists[index];
                 }
                 else {
                     this.childLists.push(list);
-                }
+                }*/
+                var list = this.children;
 
                 if (before) {
                     var i = list.indexOf(before);
@@ -101,43 +110,29 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 //                this.sendEvent({ type: MusicEventType.eventType.addChild, sender: this, child: theChild });
             }
 
-            public removeChild(theChild: IMusicElement, list?: IMusicElement[]) {
-                if (list) {
-                    var index = list.indexOf(theChild);
-                    if (index >= 0) {
-                        list.splice(index, 1);
-                        //            this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: theChild });
-                    }
-                    theChild.remove();
+            public removeChild(theChild: IMusicElement) {
+                var index = this.children.indexOf(theChild);
+                if (index >= 0) {
+                    this.children.splice(index, 1);
+                    //            this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: theChild });
                 }
-                else {
-                    for (var i = 0; i < this.childLists.length; i++) {
-                        var index = this.childLists[i].indexOf(theChild);
-                        if (index >= 0) {
-                            this.removeChild(theChild, this.childLists[i]);
-                            return;
-                        }
-                    }
-                }
+                theChild.remove();
+            
             }
 
             public debug() {
                 var string = this.getElementName() + ": ";
 
-                for (var i = 0; i < this.childLists.length; i++) {
-                    for (var j = 0; j < this.childLists[i].length; j++) {
-                        string += this.childLists[i][j].debug();
-                    }
+                for (var j = 0; j < this.children.length; j++) {
+                    string += this.children[j].debug();
                 }
                 string += " :" + this.getElementName() + " ";
                 return string;
             }
 
             public remove(): void {
-                for (var i = 0; i < this.childLists.length; i++) {
-                    for (var j = 0; j < this.childLists[i].length; j++) {
-                        this.childLists[i][j].remove();
-                    }
+                for (var j = 0; j < this.children.length; j++) {
+                    this.children[j].remove();
                 }
             }
             public setParent(p: IMusicElement) {
@@ -164,21 +159,19 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 };
                 if (withChildren) {
                     var children: IMemento[] = [];
-                    for (var i = 0; i < this.childLists.length; i++) {
-                        for (var j = 0; j < this.childLists[i].length; j++) {
-                            children.push(this.childLists[i][j].getMemento(true));
+                    
+                        for (var j = 0; j < this.children.length; j++) {
+                            children.push(this.children[j].getMemento(true));
                         }
-                    }
+                    
                     if (children.length) memento.children = children;
                 }
                 return memento;
             }
             public visitAll(visitor: IVisitorIterator<IMusicElement>) {
                 var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
-                for (var i = 0; i < this.childLists.length; i++) {
-                    for (var j = 0; j < this.childLists[i].length; j++) {
-                        this.childLists[i][j].visitAll(visitor);
-                    }
+                for (var j = 0; j < this.children.length; j++) {
+                    this.children[j].visitAll(visitor);
                 }
                 if (postFun) {
                     postFun(this);
@@ -234,7 +227,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             static createFromMemento(parent: IScore, memento: IMemento): IBar {
                 var absTime = AbsoluteTime.createFromMemento(memento.def.abs);
                 var bar = new BarElement(parent, absTime);
-                if (parent) parent.addChild(parent.bars, bar);
+                if (parent) parent.addChild(bar);
                 return bar;
             }
             public doGetMemento(): any {
@@ -290,8 +283,12 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 super(parent);
             }
             public bars: IBar[] = [];
-            public staffElements: IStaff[] = [];
-            public meterElements: IMeter[] = [];
+            get staffElements(): IStaff[] {
+                return this.getSpecialElements("Staff");
+            }
+            get meterElements(): IMeter[] {
+                return this.getSpecialElements("Meter");
+            }
             public title: string;
             public composer: string;
             public author: string;
@@ -331,12 +328,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
 
             public clear() {
-                while (this.staffElements.length)
-                    this.removeChild(this.staffElements[0], this.staffElements);
-                while (this.bars.length)
-                    this.removeChild(this.bars[0], this.bars);
-                while (this.meterElements.length)
-                    this.removeChild(this.meterElements[0], this.meterElements);
+                while (this.children.length)
+                    this.removeChild(this.children[0]);
                 this.metadata = {};
             }
             
@@ -401,7 +394,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             public removeBars(f: (bar: IBar, index: number) => boolean) {
                 for (var i = this.bars.length - 1; i >= 0; i--) {
-                    if (f(this.bars[i], i)) this.removeChild(this.bars[i], this.bars);
+                    if (f(this.bars[i], i)) this.removeChild(this.bars[i]);
                 }
             }
 
@@ -411,9 +404,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             public addStaff(clefDef: ClefDefinition): IStaff {
                 var staff = new StaffElement(this);
-                this.addChild(this.staffElements, staff);
+                this.addChild(staff);
                 var clef: IClef = new ClefElement(staff, clefDef);
-                staff.addChild(staff.clefElements, clef);
+                staff.addChild(clef);
                 /*for (var i = 0; i < this.bars.length; i++)
                     this.bars[i].changed();*/
                 return staff;
@@ -426,22 +419,26 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }*/
             public setMeter(meter: IMeterDefinition, absTime: AbsoluteTime) {
                 if (!absTime) absTime = AbsoluteTime.startTime;
-                for (var i = 0; i < this.meterElements.length; i++) {
-                    if (this.meterElements[i].absTime.eq(absTime)) {
+
+                let meterElements = this.meterElements;
+
+                for (var i = 0; i < meterElements.length; i++) {
+                    if (meterElements[i].absTime.eq(absTime)) {
                         //this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: this.meterElements[i] });
-                        this.meterElements[i].remove();
-                        this.meterElements.splice(i, 1);
+                        this.removeChild(meterElements[i]);
+                        /*meterElements[i].remove();
+                        meterElements.splice(i, 1);*/
                     }
                 }
                 var meterRef = new MeterElement(this, meter, absTime);
-                this.addChild(this.meterElements, meterRef);
+                this.addChild(meterRef);
             }
 
             public getElementName() {
                 return "Score";
             }
             public addBarLine(absTime: AbsoluteTime) {
-                this.addChild(this.bars, new BarElement(this, absTime));
+                this.addChild(new BarElement(this, absTime));
             }
 
             public setKey(key: IKeyDefinition, absTime: AbsoluteTime) {
@@ -483,17 +480,28 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 super(parent);
             }
             private keyRef: IKey;
-            public clefElements: IClef[] = [];
-            public meterElements: IMeter[] = [];
-            private keyElements: IKey[] = [];
-            public voiceElements: IVoice[] = [];
+
+            get clefElements(): IClef[] {
+                return this.getSpecialElements("Clef");
+            }
+            get meterElements(): IMeter[] {
+                return this.getSpecialElements("Meter");
+            }
+            get keyElements(): IKey[] {
+                return this.getSpecialElements("Key");
+            }
+            get voiceElements(): IVoice[] {
+                return this.getSpecialElements("Voice");
+            }
+
+
             private expressions: IStaffExpression[] = [];
             public title: string;
 
             static createFromMemento(parent: IScore, memento: IMemento): IStaff {
                 var staff: IStaff = new StaffElement(parent);
                 if (memento.def && memento.def.title) { staff.title = memento.def.title; }
-                if (parent) parent.addChild(parent.staffElements, staff); // todo: at index
+                if (parent) parent.addChild(staff); // todo: at index
                 return staff;
             }
 
@@ -556,17 +564,19 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             public getStaffContext(absTime: AbsoluteTime): StaffContext {
                 var clef: IClef;
-                this.clefElements.sort(Music.compareEvents);
-                for (var i = 0; i < this.clefElements.length; i++) {
-                    if (this.clefElements[i].absTime.gt(absTime)) break;
-                    clef = this.clefElements[i];
+                let clefElements= this.clefElements;
+                clefElements.sort(Music.compareEvents);
+                for (var i = 0; i < clefElements.length; i++) {
+                    if (clefElements[i].absTime.gt(absTime)) break;
+                    clef = clefElements[i];
                 }
                 var key: IKey;
                 //var keys = this.keyElements.length ? this.keyElements : this.parent.keyElements;
-                this.keyElements.sort(Music.compareEvents);
-                for (var i = 0; i < this.keyElements.length; i++) {
-                    if (this.keyElements[i].absTime.gt(absTime)) break;
-                    key = this.keyElements[i];
+                let keyElements = this.keyElements;
+                keyElements.sort(Music.compareEvents);
+                for (var i = 0; i < keyElements.length; i++) {
+                    if (keyElements[i].absTime.gt(absTime)) break;
+                    key = keyElements[i];
                 }
                 var meter: IMeter;
                 var meters = this.meterElements.length ? this.meterElements : this.parent.meterElements;
@@ -623,26 +633,28 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public getElementName() { return "Staff"; }
             public addVoice(): IVoice {
                 var voice = new VoiceElement(this);
-                this.addChild(this.voiceElements, voice);
+                this.addChild(voice);
                 return voice;
             }
 
             public setMeter(meter: IMeterDefinition, absTime: AbsoluteTime) {
                 if (!absTime) absTime = AbsoluteTime.startTime;
-                for (var i = 0; i < this.meterElements.length; i++) {
-                    if (this.meterElements[i].absTime.eq(absTime)) {
+                let meterElements = this.meterElements;
+                for (var i = 0; i < meterElements.length; i++) {
+                    if (meterElements[i].absTime.eq(absTime)) {
                         //this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: this.meterElements[i] });
-                        this.meterElements[i].remove();
-                        this.meterElements.splice(i, 1);
+                        this.removeChild(meterElements[i]);
+                        /*meterElements[i].remove();
+                        meterElements.splice(i, 1);*/
                     }
                 }
                 var meterRef = new MeterElement(this, meter, absTime);
                 //meterRef.changed();
-                this.addChild(this.meterElements, meterRef);
+                this.addChild(meterRef);
             }
             public setStaffExpression(type: string, absTime: AbsoluteTime): IStaffExpression {
                 var exp = new StaffExpression(this, type, absTime);
-                this.addChild(this.expressions, exp);
+                this.addChild(exp);
                 return exp;
             }
             public getParent(): IScore {
@@ -668,7 +680,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 }
                 var clefRef = new ClefElement(this, type, absTime);
                 //clefRef.changed();
-                this.addChild(this.clefElements, clefRef);
+                this.addChild(clefRef);
             }
             public setKey(key: IKeyDefinition, absTime: AbsoluteTime) {
                 for (var i = 0; i < this.keyElements.length; i++) {
@@ -680,7 +692,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 }
                 var keyRef = new KeyElement(this, key, absTime);
                 //keyRef.changed();
-                this.addChild(this.keyElements, keyRef);
+                this.addChild(keyRef);
             }
         }
 
@@ -745,13 +757,13 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             constructor(public parent: IStaff) {
                 super(parent);
                 //this.meterElements = { push: (meter: MeterElement) => { parent.addChild(parent.meterElements, meter); } };
-                this.addChild([], this.sequence);
+                this.addChild(this.sequence);
             }
 
             static createFromMemento(parent: IStaff, memento: IMemento): IVoice {
                 var voice: IVoice = new VoiceElement(parent);
                 if (memento.def && memento.def.stem) { voice.setStemDirection(memento.def.stem); }
-                if (parent) parent.addChild(parent.voiceElements, voice); // todo: at index
+                if (parent) parent.addChild(voice); // todo: at index
                 return voice;
             }
 
@@ -781,15 +793,23 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 this.withNotes((note, index) => {res.push(note);})
                 return res;
             }
+
+
+            get noteElements(): INote[] {
+                return this.getSpecialElements("Note");
+            }
+
+
             public withNotes(f: (note: INoteInfo, context: INoteContext, index: number) => void) {
                 this.visitAll(new NoteVisitor(f));
             }
 
-            public addChild(list: IMusicElement[], theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false): void {
-                if (theChild.getElementName() === "Note") {
-                    /*return*/ this.sequence.addChild(this.sequence.noteElements, theChild, before, removeOrig);    
+            public addChild(theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false): void {
+                //if (theChild.getElementName() === "Note" /*|| theChild.getElementName() === "Sequence"*/) {
+                if (theChild !== this.sequence) {
+                    this.sequence.addChild(theChild, before, removeOrig);    
                 }
-                /*return*/ super.addChild(list, theChild, before, removeOrig);
+                else super.addChild(theChild, before, removeOrig);
             }
 
             public getStemDirection(): StemDirectionType {
@@ -863,15 +883,15 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     if (parent.getElementName() === "Staff") {
                         let voice = new VoiceElement(<IStaff><any>parent);
                         //voice.setSequence(seq);
-                        voice.addChild(voice.getSequence('').noteElements, seq);
+                        voice.addChild(seq);
                         seq.parent = voice;
-                        parent.addChild((<IStaff><any>parent).voiceElements, voice);
+                        parent.addChild(voice);
                     }
                     else if ((<ISequence><any>parent).noteElements) {
-                        parent.addChild((<ISequence><any>parent).noteElements, seq); // todo: at index
+                        parent.addChild(seq); // todo: at index
                     }
                     else {
-                        parent.addChild(parent.getSequence('').noteElements, seq); // todo: at index
+                        parent.addChild(seq); // todo: at index
                     }
                 }
                 return seq;
@@ -889,7 +909,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 visitor.visitDefault(this, this.spacingInfo);
             }
 
-            public noteElements: INote[] = [];
+            get noteElements(): INote[] {
+                return this.getSpecialElements("Note");
+            }
+
             public getNoteElements() { return this.noteElements };
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
 
@@ -952,7 +975,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     restNote.setParent(this);
                     restNote.setRest(true);
                     restNote.absTime = AbsoluteTime.startTime;
-                    this.addChild(this.noteElements, restNote, null, false); // todo: change
+                    this.addChild(restNote, null, false); // todo: change
                 }
                 var oldNote: INote = beforeNote;
                 if (!oldNote && voiceTime.gt(absTime)) {
@@ -971,7 +994,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     }
                 }
                 note.dotNo = dots;
-                this.addChild(this.noteElements, note, oldNote); // todo: change
+                this.addChild(note, oldNote); // todo: change
                 if (noteType === NoteType.Rest) {
                     note.setRest(true);
                 }
@@ -1006,7 +1029,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 var def = new ClefDefinition(memento.def.clef, memento.def.lin, memento.def.tr);
                 var absTime = AbsoluteTime.createFromMemento(memento.def.abs);
                 var clef: IClef = new ClefElement(parent, def, absTime);
-                if (parent) parent.addChild(parent.clefElements, clef);
+                if (parent) parent.addChild(clef);
                 return clef;
             }
 
@@ -1069,7 +1092,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     absTime = AbsoluteTime.createFromMemento(memento.def.abs);
                 }
                 var key: IKey = new KeyElement(parent, def, absTime);
-                if (parent) parent.addChild(parent.getKeyElements(), key);
+                if (parent) parent.addChild(key);
                 return key;
             }
 
@@ -1125,7 +1148,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                     //new RegularMeterDefinition(memento.def.num, memento.def.den); // todo: factory
                 var absTime = AbsoluteTime.createFromMemento(memento.def.abs);
                 var meter: IMeter = new MeterElement(parent, def, absTime);// todo: add to parent
-                if (parent) parent.addChild(parent.meterElements, meter);
+                if (parent) parent.addChild(meter);
                 return meter;
             }
 
@@ -1256,8 +1279,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 super(parent);
             }
 
-            addChild(childList: IMusicElement[], child: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
-                this.note.addChild(childList, child, before, removeOrig);
+            addChild(child: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
+                this.note.addChild(child, before, removeOrig);
             }
 
             getVoice() {return this.parent; }
@@ -1474,10 +1497,20 @@ private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffCon
             public getSortOrder() {
                 return this.graceType ? 95 : 100;
             }
-            public noteheadElements: INotehead[] = [];
-            public decorationElements: INoteDecorationElement[] = [];
-            public longDecorationElements: ILongDecorationElement[] = [];
-            public syllableElements: ITextSyllableElement[] = [];
+            
+            get noteheadElements(): INotehead[] {
+                return this.getSpecialElements("Notehead");
+            }
+            get decorationElements(): INoteDecorationElement[] {
+                return this.getSpecialElements("NoteDecoration");
+            }
+            get longDecorationElements(): ILongDecorationElement[] {
+                return this.getSpecialElements("LongDecoration");
+            }
+            get syllableElements(): ITextSyllableElement[] {
+                return this.getSpecialElements("Syllable");
+            }
+
             dotNo: number = 0;
             absTime: AbsoluteTime = null;
             rest = false;
@@ -1619,7 +1652,7 @@ private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffCon
                     var newpitch = new NoteheadElement(this, pitch);
                     //newpitch.setPitch(pitch);
                     //newpitch.setDots(this.dotNo);
-                    this.addChild(this.noteheadElements, newpitch);
+                    this.addChild(newpitch);
                 //    this.changed();
                     return newpitch;
                 }
@@ -1664,7 +1697,7 @@ private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffCon
                 if (memento.def.tie) head.tie = true;
                 if (memento.def.tieForced) head.tieForced = true;
                 if (memento.def.forceAcc) head.forceAccidental = true;
-                if (parent) parent.addChild(parent.noteheadElements, head);
+                if (parent) parent.addChild(head);
                 return head;
             }
             
@@ -1736,7 +1769,7 @@ private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffCon
             static createFromMemento(parent: INote, memento: IMemento): INoteDecorationElement {
                 var deco = new NoteDecorationElement(parent, memento.def.id);
                 if (memento.def.placement) deco.placement = memento.def.placement;
-                if (parent) parent.addChild(parent.decorationElements, deco);
+                if (parent) parent.addChild(deco);
                 return deco;
             }
             public doGetMemento(): any {
@@ -1784,7 +1817,7 @@ private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffCon
                 var duration = TimeSpan.createFromMemento(memento.def.dur);
                 var deco = new NoteLongDecorationElement(parent, duration, memento.def.type);
                 if (memento.def.placement) deco.placement = memento.def.placement;
-                if (parent) parent.addChild(parent.longDecorationElements, deco);
+                if (parent) parent.addChild(deco);
                 return deco;
             }
             public doGetMemento(): any {
@@ -1831,7 +1864,7 @@ private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffCon
             static createFromMemento(parent: INote, memento: IMemento): ITextSyllableElement {
                 var deco = new TextSyllableElement(parent, memento.def.text);
                 if (memento.def.placement) deco.placement = memento.def.placement;
-                if (parent) parent.addChild(parent.syllableElements, deco);
+                if (parent) parent.addChild(deco);
                 return deco;
             }
             public doGetMemento(): any {
@@ -2031,11 +2064,11 @@ private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffCon
                 }
 
                 note.withDecorations((decoration: INoteDecorationElement) => {
-                    note1.addChild(note1.decorationElements, decoration);
+                    note1.addChild(decoration);
                 });
                 
                 note.withSyllables((syl: ITextSyllableElement) => {
-                    note1.addChild(note1.syllableElements, syl);
+                    note1.addChild(syl);
                 });                
 
                 note.withHeads((head: INotehead) => {
@@ -2287,7 +2320,7 @@ private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffCon
                     score = <IScore>owner;
                 }
                 var bar = score.findBar(absTime);
-                if (!bar) score.addChild(score.bars, new BarElement(score, absTime));
+                if (!bar) score.addChild(new BarElement(score, absTime));
                 return bar;
             }
         }

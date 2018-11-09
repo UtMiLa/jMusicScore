@@ -82,7 +82,7 @@ Sequence
 			def: {
 				stem: "dir"
 			},
-			children: notes.reverse() // kommer underligt nok i omvendt rækkefølge
+			children: notes // kommer underligt nok i omvendt rækkefølge
 		};
 	} 
 MusicElement

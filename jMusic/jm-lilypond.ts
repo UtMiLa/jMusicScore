@@ -17,7 +17,7 @@ export class LilyPondConverter implements IFileConverter {
             if (!parsed[i]) continue;
             var voiceMemento = parsed[i].mus; // tjek om mus er voice eller noget andet
             if (!voiceMemento) continue;
-            voiceMemento.children.reverse();
+            //voiceMemento.children.reverse();
             var staffMemento = {def:{}, t:"Staff", children:[{ "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, voiceMemento], id: '2'};
             scoreMemento.children.push(staffMemento);
         }

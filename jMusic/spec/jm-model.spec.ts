@@ -148,7 +148,9 @@ describe("Score", function () {
             expect(staff.getStaffContext(absTime).meter.debug()).toEqual('3/8');
             document.setMeter(meterDef7_16, absTimeHalfPlus);
             expect(staff.getStaffContext(absTime).meter.debug()).toEqual('3/8');
-            (<any>staff).meterElements = <any>[];
+            //(<any>staff).meterElements = <any>[];
+            var meters = (<any>staff).meterElements;
+            for (var i = 0; i < meters.length; i++) staff.removeChild(meters[i]);
             expect(staff.getStaffContext(absTime).meter.debug()).toEqual('7/16');
         });
 
