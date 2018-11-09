@@ -729,7 +729,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         export interface IVoice extends IEventContainer, IMusicElement {
             getNoteElements(): INote[];
             parent: IStaff;
-            withNotes(f: (note: INote, index: number) => void): void;
+            withNotes(f: (note: INoteInfo, context: INoteContext, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
             getEvents(fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
@@ -781,7 +781,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 this.withNotes((note, index) => {res.push(note);})
                 return res;
             }
-            public withNotes(f: (note: IVoiceNote, index: number) => void) {
+            public withNotes(f: (note: INoteInfo, context: INoteContext, index: number) => void) {
                 this.visitAll(new NoteVisitor(f));
             }
 
@@ -805,9 +805,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 var events: ITimedVoiceEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
-                this.withNotes((note: IVoiceNote, index: number) => {
+                this.withNotes((note: INoteInfo, context: INoteContext, index: number) => {
                     if (!fromTime.gt(note.absTime) && toTime.gt(note.absTime)) {
-                        events.push(note);
+                        events.push(<any>note);
                     }
                 });
                 return events;
@@ -839,7 +839,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         export interface ISequence extends IEventContainer, IMusicElement {
             noteElements: INote[];
             parent: IVoice | ISequence;
-            withNotes(f: (note: INote, index: number) => void): void;
+            withNotes(f: (note: INoteInfo, context: INoteContext, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
             getEvents(fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
@@ -893,7 +893,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public getNoteElements() { return this.noteElements };
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
 
-            public withNotes(f: (note: INote, index: number) => void) {
+            public withNotes(f: (note: INoteInfo, context: INoteContext, index: number) => void) {
                 this.visitAll(new NoteVisitor(f));
             }
             public getStemDirection(): StemDirectionType {
@@ -909,7 +909,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 var events: ITimedEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
-                this.withNotes((note: INote, index: number) => {
+                this.withNotes((note: INoteInfo, context: INoteContext, index: number) => {
                     if (!fromTime.gt(note.absTime) && toTime.gt(note.absTime)) {
                         events.push(note);
                     }
@@ -1232,6 +1232,13 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getNext(): INote;
         }
 
+
+
+        export interface INoteInfo extends INote {}
+        export interface INoteContext extends INote {
+        }
+
+
         export interface IVoiceNote extends INote {
             parent: IVoice;
             getVoice(): IVoice;
@@ -1243,7 +1250,6 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
         class NoteProxy extends MusicElement<INoteSpacingInfo> implements IVoiceNote {
-
             constructor(private note: INote, public parent: IVoice){
                 super(parent);
             }
@@ -1339,6 +1345,23 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
         class NoteElement extends MusicElement<INoteSpacingInfo> implements ISequenceNote {
+/** TODO: flyt til NoteContext */
+
+private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffContext{
+    if ((<any>elm).getStaffContext) return (<any>elm).getStaffContext(time);
+    if (!elm.parent) return undefined;
+    return this.getStaffContext(elm.parent, time);
+}
+
+/*pitchToStaffLine(pitch: Pitch): number{
+    var clef = NoteElement.getStaffContext(this, this.absTime).clef;
+    return clef.pitchToStaffLine(pitch);
+}*/
+/** TODO: flyt til NoteContext */
+
+
+
+
             constructor(public parent: ISequence, private noteId: string, public timeVal: TimeSpan) {
                 super(parent);
                 if (!noteId && timeVal) {
@@ -1435,7 +1458,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 return new HorizPosition(this.absTime, this.getSortOrder()); // todo: grace note position
             }
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitNote(this, this.spacingInfo);
+                visitor.visitNote(this, this, this.spacingInfo);
             }
 
             public get NoteId(): string { return this.noteId; }
@@ -1649,7 +1672,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public showAccidental: boolean = true;
 
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitNoteHead(this, this.spacingInfo);
+                visitor.visitNoteHead(this, this.parent, this.spacingInfo);
             }
 
             getElementName() {
@@ -1833,8 +1856,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
 
         export interface IVisitor {
-            visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo): void;
-            visitNote(note: INote, spacing: INoteSpacingInfo): void;
+            visitNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo): void;
+            visitNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo): void;
             visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo): void;
             visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo): void;
             visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo): void;
@@ -2322,8 +2345,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         return null;
     }
 
-    visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) { }
-    visitNote(note: INote, spacing: INoteSpacingInfo) { }
+    visitNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) { }
+    visitNote(note: INote, context: INoteContext, spacing: INoteSpacingInfo) { }
     visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) { }
     visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo) { }
     visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
@@ -2341,12 +2364,12 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 }
 
 export class NoteVisitor extends NullVisitor {
-    constructor(private callback: (node:IVoiceNote, index: number, spacing: INoteSpacingInfo) => void) {
+    constructor(private callback: (note:INoteInfo, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
         super()
     }
     no: number = 0;
-    visitNote(note: IVoiceNote, spacing: INoteSpacingInfo): void {
-        this.callback(note, this.no++, spacing);
+    visitNote(note:INoteInfo, context: INoteContext, spacing: INoteSpacingInfo): void {
+        this.callback(note, context, this.no++, spacing);
     }
 }   
 
@@ -2386,7 +2409,7 @@ export class NoteHeadVisitor extends NullVisitor {
         super()
     }
     no: number = 0;
-    visitNoteHead(notehead: INotehead, spacing: INoteHeadSpacingInfo): void {
+    visitNoteHead(notehead: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo): void {
         this.callback(notehead, this.no++, spacing);
     }
 }   

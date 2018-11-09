@@ -7,7 +7,7 @@ import { IMusicElement, IMeterSpacingInfo,  IMeter, Music,
     IClefSpacingInfo, Point, INotehead, INote, IVoiceNote, ITimedVoiceEvent, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteInfo, INoteContext
      } from "./jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import { IScoreDesigner, IScoreRefiner } from './jm-interfaces';
@@ -530,7 +530,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
             }
 
             private validateVoice(voice: IVoice) {
-                voice.withNotes((note: INote, index: number) => {
+                voice.withNotes((note: INoteInfo, context: INoteContext, index: number) => {
                     var nextNote = Music.nextNote(note);
                         /*: NoteElement;
                     if (index < voice.noteElements.length - 1) {

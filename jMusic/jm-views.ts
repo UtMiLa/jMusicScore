@@ -7,7 +7,7 @@ import { IMusicElement, IMeterSpacingInfo, IMeter, Music,
      IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteInfo, INoteContext
      } from "./jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
@@ -294,9 +294,9 @@ function $(elm: HTMLElement): DOMHelper {
                     return null;
                 }
     
-                visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) {
+                visitNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) {
                 }
-                visitNote(note: INote, spacing: INoteSpacingInfo) {
+                visitNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
                 }
                 visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) {
                     // expr
@@ -348,7 +348,7 @@ function $(elm: HTMLElement): DOMHelper {
                 constructor(public sensorEngine: ISensorGraphicsEngine, private score: IScore, private eventReceiver: IEventReceiver) {
                 }
     
-                visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) {
+                visitNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) {
                     var elm = this.sensorEngine.createRectObject("edit_" + head.id, -5, -2, 10, 3, 'NoteheadEdit');
                     var evRec = this.eventReceiver;
                     var me = this;
@@ -365,10 +365,10 @@ function $(elm: HTMLElement): DOMHelper {
                             evRec.processEvent("clickhead", { head: head });
                         });
                 }
-                visitNote(note: IVoiceNote, noteSpacing: INoteSpacingInfo) {
+                visitNote(note: INoteInfo, context: INoteContext, noteSpacing: INoteSpacingInfo) {
                     var evRec = this.eventReceiver;
                     var me = this.sensorEngine;
-                    var staffContext = note.parent.parent.getStaffContext(note.absTime);
+                    var staffContext = (<any>note.parent.parent).getStaffContext(context.absTime); // todo: context!
                     var clefDefinition = staffContext.clef;
                     var rectLeft = -7;
                     var rectTop = -20;
@@ -691,7 +691,7 @@ function $(elm: HTMLElement): DOMHelper {
     
     
     
-                visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) {
+                visitNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) {
                     this.graphEngine.createMusicObject(null, spacing.headGlyph, spacing.displace.x, spacing.displace.y, spacing.graceScale);
                     if (head.getAccidental()) {
                         this.graphEngine.createMusicObject(null, this.accidentalDefs[head.getAccidental()], spacing.offset.x + spacing.accidentalX, 0, spacing.graceScale);
@@ -705,7 +705,7 @@ function $(elm: HTMLElement): DOMHelper {
                         var dot = this.graphEngine.createMusicObject(null, 'e_dots.dot', head.parent.spacingInfo.dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 0, spacing.graceScale);
                     }
                 }
-                visitNote(note: INote, noteSpacing: INoteSpacingInfo) {
+                visitNote(note: INoteInfo, context: INoteContext, noteSpacing: INoteSpacingInfo) {
                     // note stem
                     //console.log("note");
                     if (!note.rest) {

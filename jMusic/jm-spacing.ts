@@ -8,7 +8,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, LedgerLineSpacingInfo,
-    ILongDecorationSpacingInfo, ITimedEvent, Music } from "./jm-model";
+    ILongDecorationSpacingInfo, ITimedEvent, Music, INoteInfo, INoteContext } from "./jm-model";
 
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: pitchToStaffLine skal ikke kaldes med <any>
@@ -42,7 +42,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 public beamDist: number;
             }
     
-            export interface INoteInfo {
+            export interface INoteContextInfo {
                 postfix: string;
                 timeVal: number;
                 dotWidth: number;
@@ -62,7 +62,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
             export class NoteHeadSpacingInfo extends BaseSpacingInfo implements INoteHeadSpacingInfo {
                 constructor(private parent: INotehead) { super(); }
     
-                static noteValues: { [index: string]: INoteInfo } = {
+                static noteValues: { [index: string]: INoteContextInfo } = {
                     hidden: {
                         postfix: "",
                         timeVal: 1,
@@ -333,8 +333,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
     
             class NullSpacer implements IVisitor {
-                visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) { }
-                visitNote(note: INote, spacing: INoteSpacingInfo) { }
+                visitNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) { }
+                visitNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) { }
                 visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) { }
                 visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo) { }
                 visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
@@ -439,12 +439,12 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
             class MinimalSpacer extends NullSpacer {
     
-                public visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) {
+                public visitNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
                     spacing.accidentalX = -head.spacingInfo.offset.x * 2 + Metrics.accidentalX + head.spacingInfo.accidentalStep * Metrics.accidentalXstep;
                     spacing.graceScale = head.parent.spacingInfo.graceScale;
     
                     spacing.offset.y = head.parent.rest ? 
-                    Metrics.restY : NoteSpacer.pitchToStaffLine(head.pitch, <any>head.parent) * Metrics.pitchYFactor;
+                    Metrics.restY : NoteSpacer.pitchToStaffLine(head.pitch, <any>head.parent, noteCtx) * Metrics.pitchYFactor;
     
     
                     if (head.tie) {
@@ -648,13 +648,13 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                visitNote(note: IVoiceNote, spacing: INoteSpacingInfo) {
+                visitNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
                     //(<NoteSpacingInfo>spacing).calcMetrics(note);
                     spacing.preWidth = MinimalSpacer.doGetPreWidth(note);
                     spacing.width = MinimalSpacer.doGetWidth(note);
     
-                    NoteSpacer.recalcPitches(note);
-                    NoteSpacer.recalcHeads(note);
+                    NoteSpacer.recalcPitches(note, context);
+                    NoteSpacer.recalcHeads(note, context);
                     NoteSpacer.recalcStem(note, spacing);
                     NoteSpacer.recalcLedgerLinesUnder(note);
                     NoteSpacer.recalcLedgerLinesOver(note);
@@ -800,12 +800,12 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return null;
                 }
     
-                visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) {
+                visitNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
                     if (!spacing) {
                         head.spacingInfo = new NoteHeadSpacingInfo(head);
                     }
                 }
-                visitNote(note: INote, spacing: INoteSpacingInfo) {
+                visitNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
                     if (!spacing) {
                         note.spacingInfo = new NoteSpacingInfo(note);
                     }
@@ -933,7 +933,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         });
     
                         staff.withVoices((voice: IVoice, index: number): void => {
-                            voice.withNotes((note: INote, index: number): void => {
+                            voice.withNotes((note: INoteInfo, context: INoteContext, index: number): void => {
                                 note.inviteVisitor(this.spacer);
                             });
                         });
@@ -992,7 +992,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                     score.withVoices((voice: IVoice, index: number): void => {
                         voice.spacingInfo.offset.x = 0;
-                        voice.withNotes((note: INote, index: number): void => {
+                        voice.withNotes((note: INoteInfo, context: INoteContext, index: number): void => {
                             /*todo: if (note.beam) {
                                 note.beam.updateAll();
                             }*/
@@ -1044,22 +1044,22 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return this.getStaffContext(elm.parent, time);
                 }
     
-                public static pitchToStaffLine(pitch: Pitch, note: IVoiceNote) {
+                public static pitchToStaffLine(pitch: Pitch, note: INoteInfo, noteCtx: INoteContext) {
                     var clef = this.getStaffContext(note, note.absTime).clef;
                     return clef.pitchToStaffLine(pitch);
                 }
-                public static staffLineToPitch(line: number, note: IVoiceNote) {
+                public static staffLineToPitch(line: number, note: INoteInfo, noteCtx: INoteContext) {
                     var clef = this.getStaffContext(note, note.absTime).clef;
                     return clef.staffLineToPitch(line);
                 }
     
-                public static recalcPitches(note: IVoiceNote) {
+                public static recalcPitches(note: INoteInfo, noteCtx: INoteContext) {
                     var noteSpacing = note.spacingInfo;
     
                     var lowPitch = 99;
                     var highPitch = -99;
                     note.withHeads((head: INotehead) => {
-                        var thePitch = NoteSpacer.pitchToStaffLine(head.getPitch(), note);
+                        var thePitch = NoteSpacer.pitchToStaffLine(head.getPitch(), note, noteCtx);
                         if (thePitch < lowPitch) {
                             lowPitch = thePitch;
                         }
@@ -1081,10 +1081,10 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     noteSpacing.highPitchY = lowPitch;
                     noteSpacing.lowPitchY = highPitch;
                     if (note.getStemDirection() == StemDirectionType.StemFree) {
-                        if (note.parent.getStemDirection() == StemDirectionType.StemFree) {
+                        if (noteCtx.getStemDirection() == StemDirectionType.StemFree) {
                             noteSpacing.rev = highPitch + lowPitch < 10;
                         }
-                        else noteSpacing.rev = (note.parent.getStemDirection() == StemDirectionType.StemDown);
+                        else noteSpacing.rev = (noteCtx.getStemDirection() == StemDirectionType.StemDown);
                     }
                     else noteSpacing.rev = (note.getStemDirection() == StemDirectionType.StemDown);
                 }
@@ -1172,7 +1172,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                public static recalcHeads(note: INote) {
+                public static recalcHeads(note: INote, noteCtx: INoteContext) {
                     var noteSpacing = note.spacingInfo;
                     var heads = note.noteheadElements;
                     if (heads.length == 0) return;
@@ -1191,8 +1191,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     for (var i = 0; i < heads.length; i++) {
                         var head = heads[i];
                         if (displace) {
-                            this.setDisplace(false, head);
-                            this.setRev(head, noteSpacing.rev);
+                            this.setDisplace(false, head, noteCtx);
+                            this.setRev(head, noteSpacing.rev, noteCtx);
                             lastPitch = head.getPitch();
                             displace = false;
                         }
@@ -1203,8 +1203,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                             else {
                                 displace = false;
                             }
-                            this.setDisplace(displace, head);
-                            this.setRev(head, noteSpacing.rev);
+                            this.setDisplace(displace, head, noteCtx);
+                            this.setRev(head, noteSpacing.rev, noteCtx);
                             lastPitch = head.getPitch();
                         }
                         /*if (head.getAccidental()) {
@@ -1213,22 +1213,22 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                public static setDisplace(displace: boolean, headElm: INotehead) {
+                public static setDisplace(displace: boolean, headElm: INotehead, noteCtx: INoteContext) {
                     var spacingInfo = headElm.spacingInfo;
                     if (spacingInfo.displacement != displace) {
                         spacingInfo.displacement = displace;
-                        this.recalc(headElm);
+                        this.recalc(headElm, noteCtx);
                     }
                 }
-                public static setRev(headElm: INotehead, rev: boolean) {
+                public static setRev(headElm: INotehead, rev: boolean, noteCtx: INoteContext) {
                     //var displayData = <SVGNoteheadDisplayData>headElm.getDisplayData(context);
                     var spacingInfo = headElm.spacingInfo;
                     if (spacingInfo.reversed != rev) {
                         spacingInfo.reversed = rev;
-                        this.recalc(headElm);
+                        this.recalc(headElm, noteCtx);
                     }
                 }
-                public static recalc(headElm: INotehead) {
+                public static recalc(headElm: INotehead, noteCtx: INoteContext) {
                     //var displayData = <SVGNoteheadDisplayData>headElm.getDisplayData(context);
                     //var parentDisplayData = <SVGNoteDisplayData>headElm.parent.getDisplayData(context);
                     var spacingInfo = headElm.spacingInfo;
@@ -1239,7 +1239,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     else {
                         spacingInfo.offset.x = spacingInfo.displacement ? Metrics.pitchXDisplacement : Metrics.pitchXNoDisplacement;
                     }
-                    spacingInfo.offset.y = headElm.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, <any>headElm.parent) * Metrics.pitchYFactor;
+                    spacingInfo.offset.y = headElm.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, <any>headElm.parent, noteCtx) * Metrics.pitchYFactor;
                     //if (displayData.ref) displayData.ref.setAttribute("transform", "translate(" + spacingInfo.center.x + "," + spacingInfo.center.y + ")");                
                 }
             }
