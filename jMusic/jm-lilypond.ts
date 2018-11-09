@@ -180,7 +180,7 @@ class LilypondHelper {
         for (var i = 0; i < events.length; i++) {
             var ev = events[i];
             if (ev.getElementName() === "Note") {
-                res += this.getNoteAsLilypond(<IVoiceNote>ev);
+                res += this.getNoteAsLilypond(<IVoiceNote><any>ev); //todo: problem
             }
             else if (ev.getElementName() === "Clef") {
                 res += this.getClefAsLilypond(<IClef>ev);

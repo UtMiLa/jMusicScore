@@ -38,8 +38,8 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
 
                 score.withStaves((staff: IStaff): void => {
                     staff.withVoices((voice: IVoice): void => {
-                        voice.withNotes((note: INote): void => {
-                            if (note.absTime.add(note.timeVal).gt(maxTime)) maxTime = note.absTime.add(note.timeVal);
+                        voice.withNotes((note: INoteInfo, context: INoteContext): void => {
+                            if (context.absTime.add(note.timeVal).gt(maxTime)) maxTime = context.absTime.add(note.timeVal);
                         });
                     });
                 });
@@ -81,12 +81,12 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 score.withStaves((staff: IStaff) => {
                     staff.withVoices((voice: IVoice) => {
                         var absTime = AbsoluteTime.startTime;
-                        voice.withNotes((note: INote) => {
-                            if (!note.absTime.eq(absTime)) {
-                                note.absTime = absTime;
+                        voice.withNotes((note: INoteInfo, context: INoteContext) => {
+                            if (!context.absTime.eq(absTime)) {
+                                context.absTime = absTime;
                             }
                             absTime = absTime.add(note.getTimeVal());
-                            events.push(note);
+                            events.push(context);
                         });
                     });
                 });
@@ -140,7 +140,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                         // if note:
                         else if (event.getElementName() === "Note") {
                             // for each pitch:
-                            var note = <IVoiceNote>event;
+                            var note = <IVoiceNote><any>event; // todo: problem
                             note.withHeads((head: INotehead, index: number): void => {
                                 var alteration = head.pitch.alteration;
                                 alteration = alteration ? alteration : "n";
@@ -361,20 +361,20 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 var quarterNote = TimeSpan.quarterNote;
                 var eighthNote = TimeSpan.eighthNote;
                 var noOfGraceNotes = 0;
-                voice.withNotes((note: INote) => {
+                voice.withNotes((note: INote, context: INoteContext) => {
                     /*for (var iNote = 0; iNote < voice.getChildren().length; iNote++) {
                         var note: INote = voice.getChild(iNote);*/
                     if (note.graceType) {
                         noOfGraceNotes++;
-                        note.getHorizPosition().graceNo = noOfGraceNotes;
+                        context.getHorizPosition().graceNo = noOfGraceNotes;
                         return;
                     }
-                    var staffContext = voice.parent.getStaffContext(note.absTime);
+                    var staffContext = voice.parent.getStaffContext(context.absTime);
                     // Check if current group is to end
                     //var splitTime = 4 % staffContext.timeInBar.denominator === 0);
                     if (!staffContext.meter) return;
-                    var nextB = staffContext.meter.nextBoundary(note.absTime, staffContext.meterTime);
-                    var splitTime = nextB.eq(note.absTime);
+                    var nextB = staffContext.meter.nextBoundary(context.absTime, staffContext.meterTime);
+                    var splitTime = nextB.eq(context.absTime);
                     if (firstNotes.length && (!quarterNote.gt(note.timeVal) || splitTime || note.rest)) {
                         // End group
                         endGroup();
@@ -421,15 +421,16 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
             private checkSyncopeBeaming(voice: IVoice) {   
                 var noteElements = voice.getNoteElements();
           
-                for (var iNote = 0; iNote < noteElements.length; iNote++) {
-                    var note: INote = noteElements[iNote];
-                    var staffContext = voice.parent.getStaffContext(note.absTime);
+                //for (var iNote = 0; iNote < noteElements.length; iNote++) { // todo: problem
+                voice.withNotes((note: INoteInfo, context: INoteContext, iNote: number) => {
+                    //var note: INote = noteElements[iNote];
+                    var staffContext = voice.parent.getStaffContext(context.absTime);
                     var beamspan = note.getBeamspan();
                     for (var i = 1; i < beamspan.length; i++) {
                         if (beamspan[i] === 1 && beamspan[0] < 0) {
                             // check syncopation
                             // tjek om det er en synkope // 8 16* 8 *16 8  men 8 *16 4 16* 8 - måske skal designeren tjekke det!
-                            var absTime = note.absTime;
+                            var absTime = context.absTime;
                             var noteTime = note.timeVal;
                             var res = absTime.diff(AbsoluteTime.startTime).modulo(note.timeVal.multiplyScalar(2));
                             // todo: check if last in beam group
@@ -442,7 +443,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                             }
                         }
                     }
-                }
+                });
             }
 
             private updateBeams(voice: IVoice) {

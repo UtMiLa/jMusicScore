@@ -298,11 +298,11 @@ function $(elm: HTMLElement): DOMHelper {
                 }
                 visitNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
                 }
-                visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) {
+                visitNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
                     // expr
                 }
                 static longDrawers: any[] = [TrillDrawer, CrescDrawer, CrescDrawer, SlurDrawer, BracketDrawer, TupletDrawer, OttavaDrawer];
-                visitLongDecoration(deco: ILongDecorationElement, spacing: MyModel.ILongDecorationSpacingInfo) {
+                visitLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: MyModel.ILongDecorationSpacingInfo) {
                     // expr
                     if (spacing && ExpressionFactory.longDrawers[deco.type]) {
                         if (!spacing.render) spacing.render = ExpressionFactory.longDrawers[deco.type].Render;
@@ -321,11 +321,11 @@ function $(elm: HTMLElement): DOMHelper {
                 }
                 visitScore(score: IScore, spacing: IScoreSpacingInfo) {
                 }
-                visitTextSyllable(syllable: ITextSyllableElement, spacing: ITextSyllableSpacingInfo) {
+                visitTextSyllable(syllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) {
                 }
                 visitBar(bar: IBar, spacing: IBarSpacingInfo) {
                 }
-                visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) {
+                visitBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
                 }
                 visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void {
                     // expr
@@ -462,9 +462,9 @@ function $(elm: HTMLElement): DOMHelper {
                             });
                     }
                 }
-                visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo) {
+                visitLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) {
                 }
-                visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) {
+                visitNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
                 }
                 visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) {
    
@@ -525,7 +525,7 @@ function $(elm: HTMLElement): DOMHelper {
                 }
                 visitScore(score: IScore, spacing: IScoreSpacingInfo) {
                 }
-                visitTextSyllable(textSyllable: ITextSyllableElement, textSpacing: ITextSyllableSpacingInfo) {
+                visitTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, textSpacing: ITextSyllableSpacingInfo) {
                 }
                 visitBar(bar: IBar, spacing: IBarSpacingInfo) {
                     var elm = this.sensorEngine.createRectObject("edit_" + bar.id, -spacing.preWidth + spacing.extraXOffset - 3, 0, spacing.preWidth + spacing.width, spacing.end.y - spacing.offset.y, 'BarEdit');
@@ -544,7 +544,7 @@ function $(elm: HTMLElement): DOMHelper {
                             evRec.processEvent("clickbar", { bar: bar });
                         });
                 }
-                visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) {
+                visitBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
                 }
                 visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void { }
     
@@ -702,7 +702,7 @@ function $(elm: HTMLElement): DOMHelper {
                     }
                     // dots
                     for (var i = 0; i < head.parent.dotNo; i++) {
-                        var dot = this.graphEngine.createMusicObject(null, 'e_dots.dot', head.parent.spacingInfo.dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 0, spacing.graceScale);
+                        var dot = this.graphEngine.createMusicObject(null, 'e_dots.dot', context.spacingInfo.dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 0, spacing.graceScale);
                     }
                 }
                 visitNote(note: INoteInfo, context: INoteContext, noteSpacing: INoteSpacingInfo) {
@@ -758,17 +758,17 @@ function $(elm: HTMLElement): DOMHelper {
                                 " z", 0, 0, 1, undefined, 'black', 'beam_'+beam.parent.id + '_' + beam.index);
                         }
                 }
-                visitLongDecoration(deco: ILongDecorationElement, spacing: MyModel.ILongDecorationSpacingInfo) {
+                visitLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: MyModel.ILongDecorationSpacingInfo) {
                     if (spacing.render) spacing.render(deco, this.graphEngine);
                 }
-                visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) {
+                visitNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
                     // short deco
                     var decoId = deco.getDecorationId();
                     if (decoId >= NoteDecorationKind.Arpeggio && decoId <= NoteDecorationKind.NonArpeggio) {
                         // arpeggio
                         if (decoId === NoteDecorationKind.Arpeggio || (decoId === NoteDecorationKind.ArpeggioDown)) {
-                            var yL = deco.parent.spacingInfo.lowPitchY;
-                            var yH = deco.parent.spacingInfo.highPitchY;
+                            var yL = context.spacingInfo.lowPitchY;
+                            var yH = context.spacingInfo.highPitchY;
                             var yStep = 2;
                             var y = yL;
                             while (y >= yH) {
@@ -782,8 +782,8 @@ function $(elm: HTMLElement): DOMHelper {
                             
                         }
                         else if (decoId === NoteDecorationKind.NonArpeggio) {
-                            var yL = deco.parent.spacingInfo.lowPitchY;
-                            var yH = deco.parent.spacingInfo.highPitchY;
+                            var yL = context.spacingInfo.lowPitchY;
+                            var yH = context.spacingInfo.highPitchY;
                             var path = 'm -10,' + (yL*3 + 2) + ' l -2,0 0,' + ((yH - yL)*3 - 4) + ' 2,0';
                             this.graphEngine.createPathObject(path, 0, 0, 1, 'black', null);
                         }
@@ -820,13 +820,13 @@ function $(elm: HTMLElement): DOMHelper {
                 visitScore(score: IScore, spacing: IScoreSpacingInfo) {
                     //this.graphEngine.SetSize(spacing.width * spacing.scale, spacing.height);
                 }
-                visitTextSyllable(textSyllable: ITextSyllableElement, textSpacing: ITextSyllableSpacingInfo) {
+                visitTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, textSpacing: ITextSyllableSpacingInfo) {
                     this.graphEngine.drawText("text" + textSyllable.id, textSyllable.Text, 0, 0, "center");
                 }
                 visitBar(bar: IBar, spacing: IBarSpacingInfo) {
                     this.graphEngine.createPathObject("m " + spacing.extraXOffset + ",0 l 0," + (spacing.end.y - spacing.offset.y), 0, 0, 1, '#444444', undefined);
                 }
-                visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) {
+                visitBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
                 }
                 visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void {
                     this.graphEngine.drawText("text" + staffExpression.id, staffExpression.text, 0, 0, "left");
