@@ -8,7 +8,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, LedgerLineSpacingInfo,
-    ILongDecorationSpacingInfo, ITimedEvent, Music, INoteInfo, INoteContext } from "./jm-model";
+    ILongDecorationSpacingInfo, ITimedEvent, Music, INoteInfo, INoteContext, ContextVisitor } from "./jm-model";
 
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: pitchToStaffLine skal ikke kaldes med <any>
@@ -332,24 +332,24 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
             }
     
     
-            class NullSpacer implements IVisitor {
-                visitNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) { }
-                visitNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) { }
-                visitNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) { }
-                visitLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) { }
+            /*class NullSpacer implements IVisitor {
+                visitNoteHead(head: INotehead,spacing: INoteHeadSpacingInfo) { }
+                visitNote(note: INoteInfo, spacing: INoteSpacingInfo) { }
+                visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) { }
+                visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo) { }
                 visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
                 visitClef(clef: IClef, spacing: IClefSpacingInfo) { }
                 visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) { }
                 visitKey(key: IKey, spacing: IKeySpacingInfo) { }
                 visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) { }
                 visitScore(score: IScore, spacing: IScoreSpacingInfo) { }
-                visitTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) { }
+                visitTextSyllable(textSyllable: ITextSyllableElement, spacing: ITextSyllableSpacingInfo) { }
                 visitBar(bar: IBar, spacing: IBarSpacingInfo) { }
-                visitBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) { }
+                visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) { }
                 visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void { }
     
                 visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
-            }
+            }*/
     
             export class Metrics {
                 // NoteOutput
@@ -437,9 +437,9 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 static tieY1 = 0.4;
             }
     
-            class MinimalSpacer extends NullSpacer {
+            class MinimalSpacer extends ContextVisitor {
     
-                public visitNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
+                public doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
                     spacing.accidentalX = -head.spacingInfo.offset.x * 2 + Metrics.accidentalX + head.spacingInfo.accidentalStep * Metrics.accidentalXstep;
                     spacing.graceScale = noteCtx.spacingInfo.graceScale;
     
@@ -648,7 +648,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                visitNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
+                doNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
                     //(<NoteSpacingInfo>spacing).calcMetrics(note);
                     spacing.preWidth = MinimalSpacer.doGetPreWidth(note);
                     spacing.width = MinimalSpacer.doGetWidth(note);
@@ -659,7 +659,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     NoteSpacer.recalcLedgerLinesUnder(note, context);
                     NoteSpacer.recalcLedgerLinesOver(note, context);
                 }
-                visitLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) {
+                doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) {
                     /*if (spacing.CalcSpacing) {
                         spacing.CalcSpacing(deco);
                     }
@@ -667,7 +667,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     MinimalSpacer.longDecoCalculations(deco, context);
                     //}
                 }
-                visitNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
+                doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
                     MinimalSpacer.noteDecoCalculations(deco, context);
                 }
                 visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
@@ -697,14 +697,14 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     spacing.height = Metrics.staffYStep * score.staffElements.length + Metrics.staffYOffset + Metrics.staffYBottomMargin;
                     if (score.staffElements.length) spacing.width = score.staffElements[0].spacingInfo.staffLength + Metrics.staffXOffset;
                 }
-                visitTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) {
+                doTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) {
                     spacing.offset.y = 50;
     
                     if (textSyllable.parent.syllableElements.length > 1) {
                         spacing.offset.y += 12 * textSyllable.parent.syllableElements.indexOf(textSyllable); // todo: konstanter
                     }
                 }
-                visitBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
+                doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
                     var beamSpacing = beam.spacingInfo;
                     var noteSpacing = context.spacingInfo;
                     // find noder
@@ -794,18 +794,18 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
             }
     
-            class SpacingFactory implements IVisitorIterator<IMusicElement>, IVisitor {
+            class SpacingFactory extends ContextVisitor implements IVisitorIterator<IMusicElement>, IVisitor {
                 visitPre(element: IMusicElement): (element: IMusicElement) => void {
                     element.inviteVisitor(this);
                     return null;
                 }
     
-                visitNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
+                doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
                     if (!spacing) {
                         head.spacingInfo = new NoteHeadSpacingInfo(head);
                     }
                 }
-                visitNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
+                doNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
                     if (!spacing) {
                         note.spacingInfo = new NoteSpacingInfo(note);
                     }
@@ -815,12 +815,12 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                             note.Beams[i].inviteVisitor(this);
                     }
                 }
-                visitNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
+                doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
                     if (!spacing) {
                         deco.spacingInfo = new NoteDecorationSpacingInfo(deco);
                     }
                 }
-                visitLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) {
+                doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) {
                     var notedecoSpacing = deco.spacingInfo;
                     if (!notedecoSpacing) {
                         deco.spacingInfo = new LongDecorationSpacingInfo(deco);
@@ -857,7 +857,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         score.spacingInfo = new ScoreSpacingInfo(score);
                     }
                 }
-                visitTextSyllable(syllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) {
+                doTextSyllable(syllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) {
                     if (!spacing) {
                         syllable.spacingInfo = new TextSpacingInfo(syllable);
                     }
@@ -867,7 +867,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         bar.spacingInfo = new BarSpacingInfo(bar);
                     }
                 }
-                visitBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
+                doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
                     if (!spacing) {
                         beam.spacingInfo = new BeamSpacingInfo(beam); // todo: visit in VisitAll - after all notes have been visited?
                     }                
@@ -1038,18 +1038,18 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return no;
                 }
 
-                private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffContext{
+                /*private static getStaffContext(elm: IMusicElement, time: AbsoluteTime): StaffContext{
                     if ((<any>elm).getStaffContext) return (<any>elm).getStaffContext(time);
                     if (!elm.parent) return undefined;
                     return this.getStaffContext(elm.parent, time);
-                }
+                }*/
     
                 public static pitchToStaffLine(pitch: Pitch, note: INoteInfo, noteCtx: INoteContext) {
-                    var clef = this.getStaffContext(note, noteCtx.absTime).clef;
+                    var clef = noteCtx.getStaffContext().clef;
                     return clef.pitchToStaffLine(pitch);
                 }
                 public static staffLineToPitch(line: number, note: INoteInfo, noteCtx: INoteContext) {
-                    var clef = this.getStaffContext(note, noteCtx.absTime).clef;
+                    var clef = noteCtx.getStaffContext().clef;
                     return clef.staffLineToPitch(line);
                 }
     
