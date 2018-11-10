@@ -5,10 +5,12 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory,
-    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement } from "./jm-model";
+    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement, GlobalContext } from "./jm-model";
 import { parse } from './peg/lilypond';
 
 export class LilyPondConverter implements IFileConverter {    
+    constructor(private globalContext: GlobalContext) {}
+    
     read(data: any): IScore{
         var parsed = parse(data);
         var scoreMemento = <any>{def:{}, t:"Score", children:[], id: '3' };
@@ -27,7 +29,7 @@ export class LilyPondConverter implements IFileConverter {
         return score;
     }
     write(score: IScore): string{
-        return LilypondHelper.getAsLilypond(score);
+        return LilypondHelper.getAsLilypond(this.globalContext, score);
     }
 
 }
@@ -101,7 +103,7 @@ class LilypondHelper {
     }
 
 
-    static getAsLilypond(document: IScore): string {
+    static getAsLilypond(globalContext: GlobalContext, document: IScore): string {
         var res = "<<\n";
         document.withStaves((staff: IStaff, indexS: number) => {
             res += "\\new Staff {\n"; // relative c"første tones oktav"
@@ -131,14 +133,14 @@ class LilypondHelper {
                 staff.withVoices((voice: IVoice, indexV: number) => {
 
                     res += '\t\t\\new Voice = "Voice' + indexS + '_' + indexV +'" {';
-                    res += "\t\t" + this.getEventsAsLilypond(voice) + "\n";
+                    res += "\t\t" + this.getEventsAsLilypond(globalContext, voice) + "\n";
                     res += "\t\t}\n";
 
                 });
                 res += "\t>>\n";
             }
             else if (staff.voiceElements.length === 1) {
-                res += "\t" + this.getEventsAsLilypond(staff.voiceElements[0]) + "\n";
+                res += "\t" + this.getEventsAsLilypond(globalContext, staff.voiceElements[0]) + "\n";
             }
             res += "}\n";
         });
@@ -174,13 +176,13 @@ class LilypondHelper {
         return '\t\\clef "' + clefName + '" \n';
     }
 
-    private static getEventsAsLilypond(voice: IVoice): string {
+    private static getEventsAsLilypond(globalContext: GlobalContext, voice: IVoice): string {
         var res = "";
-        var events = voice.getEvents(); // + staff.keys, .meters, .clefs, + score.bars
+        var events = voice.getEvents(globalContext); // + staff.keys, .meters, .clefs, + score.bars
         for (var i = 0; i < events.length; i++) {
             var ev = events[i];
             if (ev.getElementName() === "Note") {
-                res += this.getNoteAsLilypond(<IVoiceNote><any>ev); //todo: problem
+                res += this.getNoteAsLilypond(globalContext, <IVoiceNote><any>ev); //todo: problem
             }
             else if (ev.getElementName() === "Clef") {
                 res += this.getClefAsLilypond(<IClef>ev);
@@ -190,7 +192,7 @@ class LilypondHelper {
         return res;
     }
 
-    private static getNoteAsLilypond(note: INote): string {
+    private static getNoteAsLilypond(globalContext: GlobalContext, note: INote): string {
         var res = "";
         if (note.graceType) res += '\\grace ';
         if (note.NoteId === "hidden") {
@@ -205,7 +207,7 @@ class LilypondHelper {
             }
             else {
                 res += "<";
-                note.withHeads((head: INotehead, indexH: number) => {
+                note.withHeads(globalContext, (head: INotehead, indexH: number) => {
                     if (indexH) res += " ";
                     res += head.pitch.debug();
                 if (head.tie) res += "~";

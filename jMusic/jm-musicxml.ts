@@ -11,7 +11,7 @@ import { IMusicElement, IMeterSpacingInfo, IMeter, ScoreElement,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, 
     NoteDecorationElement, TextSyllableElement,
-    NoteLongDecorationElement, ITimedEvent, Music } from "./jm-model";    
+    NoteLongDecorationElement, ITimedEvent, Music, GlobalContext } from "./jm-model";    
 import { IFileConverter } from './jm-interfaces';
 import { IWriterPlugIn, IReaderPlugIn } from './jap-application';
 import {  IScoreApplication, ScoreStatusManager, IScorePlugin } from './jm-application';
@@ -19,13 +19,15 @@ import {  IScoreApplication, ScoreStatusManager, IScorePlugin } from './jm-appli
 
 
 export class MusicXmlConverter implements IFileConverter {    
+    constructor(private globalContext: GlobalContext){}
+
     read(data: any): IScore{
         /*if (typeof (data) === "string") {
             data = jQuery.parseXML(data);
         }*/
 
         var score = new ScoreElement(null);
-        var helper = new MusicXmlHelper(score);
+        var helper = new MusicXmlHelper(this.globalContext, score);
 
         // parse
         if (data.documentElement.tagName === "score-partwise") {
@@ -37,7 +39,7 @@ export class MusicXmlConverter implements IFileConverter {
         return score;
     }
     write(score: IScore): string{
-        var helper = new MusicXmlHelper(score);
+        var helper = new MusicXmlHelper(this.globalContext, score);
         return helper.getAsXml();
     }
 
@@ -65,7 +67,7 @@ export class MusicXmlConverter implements IFileConverter {
         */
 
         class MusicXmlHelper {
-            constructor(public document: IScore){
+            constructor(private globalContext: GlobalContext, public document: IScore){
             }
 
             static noteTypes: { [index: string]: string } = {
@@ -216,11 +218,11 @@ export class MusicXmlConverter implements IFileConverter {
                 }
                 var note: INote;
                 if (chord) {
-                    var noteElements = voice.getNoteElements();
+                    var noteElements = voice.getNoteElements(this.globalContext);
                     note = noteElements[noteElements.length - 1];
                 }
                 else {
-                    note = voice.addNote(rest ? NoteType.Rest : NoteType.Note, context.absTime, 'n' + noteName, noteTime, null, true, dots, tupletdef, null);
+                    note = voice.addNote(this.globalContext, rest ? NoteType.Rest : NoteType.Note, context.absTime, 'n' + noteName, noteTime, null, true, dots, tupletdef, null);
                     /*new NoteElement(null, 'n' + noteName, noteTime);
                     note.setParent(voice);
                     note.setRest(rest);
@@ -603,7 +605,7 @@ export class MusicXmlConverter implements IFileConverter {
             private smallestDivision = 1;
 
             private findDivision() {
-                var events: ITimedEvent[] = this.document.getEvents();
+                var events: ITimedEvent[] = this.document.getEvents(this.globalContext);
                 var commonDenominator: number = 1;
                 for (var i = 0; i < events.length; i++) {
                     commonDenominator *= events[i].absTime.denominator / Rational.gcd(commonDenominator, events[i].absTime.denominator);
@@ -652,7 +654,7 @@ export class MusicXmlConverter implements IFileConverter {
 
                     var startTime = !i ? AbsoluteTime.startTime : this.document.bars[i - 1].absTime;
                     var endTime = i === this.document.bars.length - 1 ? AbsoluteTime.infinity : this.document.bars[i].absTime;
-                    var events = staffElement.getEvents(startTime, endTime);
+                    var events = staffElement.getEvents(this.globalContext, startTime, endTime);
                     events.sort(Music.compareEventsByVoice);
 
                     var str = "";

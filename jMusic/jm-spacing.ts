@@ -8,7 +8,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, LedgerLineSpacingInfo,
-    ILongDecorationSpacingInfo, ITimedEvent, Music, INoteInfo, INoteContext, ContextVisitor } from "./jm-model";
+    ILongDecorationSpacingInfo, ITimedEvent, Music, INoteInfo, INoteContext, ContextVisitor, GlobalContext } from "./jm-model";
 
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: pitchToStaffLine skal ikke kaldes med <any>
@@ -496,7 +496,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return width;
                 }
     
-                public static doGetPreWidth(note: INote) {
+                public static doGetPreWidth(globalContext: GlobalContext, note: INote) {
                     //var displayData = <SVGNoteDisplayData>note.getDisplayData(context);
                     var width = 0;
                     for (var i = 0; i < note.syllableElements.length; i++) {
@@ -506,7 +506,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                             width = syllWidth / 2;
                         }
                     }
-                    note.withDecorations((deco: INoteDecorationElement) => {
+                    note.withDecorations(globalContext, (deco: INoteDecorationElement) => {
                         var w1 = MinimalSpacer.getNoteDecoWidth(deco);
                         if (w1 > width) width = w1;
                     });
@@ -650,10 +650,10 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
                 doNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
                     //(<NoteSpacingInfo>spacing).calcMetrics(note);
-                    spacing.preWidth = MinimalSpacer.doGetPreWidth(note);
+                    spacing.preWidth = MinimalSpacer.doGetPreWidth(this.globalContext, note);
                     spacing.width = MinimalSpacer.doGetWidth(note);
     
-                    NoteSpacer.recalcPitches(note, context);
+                    NoteSpacer.recalcPitches(this.globalContext, note, context);
                     NoteSpacer.recalcHeads(note, context);
                     NoteSpacer.recalcStem(note, spacing);
                     NoteSpacer.recalcLedgerLinesUnder(note, context);
@@ -747,7 +747,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         while (note && note !== beam.toNote) {
                             note.spacingInfo.stemTipY = this.yValue(note.spacingInfo.stemX + note.spacingInfo.offset.x, beam);
                             note.spacingInfo.stemLength = Math.abs(note.spacingInfo.stemRootY - note.spacingInfo.stemTipY);
-                            note = Music.nextNote(note);
+                            note = Music.nextNote(this.globalContext, note);
                         }
                     }
     
@@ -882,14 +882,14 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
             }
     
             export class SpacingDesigner implements IScoreDesigner {
-                constructor(private spacer: IVisitor = null) {
+                constructor(private globalContext: GlobalContext, private spacer: IVisitor = null) {
                     if (!spacer) {
-                        this.spacer = new MinimalSpacer();
+                        this.spacer = new MinimalSpacer(globalContext);
                     }
                 }
     
                 private checkSpacingInfo(score: IScore) {
-                    score.visitAll(new SpacingFactory());
+                    score.visitAll(new SpacingFactory(this.globalContext));
                 }
     
                 private checkUpdateAll(score: IScore) {
@@ -906,7 +906,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     });
                     score.withStaves((staff: IStaff): void => {
                         staff.withVoices((voice: IVoice): void => {
-                            voice.withNotes((note: INote): void => {
+                            voice.withNotes(this.globalContext, (note: INote): void => {
                                 for (var i = 0; i < note.Beams.length; i++) {
                                     var beam = note.Beams[i];
                                     if (beam) {
@@ -933,7 +933,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         });
     
                         staff.withVoices((voice: IVoice, index: number): void => {
-                            voice.withNotes((note: INoteInfo, context: INoteContext, index: number): void => {
+                            voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext, index: number): void => {
                                 note.inviteVisitor(this.spacer);
                             });
                         });
@@ -948,7 +948,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         staff.spacingInfo.offset.y = Metrics.staffYOffset + index * Metrics.staffYStep; // todo: index
                     });
     
-                    var events: ITimedEvent[] = score.getEvents();
+                    var events: ITimedEvent[] = score.getEvents(this.globalContext);
                     events.sort(Music.compareEvents);
     
                     var pos = Metrics.firstPos;
@@ -992,7 +992,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                     score.withVoices((voice: IVoice, index: number): void => {
                         voice.spacingInfo.offset.x = 0;
-                        voice.withNotes((note: INoteInfo, context: INoteContext, index: number): void => {
+                        voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext, index: number): void => {
                             /*todo: if (note.beam) {
                                 note.beam.updateAll();
                             }*/
@@ -1053,12 +1053,12 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return clef.staffLineToPitch(line);
                 }
     
-                public static recalcPitches(note: INoteInfo, noteCtx: INoteContext) {
+                public static recalcPitches(globalContext: GlobalContext, note: INoteInfo, noteCtx: INoteContext) {
                     var noteSpacing = noteCtx.spacingInfo;
     
                     var lowPitch = 99;
                     var highPitch = -99;
-                    note.withHeads((head: INotehead) => {
+                    note.withHeads(globalContext, (head: INotehead) => {
                         var thePitch = NoteSpacer.pitchToStaffLine(head.getPitch(), note, noteCtx);
                         if (thePitch < lowPitch) {
                             lowPitch = thePitch;

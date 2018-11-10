@@ -10,7 +10,19 @@
             "name": "Jasmine Individual Test",
             "program": "${workspaceRoot}\\node_modules\\jasmine\\bin\\jasmine.js", 
             "args": [ 
-                "${workspaceRoot}\\jMusic\\spec\\jm-mementos.spec.js" 
+                "${workspaceRoot}\\jMusic\\spec\\jm-model.spec.js" 
+            ], 
+            "env": { 
+                "NODE_PATH": "." 
+            } 
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jasmine Test Lilypond",
+            "program": "${workspaceRoot}\\node_modules\\jasmine\\bin\\jasmine.js", 
+            "args": [ 
+                "${workspaceRoot}\\jMusic\\spec\\lily-import.spec.js" 
             ], 
             "env": { 
                 "NODE_PATH": "." 

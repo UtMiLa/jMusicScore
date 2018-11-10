@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { LilyPondConverter } from '../../../../jMusic/jm-lilypond';
+import { GlobalContext } from '../../../../jMusic/jm-model';
 
 @Component({
   selector: 'app-structured-music-editor',
@@ -14,8 +15,9 @@ export class StructuredMusicEditorComponent implements OnInit {
   private parsedObject: any;
 
   @Input() set selectedObject(value: {name: string, parent: {}}) {
+    const globalCtx = new GlobalContext();
     try {
-      const parser = new LilyPondConverter();
+      const parser = new LilyPondConverter(globalCtx);
       this.parsedObject = parser.read(value.parent[value.name]);
       console.log(this.parsedObject);
       console.log(value.parent[value.name]);

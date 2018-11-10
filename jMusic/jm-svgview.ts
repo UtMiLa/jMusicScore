@@ -14,7 +14,7 @@ import { IMusicElement,  IMeterSpacingInfo, IMeter, ScoreElement,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, 
     NoteDecorationElement, TextSyllableElement, 
-    NoteLongDecorationElement, ITimedEvent, Music } from "./jm-model";    
+    NoteLongDecorationElement, ITimedEvent, Music, GlobalContext } from "./jm-model";    
 import { IFeedbackClient } from './jap-application';
 import { IWriterPlugIn, IReaderPlugIn } from './jap-application';
 import {  IScoreApplication, ScoreStatusManager, IScorePlugin, IScoreDesigner } from './jm-application';
@@ -117,7 +117,7 @@ class SvgSizeDesigner implements IScoreDesigner {
 }
 
 export class DomFeedbackClient implements IFeedbackClient {
-    constructor(private sensorEngine: ISensorGraphicsEngine) { }
+    constructor(private sensorEngine: ISensorGraphicsEngine, private globalContext: GlobalContext) { }
     changed(status: ScoreStatusManager, key: string, val: any) {
         if (key === "currentNote" || key === "currentPitch") {
             if (status.currentNote) {
@@ -145,7 +145,7 @@ export class DomFeedbackClient implements IFeedbackClient {
         else if (key === "insertPoint") {
             if (status.currentVoice) {
                 var hPos = <HorizPosition>val;
-                var events = status.currentVoice.getEvents(hPos.absTime, hPos.absTime.add(new TimeSpan(1,1024))); // todo: grimt!
+                var events = status.currentVoice.getEvents(this.globalContext, hPos.absTime, hPos.absTime.add(new TimeSpan(1,1024))); // todo: grimt!
                 if (events.length) {
                     var id = events[0].id;
                     this.sensorEngine.showInsertionPoint(id, hPos.beforeAfter * 9, staffLine * SvgMetrics.pitchYFactor);
@@ -173,7 +173,7 @@ export class DomFeedbackClient implements IFeedbackClient {
 
     showNoteCursor(noteId: string, voice: IVoice, horizPos: HorizPosition, pitch: Pitch) {
         this.sensorEngine.showCursor(noteId);
-        var events = voice.getEvents();
+        var events = voice.getEvents(this.globalContext);
         for (var i = 0; i < events.length; i++) {
             var ev = events[i];
             if (ev.getHorizPosition().eq(horizPos)) {
@@ -194,7 +194,7 @@ export class DomFeedbackClient implements IFeedbackClient {
         }
         else if (elm.getElementName() === "Note") {
             var note = <INote>elm;
-            note.withHeads((head: INotehead, i: number) => {
+            note.withHeads(this.globalContext, (head: INotehead, i: number) => {
                 var p = head.pitch.toMidi();
                 if (over) {
                     $('#tast' + p).addClass('hover');
@@ -872,14 +872,14 @@ class TimelineDesigner implements IScoreDesigner {
         var score = app.document;
         var svgHelper = this.svgHelper;//<SVGHelper>app.GetState("svgHelper:" + this.context); // todo: Svghelper yt
 
-        var visitor = new PrefixVisitor(new RedrawVisitor(svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
+        var visitor = new PrefixVisitor(new RedrawVisitor(score.globalContext, svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
         svgHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
         svgHelper.MusicGraphicsHelper.beginDraw();
         score.visitAll(visitor);
         svgHelper.MusicGraphicsHelper.endDraw();
 
         if (!this.checkSensors) {
-            this.checkSensors = new DomCheckSensorsVisitor(svgHelper.EditGraphicsHelper, app.document, app);
+            this.checkSensors = new DomCheckSensorsVisitor(score.globalContext, svgHelper.EditGraphicsHelper, app.document, app);
             //app.FeedbackManager.registerClient(this.checkSensors);
         }
 

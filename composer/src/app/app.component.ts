@@ -3,7 +3,7 @@ import { MusicProviderService } from './music-provider.service';
 import { IModel } from './datamodel/model';
 // todo: remove:
 import { LilyPondConverter } from '../../../jMusic/jm-lilypond';
-import { MusicElementFactory, IScore } from '../../../jMusic/jm-model';
+import { MusicElementFactory, IScore, GlobalContext } from '../../../jMusic/jm-model';
 
 @Component({
   selector: 'app-root',
@@ -46,16 +46,17 @@ export class AppComponent {
   set input(v: string) {
     this._input = v;
     this.output = v.toLocaleUpperCase();
+    const globalCtx = new GlobalContext();
 
 
     try {
-      const parser = new LilyPondConverter();
+      const parser = new LilyPondConverter(globalCtx);
       const parsedObject = parser.read(v);
       console.log(parsedObject);
       let maxLen = 0;
       parsedObject.withStaves((staff) => {
         staff.withVoices((voice) => {
-          voice.withNotes((note) => {
+          voice.withNotes(globalCtx, (note) => {
             const cnt = note.noteheadElements.length;
             if (cnt > maxLen) {
               maxLen = cnt;
@@ -77,7 +78,7 @@ export class AppComponent {
 
       parsedObject.withStaves((staff) => {
         staff.withVoices((voice) => {
-          voice.withNotes((note) => {
+          voice.withNotes(globalCtx, (note) => {
             const cnt = note.noteheadElements.length;
             for (let i = 0; i < maxLen; i++) {
               const voiceI = data.children[0].children[i];

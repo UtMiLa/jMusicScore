@@ -7,7 +7,7 @@ import { IMusicElement, IMeterSpacingInfo, IMeter, Music,
      IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteInfo, INoteContext, ContextVisitor
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteInfo, INoteContext, ContextVisitor, GlobalContext
      } from "./jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
@@ -332,6 +332,8 @@ function $(elm: HTMLElement): DOMHelper {
                 }
     
                 visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
+
+                visitVariable(name: string, spacing: ISpacingInfo): void {}
             }
     
             export class ExpressionRenderer implements IScoreDesigner {
@@ -345,8 +347,8 @@ function $(elm: HTMLElement): DOMHelper {
     
             /** Responsible for making event handlers on DOM (SVG/HTML) sensors */  
             export class DomCheckSensorsVisitor extends ContextVisitor { // todo: remove event handlers when inactive
-                constructor(public sensorEngine: ISensorGraphicsEngine, private _score: IScore, private eventReceiver: IEventReceiver) {
-                    super();
+                constructor(globalContext: GlobalContext, public sensorEngine: ISensorGraphicsEngine, private _score: IScore, private eventReceiver: IEventReceiver) {
+                    super(globalContext);
                 }
     
                 doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) {
@@ -406,7 +408,7 @@ function $(elm: HTMLElement): DOMHelper {
                             evRec.processEvent("clicknote", { note: note, pitch: pitch });
                         });
                     var x0 = rectX0Before - noteSpacing.preWidth;
-                    var prevNote = Music.prevNote(note);
+                    var prevNote = Music.prevNote(this.globalContext, note);
                     if (prevNote && prevNote.spacingInfo.offset.x - note.spacingInfo.offset.x - rectLeft > x0) {
                         x0 = prevNote.spacingInfo.offset.x - note.spacingInfo.offset.x - rectLeft;
                     }
@@ -435,7 +437,7 @@ function $(elm: HTMLElement): DOMHelper {
                         });
     
     
-                    var nextNote = Music.nextNote(note);
+                    var nextNote = Music.nextNote(this.globalContext, note);
                     if (!nextNote) {
                         // afternote
     
@@ -653,7 +655,7 @@ function $(elm: HTMLElement): DOMHelper {
     
     
             export class RedrawVisitor extends ContextVisitor {
-                constructor(private graphEngine: IGraphicsEngine) { super(); }
+                constructor(globalContext: GlobalContext, private graphEngine: IGraphicsEngine) { super(globalContext); }
     
                 static getTie(spacing: INoteHeadSpacingInfo): string {
                     if (spacing.tieStart) {

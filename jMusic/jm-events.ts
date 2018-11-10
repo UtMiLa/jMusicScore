@@ -18,6 +18,9 @@ export abstract class ElementDefinition {
 }
 
 export class TimedEventElement implements IMusicElement {
+    getAncestor<T extends IMusicElement>(elementName: string): T {
+        throw new Error("Method not implemented.");
+    }
     id: string;
     parent: IMusicElement;
     getElementName(): string {
@@ -66,6 +69,9 @@ export class TimedEventElement implements IMusicElement {
 }
 
 export class TimedEventStream extends TimedEventElement implements IMusicElement {
+    getAncestor<T extends IMusicElement>(elementName: string): T {
+        throw new Error("Method not implemented.");
+    }
     id: string;
     parent: IMusicElement;
     spacingInfo: ISpacingInfo;

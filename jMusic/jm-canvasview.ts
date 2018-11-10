@@ -1,4 +1,4 @@
-import { IScore, Point } from "./jm-model";    
+import { IScore, Point, GlobalContext } from "./jm-model";    
 import { MusicSpacing } from "./jm-spacing";
 import { emmentalerNotes } from "./fonts/emmentaler";
 import { fontCodePoints } from "./fonts/font-codepoints";
@@ -640,20 +640,21 @@ import { Validators } from './jm-refiners';
 
         
                 export class CanvasQuickPainter {
+                    constructor(private globalContext: GlobalContext) {}
                     public paintOnCanvas(score: IScore, canvas: HTMLCanvasElement){
                         var canvasHelper = new QuickCanvasHelper(document, canvas);
         
 
-                        var timelineValidator = new Validators.CreateTimelineValidator();
+                        var timelineValidator = new Validators.CreateTimelineValidator(this.globalContext);
                         timelineValidator.refine(score);
 
-                        var accidentalValidator = new Validators.UpdateAccidentalsValidator();              
+                        var accidentalValidator = new Validators.UpdateAccidentalsValidator(this.globalContext);
                         accidentalValidator.refine(score);
 
 
-                        var spacer = new MusicSpacing.SpacingDesigner();
+                        var spacer = new MusicSpacing.SpacingDesigner(score.globalContext);
                         spacer.design(score);
-                        var visitor = new PrefixVisitor(new RedrawVisitor(canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
+                        var visitor = new PrefixVisitor(new RedrawVisitor(score.globalContext, canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
                         //canvasHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
                         canvasHelper.MusicGraphicsHelper.beginDraw();
                         score.visitAll(visitor);

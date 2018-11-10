@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 
 import { IMemento, ClefDefinition, NoteType, AbsoluteTime, TimeSpan, RegularKeyDefinition } from '../../../../jMusic/jm-base';
-import { MusicElementFactory, IScore, ScoreElement, Music } from '../../../../jMusic/jm-model';
+import { MusicElementFactory, IScore, ScoreElement, Music, GlobalContext } from '../../../../jMusic/jm-model';
 
 import { CanvasView } from '../../../../jMusic/jm-CanvasView';
 import { VariableRef } from '../../../../jMusic/jm-ghost-elements';
@@ -156,15 +156,16 @@ export class JmusicScoreViewComponent implements OnInit {
   ngOnInit() {
     VariableRef.register();
     // console.log(MusicElementFactory.mementoCreators);
+    const globalCtx = new GlobalContext();
 
     const score = new ScoreElement(null);
     const staff = score.addStaff(ClefDefinition.clefCAlto);
     const voice = staff.addVoice();
-    const note = voice.getSequence('0').addNote(NoteType.Note, new AbsoluteTime(1, 4), 'n1_4',  TimeSpan.quarterNote);
+    const note = voice.getSequence('0').addNote(globalCtx, NoteType.Note, new AbsoluteTime(1, 4), 'n1_4',  TimeSpan.quarterNote);
     const memento = score.getMemento(true);
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);
-    this.painter = new CanvasView.CanvasQuickPainter();
+    this.painter = new CanvasView.CanvasQuickPainter(globalCtx);
     // console.log(MusicElementFactory.mementoCreators);
   }
 

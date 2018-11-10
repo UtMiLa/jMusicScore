@@ -9,18 +9,20 @@ import { IMusicElement, IMeterSpacingInfo,  IMeter, ScoreElement,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, 
     NoteDecorationElement, TextSyllableElement, 
-    NoteLongDecorationElement, ITimedEvent, Music } from "../jm-model";  
+    NoteLongDecorationElement, ITimedEvent, Music, MusicElementFactory, IdSequence, ISequence, GlobalContext } from "../jm-model";  
 
 import  { IScoreApplication, ScoreStatusManager } from '../jm-application';
 import  { AbstractApplication } from '../jap-application';
 import  { MusicSpacing } from '../jm-spacing';
 import  { JsonHelper } from '../jm-json';
+import { VariableRef } from '../jm-ghost-elements';
 
 var initScore: any = { "id": "2", "t": "Score", "def": { "metadata": {} }, "children": [{ "id": "3", "t": "Bar", "def": { "abs": { "num": 0, "den": 1 } } }, { "id": "4", "t": "Bar", "def": { "abs": { "num": 1, "den": 1 } } }, { "id": "5", "t": "Bar", "def": { "abs": { "num": 2, "den": 1 } } }, { "id": "6", "t": "Staff", "children": [{ "id": "7", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, { "id": "8", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }, { "id": "9", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "10", "t": "Sequence", "def": { "stem": 1 }, "children": [{ "id": "11", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 0, "den": 1 }, "noteId": "n1_8" }, "children": [{ "id": "12", "t": "Notehead", "def": { "p": 2, "a": "" } }] }, { "id": "13", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 1, "den": 8 }, "noteId": "n1_8" }, "children": [{ "id": "14", "t": "Notehead", "def": { "p": 2, "a": "" } }] }, { "id": "15", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 1, "den": 4 }, "noteId": "n1_8" }, "children": [{ "id": "16", "t": "Notehead", "def": { "p": 4, "a": "" } }] }, { "id": "17", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 3, "den": 8 }, "noteId": "n1_8" }, "children": [{ "id": "18", "t": "Notehead", "def": { "p": 6, "a": "" } }] }, { "id": "19", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 1, "den": 2 }, "noteId": "n1_16" }, "children": [{ "id": "20", "t": "Notehead", "def": { "p": 6, "a": "" } }] }, { "id": "21", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 9, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "22", "t": "Notehead", "def": { "p": 5, "a": "" } }] }, { "id": "23", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 5, "den": 8 }, "noteId": "n1_16" }, "children": [{ "id": "24", "t": "Notehead", "def": { "p": 4, "a": "" } }] }, { "id": "25", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 11, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "26", "t": "Notehead", "def": { "p": 3, "a": "" } }] }, { "id": "27", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 3, "den": 4 }, "noteId": "n1_8", "dots": 1 }, "children": [{ "id": "28", "t": "Notehead", "def": { "p": 2, "a": "" } }] }, { "id": "29", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 15, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "30", "t": "Notehead", "def": { "p": 2, "a": "" } }] }, { "id": "31", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 1 }, "noteId": "n1_4" }, "children": [{ "id": "32", "t": "Notehead", "def": { "p": 1, "a": "" } }] }] }, { "id": "33", "t": "Voice", "def": { "stem": 2 } }] }, { "id": "34", "t": "Staff", "children": [{ "id": "35", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 3, "lin": 2, "tr": 0 } }, { "id": "36", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }, { "id": "37", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "38", "t": "Sequence" }] }, { "id": "39", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }] };
 
 describe("Score", function () {
     //var score: IScore;
     //var app: IScoreApplication;
+    var globalContext = new GlobalContext();
     var document: IScore;
 
     beforeEach(function () {
@@ -30,6 +32,7 @@ describe("Score", function () {
             new ScoreStatusManager());
         //score = app.score;
         app.addPlugin(new JsonPlugin());*/
+        VariableRef.register();
         document = new ScoreElement(null);
     });
 
@@ -52,11 +55,11 @@ describe("Score", function () {
             expect(document.staffElements[0].voiceElements.length).toEqual(2);
         });
         it("should have 11 notes in first voice", function () {
-            expect(document.staffElements[0].voiceElements[0].getNoteElements().length).toEqual(11);
+            expect(document.staffElements[0].voiceElements[0].getNoteElements(globalContext).length).toEqual(11);
         });
         it("should enumerate 11 notes in first voice", function () {
             let i = 0;
-            document.staffElements[0].voiceElements[0].withNotes((note, index) => {
+            document.staffElements[0].voiceElements[0].withNotes(globalContext, (note, index) => {
                 i++;
             });
             expect(i).toEqual(11);
@@ -156,7 +159,27 @@ describe("Score", function () {
 
     });
 
-    xdescribe("when a ", function () {
+    describe("when a variable is used", function () {
+        let varVal = { id: "1", t: "Sequence", def: {}, children: [{ "id": "31", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 0, "den": 1 }, "noteId": "n1_4" }, "children": [{ "id": "32", "t": "Notehead", "def": { "p": 1, "a": "" } }] }] };
+        let seq = { id: "2", t: "Sequence", def: {}, children: [
+            { "id": "31", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 0, "den": 1 }, "noteId": "n1_16" }, "children": [{ "id": "32", "t": "Notehead", "def": { "p": -7, "a": "" } }] },
+            { id:"33", t: "Variable", def: {name: 'minVar'}}
+        ] };
+
+        it("should insert the variable notes into the sequence", function () {
+            //name: 'minVar'
+            let staff = document.addStaff(ClefDefinition.clefG);
+            let voice = staff.addVoice();
+            let sequence = <ISequence>MusicElementFactory.recreateElement(voice, seq);
+            let variable = <ISequence>MusicElementFactory.recreateElement(null, varVal);
+            globalContext.addVariable("minVar", variable);
+            let notes = sequence.getNoteElements(globalContext);
+            expect(notes.length).toEqual(2);
+            expect(notes[0].debug()).toEqual('Nn1_16(c ) ');
+            expect(notes[1].debug()).toEqual("Nn1_4(d' ) ");
+        });
+
+
     });
 
     xdescribe("when a ", function () {

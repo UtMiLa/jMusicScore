@@ -7,7 +7,7 @@ import { IMusicElement, IMeterSpacingInfo,  IMeter, Music,
     IClefSpacingInfo, Point, INotehead, INote, IVoiceNote, ITimedVoiceEvent, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteInfo, INoteContext
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteInfo, INoteContext, GlobalContext
      } from "./jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import { IScoreDesigner, IScoreRefiner } from './jm-interfaces';
@@ -29,6 +29,9 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
         export interface IScoreValidator extends IScoreRefiner {}
 
         export class UpdateBarsValidator implements IScoreValidator {
+            constructor(private globalContext: GlobalContext) {}
+
+
             public refine(score: IScore) {
                 var maxTime = AbsoluteTime.startTime;
 
@@ -38,7 +41,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
 
                 score.withStaves((staff: IStaff): void => {
                     staff.withVoices((voice: IVoice): void => {
-                        voice.withNotes((note: INoteInfo, context: INoteContext): void => {
+                        voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext): void => {
                             if (context.absTime.add(note.timeVal).gt(maxTime)) maxTime = context.absTime.add(note.timeVal);
                         });
                     });
@@ -76,12 +79,14 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
         }
 
         export class CreateTimelineValidator implements IScoreValidator {
+            constructor(private globalContext: GlobalContext) {}
+
             public refine(score: IScore) {
                 var events: ITimedEvent[] = [];
                 score.withStaves((staff: IStaff) => {
                     staff.withVoices((voice: IVoice) => {
                         var absTime = AbsoluteTime.startTime;
-                        voice.withNotes((note: INoteInfo, context: INoteContext) => {
+                        voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext) => {
                             if (!context.absTime.eq(absTime)) {
                                 context.absTime = absTime;
                             }
@@ -110,16 +115,18 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
         }
 
         export class UpdateAccidentalsValidator implements IScoreValidator {
+            constructor(private globalContext: GlobalContext) {}
+
             public refine(score: IScore) {
                 var currentKey: IKey = null;
                 var pitchChanges: string[] = [];
                 var pitchClassChanges: string[] = [];
 
                 // for each staff:
-                var scoreEvents: ITimedVoiceEvent[] = score.getEvents(true);
+                var scoreEvents: ITimedVoiceEvent[] = score.getEvents(this.globalContext, true);
                 score.withStaves((staff: IStaff, index: number): void => {
                     // get events (bar lines + notes + keys changes) sorted by absTime from all voices
-                    var events = staff.getEvents();
+                    var events = staff.getEvents(this.globalContext);
                     events = events.concat(scoreEvents);
                     events.sort(Music.compareEvents);
                     // for each event:
@@ -141,7 +148,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                         else if (event.getElementName() === "Note") {
                             // for each pitch:
                             var note = <IVoiceNote><any>event; // todo: problem
-                            note.withHeads((head: INotehead, index: number): void => {
+                            note.withHeads(this.globalContext, (head: INotehead, index: number): void => {
                                 var alteration = head.pitch.alteration;
                                 alteration = alteration ? alteration : "n";
                                 var pitchAbsolute = head.pitch.pitch;
@@ -323,6 +330,8 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
         }
 */
         export class BeamValidator implements IScoreValidator {
+            constructor(private globalContext: GlobalContext) {}
+
             public refine(score: IScore) {
                 score.withStaves((staff: IStaff) => {
                     staff.withVoices((voice: IVoice) => {
@@ -361,7 +370,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 var quarterNote = TimeSpan.quarterNote;
                 var eighthNote = TimeSpan.eighthNote;
                 var noOfGraceNotes = 0;
-                voice.withNotes((note: INote, context: INoteContext) => {
+                voice.withNotes(this.globalContext, (note: INote, context: INoteContext) => {
                     /*for (var iNote = 0; iNote < voice.getChildren().length; iNote++) {
                         var note: INote = voice.getChild(iNote);*/
                     if (note.graceType) {
@@ -419,10 +428,10 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
             }
 
             private checkSyncopeBeaming(voice: IVoice) {   
-                var noteElements = voice.getNoteElements();
+                var noteElements = voice.getNoteElements(this.globalContext);
           
                 //for (var iNote = 0; iNote < noteElements.length; iNote++) { // todo: problem
-                voice.withNotes((note: INoteInfo, context: INoteContext, iNote: number) => {
+                voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext, iNote: number) => {
                     //var note: INote = noteElements[iNote];
                     var staffContext = voice.parent.getStaffContext(context.absTime);
                     var beamspan = note.getBeamspan();
@@ -448,7 +457,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
 
             private updateBeams(voice: IVoice) {
                 var beams: IBeam[] = [];
-                var noteElements = voice.getNoteElements();
+                var noteElements = voice.getNoteElements(this.globalContext);
 
                 for (var iNote = 0; iNote < noteElements.length; iNote++) {
                     var note: INote = noteElements[iNote];
@@ -524,6 +533,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
 
 
         export class TieValidator implements IScoreValidator {
+            constructor(private globalContext: GlobalContext) {}
             public refine(score: IScore) {
                 score.withVoices((voice: IVoice, index: number) => {
                     this.validateVoice(voice);
@@ -531,8 +541,8 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
             }
 
             private validateVoice(voice: IVoice) {
-                voice.withNotes((note: INoteInfo, context: INoteContext, index: number) => {
-                    var nextNote = Music.nextNote(note);
+                voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext, index: number) => {
+                    var nextNote = Music.nextNote(this.globalContext, note);
                         /*: NoteElement;
                     if (index < voice.noteElements.length - 1) {
                         nextNote = voice.noteElements[index + 1];
@@ -540,12 +550,12 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                     else {
                         nextNote = undefined;
                     }*/
-                    note.withHeads((head: INotehead, index2: number) => {
+                    note.withHeads(this.globalContext, (head: INotehead, index2: number) => {
                         if (head.tie) {
                             // update slurredTo property
                             head.setProperty("tiedTo", undefined);
                             if (nextNote) {
-                                nextNote.withHeads((nextHead: INotehead, nextHeadIndex: number) => {
+                                nextNote.withHeads(this.globalContext, (nextHead: INotehead, nextHeadIndex: number) => {
                                     if (nextHead.pitch.equals(head.pitch)) {
                                         head.setProperty("tiedTo", nextHead);
                                     }

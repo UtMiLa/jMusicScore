@@ -5,7 +5,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory, IBar,
-    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement } from "./jm-model";
+    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement, GlobalContext } from "./jm-model";
 
     export interface IScoreApplication extends Application.AbstractApplication<IScore, ScoreStatusManager> { }
     export interface IScorePlugin extends Application.IPlugIn<IScore, ScoreStatusManager> { }
@@ -25,7 +25,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFact
 
 
     export class ScoreStatusManager implements Application.IStatusManager {
-        constructor() { }
+        constructor(private globalContext: GlobalContext) {}
 
         private feedbackManager: Application.IFeedbackManager;
 
@@ -61,7 +61,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFact
                 this._currentPitch = v;
                 this.changed("currentPitch", v);
                 if (v && this.currentNote && this.currentNote.matchesPitch(v, true)) {
-                    this.currentNote.withHeads((head: INotehead) => {
+                    this.currentNote.withHeads(this.globalContext, (head: INotehead) => {
                         if (head.pitch.pitch === v.pitch) {
                             this.currentNotehead = head;
 
@@ -80,7 +80,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFact
                 }
                 this.changed("currentNote", v);
                 if (v && this.currentPitch && v.matchesPitch(this.currentPitch, true)) {
-                    v.withHeads((head: INotehead) => {
+                    v.withHeads(this.globalContext, (head: INotehead) => {
                         if (head.pitch.pitch === this.currentPitch.pitch) {
                             this.currentNotehead = head;
 

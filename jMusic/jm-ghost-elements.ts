@@ -6,7 +6,8 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,  Point,
     IVisitor, IVoice, IStaff, IScore, ITimedEvent, IEventContainer, IClef,
     Music, MusicElementFactory, ClefElement,
     KeyElement, ISequence,
-    MeterElement} from "./jm-model";
+    MeterElement,
+    GlobalContext} from "./jm-model";
 import { IScoreRefiner } from "./jm-interfaces";
 
         export class GhostMeterElement extends MusicElement<IMeterSpacingInfo> implements IMeter {
@@ -138,7 +139,9 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
     id: string;
     parent: IMusicElement;
     inviteVisitor(spacer: IVisitor): void {
-        this.ref.inviteVisitor(spacer);
+
+        spacer.visitVariable(this.name, this.spacingInfo);
+        //this.ref.inviteVisitor(spacer);
     }
     /*addChild(list: IMusicElement[], theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
         throw new Error("Cannot add children to variable.");
@@ -158,14 +161,14 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
 
     public visitAll(visitor: IVisitorIterator<IMusicElement>) {
         var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
-        this.ref.visitAll(visitor);
+        //this.visitAll(visitor);
         if (postFun) {
             postFun(this);
         }
     }
 
-    getEvents(): ITimedEvent[] {
-        return this.ref.getEvents();
+    getEvents(globalContext: GlobalContext): ITimedEvent[] {
+        return this.ref.getEvents(globalContext);
     }
 
     getStaffContext(absoluteTime: AbsoluteTime) {
@@ -181,7 +184,7 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
     static createFromMemento(parent: IVoice, memento: IMemento): VariableRef {
         var varRef: VariableRef = new VariableRef(parent);
         if (memento.def && memento.def.name) { 
-            varRef.name = name; 
+            varRef.name = memento.def.name; 
             varRef.ref = <ISequence>MusicElementFactory.recreateElement(null,
                 {
                 "id": "131", "t": "Sequence", "def": { "stem": 2 },
@@ -235,3 +238,49 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
         MusicElementFactory.register("Variable", VariableRef);
     }
 }
+
+VariableRef.register();
+
+/*export class VariableValidator implements IScoreRefiner {
+
+    public refine(document: IScore) {
+
+        document.withStaves((staff: IStaff, index: number): void => {
+
+            // First time:
+            if (!staff.meterElements.length) {
+                document.withMeters((meter: IMeter, index: number) => {
+                    this.addGhostMeter(staff, meter);
+                });
+            }
+
+            // todo: Register changes:
+            document.withMeters((scoreMeter: IMeter, index: number) => {
+                // tjek om der er ghostMeter til denne kombination af meter og staff
+                var found = false;
+                staff.withMeters((staffMeter: IMeter, index: number) => {
+                    //if ((<any>staffMeter).originElement && (<any>staffMeter).originElement === scoreMeter) {
+                    if (staffMeter.absTime.eq(scoreMeter.absTime)) {
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    this.addGhostMeter(staff, scoreMeter);
+                }
+            });
+
+            staff.withMeters((staffMeter: IMeter, index: number) => {
+                // tjek om meterElm er ghostMeter og mangler tilhørende score.meter
+                if ((<any>staffMeter).originElement) {
+                    var origin = (<any>staffMeter).originElement;
+                    if (document.meterElements.indexOf(origin) === -1) {
+                        // remove ghost
+                        staff.removeChild(staffMeter, staff.meterElements);
+                    }
+                }
+            });
+        });
+    }
+}
+*/
+
