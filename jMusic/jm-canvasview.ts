@@ -654,7 +654,7 @@ import { Validators } from './jm-refiners';
 
                         var spacer = new MusicSpacing.SpacingDesigner(score.globalContext);
                         spacer.design(score);
-                        var visitor = new PrefixVisitor(new RedrawVisitor(score.globalContext, canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
+                        var visitor = new PrefixVisitor(this.globalContext, new RedrawVisitor(this.globalContext, canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
                         //canvasHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
                         canvasHelper.MusicGraphicsHelper.beginDraw();
                         score.visitAll(visitor);

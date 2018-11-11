@@ -808,7 +808,10 @@ function $(elm: HTMLElement): DOMHelper {
                     this.graphEngine.createMusicObject(null, spacing.clefId, 0, 0, 1);
                 }
                 visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) {
-                    if (!spacing) { meter.spacingInfo = (spacing = new MusicSpacing.MeterSpacingInfo(meter)); }
+                    if (!spacing) { 
+                        this.globalContext.addSpacingInfo(meter, (spacing = new MusicSpacing.MeterSpacingInfo(meter))); 
+                        //meter.spacingInfo = 
+                    }
                     MeterDrawer.addMeterXy(null, this.graphEngine, meter.definition, 0, 0);
                 }
                 visitKey(key: IKey, spacing: IKeySpacingInfo) {
@@ -840,10 +843,11 @@ function $(elm: HTMLElement): DOMHelper {
             }
     
             export class PrefixVisitor implements IVisitorIterator<IMusicElement> {
-                constructor(private visitor: IVisitor, private cge: IBaseGraphicsEngine, private prefix = '') {
+                constructor(private globalContext: GlobalContext, private visitor: IVisitor, private cge: IBaseGraphicsEngine, private prefix = '') {
                 }
                 public visitPre(element: IMusicElement): (element: IMusicElement) => void {
-                    var spacing = element.spacingInfo;
+                    //var spacing = element.spacingInfo;
+                    var spacing = this.globalContext.getSpacingInfo(element);
                     if (spacing) {
                         var grp = this.cge.beginGroup(this.prefix + element.id, spacing.offset.x, spacing.offset.y, spacing.scale, element.getElementName());
                         element.inviteVisitor(this.visitor);

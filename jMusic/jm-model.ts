@@ -27,7 +27,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             id: string;
 
             parent: IMusicElement;
-            spacingInfo: ISpacingInfo;
+            //spacingInfo: ISpacingInfo;
             //setSpacingInfo(info: ISpacingInfo): void;
             inviteVisitor(spacer: IVisitor): void;
             getElementName(): string;
@@ -276,12 +276,14 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 this._variables[name] = value;
             }
 
-            getSpacingInfo<T extends ISpacingInfo>(id: string): T {
-                return <T>this._spacingInfos[id];
+            getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T {
+                return <T>(<any>element).spacingInfo;
+                //return <T>this._spacingInfos[id];
             }
 
-            addSpacingInfo(id: string, value: ISpacingInfo) {
-                this._spacingInfos[id] = value;
+            addSpacingInfo(element: IMusicElement, value: ISpacingInfo) {
+                (<any>element).spacingInfo = value;
+                //this._spacingInfos[id] = value;
             }
         }
 
