@@ -224,7 +224,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         export interface IBar extends ITimedVoiceEvent {
             parent: IScore;
             absTime: AbsoluteTime;
-            spacingInfo: IBarSpacingInfo;
+            //spacingInfo: IBarSpacingInfo;
         }
 
         class BarElement extends MusicElement<IBarSpacingInfo> implements IBar {
@@ -278,12 +278,12 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T {
                 return <T>(<any>element).spacingInfo;
-                //return <T>this._spacingInfos[id];
+                //return <T>this._spacingInfos[element.id];
             }
 
             addSpacingInfo(element: IMusicElement, value: ISpacingInfo) {
                 (<any>element).spacingInfo = value;
-                //this._spacingInfos[id] = value;
+                //this._spacingInfos[element.id] = value;
             }
         }
 
@@ -484,7 +484,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         export interface IStaff extends IEventContainer, IMusicElement, IMeterOwner {
             parent: IScore;
             removeChild(theChild: IMusicElement, list?: IMusicElement[]): void;
-            spacingInfo: IStaffSpacingInfo;
+            //spacingInfo: IStaffSpacingInfo;
             clefElements: IClef[];
             voiceElements: IVoice[];
             title: string;
@@ -1267,7 +1267,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             
             Beams: IBeam[];
 
-            spacingInfo: INoteSpacingInfo;
+            //spacingInfo: INoteSpacingInfo;
             //setSpacingInfo(info: INoteSpacingInfo): INoteSpacingInfo;
             getContext(): INoteContext;
 
@@ -1299,7 +1299,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
         export interface INoteInfo extends INote {}
         export interface INoteContext extends INote,  ITimedEvent {
-            spacingInfo: INoteSpacingInfo;
+            //spacingInfo: INoteSpacingInfo;
             getStaffContext(): StaffContext;
             voice: IVoice;
         }
@@ -1329,7 +1329,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getVoice() {return this.parent; }
             getStaff() {return this.parent.parent; }
 
-            get spacingInfo(): INoteSpacingInfo { return this.note.spacingInfo; }  // todo: proxy skal eje spacinginfo          
+            //get spacingInfo(): INoteSpacingInfo { return this.note.spacingInfo; }  // todo: proxy skal eje spacinginfo          
             get NoteId(): string { return this.note.NoteId; }            
             get timeVal(): TimeSpan { return this.note.timeVal; }
             get noteheadElements(): INotehead[] { return this.note.noteheadElements; }
@@ -1742,7 +1742,7 @@ public getContext(): INoteContext {
             getPitch(): Pitch;
             getAccidental(): string;
             matchesPitch(pitch: Pitch, ignoreAlteration?: boolean): boolean;
-            spacingInfo: INoteHeadSpacingInfo;
+            //spacingInfo: INoteHeadSpacingInfo;
         }
 
         // NoteheadElement
@@ -1859,7 +1859,7 @@ public getContext(): INoteContext {
         export interface ILongDecorationElement extends IMusicElement {
             parent: INote;
             placement: string;
-            spacingInfo: ILongDecorationSpacingInfo;
+            //spacingInfo: ILongDecorationSpacingInfo;
             endEvent: ITimedEvent;
             type: LongDecorationType;
         }

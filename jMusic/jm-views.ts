@@ -30,7 +30,7 @@ function $(elm: HTMLElement): DOMHelper {
     
         export module MyModel {
             export interface ILongDecorationSpacingInfo extends ISpacingInfo {
-                render?: (deco: ILongDecorationElement, ge: IGraphicsEngine) => void;
+                render?: (deco: ILongDecorationElement, ge: IGraphicsEngine, globalContext: GlobalContext) => void;
             }
         }
     
@@ -207,14 +207,14 @@ function $(elm: HTMLElement): DOMHelper {
             }
     
             class TrillDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
                     var path: string;
                 }
             }
             class CrescDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
                     // long deco (cresc)
-                    var notedecoSpacing = deco.spacingInfo;
+                    var notedecoSpacing = globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
                     var longDeco = deco;
     
                     var tieDir = (deco.placement === "over") ? -1 : 1;
@@ -240,25 +240,25 @@ function $(elm: HTMLElement): DOMHelper {
                 }
             }
             class BracketDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
                     var path: string;
                 }
             }
             class TupletDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
                     var path: string;
                 }
             } 
             class OttavaDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
                     var path: string;
                 }
             }
     
             class SlurDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
                     // long deco (slur)
-                    var notedecoSpacing = deco.spacingInfo;
+                    var notedecoSpacing = globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
                     var longDeco = deco;
                     // todo: update slurs after spacing is decided
                     var slurDir = (deco.placement === "over") ? -1 : 1;
@@ -409,8 +409,10 @@ function $(elm: HTMLElement): DOMHelper {
                         });
                     var x0 = rectX0Before - noteSpacing.preWidth;
                     var prevNote = Music.prevNote(this.globalContext, note);
-                    if (prevNote && prevNote.spacingInfo.offset.x - note.spacingInfo.offset.x - rectLeft > x0) {
-                        x0 = prevNote.spacingInfo.offset.x - note.spacingInfo.offset.x - rectLeft;
+                    var prevNoteSpacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(prevNote);
+                    var noteSpacingInfo = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
+                    if (prevNote && prevNoteSpacing.offset.x - noteSpacingInfo.offset.x - rectLeft > x0) {
+                        x0 = prevNoteSpacing.offset.x - noteSpacingInfo.offset.x - rectLeft;
                     }
                     elm = this.sensorEngine.createRectObject("editbefore_" + note.id, x0, rectTopBefore, rectLeft - x0, rectHeightBefore, 'NoteEditBefore');
                     $(elm).mouseover(function (event) {
@@ -706,7 +708,7 @@ function $(elm: HTMLElement): DOMHelper {
                     }
                     // dots
                     for (var i = 0; i < head.parent.dotNo; i++) {
-                        var dot = this.graphEngine.createMusicObject(null, 'e_dots.dot', context.spacingInfo.dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 0, spacing.graceScale);
+                        var dot = this.graphEngine.createMusicObject(null, 'e_dots.dot', this.globalContext.getSpacingInfo<INoteSpacingInfo>(context).dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 0, spacing.graceScale);
                     }
                 }
                 doNote(note: INoteInfo, context: INoteContext, noteSpacing: INoteSpacingInfo) {
@@ -763,16 +765,17 @@ function $(elm: HTMLElement): DOMHelper {
                         }
                 }
                 doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: MyModel.ILongDecorationSpacingInfo) {
-                    if (spacing.render) spacing.render(deco, this.graphEngine);
+                    if (spacing.render) spacing.render(deco, this.graphEngine, this.globalContext);
                 }
                 doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
                     // short deco
+                    var noteSpacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(context);
                     var decoId = deco.getDecorationId();
                     if (decoId >= NoteDecorationKind.Arpeggio && decoId <= NoteDecorationKind.NonArpeggio) {
                         // arpeggio
                         if (decoId === NoteDecorationKind.Arpeggio || (decoId === NoteDecorationKind.ArpeggioDown)) {
-                            var yL = context.spacingInfo.lowPitchY;
-                            var yH = context.spacingInfo.highPitchY;
+                            var yL = noteSpacing.lowPitchY;
+                            var yH = noteSpacing.highPitchY;
                             var yStep = 2;
                             var y = yL;
                             while (y >= yH) {
@@ -786,8 +789,8 @@ function $(elm: HTMLElement): DOMHelper {
                             
                         }
                         else if (decoId === NoteDecorationKind.NonArpeggio) {
-                            var yL = context.spacingInfo.lowPitchY;
-                            var yH = context.spacingInfo.highPitchY;
+                            var yL = noteSpacing.lowPitchY;
+                            var yH = noteSpacing.highPitchY;
                             var path = 'm -10,' + (yL*3 + 2) + ' l -2,0 0,' + ((yH - yL)*3 - 4) + ' 2,0';
                             this.graphEngine.createPathObject(path, 0, 0, 1, 'black', null);
                         }

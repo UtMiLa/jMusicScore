@@ -444,11 +444,11 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 }*/
     
                 public doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
-                    const headSpacingInfo = this.globalContext.getSpacingInfo(head);
-                    const noteSpacingInfo = this.globalContext.getSpacingInfo(noteCtx);
+                    const headSpacingInfo = this.globalContext.getSpacingInfo<NoteHeadSpacingInfo>(head);
+                    const noteSpacingInfo = this.globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx);
 
-                    spacing.accidentalX = -head.spacingInfo.offset.x * 2 + Metrics.accidentalX + head.spacingInfo.accidentalStep * Metrics.accidentalXstep;
-                    spacing.graceScale = noteCtx.spacingInfo.graceScale;
+                    spacing.accidentalX = -headSpacingInfo.offset.x * 2 + Metrics.accidentalX + headSpacingInfo.accidentalStep * Metrics.accidentalXstep;
+                    spacing.graceScale = noteSpacingInfo.graceScale;
     
                     spacing.offset.y = head.parent.rest ? 
                     Metrics.restY : NoteSpacer.pitchToStaffLine(head.pitch, <any>head.parent, noteCtx) * Metrics.pitchYFactor;
@@ -661,10 +661,10 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     spacing.width = MinimalSpacer.doGetWidth(note);
     
                     NoteSpacer.recalcPitches(this.globalContext, note, context);
-                    NoteSpacer.recalcHeads(note, context);
+                    NoteSpacer.recalcHeads(note, context, this.globalContext);
                     NoteSpacer.recalcStem(note, spacing);
-                    NoteSpacer.recalcLedgerLinesUnder(note, context);
-                    NoteSpacer.recalcLedgerLinesOver(note, context);
+                    NoteSpacer.recalcLedgerLinesUnder(note, context, this.globalContext);
+                    NoteSpacer.recalcLedgerLinesOver(note, context, this.globalContext);
                 }
                 doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) {
                     /*if (spacing.CalcSpacing) {
@@ -832,7 +832,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
                 doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) {
-                    var notedecoSpacing = deco.spacingInfo;
+                    var notedecoSpacing = this.globalContext.getSpacingInfo(deco);
                     if (!notedecoSpacing) {
                         //deco.spacingInfo = new LongDecorationSpacingInfo(deco);
                         this.globalContext.addSpacingInfo(deco, new LongDecorationSpacingInfo(deco));
@@ -1112,9 +1112,9 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 }
     
     
-                public static recalcLedgerLinesUnder(note: INote, context: INoteContext) {
+                public static recalcLedgerLinesUnder(note: INote, context: INoteContext, globalContext: GlobalContext) {
                     if (note.rest) return;
-                    var noteSpacing = context.spacingInfo;
+                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(context);
                     
                     var antalLedelinjer = Math.floor(noteSpacing.lowPitchY / 2 - 4);
                     if (antalLedelinjer < 1) antalLedelinjer = 0;
@@ -1128,9 +1128,9 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         noteSpacing.ledgerLinesUnder.push(ledg);
                     }
                 }
-                public static recalcLedgerLinesOver(note: INote, context: INoteContext) {
+                public static recalcLedgerLinesOver(note: INote, context: INoteContext, globalContext: GlobalContext) {
                     if (note.rest) return;
-                    var noteSpacing = context.spacingInfo;
+                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(context);
     
     
                     var antalLedelinjer = Math.floor(-noteSpacing.highPitchY / 2);
@@ -1194,8 +1194,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                public static recalcHeads(note: INote, noteCtx: INoteContext) {
-                    var noteSpacing = noteCtx.spacingInfo;
+                public static recalcHeads(note: INote, noteCtx: INoteContext, globalContext: GlobalContext) {
+                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx);
                     var heads = note.noteheadElements;
                     if (heads.length == 0) return;
                     var displace = true;
@@ -1213,8 +1213,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     for (var i = 0; i < heads.length; i++) {
                         var head = heads[i];
                         if (displace) {
-                            this.setDisplace(false, head, noteCtx);
-                            this.setRev(head, noteSpacing.rev, noteCtx);
+                            this.setDisplace(false, head, noteCtx, globalContext);
+                            this.setRev(head, noteSpacing.rev, noteCtx, globalContext);
                             lastPitch = head.getPitch();
                             displace = false;
                         }
@@ -1225,8 +1225,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                             else {
                                 displace = false;
                             }
-                            this.setDisplace(displace, head, noteCtx);
-                            this.setRev(head, noteSpacing.rev, noteCtx);
+                            this.setDisplace(displace, head, noteCtx, globalContext);
+                            this.setRev(head, noteSpacing.rev, noteCtx, globalContext);
                             lastPitch = head.getPitch();
                         }
                         /*if (head.getAccidental()) {
@@ -1235,26 +1235,26 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                public static setDisplace(displace: boolean, headElm: INotehead, noteCtx: INoteContext) {
-                    var spacingInfo = headElm.spacingInfo;
+                public static setDisplace(displace: boolean, headElm: INotehead, noteCtx: INoteContext, globalContext: GlobalContext) {
+                    var spacingInfo = globalContext.getSpacingInfo<NoteHeadSpacingInfo>(headElm);
                     if (spacingInfo.displacement != displace) {
                         spacingInfo.displacement = displace;
-                        this.recalc(headElm, noteCtx);
+                        this.recalc(headElm, noteCtx, globalContext);
                     }
                 }
-                public static setRev(headElm: INotehead, rev: boolean, noteCtx: INoteContext) {
+                public static setRev(headElm: INotehead, rev: boolean, noteCtx: INoteContext, globalContext: GlobalContext) {
                     //var displayData = <SVGNoteheadDisplayData>headElm.getDisplayData(context);
-                    var spacingInfo = headElm.spacingInfo;
+                    var spacingInfo = globalContext.getSpacingInfo<NoteHeadSpacingInfo>(headElm);
                     if (spacingInfo.reversed != rev) {
                         spacingInfo.reversed = rev;
-                        this.recalc(headElm, noteCtx);
+                        this.recalc(headElm, noteCtx, globalContext);
                     }
                 }
-                public static recalc(headElm: INotehead, noteCtx: INoteContext) {
+                public static recalc(headElm: INotehead, noteCtx: INoteContext, globalContext: GlobalContext) {
                     //var displayData = <SVGNoteheadDisplayData>headElm.getDisplayData(context);
                     //var parentDisplayData = <SVGNoteDisplayData>headElm.parent.getDisplayData(context);
-                    var spacingInfo = headElm.spacingInfo;
-                    var noteSpacingInfo = headElm.parent.spacingInfo;
+                    var spacingInfo = globalContext.getSpacingInfo<NoteHeadSpacingInfo>(headElm);
+                    var noteSpacingInfo = globalContext.getSpacingInfo<NoteSpacingInfo>(headElm.parent);
                     if (spacingInfo.reversed) {
                         spacingInfo.offset.x = spacingInfo.displacement ? Metrics.pitchXRevDisplacement : Metrics.pitchXNoDisplacement;
                     }
