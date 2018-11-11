@@ -24,6 +24,7 @@ export class AppComponent {
 
   selectedRef(variableDef) {
     // console.log(variable);
+    variableDef.ctx = this.musicProvider.getGlobalContext();
     this.selectedVar = variableDef;
   }
 
@@ -46,7 +47,7 @@ export class AppComponent {
   set input(v: string) {
     this._input = v;
     this.output = v.toLocaleUpperCase();
-    const globalCtx = new GlobalContext();
+    const globalCtx = this.musicProvider.getGlobalContext();
 
 
     try {
@@ -70,10 +71,10 @@ export class AppComponent {
       // n*j skal altid fordeles med j til hver stemme
       // der er N stemmer, som skal deles med n; stemme m får m*N/n til (m+1)*N/n
 
-      const data = <any>{ "t": "Score", "def": { "metadata": {} }, "children": [
-        { "t": "Staff", "def": { "metadata": {} }, "children": [] }] };
+      const data = <any>{ 't': 'Score', 'def': { 'metadata': {} }, 'children': [
+        { 't': 'Staff', 'def': { 'metadata': {} }, 'children': [] }] };
       for (let i = 0; i < maxLen; i++) {
-        data.children[0].children.push({ "t": "Voice", "def": { "metadata": {} }, "children": [] });
+        data.children[0].children.push({ 't': 'Voice', 'def': { 'metadata': {} }, 'children': [] });
       }
 
       parsedObject.withStaves((staff) => {
@@ -87,8 +88,7 @@ export class AppComponent {
                 const myChildren = noteMemento.children.sort((a, b) => a.def.p - b.def.p);
                 noteMemento.children = [myChildren[i]];
                 voiceI.children.push(noteMemento);
-              }
-              else {
+              } else {
                 noteMemento.children = [];
                 noteMemento.def.rest = true;
                 voiceI.children.push(noteMemento);

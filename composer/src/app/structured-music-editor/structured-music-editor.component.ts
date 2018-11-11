@@ -11,14 +11,15 @@ export class StructuredMusicEditorComponent implements OnInit {
 
 
   constructor() { }
-  private _selectedObject: {name: string, parent: {}};
+  private _selectedObject: {name: string, parent: {}, ctx: GlobalContext};
   private parsedObject: any;
 
-  @Input() set selectedObject(value: {name: string, parent: {}}) {
-    const globalCtx = new GlobalContext();
+  @Input() set selectedObject(value: {name: string, parent: {}, ctx: GlobalContext}) {
+    const globalCtx = value.ctx;
     try {
       const parser = new LilyPondConverter(globalCtx);
       this.parsedObject = parser.read(value.parent[value.name]);
+      this.parsedObject.globalContext = globalCtx;
       console.log(this.parsedObject);
       console.log(value.parent[value.name]);
       this.parsedJson = null; // JSON.stringify(this.parsedObject);

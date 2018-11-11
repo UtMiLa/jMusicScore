@@ -117,6 +117,7 @@ export class JmusicScoreViewComponent implements OnInit {
         // console.log(MusicElementFactory.mementoCreators);
 
     const score = value;
+    this.painter = new CanvasView.CanvasQuickPainter(score.globalContext);
 
     const key = new RegularKeyDefinition('b', 1);
     score.setKey(key, AbsoluteTime.startTime);
@@ -165,7 +166,7 @@ export class JmusicScoreViewComponent implements OnInit {
     const memento = score.getMemento(true);
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);
-    this.painter = new CanvasView.CanvasQuickPainter(globalCtx);
+//    this.painter = new CanvasView.CanvasQuickPainter(globalCtx);
     // console.log(MusicElementFactory.mementoCreators);
   }
 
