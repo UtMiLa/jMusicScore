@@ -63,7 +63,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 this._spacingInfo = info;
             }
             public inviteVisitor(spacer: IVisitor) {
-                spacer.visitDefault(this, this._spacingInfo);
+                spacer.visitDefault(this);
             }
 
             /*public changed() { }
@@ -254,7 +254,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
 
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitBar(this, this.spacingInfo);
+                visitor.visitBar(this);
             }
         }
 
@@ -328,7 +328,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public globalContext: GlobalContext = new GlobalContext(); // todo: flyt til application
 
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitScore(this, this.spacingInfo);
+                visitor.visitScore(this);
             }
 
             static createFromMemento(parent: IMusicElement, memento: IMemento): IScore {
@@ -547,7 +547,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
 
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitStaff(this, this.spacingInfo);
+                visitor.visitStaff(this);
             }
 
             public withVoices(f: (voice: IVoice, index: number) => void) {
@@ -748,7 +748,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
 
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitStaffExpression(this, this.spacingInfo);
+                visitor.visitStaffExpression(this);
             }
             static createFromMemento(parent: IStaff, memento: IMemento): IStaffExpression {
                 var absTime = AbsoluteTime.createFromMemento(memento.def.abs);
@@ -808,7 +808,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitVoice(this, this.spacingInfo);
+                visitor.visitVoice(this);
             }
 
             private sequence = new SequenceElement(this);
@@ -938,7 +938,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitDefault(this, this.spacingInfo);
+                visitor.visitDefault(this);
             }
 
             get noteElements(): INote[] {
@@ -1061,7 +1061,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
             }
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitClef(this, this.spacingInfo);
+                visitor.visitClef(this);
             }
             static createFromMemento(parent: IStaff, memento: IMemento): IClef {
                 var def = new ClefDefinition(memento.def.clef, memento.def.lin, memento.def.tr);
@@ -1121,7 +1121,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
             }
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitKey(this, this.spacingInfo);
+                visitor.visitKey(this);
             }
             static createFromMemento(parent: IStaff, memento: IMemento): IKey {
                 var def = KeyDefinitionFactory.createKeyDefinition(memento.def.def);
@@ -1178,7 +1178,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 super(parent);
             }
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitMeter(this, this.spacingInfo);
+                visitor.visitMeter(this);
             }
             static createFromMemento(parent: IMeterOwner, memento: IMemento): IMeter {
                 if (!memento.def) return null;
@@ -1241,7 +1241,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 super(parent);
             }
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitBeam(this,  this.spacingInfo);
+                visitor.visitBeam(this);
             }
             public remove(): void {
                 var note: INote = this.parent;
@@ -1543,7 +1543,7 @@ public getContext(): INoteContext {
                 return new HorizPosition(this.absTime, this.getSortOrder()); // todo: grace note position
             }
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitNote(this, this.spacingInfo);
+                visitor.visitNote(this);
             }
 
             public get NoteId(): string { return this.noteId; }
@@ -1767,7 +1767,7 @@ public getContext(): INoteContext {
             public showAccidental: boolean = true;
 
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitNoteHead(this, this.spacingInfo);
+                visitor.visitNoteHead(this);
             }
 
             getElementName() {
@@ -1823,7 +1823,7 @@ public getContext(): INoteContext {
                 super(parent);
             }
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitNoteDecoration(this, this.spacingInfo);
+                visitor.visitNoteDecoration(this);
             }
 
             static createFromMemento(parent: INote, memento: IMemento): INoteDecorationElement {
@@ -1870,7 +1870,7 @@ public getContext(): INoteContext {
                 super(parent);
             }
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitLongDecoration(this, this.spacingInfo);
+                visitor.visitLongDecoration(this);
             }
 
             static createFromMemento(parent: INote, memento: IMemento): ILongDecorationElement {
@@ -1918,7 +1918,7 @@ public getContext(): INoteContext {
                 super(parent);
             }
             public inviteVisitor(visitor: IVisitor) {
-                visitor.visitTextSyllable(this, this.spacingInfo);
+                visitor.visitTextSyllable(this);
             }
 
             static createFromMemento(parent: INote, memento: IMemento): ITextSyllableElement {
@@ -1951,24 +1951,24 @@ public getContext(): INoteContext {
 
 
         export interface IVisitor {
-            visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo): void;
-            visitNote(note: INoteInfo, spacing: INoteSpacingInfo): void;
-            visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo): void;
-            visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo): void;
-            visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo): void;
-            visitClef(clef: IClef, spacing: IClefSpacingInfo): void;
-            visitMeter(meter: IMeter, spacing: IMeterSpacingInfo): void;
-            visitKey(key: IKey, spacing: IKeySpacingInfo): void;
-            visitStaff(staff: IStaff, spacing: IStaffSpacingInfo): void;
-            visitScore(score: IScore, spacing: IScoreSpacingInfo): void;
-            visitTextSyllable(text: ITextSyllableElement, spacing: ITextSyllableSpacingInfo): void;
-            visitBar(bar: IBar, spacing: IBarSpacingInfo): void;
-            visitBeam(beam: IBeam, spacing: IBeamSpacingInfo): void;
-            visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void;
+            visitNoteHead(head: INotehead): void;
+            visitNote(note: INoteInfo): void;
+            visitNoteDecoration(deco: INoteDecorationElement): void;
+            visitLongDecoration(deco: ILongDecorationElement): void;
+            visitVoice(voice: IVoice): void;
+            visitClef(clef: IClef): void;
+            visitMeter(meter: IMeter): void;
+            visitKey(key: IKey,): void;
+            visitStaff(staff: IStaff): void;
+            visitScore(score: IScore): void;
+            visitTextSyllable(text: ITextSyllableElement): void;
+            visitBar(bar: IBar): void;
+            visitBeam(beam: IBeam): void;
+            visitStaffExpression(staffExpression: IStaffExpression): void;
 
-            visitDefault(element: IMusicElement, spacing: ISpacingInfo): void;
+            visitDefault(element: IMusicElement): void;
 
-            visitVariable(name: string, spacing: ISpacingInfo): void;
+            visitVariable(name: string): void;
         }
 
 
@@ -2442,23 +2442,23 @@ public getContext(): INoteContext {
         return null;
     }
 
-    visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) { }
-    visitNote(note: INote, spacing: INoteSpacingInfo) { }
-    visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) { }
-    visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo) { }
-    visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
-    visitClef(clef: IClef, spacing: IClefSpacingInfo) { }
-    visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) { }
-    visitKey(key: IKey, spacing: IKeySpacingInfo) { }
-    visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) { }
-    visitScore(score: IScore, spacing: IScoreSpacingInfo) { }
-    visitTextSyllable(textSyllable: ITextSyllableElement, spacing: ITextSyllableSpacingInfo) { }
-    visitBar(bar: IBar, spacing: IBarSpacingInfo) { }
-    visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) { }
-    visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void { }
+    visitNoteHead(head: INotehead) { }
+    visitNote(note: INote) { }
+    visitNoteDecoration(deco: INoteDecorationElement) { }
+    visitLongDecoration(deco: ILongDecorationElement) { }
+    visitVoice(voice: IVoice) { }
+    visitClef(clef: IClef) { }
+    visitMeter(meter: IMeter) { }
+    visitKey(key: IKey) { }
+    visitStaff(staff: IStaff) { }
+    visitScore(score: IScore) { }
+    visitTextSyllable(textSyllable: ITextSyllableElement) { }
+    visitBar(bar: IBar) { }
+    visitBeam(beam: IBeam) { }
+    visitStaffExpression(staffExpression: IStaffExpression): void { }
 
-    visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
-    visitVariable(name: string, spacing: ISpacingInfo): void {}
+    visitDefault(element: IMusicElement): void { }
+    visitVariable(name: string): void {}
 }
 
 export class ContextVisitor extends NullVisitor {
@@ -2469,21 +2469,37 @@ export class ContextVisitor extends NullVisitor {
     constructor(public globalContext: GlobalContext){
         super();
     }
-    visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) { this.staff = staff; }
-    visitScore(score: IScore, spacing: IScoreSpacingInfo) { this.score = score; }
-    visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { this.voice = voice; }
+    visitStaff(staff: IStaff) { this.staff = staff; }
+    visitScore(score: IScore) { this.score = score; }
+    visitVoice(voice: IVoice) { this.voice = voice; }
     getStaffContext(absTime: AbsoluteTime): StaffContext{
         return this.staff.getStaffContext(absTime);
     }
-    visitNoteHead(head: INotehead,  spacing: INoteHeadSpacingInfo) { this.doNoteHead(head, this.noteContext, spacing); }
-    visitNote(note: INote, spacing: INoteSpacingInfo) {
+    visitNoteHead(head: INotehead) {
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
+         this.doNoteHead(head, this.noteContext, spacing); 
+        }
+    visitNote(note: INote) {
         this.noteContext = note.getContext();
+        var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
         this.doNote(note, this.noteContext, spacing); 
     }
-    visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) { this.doNoteDecoration(deco, this.noteContext, spacing); }
-    visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo) { this.doLongDecoration(deco, this.noteContext, spacing); }
-    visitTextSyllable(textSyllable: ITextSyllableElement, spacing: ITextSyllableSpacingInfo) { this.doTextSyllable(textSyllable, this.noteContext, spacing); }
-    visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) { this.doBeam(beam, this.noteContext, spacing); }
+    visitNoteDecoration(deco: INoteDecorationElement) { 
+        var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco);
+        this.doNoteDecoration(deco, this.noteContext, spacing); 
+    }
+    visitLongDecoration(deco: ILongDecorationElement) { 
+        var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
+        this.doLongDecoration(deco, this.noteContext, spacing); 
+    }
+    visitTextSyllable(textSyllable: ITextSyllableElement) { 
+        this.doTextSyllable(textSyllable, this.noteContext, spacing); 
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
+    }
+    visitBeam(beam: IBeam) { 
+        var spacing = beam.spacingInfo;// this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
+        this.doBeam(beam, this.noteContext, spacing); 
+    }
 
     doNote(note: INote, context: INoteContext, spacing: INoteSpacingInfo) { }
     doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) { }
@@ -2491,7 +2507,7 @@ export class ContextVisitor extends NullVisitor {
     doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) { }
     doTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) { }
     doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) { }
-    visitVariable(name: string, spacing: ISpacingInfo): void {
+    visitVariable(name: string): void {
         let val = this.globalContext.getVariable(name);
         if (val) val.visitAll(this);
     }
@@ -2510,32 +2526,32 @@ export class NoteVisitor extends ContextVisitor {
 
 
 export class StaffVisitor extends NullVisitor {
-    constructor(private callback: (node:IStaff, index: number, spacing: IStaffSpacingInfo) => void) {
+    constructor(private callback: (node:IStaff, index: number) => void) {
         super();
     }
     no: number = 0;
-    visitStaff(note: IStaff, spacing: IStaffSpacingInfo): void {
-        this.callback(note, this.no++, spacing);
+    visitStaff(note: IStaff): void {
+        this.callback(note, this.no++);
     }
 }   
 
 export class BarVisitor extends NullVisitor {
-    constructor(private callback: (bar:IBar, index: number, spacing: IBarSpacingInfo) => void) {
+    constructor(private callback: (bar:IBar, index: number) => void) {
         super()
     }
     no: number = 0;
-    visitBar(bar: IBar, spacing: IBarSpacingInfo): void {
-        this.callback(bar, this.no++, spacing);
+    visitBar(bar: IBar): void {
+        this.callback(bar, this.no++);
     }
 }   
 
 export class VoiceVisitor extends NullVisitor {
-    constructor(private callback: (voice:IVoice, index: number, spacing: IVoiceSpacingInfo) => void) {
+    constructor(private callback: (voice:IVoice, index: number) => void) {
         super()
     }
     no: number = 0;
-    visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo): void {
-        this.callback(voice, this.no++, spacing);
+    visitVoice(voice: IVoice): void {
+        this.callback(voice, this.no++);
     }
 }   
 
@@ -2550,51 +2566,51 @@ export class NoteHeadVisitor extends ContextVisitor {
 }   
 
 export class MeterVisitor extends NullVisitor {
-    constructor(private callback: (node:IMeter, index: number, spacing: IMeterSpacingInfo) => void) {
+    constructor(private callback: (node:IMeter, index: number) => void) {
         super();
     }
     no: number = 0;
-    visitMeter(meter: IMeter, spacing: IMeterSpacingInfo): void {
-        this.callback(meter, this.no++, spacing);
+    visitMeter(meter: IMeter): void {
+        this.callback(meter, this.no++);
     }
 }   
 
 export class KeyVisitor extends NullVisitor {
-    constructor(private callback: (node:IKey, index: number, spacing: IKeySpacingInfo) => void) {
+    constructor(private callback: (node:IKey, index: number) => void) {
         super()
     }
     no: number = 0;
-    visitKey(key: IKey, spacing: IKeySpacingInfo): void {
-        this.callback(key, this.no++, spacing);
+    visitKey(key: IKey): void {
+        this.callback(key, this.no++);
     }
 }   
 
 export class ClefVisitor extends NullVisitor {
-    constructor(private callback: (node:IClef, index: number, spacing: IClefSpacingInfo) => void) {
+    constructor(private callback: (node:IClef, index: number) => void) {
         super()
     }
     no: number = 0;
-    visitClef(clef: IClef, spacing: IClefSpacingInfo): void {
-        this.callback(clef, this.no++, spacing);
+    visitClef(clef: IClef): void {
+        this.callback(clef, this.no++);
     }
 }   
 
 export class TimedEventVisitor extends NullVisitor {
-    constructor(private callback: (node:ITimedVoiceEvent, index: number, spacing: ISpacingInfo) => void) {
+    constructor(private callback: (node:ITimedVoiceEvent, index: number) => void) {
         super()
     }
     no: number = 0;
-    visitKey(key: IKey, spacing: ISpacingInfo): void {
-        this.callback(key, this.no++, spacing);
+    visitKey(key: IKey): void {
+        this.callback(key, this.no++);
     }
-    visitMeter(meter: IMeter, spacing: IMeterSpacingInfo): void {
-        this.callback(meter, this.no++, spacing);
+    visitMeter(meter: IMeter): void {
+        this.callback(meter, this.no++);
     }
-    visitClef(clef: IClef, spacing: IClefSpacingInfo): void {
-        this.callback(clef, this.no++, spacing);
+    visitClef(clef: IClef): void {
+        this.callback(clef, this.no++);
     }
-    visitStaffExpression(exp: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void {
-        this.callback(exp, this.no++, spacing);
+    visitStaffExpression(exp: IStaffExpression): void {
+        this.callback(exp, this.no++);
     }
 }   
 

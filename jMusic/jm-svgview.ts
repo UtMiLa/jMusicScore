@@ -872,8 +872,9 @@ class TimelineDesigner implements IScoreDesigner {
         var score = app.document;
         var svgHelper = this.svgHelper;//<SVGHelper>app.GetState("svgHelper:" + this.context); // todo: Svghelper yt
 
-        var visitor = new PrefixVisitor(new RedrawVisitor(score.globalContext, svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
-        svgHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
+        var visitor = new PrefixVisitor(score.globalContext, new RedrawVisitor(score.globalContext, svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
+        var scoreSpacingInfo = score.globalContext.getSpacingInfo(score);
+        svgHelper.MusicGraphicsHelper.setSize(scoreSpacingInfo.width * scoreSpacingInfo.scale, scoreSpacingInfo.height);
         svgHelper.MusicGraphicsHelper.beginDraw();
         score.visitAll(visitor);
         svgHelper.MusicGraphicsHelper.endDraw();
@@ -883,7 +884,7 @@ class TimelineDesigner implements IScoreDesigner {
             //app.FeedbackManager.registerClient(this.checkSensors);
         }
 
-        var visitor = new PrefixVisitor(this.checkSensors, svgHelper.EditGraphicsHelper, 'ed_');
+        var visitor = new PrefixVisitor(score.globalContext, this.checkSensors, svgHelper.EditGraphicsHelper, 'ed_');
         svgHelper.EditGraphicsHelper.beginDraw();
         score.visitAll(visitor);
         svgHelper.EditGraphicsHelper.endDraw();

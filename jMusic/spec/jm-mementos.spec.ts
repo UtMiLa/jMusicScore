@@ -9,7 +9,7 @@ import { IMusicElement, IMeterSpacingInfo,  IMeter, ScoreElement,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, 
     NoteDecorationElement, TextSyllableElement, MusicElementFactory, 
-    NoteLongDecorationElement, ITimedEvent, Music } from "../jm-model";  
+    NoteLongDecorationElement, ITimedEvent, Music, GlobalContext } from "../jm-model";  
 
 import  { IScoreApplication, ScoreStatusManager } from '../jm-application';
 import  { AbstractApplication } from '../jap-application';
@@ -20,6 +20,7 @@ import  { JsonHelper } from '../jm-json';
 describe("Mementos", function () {
     //var score: IScore;
     //var app: IScoreApplication;
+    var globalContext = new GlobalContext();
     var document: IScore;
 
     it("should create an empty score", function () {
@@ -88,8 +89,8 @@ describe("Mementos", function () {
     }] };
         const elm: any = MusicElementFactory.recreateElement(null, data);
         expect(elm.getElementName()).toEqual("Voice");
-        expect(elm.getNoteElements().length).toEqual(1);
-        const note = <INote>elm.getNoteElements()[0];
+        expect(elm.getNoteElements(globalContext).length).toEqual(1);
+        const note = <INote>elm.getNoteElements(globalContext)[0];
         expect(note.getElementName()).toEqual("Note");
         expect(note.timeVal.toString()).toEqual("1/8");
         expect(note.noteheadElements.length).toEqual(1);
@@ -126,15 +127,15 @@ describe("Mementos", function () {
         ] };
         const elm: any = MusicElementFactory.recreateElement(null, data);
         expect(elm.getElementName()).toEqual("Voice");
-        expect(elm.getNoteElements().length).toEqual(2);
-        const note1 = <INote>elm.getNoteElements()[0];
+        expect(elm.getNoteElements(globalContext).length).toEqual(2);
+        const note1 = <INote>elm.getNoteElements(globalContext)[0];
         expect(note1.getElementName()).toEqual("Note");
         expect(note1.timeVal.toString()).toEqual("1/8");
         expect(note1.noteheadElements.length).toEqual(1);
         expect(note1.noteheadElements[0].getElementName()).toEqual("Notehead");
         expect(note1.noteheadElements[0].pitch.debug()).toEqual("e'");
 
-        const note2 = <INote>elm.getNoteElements()[1];
+        const note2 = <INote>elm.getNoteElements(globalContext)[1];
         expect(note2.getElementName()).toEqual("Note");
         expect(note2.timeVal.toString()).toEqual("1/4");
         expect(note2.noteheadElements.length).toEqual(1);
@@ -173,15 +174,15 @@ describe("Mementos", function () {
         ] };
         const elm: any = MusicElementFactory.recreateElement(null, data);
         expect(elm.getElementName()).toEqual("Sequence");
-        expect(elm.getNoteElements().length).toEqual(2);
-        const note1 = <INote>elm.getNoteElements()[0];
+        expect(elm.getNoteElements(globalContext).length).toEqual(2);
+        const note1 = <INote>elm.getNoteElements(globalContext)[0];
         expect(note1.getElementName()).toEqual("Note");
         expect(note1.timeVal.toString()).toEqual("1/8");
         expect(note1.noteheadElements.length).toEqual(1);
         expect(note1.noteheadElements[0].getElementName()).toEqual("Notehead");
         expect(note1.noteheadElements[0].pitch.debug()).toEqual("e'");
 
-        const note2 = <INote>elm.getNoteElements()[1];
+        const note2 = <INote>elm.getNoteElements(globalContext)[1];
         expect(note2.getElementName()).toEqual("Note");
         expect(note2.timeVal.toString()).toEqual("1/4");
         expect(note2.noteheadElements.length).toEqual(1);

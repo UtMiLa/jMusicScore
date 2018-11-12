@@ -677,12 +677,14 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
                     MinimalSpacer.noteDecoCalculations(deco, context, this.globalContext);
                 }
-                visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
-                visitClef(clef: IClef, spacing: IClefSpacingInfo) {
+                visitVoice(voice: IVoice) { }
+                visitClef(clef: IClef) {
+                    const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(clef);
                     spacing.offset.y = Metrics.pitchYFactor * (clef.definition.clefLine - 1) * 2;
                     spacing.clefId = this.clefRefId(clef.definition, !!clef.absTime.numerator);
                 }
-                visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) {
+                visitMeter(meter: IMeter) {
+                    const spacing = this.globalContext.getSpacingInfo(meter);
                     spacing.width = Metrics.meterWidth0;
                     var fracFunc = (num: string, den: string): any => {
                         var len = Math.max(num.length, den.length);
@@ -694,13 +696,16 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
                     meter.definition.display(fracFunc, fullFunc);
                 }
-                visitKey(key: IKey, spacing: IKeySpacingInfo) {
+                visitKey(key: IKey) {
+                    const spacing = this.globalContext.getSpacingInfo(key);
                     spacing.width = -Metrics.meterXOffset + key.definition.enumerateKeys().length * Metrics.keyXPerAcc;
                 }
-                visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) {
+                visitStaff(staff: IStaff) {
+                    const spacing = this.globalContext.getSpacingInfo<IStaffSpacingInfo>(staff);
                     spacing.staffSpace = Metrics.pitchYFactor;
                 }
-                visitScore(score: IScore, spacing: IScoreSpacingInfo) {
+                visitScore(score: IScore) {
+                    const spacing = this.globalContext.getSpacingInfo<IScoreSpacingInfo>(score);
                     spacing.height = Metrics.staffYStep * score.staffElements.length + Metrics.staffYOffset + Metrics.staffYBottomMargin;
                     if (score.staffElements.length) spacing.width = this.globalContext.getSpacingInfo<StaffSpacingInfo>(score.staffElements[0]).staffLength + Metrics.staffXOffset;
                 }
@@ -760,7 +765,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
     
                 }
-                visitBar(bar: IBar, spacing: IBarSpacingInfo) {
+                visitBar(bar: IBar) {
+                    const spacing = this.globalContext.getSpacingInfo<IBarSpacingInfo>(bar);
                     var score = bar.parent;
                     if (score.staffElements.length > 0) {
                         //this.checkRef(bar, context, svgHelper);
@@ -838,38 +844,44 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         this.globalContext.addSpacingInfo(deco, new LongDecorationSpacingInfo(deco));
                     }
                 }
-                visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) {
+                visitVoice(voice: IVoice) {
+                    const spacing = this.globalContext.getSpacingInfo(voice);
                     if (!spacing) {
                         //voice.spacingInfo = new VoiceSpacingInfo(voice);
                         this.globalContext.addSpacingInfo(voice, new VoiceSpacingInfo(voice));
                     }
                 }
-                visitClef(clef: IClef, spacing: IClefSpacingInfo) {
+                visitClef(clef: IClef) {
+                    const spacing = this.globalContext.getSpacingInfo(clef);
                     if (!spacing) {
                         //clef.spacingInfo = new ClefSpacingInfo(clef);
                         this.globalContext.addSpacingInfo(clef, new ClefSpacingInfo(clef));
                     }
                 }
-                visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) {
+                visitMeter(meter: IMeter) {                    
                     if (meter.parent.getElementName() === "Score") return;
+                    const spacing = this.globalContext.getSpacingInfo(meter);
                     if (!spacing) {
                         //meter.spacingInfo = new MeterSpacingInfo(meter);
                         this.globalContext.addSpacingInfo(meter, new MeterSpacingInfo(meter));
                     }
                 }
-                visitKey(key: IKey, spacing: IKeySpacingInfo) {
+                visitKey(key: IKey) {
+                    const spacing = this.globalContext.getSpacingInfo(key);
                     if (!spacing) {
                         //key.spacingInfo = new KeySpacingInfo(key);
                         this.globalContext.addSpacingInfo(key, new KeySpacingInfo(key));
                     }
                 }
-                visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) {
+                visitStaff(staff: IStaff) {
+                    const spacing = this.globalContext.getSpacingInfo(staff);
                     if (!spacing) {
                         //staff.spacingInfo = new StaffSpacingInfo(staff);
                         this.globalContext.addSpacingInfo(staff, new StaffSpacingInfo(staff));
                     }
                 }
-                visitScore(score: IScore, spacing: IScoreSpacingInfo) {
+                visitScore(score: IScore) {
+                    const spacing = this.globalContext.getSpacingInfo(score);
                     if (!spacing) {
                         //score.spacingInfo = new ScoreSpacingInfo(score);
                         this.globalContext.addSpacingInfo(score, new ScoreSpacingInfo(score));
@@ -881,7 +893,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         this.globalContext.addSpacingInfo(syllable, new TextSpacingInfo(syllable));
                     }
                 }
-                visitBar(bar: IBar, spacing: IBarSpacingInfo) {
+                visitBar(bar: IBar) {
+                    const spacing = this.globalContext.getSpacingInfo(bar);
                     if (!spacing) {
                         //bar.spacingInfo = new BarSpacingInfo(bar);
                         this.globalContext.addSpacingInfo(bar, new BarSpacingInfo(bar));
@@ -893,14 +906,15 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         //this.globalContext.addSpacingInfo(beam, new BeamSpacingInfo(beam));
                     }                
                 }
-                visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void {
+                visitStaffExpression(staffExpression: IStaffExpression): void {
+                    const spacing = this.globalContext.getSpacingInfo(staffExpression);
                     if (!spacing) {
                         //staffExpression.spacingInfo = new StaffExpressionSpacingInfo(staffExpression);
                         this.globalContext.addSpacingInfo(staffExpression, new StaffExpressionSpacingInfo(staffExpression));
                     }
                 }
     
-                visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
+                visitDefault(element: IMusicElement): void { }
             }
     
             export class SpacingDesigner implements IScoreDesigner {
@@ -944,7 +958,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 private checkBars(score: IScore) {
                     score.withBars((bar: IBar) => {
                         var barSpacing = this.globalContext.getSpacingInfo<BarSpacingInfo>(bar);
-                        this.spacer.visitBar(bar, barSpacing);
+                        this.spacer.visitBar(bar);
                     });
                 }
     

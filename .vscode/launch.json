@@ -31,6 +31,18 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Jasmine Test Mementos",
+            "program": "${workspaceRoot}\\node_modules\\jasmine\\bin\\jasmine.js", 
+            "args": [ 
+                "${workspaceRoot}\\jMusic\\spec\\jm-mementos.spec.js" 
+            ], 
+            "env": { 
+                "NODE_PATH": "." 
+            } 
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Launch Program",
             "program": "${file}"
         }

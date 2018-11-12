@@ -39,7 +39,7 @@ import { IScoreRefiner } from "./jm-interfaces";
                 return this.originElement.nextBar(abstime);
             }
             public inviteVisitor(spacer: IVisitor) {
-                spacer.visitMeter(this, this.spacingInfo);
+                spacer.visitMeter(this);
             }
             getHorizPosition(): HorizPosition { return this.originElement.getHorizPosition(); }
             getVoice(): IVoice { return null; }
@@ -140,7 +140,7 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
     parent: IMusicElement;
     inviteVisitor(spacer: IVisitor): void {
 
-        spacer.visitVariable(this.name, this.spacingInfo);
+        spacer.visitVariable(this.name);
         //this.ref.inviteVisitor(spacer);
     }
     /*addChild(list: IMusicElement[], theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {

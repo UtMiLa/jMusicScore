@@ -289,59 +289,64 @@ function $(elm: HTMLElement): DOMHelper {
             }
     
             class ExpressionFactory implements IVisitorIterator<IMusicElement>, IVisitor {
+                constructor(private globalContext: GlobalContext){
+
+                }
+
                 visitPre(element: IMusicElement): (element: IMusicElement) => void {
                     element.inviteVisitor(this);
                     return null;
                 }
     
-                visitNoteHead(head: INotehead, spacing: INoteHeadSpacingInfo) {
+                visitNoteHead(head: INotehead) {
                 }
-                visitNote(note: INoteInfo,  spacing: INoteSpacingInfo) {
+                visitNote(note: INoteInfo) {
                 }
-                visitNoteDecoration(deco: INoteDecorationElement,  spacing: INoteDecorationSpacingInfo) {
+                visitNoteDecoration(deco: INoteDecorationElement) {
                     // expr
                 }
                 static longDrawers: any[] = [TrillDrawer, CrescDrawer, CrescDrawer, SlurDrawer, BracketDrawer, TupletDrawer, OttavaDrawer];
-                visitLongDecoration(deco: ILongDecorationElement, spacing: MyModel.ILongDecorationSpacingInfo) {
+                visitLongDecoration(deco: ILongDecorationElement) {
                     // expr
+                    const spacing = this.globalContext.getSpacingInfo<MyModel.ILongDecorationSpacingInfo>(deco);
                     if (spacing && ExpressionFactory.longDrawers[deco.type]) {
                         if (!spacing.render) spacing.render = ExpressionFactory.longDrawers[deco.type].Render;
                         //if (!spacing.CalcSpacing) spacing.CalcSpacing = ExpressionFactory.longDrawers[deco.type].CalcSpacing;
                     }
                 }
-                visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) {
+                visitVoice(voice: IVoice) {
                 }
-                visitClef(clef: IClef, spacing: IClefSpacingInfo) {
+                visitClef(clef: IClef) {
                 }
-                visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) {
+                visitMeter(meter: IMeter) {
                 }
-                visitKey(key: IKey, spacing: IKeySpacingInfo) {
+                visitKey(key: IKey) {
                 }
-                visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) {
+                visitStaff(staff: IStaff) {
                 }
-                visitScore(score: IScore, spacing: IScoreSpacingInfo) {
+                visitScore(score: IScore) {
                 }
-                visitTextSyllable(syllable: ITextSyllableElement, spacing: ITextSyllableSpacingInfo) {
+                visitTextSyllable(syllable: ITextSyllableElement) {
                 }
-                visitBar(bar: IBar, spacing: IBarSpacingInfo) {
+                visitBar(bar: IBar) {
                 }
-                visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) {
+                visitBeam(beam: IBeam) {
                 }
-                visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void {
+                visitStaffExpression(staffExpression: IStaffExpression): void {
                     // expr
                 }
     
-                visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
+                visitDefault(element: IMusicElement): void { }
 
-                visitVariable(name: string, spacing: ISpacingInfo): void {}
+                visitVariable(name: string): void {}
             }
     
             export class ExpressionRenderer implements IScoreDesigner {
-                constructor(private spacer: IVisitor = null) {
+                constructor(private globalContext: GlobalContext, private spacer: IVisitor = null) {
                 }
     
                 public design(document: IScore): void {
-                    document.visitAll(new ExpressionFactory()); // add renderer objects to all note/staff expressions
+                    document.visitAll(new ExpressionFactory(this.globalContext)); // add renderer objects to all note/staff expressions
                 }
             }
     
@@ -472,10 +477,11 @@ function $(elm: HTMLElement): DOMHelper {
                 }
                 doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
                 }
-                visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) {
+                visitVoice(voice: IVoice) {
    
                 }
-                visitClef(clef: IClef, spacing: IClefSpacingInfo) {
+                visitClef(clef: IClef) {
+                    const spacing = this.globalContext.getSpacingInfo(clef);
                     var elm = this.sensorEngine.createRectObject("edit_" + clef.id, spacing.preWidth, -12, spacing.preWidth + spacing.width, 24, 'ClefEdit');
                     var evRec = this.eventReceiver;
                     //var me = this;
@@ -492,7 +498,8 @@ function $(elm: HTMLElement): DOMHelper {
                             evRec.processEvent("clickclef", { clef: clef });
                         });
                 }
-                visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) {
+                visitMeter(meter: IMeter) {
+                    const spacing = this.globalContext.getSpacingInfo(meter);
                     var elm = this.sensorEngine.createRectObject("edit_" + meter.id, spacing.preWidth, -12, spacing.preWidth + spacing.width, 24, 'MeterEdit');
                     var evRec = this.eventReceiver;
                     //var me = this;
@@ -509,8 +516,8 @@ function $(elm: HTMLElement): DOMHelper {
                             evRec.processEvent("clickmeter", { meter: meter });
                         });
                 }
-                visitKey(key: IKey, spacing: IKeySpacingInfo) {
-
+                visitKey(key: IKey) {
+                    const spacing = this.globalContext.getSpacingInfo(key);
                     var elm = this.sensorEngine.createRectObject("edit_" + key.id, spacing.preWidth, -12, spacing.preWidth + spacing.width, 24, 'KeyEdit');
                     var evRec = this.eventReceiver;
                     //var me = this;
@@ -527,13 +534,14 @@ function $(elm: HTMLElement): DOMHelper {
                             evRec.processEvent("clickkey", { keySig: key });
                         });
                 }
-                visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) {
+                visitStaff(staff: IStaff) {
                 }
-                visitScore(score: IScore, spacing: IScoreSpacingInfo) {
+                visitScore(score: IScore) {
                 }
                 doTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, textSpacing: ITextSyllableSpacingInfo) {
                 }
-                visitBar(bar: IBar, spacing: IBarSpacingInfo) {
+                visitBar(bar: IBar) {
+                    const spacing = this.globalContext.getSpacingInfo<IBarSpacingInfo>(bar);
                     var elm = this.sensorEngine.createRectObject("edit_" + bar.id, -spacing.preWidth + spacing.extraXOffset - 3, 0, spacing.preWidth + spacing.width, spacing.end.y - spacing.offset.y, 'BarEdit');
                     var evRec = this.eventReceiver;
                     //var me = this;
@@ -552,9 +560,9 @@ function $(elm: HTMLElement): DOMHelper {
                 }
                 doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
                 }
-                visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void { }
+                visitStaffExpression(staffExpression: IStaffExpression): void { }
     
-                visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
+                visitDefault(element: IMusicElement): void { }
     
     
                             /*
@@ -806,43 +814,49 @@ function $(elm: HTMLElement): DOMHelper {
                         }
                     }
                 }
-                visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
-                visitClef(clef: IClef, spacing: IClefSpacingInfo) {
+                visitVoice(voice: IVoice) { }
+                visitClef(clef: IClef) {
+                    const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(clef);
                     this.graphEngine.createMusicObject(null, spacing.clefId, 0, 0, 1);
                 }
-                visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) {
+                visitMeter(meter: IMeter) {
+                    let spacing = this.globalContext.getSpacingInfo<IMeterSpacingInfo>(meter);
                     if (!spacing) { 
                         this.globalContext.addSpacingInfo(meter, (spacing = new MusicSpacing.MeterSpacingInfo(meter))); 
                         //meter.spacingInfo = 
                     }
                     MeterDrawer.addMeterXy(null, this.graphEngine, meter.definition, 0, 0);
                 }
-                visitKey(key: IKey, spacing: IKeySpacingInfo) {
+                visitKey(key: IKey) {
+                    const spacing = this.globalContext.getSpacingInfo<IKeySpacingInfo>(key);
                     var staffContext = key.parent.getStaffContext(key.absTime);
                     KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef, 0, 0);
                 }
-                visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) {
+                visitStaff(staff: IStaff) {
+                    const spacing = this.globalContext.getSpacingInfo<IStaffSpacingInfo>(staff);
                     //console.log("staff");
                     for (var i = 0; i < 5; i++) {
                         this.graphEngine.createPathObject("m 0," + i * spacing.staffSpace * 2 + " l " + spacing.staffLength + ",0", 0, 0, 1, '#888', undefined, 'staffline' + staff.id + ' ' + i);
                     }
                 }
-                visitScore(score: IScore, spacing: IScoreSpacingInfo) {
+                visitScore(score: IScore) {
                     //this.graphEngine.SetSize(spacing.width * spacing.scale, spacing.height);
                 }
                 doTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, textSpacing: ITextSyllableSpacingInfo) {
                     this.graphEngine.drawText("text" + textSyllable.id, textSyllable.Text, 0, 0, "center");
                 }
-                visitBar(bar: IBar, spacing: IBarSpacingInfo) {
+                visitBar(bar: IBar) {
+                    const spacing = this.globalContext.getSpacingInfo<IBarSpacingInfo>(bar);
                     this.graphEngine.createPathObject("m " + spacing.extraXOffset + ",0 l 0," + (spacing.end.y - spacing.offset.y), 0, 0, 1, '#444444', undefined);
                 }
                 doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
                 }
-                visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void {
+                visitStaffExpression(staffExpression: IStaffExpression): void {
+                    const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(staffExpression);
                     this.graphEngine.drawText("text" + staffExpression.id, staffExpression.text, 0, 0, "left");
                 }
     
-                visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
+                visitDefault(element: IMusicElement): void { }
             }
     
             export class PrefixVisitor implements IVisitorIterator<IMusicElement> {
