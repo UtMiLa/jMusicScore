@@ -53,15 +53,15 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 //this.parent = parent;
             }
 
-            private _spacingInfo?: TSpacingInfo;
+            //private _spacingInfo?: TSpacingInfo;
             public id = IdSequence.next();
 
-            public get spacingInfo(): TSpacingInfo {
+            /*public get spacingInfo(): TSpacingInfo {
                 return this._spacingInfo;
             }
             public set spacingInfo(info: TSpacingInfo) {
                 this._spacingInfo = info;
-            }
+            }*/
             public inviteVisitor(spacer: IVisitor) {
                 spacer.visitDefault(this);
             }
@@ -277,13 +277,13 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
             getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T {
-                return <T>(<any>element).spacingInfo;
-                //return <T>this._spacingInfos[element.id];
+                //return <T>(<any>element).spacingInfo;
+                return <T>this._spacingInfos[element.id];
             }
 
             addSpacingInfo(element: IMusicElement, value: ISpacingInfo) {
-                (<any>element).spacingInfo = value;
-                //this._spacingInfos[element.id] = value;
+                //(<any>element).spacingInfo = value;
+                this._spacingInfos[element.id] = value;
             }
         }
 
@@ -1550,7 +1550,8 @@ public getContext(): INoteContext {
             public set NoteId(v: string) {
                 if (this.noteId !== v) {
                     this.noteId = v;
-                    this.spacingInfo = undefined;
+                    throw "cannot change noteid";
+                    //this.spacingInfo = undefined; // todo: change note id
                 }
             }
 
