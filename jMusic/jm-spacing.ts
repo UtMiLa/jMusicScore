@@ -662,7 +662,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
                     NoteSpacer.recalcPitches(this.globalContext, note, context);
                     NoteSpacer.recalcHeads(note, context, this.globalContext);
-                    NoteSpacer.recalcStem(note, spacing);
+                    NoteSpacer.recalcStem(this.globalContext, note, spacing);
                     NoteSpacer.recalcLedgerLinesUnder(note, context, this.globalContext);
                     NoteSpacer.recalcLedgerLinesOver(note, context, this.globalContext);
                 }
@@ -717,7 +717,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
                 doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
-                    var beamSpacing = beam.spacingInfo;
+                    var beamSpacing = this.globalContext.getSpacingInfo<BeamSpacingInfo>(beam);
                     var noteSpacing = this.globalContext.getSpacingInfo<NoteSpacingInfo>(context);
                     // find noder
                     var noteBeam = beam.parent.Beams[beam.index];
@@ -791,7 +791,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     var fromNote = refBeam.parent;
                     var toNote = refBeam.toNote;
                     var fromNoteSpacing = this.globalContext.getSpacingInfo<NoteSpacingInfo>(fromNote);
-                    var beamSpacing = refBeam.spacingInfo;
+                    var beamSpacing = this.globalContext.getSpacingInfo<BeamSpacingInfo>(refBeam);
                     if (!fromNoteSpacing) return;
                     var startX = fromNoteSpacing.offset.x + beamSpacing.start.x;
                     var startY = fromNoteSpacing.offset.y + beamSpacing.start.y;
@@ -902,8 +902,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 }
                 doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
                     if (!spacing) {
-                        beam.spacingInfo = new BeamSpacingInfo(beam); // todo: visit in VisitAll - after all notes have been visited?
-                        //this.globalContext.addSpacingInfo(beam, new BeamSpacingInfo(beam));
+                        //beam.spacingInfo = new BeamSpacingInfo(beam); // todo: visit in VisitAll - after all notes have been visited?
+                        this.globalContext.addSpacingInfo(beam, new BeamSpacingInfo(beam));
                     }                
                 }
                 visitStaffExpression(staffExpression: IStaffExpression): void {
@@ -1160,7 +1160,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                public static recalcStem(note: INote, noteSpacing: INoteSpacingInfo) {
+                public static recalcStem(globalContext: GlobalContext, note: INote, noteSpacing: INoteSpacingInfo) {
                     var noteDef = NoteHeadSpacingInfo.noteValues[note.NoteId]; // todo: fjern
                     //var hasFlag = NoteSpacer.hasFlag(note);
                     //var hasStem = !note.rest && note.timeVal.denominator >= 2;//NoteSpacer.hasStem(note);
@@ -1184,7 +1184,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
                         var beam = note.Beams[0];
                         if (beam && beam.parent !== note && beam.toNote !== note) {
-                            var beamSpacing = beam.spacingInfo;
+                            var beamSpacing = globalContext.getSpacingInfo<BeamSpacingInfo>(beam);
                             if (beamSpacing) { // todo: spacer!
                                 //noteSpacing.stemTipY = SVGBeamDesigner.yValue(noteSpacing.stemX + noteSpacing.offset.x, beam);
                                 //length = noteSpacing.stemRootY - noteSpacing.stemTipY;

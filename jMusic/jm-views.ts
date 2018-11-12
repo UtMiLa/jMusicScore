@@ -762,7 +762,7 @@ function $(elm: HTMLElement): DOMHelper {
                         for (var i = 0; i < note.Beams.length; i++) {
                             var beam = note.Beams[i];
                             if (!beam || beam.parent !== note) continue;
-                            var beamSpacing = beam.spacingInfo;
+                            var beamSpacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
                             var step = beam.index * beamSpacing.beamDist;
     
                             this.graphEngine.createPathObject("M " + beamSpacing.start.x + "," + (beamSpacing.start.y + step) +

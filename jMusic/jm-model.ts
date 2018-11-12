@@ -1226,11 +1226,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
         }
-        export interface IBeam {
+        export interface IBeam extends IMusicElement {
             parent: INote;
             toNote: INote;
             index: number;
-            spacingInfo: IBeamSpacingInfo;
+            //spacingInfo: IBeamSpacingInfo;
             //setSpacingInfo(spacingInfo: IBeamSpacingInfo): void;
             inviteVisitor(spacer: IVisitor): void;
             remove(): void;
@@ -2498,7 +2498,7 @@ export class ContextVisitor extends NullVisitor {
         var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
     }
     visitBeam(beam: IBeam) { 
-        var spacing = beam.spacingInfo;// this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
+        var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
         this.doBeam(beam, this.noteContext, spacing); 
     }
 
