@@ -651,6 +651,8 @@ import { Validators } from './jm-refiners';
                         var accidentalValidator = new Validators.UpdateAccidentalsValidator(this.globalContext);
                         accidentalValidator.refine(score);
 
+                        var beamValidator = new Validators.BeamValidator(this.globalContext);
+                        beamValidator.refine(score);
 
                         var spacer = new MusicSpacing.SpacingDesigner(score.globalContext);
                         spacer.design(score);

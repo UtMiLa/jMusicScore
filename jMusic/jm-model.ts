@@ -517,7 +517,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 return this.getSpecialElements("Clef");
             }
             get meterElements(): IMeter[] {
-                return this.getSpecialElements("Meter");
+                var res: IMeter[] = [];
+                this.withMeters((meter: IMeter, index: number) => {
+                    res.push(meter);
+                });
+                return res;
             }
             get keyElements(): IKey[] {
                 return this.getSpecialElements("Key");
