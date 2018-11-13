@@ -8,7 +8,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, LedgerLineSpacingInfo,
-    ILongDecorationSpacingInfo, ITimedEvent, Music, INoteInfo, INoteContext, ContextVisitor, GlobalContext } from "./jm-model";
+    ILongDecorationSpacingInfo, ITimedEvent, Music, INoteSource, INoteContext, ContextVisitor, GlobalContext } from "./jm-model";
 
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: pitchToStaffLine skal ikke kaldes med <any>
@@ -655,7 +655,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                doNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
+                doNote(note: INoteSource, context: INoteContext, spacing: INoteSpacingInfo) {
                     //(<NoteSpacingInfo>spacing).calcMetrics(note);
                     spacing.preWidth = MinimalSpacer.doGetPreWidth(this.globalContext, note);
                     spacing.width = MinimalSpacer.doGetWidth(note);
@@ -820,7 +820,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         this.globalContext.addSpacingInfo(head, new NoteHeadSpacingInfo(head));
                     }
                 }
-                doNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) {
+                doNote(note: INoteSource, context: INoteContext, spacing: INoteSpacingInfo) {
                     if (!spacing) {
                         //note.spacingInfo = new NoteSpacingInfo(note);
                         this.globalContext.addSpacingInfo(note, new NoteSpacingInfo(note));
@@ -969,7 +969,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         });
     
                         staff.withVoices((voice: IVoice, index: number): void => {
-                            voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext, index: number): void => {
+                            voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number): void => {
                                 note.inviteVisitor(this.spacer);
                             });
                         });
@@ -1028,7 +1028,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                     score.withVoices((voice: IVoice, index: number): void => {
                         this.globalContext.getSpacingInfo(voice).offset.x = 0;
-                        voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext, index: number): void => {
+                        voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number): void => {
                             /*todo: if (note.beam) {
                                 note.beam.updateAll();
                             }*/
@@ -1080,16 +1080,16 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return this.getStaffContext(elm.parent, time);
                 }*/
     
-                public static pitchToStaffLine(pitch: Pitch, note: INoteInfo, noteCtx: INoteContext) {
+                public static pitchToStaffLine(pitch: Pitch, note: INoteSource, noteCtx: INoteContext) {
                     var clef = noteCtx.getStaffContext().clef;
                     return clef.pitchToStaffLine(pitch);
                 }
-                public static staffLineToPitch(line: number, note: INoteInfo, noteCtx: INoteContext) {
+                public static staffLineToPitch(line: number, note: INoteSource, noteCtx: INoteContext) {
                     var clef = noteCtx.getStaffContext().clef;
                     return clef.staffLineToPitch(line);
                 }
     
-                public static recalcPitches(globalContext: GlobalContext, note: INoteInfo, noteCtx: INoteContext) {
+                public static recalcPitches(globalContext: GlobalContext, note: INoteSource, noteCtx: INoteContext) {
                     var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx);
     
                     var lowPitch = 99;

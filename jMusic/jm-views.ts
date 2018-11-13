@@ -7,7 +7,7 @@ import { IMusicElement, IMeterSpacingInfo, IMeter, Music,
      IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteInfo, INoteContext, ContextVisitor, GlobalContext
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteSource, INoteContext, ContextVisitor, GlobalContext
      } from "./jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
@@ -300,7 +300,7 @@ function $(elm: HTMLElement): DOMHelper {
     
                 visitNoteHead(head: INotehead) {
                 }
-                visitNote(note: INoteInfo) {
+                visitNote(note: INoteSource) {
                 }
                 visitNoteDecoration(deco: INoteDecorationElement) {
                     // expr
@@ -373,7 +373,7 @@ function $(elm: HTMLElement): DOMHelper {
                             evRec.processEvent("clickhead", { head: head });
                         });
                 }
-                doNote(note: INoteInfo, context: INoteContext, noteSpacing: INoteSpacingInfo) {
+                doNote(note: INoteSource, context: INoteContext, noteSpacing: INoteSpacingInfo) {
                     var evRec = this.eventReceiver;
                     var me = this.sensorEngine;
                     //var staffContext = (<any>note.parent.parent).getStaffContext(context.absTime); // todo: context!
@@ -719,7 +719,7 @@ function $(elm: HTMLElement): DOMHelper {
                         var dot = this.graphEngine.createMusicObject(null, 'e_dots.dot', this.globalContext.getSpacingInfo<INoteSpacingInfo>(context).dotWidth + 5/*SVGMetrics.dotSeparation*/ * i, 0, spacing.graceScale);
                     }
                 }
-                doNote(note: INoteInfo, context: INoteContext, noteSpacing: INoteSpacingInfo) {
+                doNote(note: INoteSource, context: INoteContext, noteSpacing: INoteSpacingInfo) {
                     // note stem
                     //console.log("note");
                     if (!note.rest) {

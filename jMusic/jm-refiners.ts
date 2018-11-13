@@ -7,7 +7,7 @@ import { IMusicElement, IMeterSpacingInfo,  IMeter, Music,
     IClefSpacingInfo, Point, INotehead, INote, IVoiceNote, ITimedVoiceEvent, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteInfo, INoteContext, GlobalContext
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteSource, INoteContext, GlobalContext
      } from "./jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import { IScoreDesigner, IScoreRefiner } from './jm-interfaces';
@@ -41,7 +41,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
 
                 score.withStaves((staff: IStaff): void => {
                     staff.withVoices((voice: IVoice): void => {
-                        voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext): void => {
+                        voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext): void => {
                             if (context.absTime.add(note.timeVal).gt(maxTime)) maxTime = context.absTime.add(note.timeVal);
                         });
                     });
@@ -86,7 +86,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 score.withStaves((staff: IStaff) => {
                     staff.withVoices((voice: IVoice) => {
                         var absTime = AbsoluteTime.startTime;
-                        voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext) => {
+                        voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext) => {
                             if (!context.absTime.eq(absTime)) {
                                 context.absTime = absTime;
                             }
@@ -431,7 +431,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 var noteElements = voice.getNoteElements(this.globalContext);
           
                 //for (var iNote = 0; iNote < noteElements.length; iNote++) { // todo: problem
-                voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext, iNote: number) => {
+                voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, iNote: number) => {
                     //var note: INote = noteElements[iNote];
                     var staffContext = voice.parent.getStaffContext(context.absTime);
                     var beamspan = note.getBeamspan();
@@ -541,7 +541,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
             }
 
             private validateVoice(voice: IVoice) {
-                voice.withNotes(this.globalContext, (note: INoteInfo, context: INoteContext, index: number) => {
+                voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number) => {
                     var nextNote = Music.nextNote(this.globalContext, note);
                         /*: NoteElement;
                     if (index < voice.noteElements.length - 1) {

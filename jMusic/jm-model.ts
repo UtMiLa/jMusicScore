@@ -777,14 +777,14 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         export interface IVoice extends IEventContainer, IMusicElement {
             getNoteElements(globalContext: GlobalContext): INote[];
             parent: IStaff;
-            withNotes(globalContext: GlobalContext, f: (note: INoteInfo, context: INoteContext, index: number) => void): void;
+            withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
             getEvents(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
             getEndTime(globalContext: GlobalContext): AbsoluteTime;
             removeChild(child: INote): void;
             getSequence(id: string): ISequence;
-            addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): IVoiceNote;
+            addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): ISequenceNote;
             addEvent(event: ITimedEvent): void;
         }
 
@@ -836,7 +836,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
 
-            public withNotes(globalContext: GlobalContext, f: (note: INoteInfo, context: INoteContext, index: number) => void) {
+            public withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
                 this.visitAll(new NoteVisitor(globalContext, f));
             }
 
@@ -861,7 +861,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 var events: ITimedVoiceEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
-                this.withNotes(globalContext, (note: INoteInfo, context: INoteContext, index: number) => {
+                this.withNotes(globalContext, (note: INoteSource, context: INoteContext, index: number) => {
                     if (!fromTime.gt(context.absTime) && toTime.gt(context.absTime)) {
                         events.push(<any>note);
                     }
@@ -884,10 +884,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
 
-            public addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): IVoiceNote{
+            public addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): ISequenceNote{
                 let segment = this.getSequence(segmentId);
                 let seqNote = segment.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);
-                return new NoteProxy(seqNote, this);
+                return seqNote; // new NoteProxy(seqNote, this);
             }
         }
 
@@ -895,7 +895,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         export interface ISequence extends IEventContainer, IMusicElement {
             noteElements: INote[];
             parent: IVoice | ISequence;
-            withNotes(globalContext: GlobalContext, f: (note: INoteInfo, context: INoteContext, index: number) => void): void;
+            withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
             getEvents(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
@@ -958,7 +958,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             };
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
 
-            public withNotes(globalContext: GlobalContext, f: (note: INoteInfo, context: INoteContext, index: number) => void) {
+            public withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
                 this.visitAll(new NoteVisitor(globalContext, f));
             }
             public getStemDirection(): StemDirectionType {
@@ -974,7 +974,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 var events: ITimedEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
-                this.withNotes(globalContext, (note: INoteInfo, context: INoteContext, index: number) => {
+                this.withNotes(globalContext, (note: INoteSource, context: INoteContext, index: number) => {
                     if (!fromTime.gt(context.absTime) && toTime.gt(context.absTime)) {
                         events.push(context);
                     }
@@ -1297,11 +1297,18 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             setStemDirection(dir: StemDirectionType): void;
             getPrev(globalContext: GlobalContext): INote;
             getNext(globalContext: GlobalContext): INote;
+            getInfo(): INoteInfo;
         }
 
 
 
-        export interface INoteInfo extends INote {}
+        export interface INoteSource  extends INote, ITimedEvent {
+        }
+        export interface INoteInfo {
+            note: INote;
+            absTime: AbsoluteTime;
+            id: string;
+        }
         export interface INoteContext extends INote,  ITimedEvent {
             //spacingInfo: INoteSpacingInfo;
             getStaffContext(): StaffContext;
@@ -1319,12 +1326,20 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             parent: ISequence;
         }
 
-        class NoteProxy extends MusicElement<INoteSpacingInfo> implements IVoiceNote {
+        /*class NoteProxy extends MusicElement<INoteSpacingInfo> implements IVoiceNote {
             constructor(private note: INote, public parent: IVoice){
                 super(parent);
             }
 
             getContext(){ return this.note.getContext(); }
+
+            getInfo(): INoteInfo {
+                return {
+                    note: this,
+                    absTime: this.absTime, 
+                    id: this.id
+                }
+            }
 
             addChild(child: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
                 this.note.addChild(child, before, removeOrig);
@@ -1414,7 +1429,24 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
 
-        }
+        }*/
+
+
+        /**
+         * NoteElement: det faktiske element, uden transformationer. Bruges af værktøjer, der arbejder direkte på musikken. Kan bo på en Voice, Sequence eller Variable.
+         * INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
+         *      Id er konkateneret af variables og NoteElement's Id. NoteSpacingInfo og AbsTime er knyttet til denne. 
+         *      Holder en reference til NoteElement (nødvendigt?)
+         *      Linker til foregående og næste node og Voice.
+         *      Hver Sequence og variabel kopierer INoteInfo (og transformerer evt.).
+         * NoteHeadElement: det faktiske element, uden transformationer. Bruges af værktøjer, der arbejder direkte på musikken. Kan bo på NoteElement. 
+         * INoteHeadInfo: transformeret version, bor på INoteInfo. Holder Pitch, Tie, Accidentals, NoteHeadSpacingInfo.
+         * Ditto for andre Note-children. De vil blot indeholde en SpacingInfo og en reference til dekorationen.
+         * BeamOverrides: bor på NoteElement, og bestemmer, hvor bjælkeregler skal overtrumfes.
+         * Beams: bor på INoteInfo. 
+         */
+
+
 
         class NoteElement extends MusicElement<INoteSpacingInfo> implements ISequenceNote {
 /** TODO: flyt til NoteContext */
@@ -1440,6 +1472,15 @@ public get voice(): IVoice {
 }
 public getContext(): INoteContext {
     return this;
+}
+
+
+getInfo(): INoteInfo {
+    return {
+        note: this,
+        absTime: this.absTime, 
+        id: this.id
+    }
 }
 
 /*pitchToStaffLine(pitch: Pitch): number{
@@ -1957,7 +1998,7 @@ public getContext(): INoteContext {
 
         export interface IVisitor {
             visitNoteHead(head: INotehead): void;
-            visitNote(note: INoteInfo): void;
+            visitNote(note: INoteSource): void;
             visitNoteDecoration(deco: INoteDecorationElement): void;
             visitLongDecoration(deco: ILongDecorationElement): void;
             visitVoice(voice: IVoice): void;
@@ -2233,7 +2274,7 @@ public getContext(): INoteContext {
                         return note;
                     }
                 }
-                sequence.withNotes(globalContext, (note: INoteInfo, context: INoteContext) => {
+                sequence.withNotes(globalContext, (note: INoteSource, context: INoteContext) => {
                     if (absTime.ge(context.absTime) && context.absTime.add(note.timeVal).gt(absTime)) {
                         res = note;
                     }
@@ -2270,9 +2311,9 @@ public getContext(): INoteContext {
                 return null;
             }
 
-            static addNoteToVoiceX(globalContext: GlobalContext, voice: IVoice, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null, segmentId: string = null): IVoiceNote {            
+            /*static addNoteToVoiceX(globalContext: GlobalContext, voice: IVoice, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null, segmentId: string = null): IVoiceNote {            
                 return voice.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet, segmentId);
-            }
+            }*/
 
             /** Add a note to voice at a specified absTime */
             static addNoteX(globalContext: GlobalContext, sequence: ISequence, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): ISequenceNote {
@@ -2520,11 +2561,11 @@ export class ContextVisitor extends NullVisitor {
 
 
 export class NoteVisitor extends ContextVisitor {
-    constructor(globalContext: GlobalContext, private callback: (note:INoteInfo, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
+    constructor(globalContext: GlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
         super(globalContext);
     }
     no: number = 0;
-    doNote(note:INoteInfo, context: INoteContext, spacing: INoteSpacingInfo): void {
+    doNote(note:INoteSource, context: INoteContext, spacing: INoteSpacingInfo): void {
         this.callback(note, context, this.no++, spacing);
     }
 }   
