@@ -123,10 +123,10 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 var pitchClassChanges: string[] = [];
 
                 // for each staff:
-                var scoreEvents: ITimedVoiceEvent[] = score.getEvents(this.globalContext, true);
+                var scoreEvents: ITimedVoiceEvent[] = score.getEventsOld(this.globalContext, true);
                 score.withStaves((staff: IStaff, index: number): void => {
                     // get events (bar lines + notes + keys changes) sorted by absTime from all voices
-                    var events = staff.getEvents(this.globalContext);
+                    var events = staff.getEventsOld(this.globalContext);
                     events = events.concat(scoreEvents);
                     events.sort(Music.compareEvents);
                     // for each event:

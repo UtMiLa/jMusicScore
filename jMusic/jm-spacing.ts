@@ -984,7 +984,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         this.globalContext.getSpacingInfo(staff).offset.y = Metrics.staffYOffset + index * Metrics.staffYStep; // todo: index
                     });
     
-                    var events: ITimedEvent[] = score.getEvents(this.globalContext);
+                    var events: ITimedEvent[] = score.getEventsOld(this.globalContext);
                     events.sort(Music.compareEvents);
     
                     var pos = Metrics.firstPos;

@@ -178,7 +178,7 @@ class LilypondHelper {
 
     private static getEventsAsLilypond(globalContext: GlobalContext, voice: IVoice): string {
         var res = "";
-        var events = voice.getEvents(globalContext); // + staff.keys, .meters, .clefs, + score.bars
+        var events = voice.getEventsOld(globalContext); // + staff.keys, .meters, .clefs, + score.bars
         for (var i = 0; i < events.length; i++) {
             var ev = events[i];
             if (ev.getElementName() === "Note") {

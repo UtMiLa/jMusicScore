@@ -145,7 +145,7 @@ export class DomFeedbackClient implements IFeedbackClient {
         else if (key === "insertPoint") {
             if (status.currentVoice) {
                 var hPos = <HorizPosition>val;
-                var events = status.currentVoice.getEvents(this.globalContext, hPos.absTime, hPos.absTime.add(new TimeSpan(1,1024))); // todo: grimt!
+                var events = status.currentVoice.getEventsOld(this.globalContext, hPos.absTime, hPos.absTime.add(new TimeSpan(1,1024))); // todo: grimt!
                 if (events.length) {
                     var id = events[0].id;
                     this.sensorEngine.showInsertionPoint(id, hPos.beforeAfter * 9, staffLine * SvgMetrics.pitchYFactor);
@@ -173,7 +173,7 @@ export class DomFeedbackClient implements IFeedbackClient {
 
     showNoteCursor(noteId: string, voice: IVoice, horizPos: HorizPosition, pitch: Pitch) {
         this.sensorEngine.showCursor(noteId);
-        var events = voice.getEvents(this.globalContext);
+        var events = voice.getEventsOld(this.globalContext);
         for (var i = 0; i < events.length; i++) {
             var ev = events[i];
             if (ev.getHorizPosition().eq(horizPos)) {

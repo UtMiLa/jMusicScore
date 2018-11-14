@@ -188,7 +188,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
-        export interface ITimedEvent extends IMusicElement {
+        export interface ITimedEvent extends IMusicElement, IEventEnumerator {
             absTime: AbsoluteTime;
             getElementName(): string;
             debug(): string;
@@ -218,7 +218,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
         export interface IEventContainer {
-            getEvents(globalContext: GlobalContext): ITimedEvent[];
+            getEventsOld(globalContext: GlobalContext): ITimedEvent[];
         }
 
         export interface IBar extends ITimedVoiceEvent {
@@ -228,6 +228,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
         class BarElement extends MusicElement<IBarSpacingInfo> implements IBar {
+            getEvents(): IEventInfo[] {
+                return [this];
+            }
             constructor(public parent: IScore, public absTime: AbsoluteTime) {
                 super(parent);
             }
@@ -277,13 +280,13 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
             getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T {
-                //return <T>(<any>element).spacingInfo;
-                return <T>this._spacingInfos[element.id];
+                return <T>(<any>element).spacingInfo;
+                //return <T>this._spacingInfos[element.id];
             }
 
             addSpacingInfo(element: IMusicElement, value: ISpacingInfo) {
-                //(<any>element).spacingInfo = value;
-                this._spacingInfos[element.id] = value;
+                (<any>element).spacingInfo = value;
+                //this._spacingInfos[element.id] = value;
             }
         }
 
@@ -299,7 +302,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             clear(): void;
             findBar(absTime: AbsoluteTime): IBar;
-            getEvents(globalContext: GlobalContext, ignoreStaves?: boolean): ITimedVoiceEvent[];
+            getEventsOld(globalContext: GlobalContext, ignoreStaves?: boolean): ITimedVoiceEvent[];
             withStaves(f: (staff: IStaff, index: number) => void): void;
             withVoices(f: (voice: IVoice, index: number) => void): void;
             withBars(f: (bar: IBar, index: number) => void): void;
@@ -383,11 +386,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 }
             }
 
-            public getEvents(globalContext: GlobalContext, ignoreStaves = false): ITimedVoiceEvent[] {
+            public getEventsOld(globalContext: GlobalContext, ignoreStaves = false): ITimedVoiceEvent[] {
                 var events: ITimedVoiceEvent[] = [];
                 if (!ignoreStaves) {
                     this.withStaves((staff: IStaff) => {
-                        events = events.concat(staff.getEvents(globalContext));
+                        events = events.concat(staff.getEventsOld(globalContext));
                     });
                 }
                 events = events.concat(this.bars);
@@ -497,7 +500,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getStaffContext(absTime: AbsoluteTime): StaffContext;
             //getMeterElements(): IMeter[];
             getKeyElements(): IKey[];
-            getEvents(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
+            getEventsOld(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
             addVoice(): IVoice;
             //setMeter(meter: MeterDefinition, absTime: AbsoluteTime): void;
             getParent(): IScore;
@@ -649,13 +652,13 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             public getKeyElements(): IKey[] {
                 return this.keyElements;
             }
-            public getEvents(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
+            public getEventsOld(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
                 var events: ITimedVoiceEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
 
                 this.withVoices((voice: IVoice, index: number) => {
-                    events = events.concat(voice.getEvents(globalContext, fromTime, toTime));
+                    events = events.concat(voice.getEventsOld(globalContext, fromTime, toTime));
                 });
 
                 var f = (elm: ITimedVoiceEvent, index: number) => {
@@ -743,6 +746,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             constructor(public parent: IStaff, public text: string, public absTime: AbsoluteTime) {
                 super(parent);
             }
+            getEvents(): IEventInfo[] {
+                return [this];
+            }
+
             public getElementName() { return "StaffExpression"; }
             public getSortOrder() {
                 return 99;
@@ -780,7 +787,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
-            getEvents(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
+            getEventsOld(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
             getEndTime(globalContext: GlobalContext): AbsoluteTime;
             removeChild(child: INote): void;
             getSequence(id: string): ISequence;
@@ -857,7 +864,26 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 //    this.changed();
                 }
             }
-            public getEvents(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
+
+
+            public getEvents(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): IEventInfo[] {
+                var events: IEventInfo[] = [];
+                if (!fromTime) fromTime = AbsoluteTime.startTime;
+                if (!toTime) toTime = AbsoluteTime.infinity;
+                for (var i = 0; i < this.children.length; i++) {
+                    let addedEvents = (<IEventEnumerator><any>this.children[i]).getEvents(globalContext);
+                    events = events.concat(addedEvents);
+                }
+                /*this.withNotes(globalContext, (note: INoteSource, context: INoteContext, index: number) => {
+                    if (!fromTime.gt(context.absTime) && toTime.gt(context.absTime)) {
+                        events.concat(note.getEvents(globalContext));
+                    }
+                });*/
+                return events;
+            }
+
+
+            public getEventsOld(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
                 var events: ITimedVoiceEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
@@ -892,13 +918,13 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
-        export interface ISequence extends IEventContainer, IMusicElement {
+        export interface ISequence extends IEventContainer, IMusicElement, IEventEnumerator {
             noteElements: INote[];
             parent: IVoice | ISequence;
             withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
-            getEvents(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
+            getEventsOld(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
             getEndTime(): AbsoluteTime;
             getNoteElements(globalContext: GlobalContext): INote[];
             removeChild(child: INote): void;
@@ -970,7 +996,23 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 //    this.changed();
                 }
             }
-            public getEvents(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
+
+            public getEvents(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): IEventInfo[] {
+                var events: IEventInfo[] = [];
+                if (!fromTime) fromTime = AbsoluteTime.startTime;
+                if (!toTime) toTime = AbsoluteTime.infinity;
+                for (var i = 0; i < this.children.length; i++) {
+                    let addedEvents = (<IEventEnumerator><any>this.children[i]).getEvents(globalContext);
+                    events = events.concat(addedEvents);
+                }
+                /*this.withNotes(globalContext, (note: INoteSource, context: INoteContext, index: number) => {
+                    if (!fromTime.gt(context.absTime) && toTime.gt(context.absTime)) {
+                        events.concat(note.getEvents(globalContext));
+                    }
+                });*/
+                return events;
+            }
+            public getEventsOld(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
                 var events: ITimedEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
@@ -1064,6 +1106,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 super(parent);
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
             }
+            getEvents(): IEventInfo[] {
+                return [this];
+            }
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitClef(this);
             }
@@ -1124,6 +1170,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 super(parent);
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
             }
+            getEvents(): IEventInfo[] {
+                return [this];
+            }
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitKey(this);
             }
@@ -1181,6 +1231,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             constructor(public parent: IMeterOwner, public definition: IMeterDefinition, public absTime: AbsoluteTime) {
                 super(parent);
             }
+            getEvents(): IEventInfo[] {
+                return [this];
+            }
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitMeter(this);
             }
@@ -1304,10 +1358,36 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
         export interface INoteSource  extends INote, ITimedEvent {
         }
-        export interface INoteInfo {
-            note: INote;
-            absTime: AbsoluteTime;
+        export interface INoteHeadInfo {
+            head: INotehead;
+            pitch: Pitch;
             id: string;
+        }
+        export interface INoteDecoInfo<T> {
+            deco: T;
+            id: string;
+        }
+
+
+        export interface IEventInfo {
+            id: string;
+        }
+        /**INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
+         *      Id er konkateneret af variables og NoteElement's Id. NoteSpacingInfo og AbsTime er knyttet til denne. 
+         *      Holder en reference til NoteElement (nødvendigt?)
+         *      Linker til foregående og næste node og Voice.
+         *      Hver Sequence og variabel kopierer INoteInfo (og transformerer evt.). */
+        export interface INoteInfo extends IEventInfo {
+            note: INote;
+            heads: INoteHeadInfo[];
+            decorations: INoteDecoInfo<INoteDecorationElement>[];
+            longDecorations: INoteDecoInfo<ILongDecorationElement>[];
+            syllables: INoteDecoInfo<ITextSyllableElement>[];
+            absTime: AbsoluteTime;
+        }
+
+        export interface IEventEnumerator {
+            getEvents(globalContext: GlobalContext): IEventInfo[];
         }
         export interface INoteContext extends INote,  ITimedEvent {
             //spacingInfo: INoteSpacingInfo;
@@ -1326,113 +1406,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             parent: ISequence;
         }
 
-        /*class NoteProxy extends MusicElement<INoteSpacingInfo> implements IVoiceNote {
-            constructor(private note: INote, public parent: IVoice){
-                super(parent);
-            }
-
-            getContext(){ return this.note.getContext(); }
-
-            getInfo(): INoteInfo {
-                return {
-                    note: this,
-                    absTime: this.absTime, 
-                    id: this.id
-                }
-            }
-
-            addChild(child: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
-                this.note.addChild(child, before, removeOrig);
-            }
-
-            getVoice() {return this.parent; }
-            getStaff() {return this.parent.parent; }
-
-            //get spacingInfo(): INoteSpacingInfo { return this.note.spacingInfo; }  // todo: proxy skal eje spacinginfo          
-            get NoteId(): string { return this.note.NoteId; }            
-            get timeVal(): TimeSpan { return this.note.timeVal; }
-            get noteheadElements(): INotehead[] { return this.note.noteheadElements; }
-            get decorationElements(): INoteDecorationElement[] { return this.note.decorationElements; }
-            get longDecorationElements(): ILongDecorationElement[] { return this.note.longDecorationElements; }
-            get syllableElements(): ITextSyllableElement[] { return this.note.syllableElements; }
-            get tupletDef(): TupletDef { return this.note.tupletDef; }
-            get dotNo(): number { return this.note.dotNo; }
-            get rest(): boolean { return this.note.rest; }
-            get graceType(): string { return this.note.graceType; }
-            get Beams(): IBeam[] { return this.note.Beams; }
-            withHeads(globalContext: GlobalContext, f: (head: INotehead, index: number) => void): void {
-                this.note.withHeads(globalContext, f);
-            }
-            withDecorations(globalContext: GlobalContext, f: (deco: INoteDecorationElement, index: number) => void): void {
-                this.note.withDecorations(globalContext, f);
-            }
-            withLongDecorations(globalContext: GlobalContext, f: (deco: ILongDecorationElement, index: number) => void): void {
-                this.note.withLongDecorations(globalContext, f);
-            }
-            withSyllables(globalContext: GlobalContext, f: (syll: ITextSyllableElement, index: number) => void): void {
-                this.note.withSyllables(globalContext, f);
-            }
-            getBeamspan(): number[] {
-                return this.note.getBeamspan();
-            }
-            setBeamspan(beamspan: number[]): void {
-                throw new Error("May not change note.");
-            }
-            setDots(no: number): void {
-                throw new Error("May not change note.");
-            }
-            matchesOnePitch(pitch: Pitch, ignoreAlteration: boolean): boolean {
-                throw new Error("Method not implemented.");
-            }
-            matchesPitch(pitch: Pitch, ignoreAlteration: boolean): boolean {
-                throw new Error("Method not implemented.");
-            }
-            setPitch(pitch: Pitch): INotehead {
-                throw new Error("Method not implemented.");
-            }
-            getTimeVal(): TimeSpan {
-                throw new Error("Method not implemented.");
-            }
-            setRest(newRest: boolean): void {
-                throw new Error("Method not implemented.");
-            }
-            getStemDirection(): StemDirectionType {
-                throw new Error("Method not implemented.");
-            }
-            setStemDirection(dir: StemDirectionType): void {
-                throw new Error("Method not implemented.");
-            }
-            get absTime(): AbsoluteTime { return this.note.absTime; }
-            get getSortOrder(): () => number { return this.note.getSortOrder; }
-            getHorizPosition(): HorizPosition {
-                throw new Error("Method not implemented.");
-            }
-
-
-            getPrev(globalContext: GlobalContext): INote {
-                var seq = this.parent;
-                var noteElements = seq.getNoteElements(globalContext);
-                var i = noteElements.indexOf(this);
-                if (i > 0) {
-                    return noteElements[i - 1];
-                }
-                return null;
-            }
-            getNext(globalContext: GlobalContext): INote{
-                var seq = this.parent;
-                var noteElements = seq.getNoteElements(globalContext);
-                var i = noteElements.indexOf(this);
-                if (i >= 0 && i < noteElements.length - 1) {
-                    return noteElements[i + 1];
-                }
-                return null;
-            }
-
-
-        }*/
-
-
-        /**
+        /*
          * NoteElement: det faktiske element, uden transformationer. Bruges af værktøjer, der arbejder direkte på musikken. Kan bo på en Voice, Sequence eller Variable.
          * INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
          *      Id er konkateneret af variables og NoteElement's Id. NoteSpacingInfo og AbsTime er knyttet til denne. 
@@ -1447,11 +1421,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
          */
 
 
-
+    /** NoteHeadElement: det faktiske element, uden transformationer. Bruges af værktøjer, der arbejder direkte på musikken. Kan bo på NoteElement.  */
         class NoteElement extends MusicElement<INoteSpacingInfo> implements ISequenceNote {
+
 /** TODO: flyt til NoteContext */
-
-
 //(<any>note.parent.parent).getStaffContext(context.absTime); // todo: context!
 
 public getStaffContext(): StaffContext{
@@ -1474,14 +1447,21 @@ public getContext(): INoteContext {
     return this;
 }
 
+            getEvents(): IEventInfo[] {
+                return [this];
+            }
 
-getInfo(): INoteInfo {
-    return {
-        note: this,
-        absTime: this.absTime, 
-        id: this.id
-    }
-}
+            getInfo(): INoteInfo {
+                return {
+                    note: this,
+                    heads: this.noteheadElements.map(h => h.getInfo()),
+                    decorations: this.decorationElements.map(h => h.getInfo()),
+                    longDecorations: this.longDecorationElements.map(h => h.getInfo()),
+                    syllables: this.syllableElements.map(h => h.getInfo()),
+                    absTime: this.absTime, 
+                    id: this.id
+                }
+            }
 
 /*pitchToStaffLine(pitch: Pitch): number{
     var clef = NoteElement.getStaffContext(this, this.absTime).clef;
@@ -1788,6 +1768,7 @@ getInfo(): INoteInfo {
             getPitch(): Pitch;
             getAccidental(): string;
             matchesPitch(pitch: Pitch, ignoreAlteration?: boolean): boolean;
+            getInfo(): INoteHeadInfo;
             //spacingInfo: INoteHeadSpacingInfo;
         }
 
@@ -1796,6 +1777,15 @@ getInfo(): INoteInfo {
             constructor(public parent: INote/*, noteId: string*/, public pitch: Pitch) {
                 super(parent);
             }
+            getInfo(): INoteHeadInfo {
+                return {
+                    id: this.id,
+                    head: this,
+                    pitch: this.pitch
+                };
+            }
+
+
             static createFromMemento(parent: INote, memento: IMemento): NoteheadElement {
                 var pitch = new Pitch(memento.def.p, memento.def.a);
                 var head = new NoteheadElement(parent,pitch);
@@ -1861,6 +1851,7 @@ getInfo(): INoteInfo {
             parent: INote;
             placement: string;
             getDecorationId(): NoteDecorationKind;
+            getInfo(): INoteDecoInfo<INoteDecorationElement>;
         }
 
         /** Note decoration, e.g. staccato dot, fermata */
@@ -1868,6 +1859,15 @@ getInfo(): INoteInfo {
             constructor(public parent: INote, private notedecorationId: NoteDecorationKind) {
                 super(parent);
             }
+
+            getInfo(): INoteDecoInfo<INoteDecorationElement>{
+                return {
+                    id: this.id,
+                    deco: this
+                };
+            }
+
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitNoteDecoration(this);
             }
@@ -1908,6 +1908,7 @@ getInfo(): INoteInfo {
             //spacingInfo: ILongDecorationSpacingInfo;
             endEvent: ITimedEvent;
             type: LongDecorationType;
+            getInfo(): INoteDecoInfo<ILongDecorationElement>;
         }
 
         /** Long note decoration implementation, e.g. hairpin, trill extension and slur */
@@ -1915,6 +1916,15 @@ getInfo(): INoteInfo {
             constructor(public parent: INote, private duration: TimeSpan, public type: LongDecorationType) {
                 super(parent);
             }
+
+            getInfo(): INoteDecoInfo<ILongDecorationElement>{
+                return {
+                    id: this.id,
+                    deco: this
+                };
+            }
+
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitLongDecoration(this);
             }
@@ -1956,6 +1966,7 @@ getInfo(): INoteInfo {
             placement: string;
             Text: string;
             parent: INote;
+            getInfo(): INoteDecoInfo<ITextSyllableElement>;
         }
 
         /** Text syllable from lyrics, shown under or over a note */
@@ -1963,6 +1974,14 @@ getInfo(): INoteInfo {
             constructor(public parent: INote, private text: string) {
                 super(parent);
             }
+
+            getInfo(): INoteDecoInfo<ITextSyllableElement>{
+                return {
+                    id: this.id,
+                    deco: this
+                };
+            }
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitTextSyllable(this);
             }

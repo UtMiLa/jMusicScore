@@ -7,12 +7,16 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,  Point,
     Music, MusicElementFactory, ClefElement,
     KeyElement, ISequence,
     MeterElement,
-    GlobalContext} from "./jm-model";
+    GlobalContext,
+    IEventInfo} from "./jm-model";
 import { IScoreRefiner } from "./jm-interfaces";
 
         export class GhostMeterElement extends MusicElement<IMeterSpacingInfo> implements IMeter {
             constructor(public parent: IMusicElement, private originElement: IMeter) {
                 super(parent);
+            }
+            getEvents(globalContext: GlobalContext): IEventInfo[] {
+                return [this];
             }
 
             public get absTime(): AbsoluteTime { return this.originElement.absTime; }
@@ -113,6 +117,9 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
     private name: string;
     private ref: ISequence;
     
+    getEvents(globalContext: GlobalContext): IEventInfo[] {
+        return this.ref.getEvents(globalContext);//todo: concatenate ids
+    }
     getElementName(): string {
         return "VariableRef";
     }
@@ -167,8 +174,8 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
         }
     }
 
-    getEvents(globalContext: GlobalContext): ITimedEvent[] {
-        return this.ref.getEvents(globalContext);
+    getEventsOld(globalContext: GlobalContext): ITimedEvent[] {
+        return this.ref.getEventsOld(globalContext);
     }
 
     getStaffContext(absoluteTime: AbsoluteTime) {

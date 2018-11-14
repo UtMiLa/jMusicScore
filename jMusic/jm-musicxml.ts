@@ -605,7 +605,7 @@ export class MusicXmlConverter implements IFileConverter {
             private smallestDivision = 1;
 
             private findDivision() {
-                var events: ITimedEvent[] = this.document.getEvents(this.globalContext);
+                var events: ITimedEvent[] = this.document.getEventsOld(this.globalContext);
                 var commonDenominator: number = 1;
                 for (var i = 0; i < events.length; i++) {
                     commonDenominator *= events[i].absTime.denominator / Rational.gcd(commonDenominator, events[i].absTime.denominator);
@@ -654,7 +654,7 @@ export class MusicXmlConverter implements IFileConverter {
 
                     var startTime = !i ? AbsoluteTime.startTime : this.document.bars[i - 1].absTime;
                     var endTime = i === this.document.bars.length - 1 ? AbsoluteTime.infinity : this.document.bars[i].absTime;
-                    var events = staffElement.getEvents(this.globalContext, startTime, endTime);
+                    var events = staffElement.getEventsOld(this.globalContext, startTime, endTime);
                     events.sort(Music.compareEventsByVoice);
 
                     var str = "";
