@@ -291,42 +291,62 @@ describe("Keys and pitches", function () {
     });
 
     
-    it("should compute correct semitones from intervals", function() {
+    it("should compute correct semitones and pitchclasses from intervals", function() {
         var testData = [
-            { i: new Interval(0, IntervalType.Pure), r: 0 },
-            { i: new Interval(1, IntervalType.Small), r: 1 },
-            { i: new Interval(1, IntervalType.Large), r: 2 },
-            { i: new Interval(2, IntervalType.Small), r: 3 },
-            { i: new Interval(2, IntervalType.Large), r: 4 },
-            { i: new Interval(3, IntervalType.Pure), r: 5 },
-            { i: new Interval(4, IntervalType.Pure), r: 7 },
-            { i: new Interval(5, IntervalType.Small), r: 8 },
-            { i: new Interval(5, IntervalType.Large), r: 9 },
-            { i: new Interval(6, IntervalType.Small), r: 10 },
-            { i: new Interval(6, IntervalType.Large), r: 11 },
-            { i: new Interval(7, IntervalType.Pure), r: 12 },
-            { i: new Interval(8, IntervalType.Small), r: 13 },
-            { i: new Interval(0, IntervalType.Augmented), r: 1 },
-            { i: new Interval(1, IntervalType.Augmented), r: 3 },
-            { i: new Interval(2, IntervalType.Augmented), r: 5 },
-            { i: new Interval(3, IntervalType.Augmented), r: 6 },
-            { i: new Interval(4, IntervalType.Augmented), r: 8 },
-            { i: new Interval(5, IntervalType.Augmented), r: 10 },
-            { i: new Interval(6, IntervalType.Augmented), r: 12 },
-            { i: new Interval(0, IntervalType.Diminished), r: -1 },
-            { i: new Interval(1, IntervalType.Diminished), r: 0 },
-            { i: new Interval(2, IntervalType.Diminished), r: 2 },
-            { i: new Interval(3, IntervalType.Diminished), r: 4 },
-            { i: new Interval(4, IntervalType.Diminished), r: 6 },
-            { i: new Interval(5, IntervalType.Diminished), r: 7 },
-            { i: new Interval(6, IntervalType.Diminished), r: 9 },
-            { i: new Interval(7, IntervalType.Diminished), r: 11 },
+            { d: 0, i: new Interval(0, IntervalType.Pure), r: 0 },
+            { d: -5, i: new Interval(1, IntervalType.Minor), r: 1 },
+            { d: 2, i: new Interval(1, IntervalType.Major), r: 2 },
+            { d: -3, i: new Interval(2, IntervalType.Minor), r: 3 },
+            { d: 4, i: new Interval(2, IntervalType.Major), r: 4 },
+            { d: -1, i: new Interval(3, IntervalType.Pure), r: 5 },
+            { d: 1, i: new Interval(4, IntervalType.Pure), r: 7 },
+            { d: -4, i: new Interval(5, IntervalType.Minor), r: 8 },
+            { d: 3, i: new Interval(5, IntervalType.Major), r: 9 },
+            { d: -2, i: new Interval(6, IntervalType.Minor), r: 10 },
+            { d: 5, i: new Interval(6, IntervalType.Major), r: 11 },
+            { d: 0, i: new Interval(7, IntervalType.Pure), r: 12 },
+            { d: -5, i: new Interval(8, IntervalType.Minor), r: 13 },
+            { d: 7, i: new Interval(0, IntervalType.Augmented), r: 1 },
+            { d: 9, i: new Interval(1, IntervalType.Augmented), r: 3 },
+            { d: 11, i: new Interval(2, IntervalType.Augmented), r: 5 },
+            { d: 6, i: new Interval(3, IntervalType.Augmented), r: 6 },
+            { d: 8, i: new Interval(4, IntervalType.Augmented), r: 8 },
+            { d: 10, i: new Interval(5, IntervalType.Augmented), r: 10 },
+            { d: 12, i: new Interval(6, IntervalType.Augmented), r: 12 },
+            { d: -7, i: new Interval(0, IntervalType.Diminished), r: -1 },
+            { d: -12, i: new Interval(1, IntervalType.Diminished), r: 0 },
+            { d: -10, i: new Interval(2, IntervalType.Diminished), r: 2 },
+            { d: -8, i: new Interval(3, IntervalType.Diminished), r: 4 },
+            { d: -6, i: new Interval(4, IntervalType.Diminished), r: 6 },
+            { d: -11, i: new Interval(5, IntervalType.Diminished), r: 7 },
+            { d: -9, i: new Interval(6, IntervalType.Diminished), r: 9 },
+            { d: -7, i: new Interval(7, IntervalType.Diminished), r: 11 },
         ];
         for(var i = 0; i < testData.length; i++){
-            var res = testData[i].i.semitones();
-            expect(res).toEqual(testData[i].r);
+            var res = testData[i].i;
+            expect(res.semitones()).toEqual(testData[i].r);
+            expect((<any>res).diffPc).toEqual(testData[i].d);
         }
     });
+
+
+    
+    it("should transpose pitches correctly", function() {
+        var testData = [            
+            { p: new Pitch(1, ''), i: new Interval(1, IntervalType.Major), rp: 2, ra: '' },
+            { p: new Pitch(2, ''), i: new Interval(1, IntervalType.Major), rp: 3, ra: 'x' },
+            { p: new Pitch(4, 'x'), i: new Interval(3, IntervalType.Augmented), rp: 7, ra: 'xx' },
+            { p: new Pitch(5, 'b'), i: new Interval(3, IntervalType.Augmented), rp: 8, ra: '' },
+            { p: new Pitch(2, ''), i: new Interval(1, IntervalType.Minor), rp: 3, ra: '' },
+            { p: new Pitch(2, ''), i: new Interval(1, IntervalType.Diminished), rp: 3, ra: 'b' },
+        ];
+        for(var i = 0; i < testData.length; i++){
+            var int = testData[i].i;
+            var p =  testData[i].p;
+            expect(p.add(int).pitch).toEqual(testData[i].rp);
+            expect(p.add(int).alteration).toEqual(testData[i].ra);
+        }
+    });    
 });
 /*
 var initApp1 = { "id": "570", "t": "Score", "def": { "metadata": {} }, "children": [{ "id": "589", "t": "Bar", "def": { "abs": { "num": 1, "den": 1 } } }, { "id": "590", "t": "Bar", "def": { "abs": { "num": 2, "den": 1 } } }, { "id": "572", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }, { "id": "573", "t": "Staff", "children": [{ "id": "574", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, { "id": "575", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "576", "t": "Voice", "def": { "stem": 1 }, "children": [{ "id": "577", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 0, "den": 1 }, "noteId": "n1_8", "dots": 1, "rest": true } }, { "id": "578", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 3, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "579", "t": "Notehead", "def": { "p": 2, "a": "" } }, { "id": "580", "t": "TextSyllable", "def": { "text": "tænk" } }] }, { "id": "581", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "582", "t": "Notehead", "def": { "p": 3, "a": "x" } }] }, { "id": "583", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 2 }, "noteId": "n1_4" }, "children": [{ "id": "584", "t": "Notehead", "def": { "p": 4, "a": "n" } }] }, { "id": "585", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 3, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "586", "t": "Notehead", "def": { "p": 5, "a": "n" } }] }, { "id": "587", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 1, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "594", "t": "Note", "def": { "time": { "num": 31, "den": 32 }, "abs": { "num": 33, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }] }, { "id": "588", "t": "StaffExpression", "def": { "text": "Allegro", "abs": { "num": 0, "den": 1 } } }, { "id": "593", "t": "Meter" }] }] };

@@ -545,6 +545,12 @@ export class PitchClass {
         return new PitchClass(PitchClass.pitchToPc[p1] + 7 * Pitch.strToInt(pitch.alteration));
     }
 
+    public accidentals() {
+        var x = this.pitchClass + 15;
+        var accidentalSuffixNo = Math.floor(x / 7);
+        return accidentalSuffixNo - 2;
+    }
+
     public noteNameLilypond(): string {
         var x = this.pitchClass + 15;
         var noteNameRoot = PitchClass.noteNames[x % 7];
@@ -559,7 +565,7 @@ export class PitchClass {
 
 
 
-export enum IntervalType { DblDiminished = -3, Diminished = -2, Small = -1, Pure = 0, Large = 1, Augmented = 2, DblAugmented = 3 }
+export enum IntervalType { DblDiminished = -3, Diminished = -2, Minor = -1, Pure = 0, Major = 1, Augmented = 2, DblAugmented = 3 }
 
 /**
  * Interval including alterations. Zero-based.
@@ -572,26 +578,7 @@ export enum IntervalType { DblDiminished = -3, Diminished = -2, Small = -1, Pure
  * reverse diminished fifth   -4   Augmented
  */
 export class Interval {
-    constructor (public length: number, public alteration: IntervalType) {
-    }
-    static fromPitches(fromPitch: Pitch, toPitch: Pitch): Interval {
-        const length = toPitch.pitch - fromPitch.pitch;
-        const fromPc = PitchClass.create(fromPitch);
-        const toPc = PitchClass.create(toPitch);
-        const diffPc = toPc.pitchClass - fromPc.pitchClass;
-        /*const bounds = [-12, -5, -1, 2, 6, 13];
-        var alt = -3;
-        for (var i = 0; i < bounds.length; i++){
-            if (diffPc < bounds[i]) break;
-            alt++;
-        }*/
-
-        const part1 = diffPc > 1 ? Math.floor((diffPc - 6) / 7) + 2 : 0;
-        const part2 = diffPc < -1 ? Math.floor((-diffPc - 6) / 7) + 2 : 0;
-
-        return new Interval(length, part1 - part2);
-    }
-    semitones(): number {
+    constructor (public length: number, public alteration: IntervalType, private diffPc?: number) {
         let alt = this.alteration;
         if(alt){
             const baseInterval = this.length % 7;
@@ -603,8 +590,43 @@ export class Interval {
                 if (alt > 0) alt--;
             }
         }
-        return Math.floor(12 * (this.length + 1) / 7) - 1 + alt; // todo: alteration -> compared to diatonic scale
+        this.realAlteration = alt;
+        
+        if (diffPc === undefined){
+            this.diffPc = PitchClass.pitchToPc[length % 7] + 7 * alt;
+        }
     }
+    
+    private realAlteration: number;
+
+    static fromPitches(fromPitch: Pitch, toPitch: Pitch): Interval {
+        const length = toPitch.pitch - fromPitch.pitch;
+        const fromPc = PitchClass.create(fromPitch);
+        const toPc = PitchClass.create(toPitch);
+        const diffPc = toPc.pitchClass - fromPc.pitchClass;
+
+        const part1 = diffPc > 1 ? Math.floor((diffPc - 6) / 7) + 2 : 0;
+        const part2 = diffPc < -1 ? Math.floor((-diffPc - 6) / 7) + 2 : 0;
+
+        return new Interval(length, part1 - part2, diffPc);
+    }
+    semitones(): number {
+        return Math.floor(12 * (this.length + 1) / 7) - 1 + this.realAlteration;
+    }
+
+    addPitch(pitch: Pitch): Pitch{
+        const pc = PitchClass.create(pitch);
+        const newpc = pc.pitchClass + this.diffPc;
+        const newPitchClass = new PitchClass(newpc);
+        const newAccidentals = newPitchClass.accidentals();
+
+        return new Pitch(pitch.pitch + this.length, Pitch.intToStr(newAccidentals)); // todo: interval alteration, like e + major sec: fx
+    }
+
+    /*addInterval(interval: Interval): Interval{
+        
+    }*/
+
     toString() {
         return "Interval(" + this.length + " " + this.alteration + ")";
     }
@@ -620,6 +642,9 @@ export class Pitch {
     }
     public diff(pitch: Pitch): Interval {
         return Interval.fromPitches(pitch, this);
+    }
+    public add(interval: Interval): Pitch {
+        return interval.addPitch(this);
     }
     public equals(pitch: Pitch, ignoreAlteration: boolean = false): boolean {
         return this.pitch == pitch.pitch && (ignoreAlteration || this.alteration == pitch.alteration);
