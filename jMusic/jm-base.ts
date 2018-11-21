@@ -624,7 +624,12 @@ export class Interval {
     }
 
     /*addInterval(interval: Interval): Interval{
-        
+        ren + ren   = ren eller stor
+        ren + lille = lille eller formindsket
+        ren + stor  = stor eller ren eller forstørret
+        lille + lille = formindsket (altid?)
+        lille + stor = lille eller ren
+        stor + stor = forstørret
     }*/
 
     toString() {
