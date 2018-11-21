@@ -519,7 +519,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     });
     
                     var heads = note.noteheadElements;
-                    heads.sort(function (a, b) { return b.getPitch().diff(a.getPitch()); });
+                    heads.sort(function (a, b) { return b.getPitch().diff(a.getPitch()).length; });
                     var accidentalStep = width / 10; // todo: constant
                     for (var i = 0; i < heads.length; i++) {
                         var head = heads[i];
@@ -1217,11 +1217,11 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     //var accidentalStep = 0;
                     if (!noteSpacing.rev) {
                         // Sorter nedefra
-                        heads.sort(function (a, b) { return a.getPitch().diff(b.getPitch()); });
+                        heads.sort(function (a, b) { return a.getPitch().diff(b.getPitch()).length; });
                     }
                     else {
                         // Sorter oppefra
-                        heads.sort(function (a, b) { return b.getPitch().diff(a.getPitch()); });
+                        heads.sort(function (a, b) { return b.getPitch().diff(a.getPitch()).length; });
                     }
                     // Start forfra og sæt noden normal. For hvert sekundinterval sættes noden forskubbet. Næste node sættes normal.
                     for (var i = 0; i < heads.length; i++) {

@@ -557,6 +557,59 @@ export class PitchClass {
     static pitchToPc = [0, 2, 4, -1, 1, 3, 5];
 }
 
+
+
+export enum IntervalType { DblDiminished = -3, Diminished = -2, Small = -1, Pure = 0, Large = 1, Augmented = 2, DblAugmented = 3 }
+
+/**
+ * Interval including alterations. Zero-based.
+ *                  length   alt
+ * Pure prime         0      Pure
+ * Small second       1      Small
+ * Diminished fifth   4      Diminished
+ * Large seventh      6      Large
+ * NB: inverse intervals: alteration and length both change polarity:
+ * reverse diminished fifth   -4   Augmented
+ */
+export class Interval {
+    constructor (public length: number, public alteration: IntervalType) {
+    }
+    static fromPitches(fromPitch: Pitch, toPitch: Pitch): Interval {
+        const length = toPitch.pitch - fromPitch.pitch;
+        const fromPc = PitchClass.create(fromPitch);
+        const toPc = PitchClass.create(toPitch);
+        const diffPc = toPc.pitchClass - fromPc.pitchClass;
+        /*const bounds = [-12, -5, -1, 2, 6, 13];
+        var alt = -3;
+        for (var i = 0; i < bounds.length; i++){
+            if (diffPc < bounds[i]) break;
+            alt++;
+        }*/
+
+        const part1 = diffPc > 1 ? Math.floor((diffPc - 6) / 7) + 2 : 0;
+        const part2 = diffPc < -1 ? Math.floor((-diffPc - 6) / 7) + 2 : 0;
+
+        return new Interval(length, part1 - part2);
+    }
+    semitones(): number {
+        let alt = this.alteration;
+        if(alt){
+            const baseInterval = this.length % 7;
+            if (baseInterval === 0 || baseInterval === 3 || baseInterval === 4) {
+                // pure/augm/dim
+                if (alt < 0) alt++; else alt--;
+            }
+            else {
+                if (alt > 0) alt--;
+            }
+        }
+        return Math.floor(12 * (this.length + 1) / 7) - 1 + alt; // todo: alteration -> compared to diatonic scale
+    }
+    toString() {
+        return "Interval(" + this.length + " " + this.alteration + ")";
+    }
+}
+
 /**
     * Pitch including alterations
     * Middle C = C4 = c' = midi 60 = pitch 0
@@ -565,8 +618,8 @@ export class PitchClass {
 export class Pitch {
     constructor(public pitch: number, public alteration: string) {
     }
-    public diff(pitch: Pitch): number {
-        return this.pitch - pitch.pitch;
+    public diff(pitch: Pitch): Interval {
+        return Interval.fromPitches(pitch, this);
     }
     public equals(pitch: Pitch, ignoreAlteration: boolean = false): boolean {
         return this.pitch == pitch.pitch && (ignoreAlteration || this.alteration == pitch.alteration);

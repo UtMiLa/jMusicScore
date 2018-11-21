@@ -1,7 +1,7 @@
 import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from '../jm-base'
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval, IntervalType} from '../jm-base'
 import { IMusicElement, IMeterSpacingInfo,  IMeter, ScoreElement, 
     IVisitor, IVoice, IStaff, IScore, ILongDecorationElement, ISpacingInfo, 
      IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
@@ -241,6 +241,92 @@ describe("Keys and pitches", function () {
         expect(pc.pitchClass).toEqual(5);
     });
 
+    it("should compute correct intervals from pitches", function() {
+        var testData = [
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(0,''), res: '0 0' }, // c
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(1,''), res: '1 1' }, // d
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(2,''), res: '2 1' }, // e
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(3,''), res: '3 0' }, // f
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(4,''), res: '4 0' }, // g
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(5,''), res: '5 1' }, // a
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(6,''), res: '6 1' }, // b
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(7,''), res: '7 0' }, // c'
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(8,''), res: '8 1' }, // d'
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(0,'x'), res: '0 2' }, // cx
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(0,'b'), res: '0 -2' }, // cb
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(4,'x'), res: '4 2' }, // gx
+            /** test limits: 
+             * pure -> small: f -> bb
+             * pure -> large: g -> d
+             * small -> dimi: db -> gb
+             * dimi -> dbl dimi: dbb -> gbb
+             * large -> augm: b -> fx
+             * augm -> dbl augm: bx -> fxx
+             *  */ 
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(6,'b'), res: '6 -1' }, // bb
+
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(1,'b'), res: '1 -1' }, // db
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(4,'b'), res: '4 -2' }, // gb
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(1,'bb'), res: '1 -2' }, // dbb
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(4,'bb'), res: '4 -3' }, // gbb
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(3,'x'), res: '3 2' }, // fx
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(6,'x'), res: '6 2' }, // bx
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(3,'xx'), res: '3 3' }, // fxx
+
+            // test other pitch1's:
+            { pitch1: new Pitch(1,''), pitch2: new Pitch(5,'b'), res: '4 -2' }, // d -> ab
+            { pitch1: new Pitch(3,''), pitch2: new Pitch(6,''), res: '3 2' }, // f -> b
+            { pitch1: new Pitch(6,''), pitch2: new Pitch(10,''), res: '4 -2' }, // b -> f'
+            { pitch1: new Pitch(2,'b'), pitch2: new Pitch(3,'x'), res: '1 2' }, // eb -> fx
+            { pitch1: new Pitch(3,'x'), pitch2: new Pitch(6,''), res: '3 0' }, // fx -> b
+
+            // test reverse order:
+            { pitch1: new Pitch(6,''), pitch2: new Pitch(3,''), res: '-3 -2' }, // b -> f
+        ];
+
+        for (var i = 0; i < testData.length; i++){
+            var interval = Interval.fromPitches(testData[i].pitch1,  testData[i].pitch2);
+            expect(interval.toString()).toEqual("Interval(" + testData[i].res + ")");
+        }
+    });
+
+    
+    it("should compute correct semitones from intervals", function() {
+        var testData = [
+            { i: new Interval(0, IntervalType.Pure), r: 0 },
+            { i: new Interval(1, IntervalType.Small), r: 1 },
+            { i: new Interval(1, IntervalType.Large), r: 2 },
+            { i: new Interval(2, IntervalType.Small), r: 3 },
+            { i: new Interval(2, IntervalType.Large), r: 4 },
+            { i: new Interval(3, IntervalType.Pure), r: 5 },
+            { i: new Interval(4, IntervalType.Pure), r: 7 },
+            { i: new Interval(5, IntervalType.Small), r: 8 },
+            { i: new Interval(5, IntervalType.Large), r: 9 },
+            { i: new Interval(6, IntervalType.Small), r: 10 },
+            { i: new Interval(6, IntervalType.Large), r: 11 },
+            { i: new Interval(7, IntervalType.Pure), r: 12 },
+            { i: new Interval(8, IntervalType.Small), r: 13 },
+            { i: new Interval(0, IntervalType.Augmented), r: 1 },
+            { i: new Interval(1, IntervalType.Augmented), r: 3 },
+            { i: new Interval(2, IntervalType.Augmented), r: 5 },
+            { i: new Interval(3, IntervalType.Augmented), r: 6 },
+            { i: new Interval(4, IntervalType.Augmented), r: 8 },
+            { i: new Interval(5, IntervalType.Augmented), r: 10 },
+            { i: new Interval(6, IntervalType.Augmented), r: 12 },
+            { i: new Interval(0, IntervalType.Diminished), r: -1 },
+            { i: new Interval(1, IntervalType.Diminished), r: 0 },
+            { i: new Interval(2, IntervalType.Diminished), r: 2 },
+            { i: new Interval(3, IntervalType.Diminished), r: 4 },
+            { i: new Interval(4, IntervalType.Diminished), r: 6 },
+            { i: new Interval(5, IntervalType.Diminished), r: 7 },
+            { i: new Interval(6, IntervalType.Diminished), r: 9 },
+            { i: new Interval(7, IntervalType.Diminished), r: 11 },
+        ];
+        for(var i = 0; i < testData.length; i++){
+            var res = testData[i].i.semitones();
+            expect(res).toEqual(testData[i].r);
+        }
+    });
 });
 /*
 var initApp1 = { "id": "570", "t": "Score", "def": { "metadata": {} }, "children": [{ "id": "589", "t": "Bar", "def": { "abs": { "num": 1, "den": 1 } } }, { "id": "590", "t": "Bar", "def": { "abs": { "num": 2, "den": 1 } } }, { "id": "572", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }, { "id": "573", "t": "Staff", "children": [{ "id": "574", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, { "id": "575", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "576", "t": "Voice", "def": { "stem": 1 }, "children": [{ "id": "577", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 0, "den": 1 }, "noteId": "n1_8", "dots": 1, "rest": true } }, { "id": "578", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 3, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "579", "t": "Notehead", "def": { "p": 2, "a": "" } }, { "id": "580", "t": "TextSyllable", "def": { "text": "tænk" } }] }, { "id": "581", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "582", "t": "Notehead", "def": { "p": 3, "a": "x" } }] }, { "id": "583", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 2 }, "noteId": "n1_4" }, "children": [{ "id": "584", "t": "Notehead", "def": { "p": 4, "a": "n" } }] }, { "id": "585", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 3, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "586", "t": "Notehead", "def": { "p": 5, "a": "n" } }] }, { "id": "587", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 1, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "594", "t": "Note", "def": { "time": { "num": 31, "den": 32 }, "abs": { "num": 33, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }] }, { "id": "588", "t": "StaffExpression", "def": { "text": "Allegro", "abs": { "num": 0, "den": 1 } } }, { "id": "593", "t": "Meter" }] }] };
