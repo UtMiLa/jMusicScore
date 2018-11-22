@@ -569,13 +569,14 @@ export enum IntervalType { DblDiminished = -3, Diminished = -2, Minor = -1, Pure
 
 /**
  * Interval including alterations. Zero-based.
- *                  length   alt
- * Pure prime         0      Pure
- * Small second       1      Small
- * Diminished fifth   4      Diminished
- * Large seventh      6      Large
+ *                  length   alt                diffPc
+ * Pure prime         0      Pure                 0
+ * Minor second       1      Minor               -5
+ * Diminished fifth   4      Diminished          -6
+ * Major seventh      6      Major                5
  * NB: inverse intervals: alteration and length both change polarity:
  * reverse diminished fifth   -4   Augmented
+ * diffPc = number of steps around the circle of fifths
  */
 export class Interval {
     constructor (public length: number, public alteration: IntervalType, private diffPc?: number) {
@@ -622,13 +623,17 @@ export class Interval {
         return Math.floor(12 * (this.length + 1) / 7) - 1 + this.realAlteration;
     }
 
+    inverted(): Interval{        
+        return new Interval(-this.length, -this.alteration, -this.diffPc);
+    }
+
     addPitch(pitch: Pitch): Pitch{
         const pc = PitchClass.create(pitch);
         const newpc = pc.pitchClass + this.diffPc;
         const newPitchClass = new PitchClass(newpc);
         const newAccidentals = newPitchClass.accidentals();
 
-        return new Pitch(pitch.pitch + this.length, Pitch.intToStr(newAccidentals)); // todo: interval alteration, like e + major sec: fx
+        return new Pitch(pitch.pitch + this.length, Pitch.intToStr(newAccidentals));
     }
 
     addInterval(interval: Interval): Interval { 
@@ -639,7 +644,10 @@ export class Interval {
     }
 
     toString() {
-        return "Interval(" + this.length + " " + this.alteration + ")";
+        const invert = this.semitones() < 0;
+        const interval = invert ? this.inverted() : this;
+        return "Interval(" + (invert ? 'inv ' : '') +
+            interval.length + " " + interval.alteration + ")";
     }
 }
 

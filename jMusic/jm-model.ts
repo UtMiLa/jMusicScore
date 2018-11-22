@@ -2,7 +2,7 @@
 import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from './jm-base'
 
         // todo: Spacers out of this file
         // todo: NoteId away
@@ -1093,6 +1093,82 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
 
         }
+
+        class TransposeElement extends MusicElement<ISpacingInfo> implements ISequence {
+            constructor(public parent: IVoice | ISequence, private sequence: ISequence, public interval: Interval){
+                super(parent);
+            }
+
+            static createFromMemento(parent: IVoice, memento: IMemento): ISequence {
+                var seq = new SequenceElement(parent);
+                //if (memento.def && memento.def.stem) { voice.setStemDirection(memento.def.stem); }
+                if (parent) {
+                    if (parent.getElementName() === "Staff") {
+                        let voice = new VoiceElement(<IStaff><any>parent);
+                        //voice.setSequence(seq);
+                        voice.addChild(seq);
+                        seq.parent = voice;
+                        parent.addChild(voice);
+                    }
+                    else if ((<ISequence><any>parent).noteElements) {
+                        parent.addChild(seq); // todo: at index
+                    }
+                    else {
+                        parent.addChild(seq); // todo: at index
+                    }
+                }
+                return seq;
+            }
+
+            public doGetMemento(): any {
+                var val: any; // todo: serialize interval
+                /*if (this.stemDirection) {
+                    val = { stem: this.stemDirection };
+                }*/
+                return val;
+            }
+
+            public inviteVisitor(visitor: IVisitor) {
+                visitor.visitDefault(this);
+            }
+
+
+            get noteElements(): INote[] {
+                return this.sequence.noteElements;
+            }
+            withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void {
+                this.sequence.withNotes(globalContext, f);
+            }
+            getStemDirection(): StemDirectionType {
+                return this.sequence.getStemDirection();
+            }
+            setStemDirection(dir: StemDirectionType): void {
+                this.sequence.setStemDirection(dir);
+            }
+            getEventsOld(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[] {
+                return this.sequence.getEventsOld(globalContext, fromTime, toTime);
+            }
+            getEndTime(): AbsoluteTime {
+                return this.sequence.getEndTime();
+            }
+            getNoteElements(globalContext: GlobalContext): INote[] {
+                return this.sequence.getNoteElements(globalContext);
+            }
+            addEvent(event: ITimedEvent): void {
+                throw new Error("Cannot add event to transposeElement");
+            }
+            addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef): ISequenceNote {
+                throw new Error("Cannot add event to transposeElement");
+            }
+            getEvents(globalContext: GlobalContext): IEventInfo[] {
+                let events = this.sequence.getEvents(globalContext);
+                // todo: transpose all pitches
+                return events;
+            }
+            public getElementName() { return "Transpose"; }
+        }
+
+
         export interface IClef extends ITimedVoiceEvent {
             parent: IStaff;
             definition: ClefDefinition;            
@@ -2463,6 +2539,7 @@ public getContext(): INoteContext {
             "Note": NoteElement,
             "Notehead": NoteheadElement,
             "Sequence": SequenceElement,
+            "Transpose": TransposeElement,
             "Pitch": NoteheadElement,
             "Meter": MeterElement,
             "Key": KeyElement,

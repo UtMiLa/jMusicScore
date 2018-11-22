@@ -253,7 +253,7 @@ describe("Keys and pitches", function () {
             { pitch1: new Pitch(0,''), pitch2: new Pitch(7,''), res: '7 0' }, // c'
             { pitch1: new Pitch(0,''), pitch2: new Pitch(8,''), res: '8 1' }, // d'
             { pitch1: new Pitch(0,''), pitch2: new Pitch(0,'x'), res: '0 2' }, // cx
-            { pitch1: new Pitch(0,''), pitch2: new Pitch(0,'b'), res: '0 -2' }, // cb
+            { pitch1: new Pitch(0,''), pitch2: new Pitch(0,'b'), res: 'inv 0 2' }, // cb
             { pitch1: new Pitch(0,''), pitch2: new Pitch(4,'x'), res: '4 2' }, // gx
             /** test limits: 
              * pure -> small: f -> bb
@@ -281,7 +281,7 @@ describe("Keys and pitches", function () {
             { pitch1: new Pitch(3,'x'), pitch2: new Pitch(6,''), res: '3 0' }, // fx -> b
 
             // test reverse order:
-            { pitch1: new Pitch(6,''), pitch2: new Pitch(3,''), res: '-3 -2' }, // b -> f
+            { pitch1: new Pitch(6,''), pitch2: new Pitch(3,''), res: 'inv 3 2' }, // b -> f
         ];
 
         for (var i = 0; i < testData.length; i++){
