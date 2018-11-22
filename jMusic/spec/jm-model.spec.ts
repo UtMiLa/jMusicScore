@@ -347,6 +347,30 @@ describe("Keys and pitches", function () {
             expect(p.add(int).alteration).toEqual(testData[i].ra);
         }
     });    
+
+
+    
+    it("should compute correct semitones and pitchclasses from intervals", function() {
+        var testData = [
+            { i1: new Interval(1, IntervalType.Major),   i2:  new Interval(1, IntervalType.Major),    res: '2 1'  }, // stor + stor = stor
+            { i1: new Interval(2, IntervalType.Major),   i2:  new Interval(2, IntervalType.Major),    res: '4 2'  }, // stor + stor = forstørret
+            { i1: new Interval(3, IntervalType.Pure),   i2:  new Interval(4, IntervalType.Pure),    res: '7 0'  }, // ren  + ren  = ren
+            { i1: new Interval(4, IntervalType.Pure),   i2:  new Interval(4, IntervalType.Pure),    res: '8 1'  }, // ren  + ren  = stor
+            { i1: new Interval(4, IntervalType.Pure),   i2:  new Interval(1, IntervalType.Minor),    res: '5 -1'  }, // ren  + lille = lille
+            { i1: new Interval(3, IntervalType.Pure),   i2:  new Interval(1, IntervalType.Minor),    res: '4 -2'  }, // ren  + lille = formindsket
+            { i1: new Interval(3, IntervalType.Pure),   i2:  new Interval(2, IntervalType.Major),    res: '5 1'  }, // ren  + stor = stor
+            { i1: new Interval(3, IntervalType.Pure),   i2:  new Interval(1, IntervalType.Major),    res: '4 0'  }, // ren  + stor = ren
+            { i1: new Interval(4, IntervalType.Pure),   i2:  new Interval(6, IntervalType.Major),    res: '10 2'  }, // ren  + stor = forstørret
+            { i1: new Interval(1, IntervalType.Minor),   i2:  new Interval(1, IntervalType.Minor),    res: '2 -2'  }, // lille + lille = formindsket
+            { i1: new Interval(1, IntervalType.Minor),   i2:  new Interval(1, IntervalType.Major),    res: '2 -1'  }, // lille + stor = lille
+            { i1: new Interval(2, IntervalType.Minor),   i2:  new Interval(2, IntervalType.Major),    res: '4 0'  }, // lille + stor = ren
+        ];
+        for(var i = 0; i < testData.length; i++){
+            var i1 = testData[i].i1;
+            var i2 = testData[i].i2;
+            expect(i1.addInterval(i2).toString()).toEqual('Interval(' + testData[i].res + ')');
+        }
+    });
 });
 /*
 var initApp1 = { "id": "570", "t": "Score", "def": { "metadata": {} }, "children": [{ "id": "589", "t": "Bar", "def": { "abs": { "num": 1, "den": 1 } } }, { "id": "590", "t": "Bar", "def": { "abs": { "num": 2, "den": 1 } } }, { "id": "572", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }, { "id": "573", "t": "Staff", "children": [{ "id": "574", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, { "id": "575", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "576", "t": "Voice", "def": { "stem": 1 }, "children": [{ "id": "577", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 0, "den": 1 }, "noteId": "n1_8", "dots": 1, "rest": true } }, { "id": "578", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 3, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "579", "t": "Notehead", "def": { "p": 2, "a": "" } }, { "id": "580", "t": "TextSyllable", "def": { "text": "tænk" } }] }, { "id": "581", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "582", "t": "Notehead", "def": { "p": 3, "a": "x" } }] }, { "id": "583", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 2 }, "noteId": "n1_4" }, "children": [{ "id": "584", "t": "Notehead", "def": { "p": 4, "a": "n" } }] }, { "id": "585", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 3, "den": 4 }, "noteId": "n1_4" }, "children": [{ "id": "586", "t": "Notehead", "def": { "p": 5, "a": "n" } }] }, { "id": "587", "t": "Note", "def": { "time": { "num": 1, "den": 32 }, "abs": { "num": 1, "den": 1 }, "noteId": "hidden", "rest": true, "hidden": true } }, { "id": "594", "t": "Note", "def": { "time": { "num": 31, "den": 32 }, "abs": { "num": 33, "den": 32 }, "noteId": "hidden", "rest": true, "hidden": true } }] }, { "id": "588", "t": "StaffExpression", "def": { "text": "Allegro", "abs": { "num": 0, "den": 1 } } }, { "id": "593", "t": "Meter" }] }] };

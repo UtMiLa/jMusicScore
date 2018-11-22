@@ -605,11 +605,19 @@ export class Interval {
         const toPc = PitchClass.create(toPitch);
         const diffPc = toPc.pitchClass - fromPc.pitchClass;
 
+        /*const part1 = diffPc > 1 ? Math.floor((diffPc - 6) / 7) + 2 : 0;
+        const part2 = diffPc < -1 ? Math.floor((-diffPc - 6) / 7) + 2 : 0;*/
+
+        return new Interval(length, this.alterationFromDiffPc(diffPc), diffPc);
+    }
+
+    static alterationFromDiffPc(diffPc: number): IntervalType{
         const part1 = diffPc > 1 ? Math.floor((diffPc - 6) / 7) + 2 : 0;
         const part2 = diffPc < -1 ? Math.floor((-diffPc - 6) / 7) + 2 : 0;
 
-        return new Interval(length, part1 - part2, diffPc);
+        return part1 - part2;
     }
+
     semitones(): number {
         return Math.floor(12 * (this.length + 1) / 7) - 1 + this.realAlteration;
     }
@@ -623,14 +631,12 @@ export class Interval {
         return new Pitch(pitch.pitch + this.length, Pitch.intToStr(newAccidentals)); // todo: interval alteration, like e + major sec: fx
     }
 
-    /*addInterval(interval: Interval): Interval{
-        ren + ren   = ren eller stor
-        ren + lille = lille eller formindsket
-        ren + stor  = stor eller ren eller forstørret
-        lille + lille = formindsket (altid?)
-        lille + stor = lille eller ren
-        stor + stor = forstørret
-    }*/
+    addInterval(interval: Interval): Interval { 
+        var newDiffPc = this.diffPc + interval.diffPc;
+        var alt = Interval.alterationFromDiffPc(newDiffPc);
+
+        return new Interval(this.length + interval.length, alt, newDiffPc);
+    }
 
     toString() {
         return "Interval(" + this.length + " " + this.alteration + ")";
