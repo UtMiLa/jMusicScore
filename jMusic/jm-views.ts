@@ -829,7 +829,7 @@ function $(elm: HTMLElement): DOMHelper {
                 }
                 visitKey(key: IKey) {
                     const spacing = this.globalContext.getSpacingInfo<IKeySpacingInfo>(key);
-                    var staffContext = key.parent.getStaffContext(key.absTime);
+                    var staffContext = /*key.parent*/this.staff.getStaffContext(key.absTime);
                     KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef, 0, 0);
                 }
                 visitStaff(staff: IStaff) {

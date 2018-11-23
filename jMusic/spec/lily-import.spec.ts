@@ -166,10 +166,10 @@ describe("Lilypond Import", function () {
 
             let parsedObject = loadFromLily(input, 1, 1);
             
-            let noteArray = ((<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).children[0].noteElements);
+            let noteArray = ((<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).getChild(0).noteElements);
             expect(noteArray.length).toEqual(2);
 
-            let childArray = (<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).children[0].children;
+            let childArray = (<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).getChild(0).removeThisChildren;
             expect(childArray.length).toEqual(3);
 
             let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements(globalContext);
@@ -190,10 +190,10 @@ describe("Lilypond Import", function () {
 
             globalContext.addVariable('hutlifut', hutlifut.staffElements[0].voiceElements[0].getSequence(''));
 
-            let noteArray = ((<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).children[0].noteElements);
+            let noteArray = ((<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).getChild(0).noteElements);
             expect(noteArray.length).toEqual(2);
 
-            let childArray = (<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).children[0].children;
+            let childArray = (<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).getChild(0).removeThisChildren;
             expect(childArray.length).toEqual(3);
 
 

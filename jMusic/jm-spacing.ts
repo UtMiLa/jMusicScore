@@ -767,7 +767,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 }
                 visitBar(bar: IBar) {
                     const spacing = this.globalContext.getSpacingInfo<IBarSpacingInfo>(bar);
-                    var score = bar.parent;
+                    var score = this.score;// bar.parent;
                     if (score.staffElements.length > 0) {
                         //this.checkRef(bar, context, svgHelper);
                         var barSpacing = this.globalContext.getSpacingInfo<BarSpacingInfo>(bar);
@@ -1280,7 +1280,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 }
             }
     
-            export function absolutePos(elm: IMusicElement, x: number, y: number, globalContext: GlobalContext): Point {
+            /*export function absolutePos(elm: IMusicElement, x: number, y: number, globalContext: GlobalContext): Point {
                 const spacingInfo = globalContext.getSpacingInfo(elm);
                 x *= spacingInfo.scale;
                 y *= spacingInfo.scale;
@@ -1292,6 +1292,6 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 else {
                     return new Point(x, y);
                 }
-            }    
+            }    */
         }
     //}
