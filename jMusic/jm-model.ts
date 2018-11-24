@@ -226,6 +226,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
         export interface IEventContainer {
             getEventsOld(globalContext: GlobalContext): ITimedEvent[];
+            //getEvents(globalContext: GlobalContext): IEventInfo[];
         }
 
         export interface IBar extends ITimedVoiceEvent {
@@ -953,9 +954,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                         seq.parent = voice;
                         parent.addChild(voice);
                     }
-                    else if ((<ISequence><any>parent).noteElements) {
+                    /*else if ((<ISequence><any>parent).noteElements) {
                         parent.addChild(seq); // todo: at index
-                    }
+                    }*/
                     else {
                         parent.addChild(seq); // todo: at index
                     }
@@ -1100,13 +1101,14 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
         }
 
-        class TransposeElement extends MusicElement<ISpacingInfo> implements ISequence {
+        export class TransposeElement extends MusicElement<ISpacingInfo> implements ISequence {
             constructor(public parent: IVoice | ISequence, private sequence: ISequence, public interval: Interval){
                 super(parent);
             }
 
             static createFromMemento(parent: IVoice, memento: IMemento): ISequence {
-                var seq = new SequenceElement(parent);
+                const interval = new Interval(memento.def.interval, memento.def.alteration);
+                var seq = new TransposeElement(parent, null, interval);
                 //if (memento.def && memento.def.stem) { voice.setStemDirection(memento.def.stem); }
                 if (parent) {
                     if (parent.getElementName() === "Staff") {
@@ -1159,6 +1161,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
             getNoteElements(globalContext: GlobalContext): INote[] {
                 return this.sequence.getNoteElements(globalContext);
+            }
+            addChild(child: IMusicElement){
+                this.sequence = <ISequence>child;
+                super.addChild(child);
             }
             addEvent(event: ITimedEvent): void {
                 throw new Error("Cannot add event to transposeElement");
@@ -1539,7 +1545,7 @@ public getContext(): INoteContext {
 }
 
             getEvents(): IEventInfo[] {
-                return [this];
+                return [this.getInfo()];
             }
 
             getInfo(): INoteInfo {
@@ -1750,16 +1756,16 @@ public getContext(): INoteContext {
                 } //*/
             }
 
-            private getChild(i: number): INotehead {
+            /*private getChild(i: number): INotehead {
                 return this.noteheadElements[i];
             }
             private getChildren(): INotehead[] {
                 return this.noteheadElements;
-            }
+            }*/
             debug() {
                 var string = "N" + this.noteId + "(";
-                for (var i = 0; i < this.getChildren().length; i++) {
-                    string += this.getChild(i).debug();
+                for (var i = 0; i < this.noteheadElements.length; i++) {
+                    string += this.noteheadElements[i].debug();
                 }
                 string += ") ";
                 return string;
@@ -1773,14 +1779,14 @@ public getContext(): INoteContext {
 
             matchesOnePitch(pitch: Pitch, ignoreAlteration: boolean = false) {
                 if (this.rest) return false;
-                if (this.getChildren().length != 1) return false;
-                if (this.getChild(0).matchesPitch(pitch, ignoreAlteration)) return true;
+                if (this.noteheadElements.length != 1) return false;
+                if (this.noteheadElements[0].matchesPitch(pitch, ignoreAlteration)) return true;
                 return false;
             }
             matchesPitch(pitch: Pitch, ignoreAlteration: boolean = false) {
                 if (this.rest) return true;
-                for (var i = 0; i < this.getChildren().length; i++) {
-                    if (this.getChild(i).matchesPitch(pitch, ignoreAlteration)) return true;
+                for (var i = 0; i < this.noteheadElements.length; i++) {
+                    if (this.noteheadElements[i].matchesPitch(pitch, ignoreAlteration)) return true;
                 }
                 return false;
             }
@@ -1823,8 +1829,8 @@ public getContext(): INoteContext {
                     return null;
                 }
                 else {
-                    for (var i = 0; i < this.getChildren().length; i++) {
-                        if (this.getChild(i).getPitch().equals(pitch)) return this.getChild(i);
+                    for (var i = 0; i < this.noteheadElements.length; i++) {
+                        if (this.noteheadElements[i].getPitch().equals(pitch)) return this.noteheadElements[i];
                     }
                     var newpitch = new NoteheadElement(this, pitch);
                     //newpitch.setPitch(pitch);

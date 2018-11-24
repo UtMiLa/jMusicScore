@@ -8,8 +8,8 @@ import { IMusicElement, IMeterSpacingInfo,  IMeter, ScoreElement,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, 
-    NoteDecorationElement, TextSyllableElement, MusicElementFactory, 
-    NoteLongDecorationElement, ITimedEvent, Music, GlobalContext } from "../jm-model";  
+    NoteDecorationElement, TextSyllableElement, MusicElementFactory, TransposeElement,
+    NoteLongDecorationElement, ITimedEvent, Music, GlobalContext, INoteInfo } from "../jm-model";  
 
 import  { IScoreApplication, ScoreStatusManager } from '../jm-application';
 import  { AbstractApplication } from '../jap-application';
@@ -188,6 +188,64 @@ describe("Mementos", function () {
         expect(note2.noteheadElements.length).toEqual(1);
         expect(note2.noteheadElements[0].getElementName()).toEqual("Notehead");
         expect(note2.noteheadElements[0].pitch.debug()).toEqual("f'");
+    });
+
+
+
+    it("should create a transposing sequence with two notes", function () {
+        const data = <any>{
+            "id": "2", "t": "Transpose", "def": { interval: 2, alteration: -1  /* minor third up */}, "children": [
+                {"id": "2", "t": "Sequence", "def": {  }, "children": [
+                { "id": "11", "t": "Note",
+                    "def": { "time": { "num": 1, "den": 8 }, "noteId": "n1_8" },
+                    "children": [{
+                            "id": "12",
+                            "t": "Notehead",
+                            "def": {
+                                "p": 2,
+                                "a": ""
+                            }
+                        }
+                    ]
+                },
+                { "id": "12", "t": "Note",
+                    "def": { "time": { "num": 1, "den": 4 }, "noteId": "n1_8" },
+                    "children": [{
+                            "id": "12",
+                            "t": "Notehead",
+                            "def": {
+                                "p": 3,
+                                "a": ""
+                            }
+                        }
+                    ]
+                }
+        ] } ] };
+        const elm: TransposeElement = <any>MusicElementFactory.recreateElement(null, data);
+        expect(elm.getElementName()).toEqual("Transpose");
+        /*expect(elm.getNoteElements(globalContext).length).toEqual(2);
+        const note1 = <INote>elm.getNoteElements(globalContext)[0];
+        expect(note1.getElementName()).toEqual("Note");
+        expect(note1.timeVal.toString()).toEqual("1/8");
+        expect(note1.noteheadElements.length).toEqual(1);
+        expect(note1.noteheadElements[0].getElementName()).toEqual("Notehead");
+        expect(note1.noteheadElements[0].pitch.debug()).toEqual("e'");
+
+        const note2 = <INote>elm.getNoteElements(globalContext)[1];
+        expect(note2.getElementName()).toEqual("Note");
+        expect(note2.timeVal.toString()).toEqual("1/4");
+        expect(note2.noteheadElements.length).toEqual(1);
+        expect(note2.noteheadElements[0].getElementName()).toEqual("Notehead");
+        expect(note2.noteheadElements[0].pitch.debug()).toEqual("f'");*/
+
+        const notes = elm.getEvents(globalContext);
+        expect(notes.length).toEqual(2);
+        const note1 = <INoteInfo>notes[0];
+        const note2 = <INoteInfo>notes[1];
+        expect(note1.heads.length).toEqual(1);
+        expect(note1.heads[0].pitch.debug()).toEqual("g'");
+        expect(note2.heads.length).toEqual(1);
+        expect(note2.heads[0].pitch.debug()).toEqual("aes'");
     });
 
 
