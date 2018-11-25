@@ -7,7 +7,7 @@ import { IMusicElement, IMeterSpacingInfo, IMeter, Music,
      IClefSpacingInfo, Point, INotehead, INote, INoteHeadSpacingInfo, INoteSpacingInfo,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteSource, INoteContext, ContextVisitor, GlobalContext
+    IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteSource, INoteContext, ContextVisitor, GlobalContext, EventVisitor
      } from "./jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
@@ -814,7 +814,7 @@ function $(elm: HTMLElement): DOMHelper {
                         }
                     }
                 }
-                visitVoice(voice: IVoice) { }
+    //            visitVoice(voice: IVoice) { }
                 visitClef(clef: IClef) {
                     const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(clef);
                     this.graphEngine.createMusicObject(null, spacing.clefId, 0, 0, 1);

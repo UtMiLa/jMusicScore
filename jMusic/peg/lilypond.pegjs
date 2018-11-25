@@ -45,8 +45,8 @@ Expression
   s:[ \t\n\r]+ { return undefined; } 
   
 TransposeFunction
-    = "\\transpose" _ Pitch _ Pitch _ Music _ /
-    "\\modalTranspose" _ Pitch _ Pitch _ Music Music _
+    = "\\transpose" _ p1:Pitch _ p2:Pitch _ m:Music _ { return {t: "Transpose", def: { interval: 2, alteration: -1 }, children: [m] } }
+	/ "\\modalTranspose" _ Pitch _ Pitch _ Music Music _
 RepeatFunction
 	= "\\repeat" _ "unfold" _ no:[0-9]+ _ Music {return {"t": "repeat"}; }
 Score

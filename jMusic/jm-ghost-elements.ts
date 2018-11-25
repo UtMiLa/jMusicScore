@@ -19,6 +19,10 @@ import { IScoreRefiner } from "./jm-interfaces";
                 return [this];
             }
 
+            visit(visitor: IVisitor): void{
+                this.inviteVisitor(visitor);
+            }
+
             public get absTime(): AbsoluteTime { return this.originElement.absTime; }
             public get definition(): IMeterDefinition { return this.originElement.definition; }
 

@@ -239,6 +239,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getEvents(): IEventInfo[] {
                 return [this];
             }
+
+            visit(visitor: IVisitor): void{
+                this.inviteVisitor(visitor);
+            }
+
             constructor(public parent: IScore, public absTime: AbsoluteTime) {
                 super(parent);
             }
@@ -754,6 +759,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 return [this];
             }
 
+
+            visit(visitor: IVisitor): void{
+                this.inviteVisitor(visitor);
+            }
+
             public getElementName() { return "StaffExpression"; }
             public getSortOrder() {
                 return 99;
@@ -792,6 +802,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
             getEventsOld(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
+            getEvents(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): IEventInfo[];
             getEndTime(globalContext: GlobalContext): AbsoluteTime;
             removeChild(child: INote): void;
             getSequence(id: string): ISequence;
@@ -845,7 +856,6 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             get noteElements(): INote[] {
                 return this.getSpecialElements("Note");
             }
-
 
             public withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
                 this.visitAll(new NoteVisitor(globalContext, f));
@@ -1207,6 +1217,10 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 return [this];
             }
 
+            visit(visitor: IVisitor): void{
+                this.inviteVisitor(visitor);
+            }
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitClef(this);
             }
@@ -1271,6 +1285,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
                 return [this];
             }
 
+
+            visit(visitor: IVisitor): void{
+                this.inviteVisitor(visitor);
+            }
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitKey(this);
             }
@@ -1330,6 +1349,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             }
             getEvents(): IEventInfo[] {
                 return [this];
+            }
+
+
+            visit(visitor: IVisitor): void{
+                this.inviteVisitor(visitor);
             }
 
             public inviteVisitor(visitor: IVisitor) {
@@ -1468,6 +1492,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
         export interface IEventInfo {
             id: string;
+            visit(visitor: IVisitor): void;
         }
         /**INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
          *      Id er konkateneret af variables og NoteElement's Id. NoteSpacingInfo og AbsTime er knyttet til denne. 
@@ -1556,7 +1581,8 @@ public getContext(): INoteContext {
                     longDecorations: this.longDecorationElements.map(h => h.getInfo()),
                     syllables: this.syllableElements.map(h => h.getInfo()),
                     absTime: this.absTime, 
-                    id: this.id
+                    id: this.id,
+                    visit: (visitor: IVisitor): void => { this.inviteVisitor(visitor);}
                 }
             }
 
@@ -2656,8 +2682,8 @@ export class ContextVisitor extends NullVisitor {
         this.doLongDecoration(deco, this.noteContext, spacing); 
     }
     visitTextSyllable(textSyllable: ITextSyllableElement) { 
-        this.doTextSyllable(textSyllable, this.noteContext, spacing); 
         var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
+        this.doTextSyllable(textSyllable, this.noteContext, spacing); 
     }
     visitBeam(beam: IBeam) { 
         var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
@@ -2676,6 +2702,44 @@ export class ContextVisitor extends NullVisitor {
     }
 }
 
+export class EventVisitor extends ContextVisitor {
+    visitVoice(voice: IVoice) { 
+        super.visitVoice(voice);
+        const events = voice.getEvents(this.globalContext);
+        for (var i = 0; i < events.length; i++){
+            events[i].visit(this);
+        }
+    }
+
+
+
+    visitNoteHead(head: INotehead) {
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
+         //this.doNoteHead(head, this.noteContext, spacing); 
+        }
+    visitNote(note: INote) {
+        this.noteContext = note.getContext();
+        var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
+        //this.doNote(note, this.noteContext, spacing); 
+    }
+    visitNoteDecoration(deco: INoteDecorationElement) { 
+        var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco);
+        //this.doNoteDecoration(deco, this.noteContext, spacing); 
+    }
+    visitLongDecoration(deco: ILongDecorationElement) { 
+        var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
+        //this.doLongDecoration(deco, this.noteContext, spacing); 
+    }
+    visitTextSyllable(textSyllable: ITextSyllableElement) { 
+        //this.doTextSyllable(textSyllable, this.noteContext, spacing); 
+        //var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
+    }
+    visitBeam(beam: IBeam) { 
+        var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
+        //this.doBeam(beam, this.noteContext, spacing); 
+    }
+
+}
 
 export class NoteVisitor extends ContextVisitor {
     constructor(globalContext: GlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
