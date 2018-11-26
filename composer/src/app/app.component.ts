@@ -3,7 +3,8 @@ import { MusicProviderService } from './music-provider.service';
 import { IModel } from './datamodel/model';
 // todo: remove:
 import { LilyPondConverter } from '../../../jMusic/jm-lilypond';
-import { MusicElementFactory, IScore, GlobalContext } from '../../../jMusic/model/jm-model';
+import { IScore } from '../../../jMusic/model/jm-model-interfaces';
+import { MusicElementFactory, GlobalContext } from '../../../jMusic/model/jm-model';
 
 @Component({
   selector: 'app-root',

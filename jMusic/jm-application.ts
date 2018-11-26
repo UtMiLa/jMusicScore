@@ -3,9 +3,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
-
-import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory, IBar,
-    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement, GlobalContext } from "./model/jm-model";
+import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IBar, IMeter, IMusicElement } from './model/jm-model-interfaces';
+import {MusicElement, ScoreElement, GlobalContext } from "./model/jm-model";
 
     export interface IScoreApplication extends Application.AbstractApplication<IScore, ScoreStatusManager> { }
     export interface IScorePlugin extends Application.IPlugIn<IScore, ScoreStatusManager> { }

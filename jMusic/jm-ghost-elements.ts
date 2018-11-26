@@ -1,14 +1,13 @@
 import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
-import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,  Point,
-    IVisitor, IVoice, IStaff, IScore, ITimedEvent, IEventContainer, IClef,
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
+import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence } from './model/jm-model-interfaces';    
+import {MusicElement, Point,
     Music, MusicElementFactory, ClefElement,
-    KeyElement, ISequence,
+    KeyElement, 
     MeterElement,
-    GlobalContext,
-    IEventInfo} from "./model/jm-model";
+    GlobalContext,} from "./model/jm-model";
 import { IScoreRefiner } from "./jm-interfaces";
 
         export class GhostMeterElement extends MusicElement<IMeterSpacingInfo> implements IMeter {

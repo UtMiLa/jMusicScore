@@ -3,9 +3,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
+import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from './model/jm-model-interfaces';
 
-import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory,
-    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement, GlobalContext } from "./model/jm-model";
+import {MusicElement,  MusicElementFactory,     ScoreElement, GlobalContext } from "./model/jm-model";
 import { parse } from './peg/lilypond';
 
 export class LilyPondConverter implements IFileConverter {    

@@ -2,12 +2,9 @@
 import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
-import {    INotehead, INoteHeadSpacingInfo,    INote, INoteSpacingInfo,    INoteDecorationElement,  INoteDecorationSpacingInfo,
-    ILongDecorationElement,  ILongDecorationSpacingInfo,    IVoice,  IVoiceSpacingInfo,   IClef,  IClefSpacingInfo,
-    IMeter,  IMeterSpacingInfo,    IKey,  IKeySpacingInfo,    IStaff,  IStaffSpacingInfo,
-   IScore,  IScoreSpacingInfo,   ITextSyllableElement,  ITextSyllableSpacingInfo,    IBar,  IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo,    IStaffExpression,  IStaffExpressionSpacingInfo,   IMusicElement,  ISpacingInfo, IVisitor} from './model/jm-model';
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
+import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IVisitor, ISpacingInfo, IMusicElement } from './model/jm-model-interfaces';    
+import { } from './model/jm-model';
 
 
 
