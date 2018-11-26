@@ -35,3 +35,35 @@ describe("NullVisitor", function () {
     });
 });
 
+describe("ContextVisitor", function () {
+    //var score: IScore;
+    //var app: IScoreApplication;
+    var globalContext = new GlobalContext();
+    var document: IScore;
+
+    beforeEach(function () {
+        VariableRef.register();
+        document = new ScoreElement(null);
+    });
+
+    it("should visit every element once with context", function () {
+        expect(document.staffElements.length).toEqual(0);
+    });
+});
+
+describe("EventVisitor", function () {
+    //var score: IScore;
+    //var app: IScoreApplication;
+    var globalContext = new GlobalContext();
+    var document: IScore;
+
+    beforeEach(function () {
+        VariableRef.register();
+        document = new ScoreElement(null);
+    });
+
+    it("should visit events including transformed and referenced events", function () {
+        expect(document.staffElements.length).toEqual(0);
+    });
+});
+

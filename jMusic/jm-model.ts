@@ -1480,12 +1480,12 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         export interface INoteSource  extends INote, ITimedEvent {
         }
         export interface INoteHeadInfo {
-            head: INotehead;
+            source: INotehead;
             pitch: Pitch;
             id: string;
         }
         export interface INoteDecoInfo<T> {
-            deco: T;
+            source: T;
             id: string;
         }
 
@@ -1500,7 +1500,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
          *      Linker til foregående og næste node og Voice.
          *      Hver Sequence og variabel kopierer INoteInfo (og transformerer evt.). */
         export interface INoteInfo extends IEventInfo {
-            note: INote;
+            source: INote;
             heads: INoteHeadInfo[];
             decorations: INoteDecoInfo<INoteDecorationElement>[];
             longDecorations: INoteDecoInfo<ILongDecorationElement>[];
@@ -1575,7 +1575,7 @@ public getContext(): INoteContext {
 
             getInfo(): INoteInfo {
                 return {
-                    note: this,
+                    source: this,
                     heads: this.noteheadElements.map(h => h.getInfo()),
                     decorations: this.decorationElements.map(h => h.getInfo()),
                     longDecorations: this.longDecorationElements.map(h => h.getInfo()),
@@ -1903,7 +1903,7 @@ public getContext(): INoteContext {
             getInfo(): INoteHeadInfo {
                 return {
                     id: this.id,
-                    head: this,
+                    source: this,
                     pitch: this.pitch
                 };
             }
@@ -1986,7 +1986,7 @@ public getContext(): INoteContext {
             getInfo(): INoteDecoInfo<INoteDecorationElement>{
                 return {
                     id: this.id,
-                    deco: this
+                    source: this
                 };
             }
 
@@ -2043,7 +2043,7 @@ public getContext(): INoteContext {
             getInfo(): INoteDecoInfo<ILongDecorationElement>{
                 return {
                     id: this.id,
-                    deco: this
+                    source: this
                 };
             }
 
@@ -2101,7 +2101,7 @@ public getContext(): INoteContext {
             getInfo(): INoteDecoInfo<ITextSyllableElement>{
                 return {
                     id: this.id,
-                    deco: this
+                    source: this
                 };
             }
 
