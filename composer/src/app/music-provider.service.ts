@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import {IModel} from './datamodel/model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { GlobalContext, ISequence } from '../../../jMusic/jm-model';
+import { GlobalContext, ISequence } from '../../../jMusic/model/jm-model';
 import { LilyPondConverter } from '../../../jMusic/jm-lilypond';
 
 @Injectable()

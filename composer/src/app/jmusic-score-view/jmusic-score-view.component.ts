@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 
 import { IMemento, ClefDefinition, NoteType, AbsoluteTime, TimeSpan, RegularKeyDefinition } from '../../../../jMusic/jm-base';
-import { MusicElementFactory, IScore, ScoreElement, Music, GlobalContext } from '../../../../jMusic/jm-model';
+import { MusicElementFactory, IScore, ScoreElement, Music, GlobalContext } from '../../../../jMusic/model/jm-model';
 
 import { CanvasView } from '../../../../jMusic/jm-CanvasView';
 import { VariableRef } from '../../../../jMusic/jm-ghost-elements';

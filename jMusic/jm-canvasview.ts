@@ -1,4 +1,4 @@
-import { IScore, Point, GlobalContext } from "./jm-model";    
+import { IScore, Point, GlobalContext } from "./model/jm-model";    
 import { MusicSpacing } from "./jm-spacing";
 import { emmentalerNotes } from "./fonts/emmentaler";
 import { fontCodePoints } from "./fonts/font-codepoints";

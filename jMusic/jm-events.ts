@@ -7,7 +7,7 @@ import {    INotehead, INoteHeadSpacingInfo,    INote, INoteSpacingInfo,    INot
     ILongDecorationElement,  ILongDecorationSpacingInfo,    IVoice,  IVoiceSpacingInfo,   IClef,  IClefSpacingInfo,
     IMeter,  IMeterSpacingInfo,    IKey,  IKeySpacingInfo,    IStaff,  IStaffSpacingInfo,
    IScore,  IScoreSpacingInfo,   ITextSyllableElement,  ITextSyllableSpacingInfo,    IBar,  IBarSpacingInfo,
-    IBeam, IBeamSpacingInfo,    IStaffExpression,  IStaffExpressionSpacingInfo,   IMusicElement,  ISpacingInfo, IVisitor} from './jm-model';
+    IBeam, IBeamSpacingInfo,    IStaffExpression,  IStaffExpressionSpacingInfo,   IMusicElement,  ISpacingInfo, IVisitor} from './model/jm-model';
 
 
 

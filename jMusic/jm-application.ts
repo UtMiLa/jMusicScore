@@ -5,7 +5,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory, IBar,
-    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement, GlobalContext } from "./jm-model";
+    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement, GlobalContext } from "./model/jm-model";
 
     export interface IScoreApplication extends Application.AbstractApplication<IScore, ScoreStatusManager> { }
     export interface IScorePlugin extends Application.IPlugIn<IScore, ScoreStatusManager> { }

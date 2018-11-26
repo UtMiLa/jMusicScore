@@ -5,7 +5,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 
 import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter, MusicElementFactory,
-    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement, GlobalContext } from "./jm-model";
+    IVisitor, IVoice, IStaff, IScore, IKey, IClef, INote, IVoiceNote, INotehead, ScoreElement, GlobalContext } from "./model/jm-model";
 import { parse } from './peg/lilypond';
 
 export class LilyPondConverter implements IFileConverter {    

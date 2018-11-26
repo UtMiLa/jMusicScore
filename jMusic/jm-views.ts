@@ -8,7 +8,7 @@ import { IMusicElement, IMeterSpacingInfo, IMeter, Music,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, INoteSource, INoteContext, ContextVisitor, GlobalContext, EventVisitor
-     } from "./jm-model";    
+     } from "./model/jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
 import { NoteDecorations } from './jm-glyph-details';

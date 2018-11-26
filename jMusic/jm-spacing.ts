@@ -8,7 +8,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,
     INoteDecorationElement, INoteDecorationSpacingInfo, IVoiceSpacingInfo, IKeySpacingInfo,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, LedgerLineSpacingInfo,
-    ILongDecorationSpacingInfo, ITimedEvent, Music, INoteSource, INoteContext, ContextVisitor, GlobalContext } from "./jm-model";
+    ILongDecorationSpacingInfo, ITimedEvent, Music, INoteSource, INoteContext, ContextVisitor, GlobalContext } from "./model/jm-model";
 
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: pitchToStaffLine skal ikke kaldes med <any>

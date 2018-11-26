@@ -1,5 +1,5 @@
 import { IMemento, ClefDefinition, NoteType, AbsoluteTime, TimeSpan, RegularKeyDefinition } from '../jm-base';
-import { MusicElementFactory, IScore, ScoreElement, Music, GlobalContext } from '../jm-model';
+import { MusicElementFactory, IScore, ScoreElement, Music, GlobalContext } from '../model/jm-model';
 import { LilyPondConverter } from '../jm-lilypond';
 import { VariableRef } from '../jm-ghost-elements';
 

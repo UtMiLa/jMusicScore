@@ -1,4 +1,4 @@
-import { IScore } from "./jm-model";
+import { IScore } from "./model/jm-model";
 
 /** Interface for objects that check and refines the model after every change (like beam calculation) */
 /*export interface IValidator<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {

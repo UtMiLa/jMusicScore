@@ -8,7 +8,7 @@ import {MusicElement, IMusicElement, IMeterSpacingInfo, IMeter,  Point,
     KeyElement, ISequence,
     MeterElement,
     GlobalContext,
-    IEventInfo} from "./jm-model";
+    IEventInfo} from "./model/jm-model";
 import { IScoreRefiner } from "./jm-interfaces";
 
         export class GhostMeterElement extends MusicElement<IMeterSpacingInfo> implements IMeter {

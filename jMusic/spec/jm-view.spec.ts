@@ -9,7 +9,7 @@ import { IMusicElement, IMeterSpacingInfo,  IMeter, ScoreElement,
     IStaffSpacingInfo, IScoreSpacingInfo, ITextSyllableElement, ITextSyllableSpacingInfo, IBar, IBarSpacingInfo,
     IBeam, IBeamSpacingInfo, IStaffExpression, IStaffExpressionSpacingInfo, IClef, IKey, 
     NoteDecorationElement, TextSyllableElement, 
-    NoteLongDecorationElement, ITimedEvent, Music, MusicElementFactory, IdSequence, ISequence, GlobalContext } from "../jm-model";  
+    NoteLongDecorationElement, ITimedEvent, Music, MusicElementFactory, IdSequence, ISequence, GlobalContext } from "../model/jm-model";  
 
 import  { IScoreApplication, ScoreStatusManager } from '../jm-application';
 import  { AbstractApplication } from '../jap-application';
