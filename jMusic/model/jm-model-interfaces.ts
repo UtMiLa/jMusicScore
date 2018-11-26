@@ -2,7 +2,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-base';
-import { GlobalContext, Point } from './jm-model';
+import { IGlobalContext, Point } from './jm-model';
 
         export interface IMusicElement {
             //changed(): void;
@@ -57,7 +57,7 @@ import { GlobalContext, Point } from './jm-model';
         }
 
         export interface IEventContainer {
-            getEventsOld(globalContext: GlobalContext): ITimedEvent[];
+            getEventsOld(globalContext: IGlobalContext): ITimedEvent[];
             //getEvents(globalContext: GlobalContext): IEventInfo[];
         }
 
@@ -83,11 +83,11 @@ import { GlobalContext, Point } from './jm-model';
             author: string;
             subTitle: string;
             metadata: {};
-            globalContext: GlobalContext;
+            globalContext: IGlobalContext;
 
             clear(): void;
             findBar(absTime: AbsoluteTime): IBar;
-            getEventsOld(globalContext: GlobalContext, ignoreStaves?: boolean): ITimedVoiceEvent[];
+            getEventsOld(globalContext: IGlobalContext, ignoreStaves?: boolean): ITimedVoiceEvent[];
             withStaves(f: (staff: IStaff, index: number) => void): void;
             withVoices(f: (voice: IVoice, index: number) => void): void;
             withBars(f: (bar: IBar, index: number) => void): void;
@@ -113,7 +113,7 @@ import { GlobalContext, Point } from './jm-model';
             getStaffContext(absTime: AbsoluteTime): StaffContext;
             //getMeterElements(): IMeter[];
             getKeyElements(): IKey[];
-            getEventsOld(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
+            getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
             addVoice(): IVoice;
             //setMeter(meter: MeterDefinition, absTime: AbsoluteTime): void;
             setClef(type: ClefDefinition, absTime: AbsoluteTime): void;
@@ -129,17 +129,17 @@ import { GlobalContext, Point } from './jm-model';
         export interface IStaffExpressionSpacingInfo extends ISpacingInfo { }
 
         export interface IVoice extends IEventContainer, IMusicElement {
-            getNoteElements(globalContext: GlobalContext): INote[];
+            getNoteElements(globalContext: IGlobalContext): INote[];
             parent: IStaff;
-            withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
+            withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
-            getEventsOld(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
-            getEvents(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): IEventInfo[];
-            getEndTime(globalContext: GlobalContext): AbsoluteTime;
+            getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
+            getEvents(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): IEventInfo[];
+            getEndTime(globalContext: IGlobalContext): AbsoluteTime;
             removeChild(child: INote): void;
             getSequence(id: string): ISequence;
-            addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): ISequenceNote;
+            addNote(globalContext: IGlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): ISequenceNote;
             addEvent(event: ITimedEvent): void;
         }
 
@@ -147,15 +147,15 @@ import { GlobalContext, Point } from './jm-model';
         export interface ISequence extends IEventContainer, IMusicElement, IEventEnumerator {
             noteElements: INote[];
             //parent: IVoice | ISequence;
-            withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
+            withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
-            getEventsOld(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
+            getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
             getEndTime(): AbsoluteTime;
-            getNoteElements(globalContext: GlobalContext): INote[];
+            getNoteElements(globalContext: IGlobalContext): INote[];
             removeChild(child: INote): void;
             addEvent(event: ITimedEvent): void;
-            addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef): ISequenceNote;
+            addNote(globalContext: IGlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef): ISequenceNote;
         }
 
 
@@ -208,10 +208,10 @@ import { GlobalContext, Point } from './jm-model';
             //setSpacingInfo(info: INoteSpacingInfo): INoteSpacingInfo;
             getContext(): INoteContext;
 
-            withHeads(globalContext: GlobalContext, f: (head: INotehead, index: number) => void): void;
-            withDecorations(globalContext: GlobalContext, f: (deco: INoteDecorationElement, index: number) => void): void;
-            withLongDecorations(globalContext: GlobalContext, f: (deco: ILongDecorationElement, index: number) => void): void;
-            withSyllables(globalContext: GlobalContext, f: (syll: ITextSyllableElement, index: number) => void): void;
+            withHeads(globalContext: IGlobalContext, f: (head: INotehead, index: number) => void): void;
+            withDecorations(globalContext: IGlobalContext, f: (deco: INoteDecorationElement, index: number) => void): void;
+            withLongDecorations(globalContext: IGlobalContext, f: (deco: ILongDecorationElement, index: number) => void): void;
+            withSyllables(globalContext: IGlobalContext, f: (syll: ITextSyllableElement, index: number) => void): void;
 
 
             getBeamspan(): number[];
@@ -228,8 +228,8 @@ import { GlobalContext, Point } from './jm-model';
             setRest(newRest: boolean): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
-            getPrev(globalContext: GlobalContext): INote;
-            getNext(globalContext: GlobalContext): INote;
+            getPrev(globalContext: IGlobalContext): INote;
+            getNext(globalContext: IGlobalContext): INote;
             getInfo(): INoteInfo;
         }
 
@@ -267,7 +267,7 @@ import { GlobalContext, Point } from './jm-model';
         }
 
         export interface IEventEnumerator {
-            getEvents(globalContext: GlobalContext): IEventInfo[];
+            getEvents(globalContext: IGlobalContext): IEventInfo[];
         }
         export interface INoteContext extends INote,  ITimedEvent {
             //spacingInfo: INoteSpacingInfo;

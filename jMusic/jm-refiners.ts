@@ -8,7 +8,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
          IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
          ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, 
          ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote } from './model/jm-model-interfaces';
-import {  Music,      BeamElement,      Point,         GlobalContext     } from "./model/jm-model";    
+import {  Music,      BeamElement,      Point,         IGlobalContext     } from "./model/jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import { IScoreDesigner, IScoreRefiner } from './jm-interfaces';
 import { NoteDecorations } from './jm-glyph-details';
@@ -29,7 +29,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
         export interface IScoreValidator extends IScoreRefiner {}
 
         export class UpdateBarsValidator implements IScoreValidator {
-            constructor(private globalContext: GlobalContext) {}
+            constructor(private globalContext: IGlobalContext) {}
 
 
             public refine(score: IScore) {
@@ -79,7 +79,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
         }
 
         export class CreateTimelineValidator implements IScoreValidator {
-            constructor(private globalContext: GlobalContext) {}
+            constructor(private globalContext: IGlobalContext) {}
 
             public refine(score: IScore) {
                 var events: ITimedEvent[] = [];
@@ -115,7 +115,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
         }
 
         export class UpdateAccidentalsValidator implements IScoreValidator {
-            constructor(private globalContext: GlobalContext) {}
+            constructor(private globalContext: IGlobalContext) {}
 
             public refine(score: IScore) {
                 var currentKey: IKey = null;
@@ -330,7 +330,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
         }
 */
         export class BeamValidator implements IScoreValidator {
-            constructor(private globalContext: GlobalContext) {}
+            constructor(private globalContext: IGlobalContext) {}
 
             public refine(score: IScore) {
                 score.withStaves((staff: IStaff) => {
@@ -533,7 +533,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
 
 
         export class TieValidator implements IScoreValidator {
-            constructor(private globalContext: GlobalContext) {}
+            constructor(private globalContext: IGlobalContext) {}
             public refine(score: IScore) {
                 score.withVoices((voice: IVoice, index: number) => {
                     this.validateVoice(voice);

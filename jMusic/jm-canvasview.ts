@@ -1,4 +1,4 @@
-import { Point, GlobalContext } from "./model/jm-model";    
+import { Point, IGlobalContext } from "./model/jm-model";    
 import { IScore } from './model/jm-model-interfaces';
 import { MusicSpacing } from "./jm-spacing";
 import { emmentalerNotes } from "./fonts/emmentaler";
@@ -641,7 +641,7 @@ import { Validators } from './jm-refiners';
 
         
                 export class CanvasQuickPainter {
-                    constructor(private globalContext: GlobalContext) {}
+                    constructor(private globalContext: IGlobalContext) {}
                     public paintOnCanvas(score: IScore, canvas: HTMLCanvasElement){
                         var canvasHelper = new QuickCanvasHelper(document, canvas);
         

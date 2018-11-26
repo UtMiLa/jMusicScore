@@ -4,7 +4,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval, IntervalType} from '../jm-base';
 import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from '../model/jm-model-interfaces';    
 import {    NoteDecorationElement, TextSyllableElement, 
-    NoteLongDecorationElement, Music, MusicElementFactory, IdSequence,  GlobalContext, ScoreElement } from "../model/jm-model";  
+    NoteLongDecorationElement, Music, MusicElementFactory, IdSequence, GlobalContext, ScoreElement } from "../model/jm-model";  
 
 import  { IScoreApplication, ScoreStatusManager } from '../jm-application';
 import  { AbstractApplication } from '../jap-application';

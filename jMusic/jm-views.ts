@@ -8,7 +8,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, 
         ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote } from './model/jm-model-interfaces';
-import {ContextVisitor, GlobalContext, EventVisitor, Point, Music     } from "./model/jm-model";    
+import {ContextVisitor, IGlobalContext, EventVisitor, Point, Music     } from "./model/jm-model";    
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
 import { NoteDecorations } from './jm-glyph-details';
@@ -30,7 +30,7 @@ function $(elm: HTMLElement): DOMHelper {
     
         export module MyModel {
             export interface ILongDecorationSpacingInfo extends ISpacingInfo {
-                render?: (deco: ILongDecorationElement, ge: IGraphicsEngine, globalContext: GlobalContext) => void;
+                render?: (deco: ILongDecorationElement, ge: IGraphicsEngine, globalContext: IGlobalContext) => void;
             }
         }
     
@@ -207,12 +207,12 @@ function $(elm: HTMLElement): DOMHelper {
             }
     
             class TrillDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: IGlobalContext): void {
                     var path: string;
                 }
             }
             class CrescDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: IGlobalContext): void {
                     // long deco (cresc)
                     var notedecoSpacing = globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
                     var longDeco = deco;
@@ -240,23 +240,23 @@ function $(elm: HTMLElement): DOMHelper {
                 }
             }
             class BracketDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: IGlobalContext): void {
                     var path: string;
                 }
             }
             class TupletDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: IGlobalContext): void {
                     var path: string;
                 }
             } 
             class OttavaDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: IGlobalContext): void {
                     var path: string;
                 }
             }
     
             class SlurDrawer extends LongDecorationDrawer {
-                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: GlobalContext): void {
+                public static render(deco: ILongDecorationElement, graphEngine: IGraphicsEngine, globalContext: IGlobalContext): void {
                     // long deco (slur)
                     var notedecoSpacing = globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
                     var longDeco = deco;
@@ -289,7 +289,7 @@ function $(elm: HTMLElement): DOMHelper {
             }
     
             class ExpressionFactory implements IVisitorIterator<IMusicElement>, IVisitor {
-                constructor(private globalContext: GlobalContext){
+                constructor(private globalContext: IGlobalContext){
 
                 }
 
@@ -342,7 +342,7 @@ function $(elm: HTMLElement): DOMHelper {
             }
     
             export class ExpressionRenderer implements IScoreDesigner {
-                constructor(private globalContext: GlobalContext, private spacer: IVisitor = null) {
+                constructor(private globalContext: IGlobalContext, private spacer: IVisitor = null) {
                 }
     
                 public design(document: IScore): void {
@@ -352,7 +352,7 @@ function $(elm: HTMLElement): DOMHelper {
     
             /** Responsible for making event handlers on DOM (SVG/HTML) sensors */  
             export class DomCheckSensorsVisitor extends ContextVisitor { // todo: remove event handlers when inactive
-                constructor(globalContext: GlobalContext, public sensorEngine: ISensorGraphicsEngine, private _score: IScore, private eventReceiver: IEventReceiver) {
+                constructor(globalContext: IGlobalContext, public sensorEngine: ISensorGraphicsEngine, private _score: IScore, private eventReceiver: IEventReceiver) {
                     super(globalContext);
                 }
     
@@ -665,7 +665,7 @@ function $(elm: HTMLElement): DOMHelper {
     
     
             export class RedrawVisitor extends ContextVisitor {
-                constructor(globalContext: GlobalContext, private graphEngine: IGraphicsEngine) { super(globalContext); }
+                constructor(globalContext: IGlobalContext, private graphEngine: IGraphicsEngine) { super(globalContext); }
     
                 static getTie(spacing: INoteHeadSpacingInfo): string {
                     if (spacing.tieStart) {
@@ -860,7 +860,7 @@ function $(elm: HTMLElement): DOMHelper {
             }
     
             export class PrefixVisitor implements IVisitorIterator<IMusicElement> {
-                constructor(private globalContext: GlobalContext, private visitor: IVisitor, private cge: IBaseGraphicsEngine, private prefix = '') {
+                constructor(private globalContext: IGlobalContext, private visitor: IVisitor, private cge: IBaseGraphicsEngine, private prefix = '') {
                 }
                 public visitPre(element: IMusicElement): (element: IMusicElement) => void {
                     //var spacing = element.spacingInfo;

@@ -212,8 +212,14 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
         }
 
-        
-        export class GlobalContext{
+        export interface IGlobalContext{ 
+            getVariable(name: string): ISequence;
+            addVariable(name: string, value: ISequence):void;
+            getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T;
+            addSpacingInfo(element: IMusicElement, value: ISpacingInfo): void;
+        }
+
+        export class GlobalContext implements IGlobalContext {
             private _variables: { [key: string]: ISequence } = {};
             private _spacingInfos: { [key: string]: ISpacingInfo } = {};
 
@@ -252,7 +258,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             public author: string;
             public subTitle: string;
             public metadata = {};
-            public globalContext: GlobalContext = new GlobalContext(); // todo: flyt til application
+            public globalContext: IGlobalContext = new GlobalContext(); // todo: flyt til application
 
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitScore(this);
@@ -310,7 +316,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 }
             }
 
-            public getEventsOld(globalContext: GlobalContext, ignoreStaves = false): ITimedVoiceEvent[] {
+            public getEventsOld(globalContext: IGlobalContext, ignoreStaves = false): ITimedVoiceEvent[] {
                 var events: ITimedVoiceEvent[] = [];
                 if (!ignoreStaves) {
                     this.withStaves((staff: IStaff) => {
@@ -549,7 +555,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             public getKeyElements(): IKey[] {
                 return this.keyElements;
             }
-            public getEventsOld(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
+            public getEventsOld(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
                 var events: ITimedVoiceEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
@@ -710,7 +716,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
             //public meterElements: { push: (meter: MeterElement) => void; };
 
-            public getNoteElements(globalContext: GlobalContext): INote[] {
+            public getNoteElements(globalContext: IGlobalContext): INote[] {
                 let res: INote[] = [];
                 this.withNotes(globalContext, (note, index) => {res.push(note);})
                 return res;
@@ -721,7 +727,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 return this.getSpecialElements("Note");
             }
 
-            public withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
+            public withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
                 this.visitAll(new NoteVisitor(globalContext, f));
             }
 
@@ -744,7 +750,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
 
 
-            public getEvents(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): IEventInfo[] {
+            public getEvents(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): IEventInfo[] {
                 var events: IEventInfo[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
@@ -762,7 +768,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
 
 
-            public getEventsOld(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
+            public getEventsOld(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
                 var events: ITimedVoiceEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
@@ -775,7 +781,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
             public getElementName() { return "Voice"; }
 
-            public getEndTime(globalContext: GlobalContext): AbsoluteTime {
+            public getEndTime(globalContext: IGlobalContext): AbsoluteTime {
                 let noteElements = this.getNoteElements(globalContext);
                 if (noteElements.length) {
                     var lastNote = noteElements[noteElements.length - 1];
@@ -789,7 +795,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
 
 
-            public addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): ISequenceNote{
+            public addNote(globalContext: IGlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef, segmentId?: string): ISequenceNote{
                 let segment = this.getSequence(segmentId);
                 let seqNote = segment.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);
                 return seqNote; // new NoteProxy(seqNote, this);
@@ -839,7 +845,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 return this.getSpecialElements("Note");
             }
 
-            public getNoteElements(globalContext: GlobalContext): INote[] { 
+            public getNoteElements(globalContext: IGlobalContext): INote[] { 
                 var res: INote[] = [];
                 this.withNotes(globalContext, (note) => {
                     res.push(note);
@@ -848,7 +854,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             };
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
 
-            public withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
+            public withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
                 this.visitAll(new NoteVisitor(globalContext, f));
             }
             public getStemDirection(): StemDirectionType {
@@ -861,7 +867,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 }
             }
 
-            public getEvents(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): IEventInfo[] {
+            public getEvents(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): IEventInfo[] {
                 var events: IEventInfo[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
@@ -877,7 +883,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 });*/
                 return events;
             }
-            public getEventsOld(globalContext: GlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
+            public getEventsOld(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
                 var events: ITimedEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
@@ -905,7 +911,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
 
 
-            public addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): ISequenceNote {
+            public addNote(globalContext: IGlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): ISequenceNote {
                 if (!absTime){
                     absTime = this.getEndTime();
                 }
@@ -1003,7 +1009,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             get noteElements(): INote[] {
                 return this.sequence.noteElements;
             }
-            withNotes(globalContext: GlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void {
+            withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void {
                 this.sequence.withNotes(globalContext, f);
             }
             getStemDirection(): StemDirectionType {
@@ -1012,13 +1018,13 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             setStemDirection(dir: StemDirectionType): void {
                 this.sequence.setStemDirection(dir);
             }
-            getEventsOld(globalContext: GlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[] {
+            getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[] {
                 return this.sequence.getEventsOld(globalContext, fromTime, toTime);
             }
             getEndTime(): AbsoluteTime {
                 return this.sequence.getEndTime();
             }
-            getNoteElements(globalContext: GlobalContext): INote[] {
+            getNoteElements(globalContext: IGlobalContext): INote[] {
                 return this.sequence.getNoteElements(globalContext);
             }
             addChild(child: IMusicElement){
@@ -1028,10 +1034,10 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             addEvent(event: ITimedEvent): void {
                 throw new Error("Cannot add event to transposeElement");
             }
-            addNote(globalContext: GlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef): ISequenceNote {
+            addNote(globalContext: IGlobalContext, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote?: INote, insert?: boolean, dots?: number, tuplet?: TupletDef): ISequenceNote {
                 throw new Error("Cannot add event to transposeElement");
             }
-            getEvents(globalContext: GlobalContext): IEventInfo[] {
+            getEvents(globalContext: IGlobalContext): IEventInfo[] {
                 let events = this.sequence.getEvents(globalContext);
                 for (let i = 0; i < events.length; i++){
                     if ((<any>events[i]).heads){
@@ -1326,7 +1332,7 @@ public getContext(): INoteContext {
                 }
             }
 
-            getPrev(globalContext: GlobalContext): INote {
+            getPrev(globalContext: IGlobalContext): INote {
                 var voice = this.parent;
                 var noteElements = voice.getNoteElements(globalContext);
                 var i = noteElements.indexOf(this);
@@ -1335,7 +1341,7 @@ public getContext(): INoteContext {
                 }
                 return null;
             }
-            getNext(globalContext: GlobalContext): INote{
+            getNext(globalContext: IGlobalContext): INote{
                 var voice = this.parent;
                 var noteElements = voice.getNoteElements(globalContext);
                 var i = noteElements.indexOf(this);
@@ -1463,28 +1469,28 @@ public getContext(): INoteContext {
 
             getElementName() { return "Note"; }
 
-            public withHeads(globalContext: GlobalContext, f: (head: INotehead, index: number) => void) {
+            public withHeads(globalContext: IGlobalContext, f: (head: INotehead, index: number) => void) {
                 this.visitAll(new NoteHeadVisitor(globalContext, f));
                 /*for (var i = 0; i < this.noteheadElements.length; i++) {
                     f(this.noteheadElements[i], i);
                 }*/
             }
 
-            public withDecorations(globalContext: GlobalContext, f: (deco: INoteDecorationElement, index: number) => void) {
+            public withDecorations(globalContext: IGlobalContext, f: (deco: INoteDecorationElement, index: number) => void) {
                 this.visitAll(new NoteDecorationVisitor(globalContext,f));
                 /*for (var i = 0; i < this.decorationElements.length; i++) {
                     f(this.decorationElements[i], i);
                 }*/
             }
 
-            public withLongDecorations(globalContext: GlobalContext, f: (deco: ILongDecorationElement, index: number) => void) {
+            public withLongDecorations(globalContext: IGlobalContext, f: (deco: ILongDecorationElement, index: number) => void) {
                 this.visitAll(new LongDecorationVisitor(globalContext,f));
                 /*for (var i = 0; i < this.longDecorationElements.length; i++) {
                     f(this.longDecorationElements[i], i);
                 }*/
             }
 
-            public withSyllables(globalContext: GlobalContext, f: (syll: ITextSyllableElement, index: number) => void) {
+            public withSyllables(globalContext: IGlobalContext, f: (syll: ITextSyllableElement, index: number) => void) {
                 this.visitAll(new TextSyllableVisitor(globalContext,f));
                 /*for (var i = 0; i < this.syllableElements.length; i++) {
                     f(this.syllableElements[i], i);
@@ -1842,7 +1848,7 @@ public getContext(): INoteContext {
                 return this._music;
             }*/
 
-            static prevNote(globalContext: GlobalContext, note: INote): INote {
+            static prevNote(globalContext: IGlobalContext, note: INote): INote {
                 /*var voice = note.parent;
                 var noteElements = voice.getNoteElements();
                 var i = noteElements.indexOf(note);
@@ -1852,7 +1858,7 @@ public getContext(): INoteContext {
                 return null;*/
                 return note.getPrev(globalContext);
             }
-            static nextNote(globalContext: GlobalContext, note: INote): INote { // (noteIndex >= note.parent.noteElements.length) ? null : note.parent.noteElements[noteIndex + 1];
+            static nextNote(globalContext: IGlobalContext, note: INote): INote { // (noteIndex >= note.parent.noteElements.length) ? null : note.parent.noteElements[noteIndex + 1];
                 /*var voice = note.parent;
                 var noteElements = voice.getNoteElements();
                 var i = noteElements.indexOf(note);
@@ -1863,7 +1869,7 @@ public getContext(): INoteContext {
                 return note.getNext(globalContext);
             }
 
-            public static changeNoteDuration(globalContext: GlobalContext, note: ISequenceNote, nominalDuration: TimeSpan, actualDuration: TimeSpan): ISequenceNote {
+            public static changeNoteDuration(globalContext: IGlobalContext, note: ISequenceNote, nominalDuration: TimeSpan, actualDuration: TimeSpan): ISequenceNote {
                 if (note.getTimeVal().eq(actualDuration) && note.timeVal.eq(nominalDuration)) return; // no change
 
                 //note.timeVal = nominalDuration;
@@ -1911,7 +1917,7 @@ public getContext(): INoteContext {
                 return note1;
             }
 
-            public static splitNote(globalContext: GlobalContext, note: ISequenceNote, notes: TimeSpan[]): void {
+            public static splitNote(globalContext: IGlobalContext, note: ISequenceNote, notes: TimeSpan[]): void {
                 if (notes.length <= 1) return;
                 var absTime = note.absTime;
                 var nextNote = Music.nextNote(globalContext, note);
@@ -1940,7 +1946,7 @@ public getContext(): INoteContext {
 
             }
 
-            public static mergeNoteWithNext(globalContext: GlobalContext, note: ISequenceNote, no: number = 1): ISequenceNote {
+            public static mergeNoteWithNext(globalContext: IGlobalContext, note: ISequenceNote, no: number = 1): ISequenceNote {
                 var nextNotes: INote[] = [];
                 var nextNote = Music.nextNote(globalContext, note);
                 var time = note.getTimeVal();
@@ -1985,7 +1991,7 @@ public getContext(): INoteContext {
                 }
                 return null;
             }
-            static findNote(globalContext: GlobalContext, sequence: ISequence, absTime: AbsoluteTime): INote {
+            static findNote(globalContext: IGlobalContext, sequence: ISequence, absTime: AbsoluteTime): INote {
                 var res: INote;
                 var noteElements = sequence.noteElements;
 
@@ -2004,7 +2010,7 @@ public getContext(): INoteContext {
             }
 
             /** Check if absTime is in an area with unfinished tuplets and return the current tuplet fraction at this absTime */
-            static inTupletArea(globalContext: GlobalContext, sequence: ISequence, absTime: AbsoluteTime): Rational {
+            static inTupletArea(globalContext: IGlobalContext, sequence: ISequence, absTime: AbsoluteTime): Rational {
                 // Find first note in the bar
                 // todo: maybe add support for tuplets crossing bar lines
                 //var staffContext = sequence.parent.getStaffContext(absTime);
@@ -2037,7 +2043,7 @@ public getContext(): INoteContext {
             }*/
 
             /** Add a note to voice at a specified absTime */
-            static addNoteX(globalContext: GlobalContext, sequence: ISequence, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): ISequenceNote {
+            static addNoteX(globalContext: IGlobalContext, sequence: ISequence, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): ISequenceNote {
                 return sequence.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);
                 /*if (!absTime){
                     absTime = sequence.getEndTime();
@@ -2089,7 +2095,7 @@ public getContext(): INoteContext {
                 return note;/* */
                 // = { note: 0, rest: 1, placeholder: 2 };
             }
-            static getText(globalContext: GlobalContext, voice: IVoice) {
+            static getText(globalContext: IGlobalContext, voice: IVoice) {
                 if (voice) {
                     var txt = "";
                     voice.withNotes(globalContext, (note: INote) => {
@@ -2231,7 +2237,7 @@ export class ContextVisitor extends NullVisitor {
     staff: IStaff;
     voice: IVoice;
     noteContext: INoteContext;
-    constructor(public globalContext: GlobalContext){
+    constructor(public globalContext: IGlobalContext){
         super();
     }
     visitStaff(staff: IStaff) { this.staff = staff; }
@@ -2318,7 +2324,7 @@ export class EventVisitor extends ContextVisitor {
 }
 
 export class NoteVisitor extends ContextVisitor {
-    constructor(globalContext: GlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
+    constructor(globalContext: IGlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
         super(globalContext);
     }
     no: number = 0;
@@ -2359,7 +2365,7 @@ export class VoiceVisitor extends NullVisitor {
 }   
 
 export class NoteHeadVisitor extends ContextVisitor {
-    constructor(globalContext: GlobalContext, private callback: (node:INotehead, index: number, spacing: INoteHeadSpacingInfo) => void) {
+    constructor(globalContext: IGlobalContext, private callback: (node:INotehead, index: number, spacing: INoteHeadSpacingInfo) => void) {
         super(globalContext)
     }
     no: number = 0;
@@ -2418,7 +2424,7 @@ export class TimedEventVisitor extends NullVisitor {
 }   
 
 export class NoteDecorationVisitor extends ContextVisitor {
-    constructor(globalContext: GlobalContext, private callback: (node:INoteDecorationElement, index: number, spacing: INoteDecorationSpacingInfo) => void) {
+    constructor(globalContext: IGlobalContext, private callback: (node:INoteDecorationElement, index: number, spacing: INoteDecorationSpacingInfo) => void) {
         super(globalContext)
     }
     no: number = 0;
@@ -2428,7 +2434,7 @@ export class NoteDecorationVisitor extends ContextVisitor {
 }   
 
 export class LongDecorationVisitor extends ContextVisitor {
-    constructor(globalContext: GlobalContext, private callback: (node:ILongDecorationElement, index: number, spacing: ILongDecorationSpacingInfo) => void) {
+    constructor(globalContext: IGlobalContext, private callback: (node:ILongDecorationElement, index: number, spacing: ILongDecorationSpacingInfo) => void) {
         super(globalContext)
     }
     no: number = 0;
@@ -2438,7 +2444,7 @@ export class LongDecorationVisitor extends ContextVisitor {
 }   
 
 export class TextSyllableVisitor extends ContextVisitor {
-    constructor(globalContext: GlobalContext, private callback: (node:ITextSyllableElement, index: number, spacing: ITextSyllableSpacingInfo) => void) {
+    constructor(globalContext: IGlobalContext, private callback: (node:ITextSyllableElement, index: number, spacing: ITextSyllableSpacingInfo) => void) {
         super(globalContext)
     }
     no: number = 0;

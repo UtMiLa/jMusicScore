@@ -8,7 +8,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
 import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IMusicElement } from './model/jm-model-interfaces';    
-import {GlobalContext, Point } from "./model/jm-model";    
+import {IGlobalContext, Point } from "./model/jm-model";    
 import { IFeedbackClient } from './jap-application';
 import { IWriterPlugIn, IReaderPlugIn } from './jap-application';
 import {  IScoreApplication, ScoreStatusManager, IScorePlugin, IScoreDesigner } from './jm-application';
@@ -111,7 +111,7 @@ class SvgSizeDesigner implements IScoreDesigner {
 }
 
 export class DomFeedbackClient implements IFeedbackClient {
-    constructor(private sensorEngine: ISensorGraphicsEngine, private globalContext: GlobalContext) { }
+    constructor(private sensorEngine: ISensorGraphicsEngine, private globalContext: IGlobalContext) { }
     changed(status: ScoreStatusManager, key: string, val: any) {
         if (key === "currentNote" || key === "currentPitch") {
             if (status.currentNote) {
