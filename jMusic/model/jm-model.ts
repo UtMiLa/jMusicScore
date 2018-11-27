@@ -3,7 +3,22 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-base';
-import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInfo, IScore, IVoice, IStaff, ISequence, IScoreSpacingInfo, IMeter, ITimedVoiceEvent, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, INote, INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, IMusicElementCreator } from './jm-model-interfaces';
+import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInfo, IScore, IVoice, IStaff, ISequence, IScoreSpacingInfo, 
+    IMeter, ITimedVoiceEvent, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, INote, 
+    INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, IMeterSpacingInfo, 
+    IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, ITextSyllableElement, 
+    INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, 
+    IMusicElementCreator, 
+    IEventVisitor,
+    INoteDecorationEventInfo,
+    ILongDecorationEventInfo,
+    ITextSyllableEventInfo,
+    IBeamEventInfo,
+    IBarEventInfo,
+    IClefEventInfo,
+    IMeterEventInfo,
+    IKeyEventInfo,
+    IStaffExpressionEventInfo} from './jm-model-interfaces';
         // todo: Spacers out of this file
         // todo: NoteId away
 
@@ -175,11 +190,9 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
         class BarElement extends MusicElement<IBarSpacingInfo> implements IBar {
             getEvents(): IEventInfo[] {
-                return [this];
-            }
-
-            visit(visitor: IVisitor): void{
-                this.inviteVisitor(visitor);
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined };
+                info.visit = (visitor: IEventVisitor) => {visitor.visitBar(info)};
+                return [info];
             }
 
             constructor(public parent: IScore, public absTime: AbsoluteTime) {
@@ -640,8 +653,11 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             constructor(public parent: IStaff, public text: string, public absTime: AbsoluteTime) {
                 super(parent);
             }
+
             getEvents(): IEventInfo[] {
-                return [this];
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined };
+                info.visit = (visitor: IEventVisitor) => {visitor.visitStaffExpression(info)};
+                return [info];
             }
 
 
@@ -1061,7 +1077,9 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                return [this];
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined };
+                info.visit = (visitor: IEventVisitor) => {visitor.visitClef(info)};
+                return [info];
             }
 
             visit(visitor: IVisitor): void{
@@ -1124,7 +1142,9 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                return [this];
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined };
+                info.visit = (visitor: IEventVisitor) => {visitor.visitKey(info)};
+                return [info];
             }
 
 
@@ -1182,9 +1202,10 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 super(parent);
             }
             getEvents(): IEventInfo[] {
-                return [this];
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined };
+                info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
+                return [info];
             }
-
 
             visit(visitor: IVisitor): void{
                 this.inviteVisitor(visitor);
@@ -1303,7 +1324,7 @@ public getContext(): INoteContext {
             }
 
             getInfo(): INoteInfo {
-                return {
+                let info: INoteInfo = { 
                     source: this,
                     heads: this.noteheadElements.map(h => h.getInfo()),
                     decorations: this.decorationElements.map(h => h.getInfo()),
@@ -1311,9 +1332,12 @@ public getContext(): INoteContext {
                     syllables: this.syllableElements.map(h => h.getInfo()),
                     absTime: this.absTime, 
                     id: this.id,
-                    visit: (visitor: IVisitor): void => { this.inviteVisitor(visitor);}
-                }
+                    visit: undefined 
+                };
+                info.visit = (visitor: IEventVisitor) => {visitor.visitNote(info)};
+                return info;                
             }
+
 
 /*pitchToStaffLine(pitch: Pitch): number{
     var clef = NoteElement.getStaffContext(this, this.absTime).clef;
@@ -2284,8 +2308,37 @@ export class ContextVisitor extends NullVisitor {
     }
 }
 
-export class EventVisitor extends ContextVisitor {
-    visitVoice(voice: IVoice) { 
+export class NullEventVisitor implements IEventVisitor {
+    visitNoteHead(head: INoteHeadInfo): void {
+    }   
+    visitNote(note: INoteInfo): void {
+    }
+    visitNoteDecoration(deco: INoteDecorationEventInfo): void {
+    }
+    visitLongDecoration(deco: ILongDecorationEventInfo): void {
+    }
+    visitTextSyllable(text: ITextSyllableEventInfo): void {
+    }
+    visitBeam(beam: IBeamEventInfo): void {
+    }
+    visitBar(bar: IBarEventInfo): void {
+    }
+    visitClef(clef: IClefEventInfo): void {
+    }
+    visitMeter(meter: IMeterEventInfo): void {
+    }
+    visitKey(key: IKeyEventInfo): void {
+    }
+    visitStaffExpression(staffExpression: IStaffExpressionEventInfo): void {
+    }
+    visitVoice(voice: IVoice): void {
+    }
+    visitStaff(staff: IStaff): void {
+    }
+    visitScore(score: IScore): void {
+    }
+
+/*    visitVoice(voice: IVoice) { 
         super.visitVoice(voice);
         const events = voice.getEvents(this.globalContext);
         for (var i = 0; i < events.length; i++){
@@ -2320,8 +2373,62 @@ export class EventVisitor extends ContextVisitor {
         var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
         //this.doBeam(beam, this.noteContext, spacing); 
     }
-
+*/
 }
+
+export class ContextEventVisitor extends NullEventVisitor {
+    score: IScore;
+    staff: IStaff;
+    voice: IVoice;
+    noteContext: INoteContext;
+    constructor(public globalContext: IGlobalContext){
+        super();
+    }
+    visitStaff(staff: IStaff) { this.staff = staff; }
+    visitScore(score: IScore) { this.score = score; }
+    visitVoice(voice: IVoice) { this.voice = voice; }
+    getStaffContext(absTime: AbsoluteTime): StaffContext{
+        return this.staff.getStaffContext(absTime);
+    }
+    /*visitNoteHead(head: INoteHeadInfo) {
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
+         this.doNoteHead(head, this.noteContext, spacing); 
+        }
+    visitNote(note: INoteInfo) {
+        this.noteContext = note.getContext();
+        var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
+        this.doNote(note, this.noteContext, spacing); 
+    }
+    visitNoteDecoration(deco: INoteDecorationEventInfo) { 
+        var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco);
+        this.doNoteDecoration(deco, this.noteContext, spacing); 
+    }
+    visitLongDecoration(deco: ILongDecorationEventInfo) { 
+        var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
+        this.doLongDecoration(deco, this.noteContext, spacing); 
+    }
+    visitTextSyllable(textSyllable: ITextSyllableEventInfo) { 
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
+        this.doTextSyllable(textSyllable, this.noteContext, spacing); 
+    }
+    visitBeam(beam: IBeamEventInfo) { 
+        var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
+        this.doBeam(beam, this.noteContext, spacing); 
+    }
+
+    doNote(note: INote, context: INoteContext, spacing: INoteSpacingInfo) { }
+    doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) { }
+    doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) { }
+    doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) { }
+    doTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) { }
+    doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) { }
+    visitVariable(name: string): void {
+        let val = this.globalContext.getVariable(name);
+        if (val) val.visitAll(this);
+    }
+*/
+}
+
 
 export class NoteVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {

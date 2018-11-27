@@ -250,8 +250,20 @@ import { IGlobalContext, Point } from './jm-model';
 
         export interface IEventInfo {
             id: string;
-            visit(visitor: IVisitor): void;
+            source: IMusicElement;
+            visit(visitor: IEventVisitor): void;
         }
+
+        export interface IKeyEventInfo extends IEventInfo {}
+        export interface IClefEventInfo extends IEventInfo {}
+        export interface IMeterEventInfo extends IEventInfo {}
+        export interface IBarEventInfo extends IEventInfo {}
+        export interface IBeamEventInfo extends IEventInfo {}
+        export interface INoteDecorationEventInfo extends IEventInfo {}
+        export interface ILongDecorationEventInfo extends IEventInfo {}
+        export interface IStaffExpressionEventInfo extends IEventInfo {}
+        export interface ITextSyllableEventInfo extends IEventInfo {}
+
         /**INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
          *      Id er konkateneret af variables og NoteElement's Id. NoteSpacingInfo og AbsTime er knyttet til denne. 
          *      Holder en reference til NoteElement (nødvendigt?)
@@ -268,6 +280,7 @@ import { IGlobalContext, Point } from './jm-model';
 
         export interface IEventEnumerator {
             getEvents(globalContext: IGlobalContext): IEventInfo[];
+            //visitEvents(globalContext: IGlobalContext, f: (visitor: IEventVisitor) => void): void;
         }
         export interface INoteContext extends INote,  ITimedEvent {
             //spacingInfo: INoteSpacingInfo;
@@ -343,6 +356,24 @@ import { IGlobalContext, Point } from './jm-model';
             visitVariable(name: string): void;
         }
 
+        export interface IEventVisitor {
+            visitNoteHead(head: INoteHeadInfo): void;
+            visitNote(note: INoteInfo): void;
+            visitNoteDecoration(deco: INoteDecorationEventInfo): void;
+            visitLongDecoration(deco: ILongDecorationEventInfo): void;
+            visitTextSyllable(text: ITextSyllableEventInfo): void;
+            visitBeam(beam: IBeamEventInfo): void;
+
+            visitBar(bar: IBarEventInfo): void;
+            visitClef(clef: IClefEventInfo): void;
+            visitMeter(meter: IMeterEventInfo): void;
+            visitKey(key: IKeyEventInfo): void;
+            visitStaffExpression(staffExpression: IStaffExpressionEventInfo): void;
+
+            visitVoice(voice: IVoice): void;
+            visitStaff(staff: IStaff): void;
+            visitScore(score: IScore): void;
+        }
 
         export interface ISpacingInfo {
             /// Center x,y - like center of notehead or clef

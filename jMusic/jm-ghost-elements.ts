@@ -2,7 +2,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
-import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence } from './model/jm-model-interfaces';    
+import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence, IEventVisitor } from './model/jm-model-interfaces';    
 import {MusicElement, Point,
     Music, MusicElementFactory, ClefElement,
     KeyElement, 
@@ -14,9 +14,13 @@ import { IScoreRefiner } from "./jm-interfaces";
             constructor(public parent: IMusicElement, private originElement: IMeter) {
                 super(parent);
             }
-            getEvents(globalContext: GlobalContext): IEventInfo[] {
-                return [this];
+
+            getEvents(): IEventInfo[] {
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined };
+                info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
+                return [info];
             }
+
 
             visit(visitor: IVisitor): void{
                 this.inviteVisitor(visitor);
