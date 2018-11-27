@@ -163,22 +163,23 @@ describe("Lilypond Import", function () {
             //test beaming
         });
         it("should allow nested sequences", function () {
-            var input = "{ c4 d {e f} }";
+            var input = "{ c4 d {e f} g }";
 
             let parsedObject = loadFromLily(input, 1, 1);
             
             let noteArray = ((<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).getChild(0).noteElements);
-            expect(noteArray.length).toEqual(2);
+            expect(noteArray.length).toEqual(3);
 
             let childArray = (<any>parsedObject.staffElements[0].voiceElements[0].getSequence('')).getChild(0).removeThisChildren;
-            expect(childArray.length).toEqual(3);
+            expect(childArray.length).toEqual(4);
 
             let notes = parsedObject.staffElements[0].voiceElements[0].getNoteElements(globalContext);
-            expect(notes.length).toEqual(4);
+            expect(notes.length).toEqual(5);
             expect(notes[0].debug()).toEqual('Nn1_4(c ) ');
             expect(notes[1].debug()).toEqual('Nn1_4(d ) ');
             expect(notes[2].debug()).toEqual('Nn1_4(e ) ');
             expect(notes[3].debug()).toEqual('Nn1_4(f ) ');
+            expect(notes[4].debug()).toEqual('Nn1_4(g ) ');
 
             // test values
         });

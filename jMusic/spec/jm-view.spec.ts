@@ -67,7 +67,12 @@ describe("NullEventVisitor", function () {
 
         let hutlifut = loadFromLily("{d4 e4}", 1, 1);
 
-        var input = "{ c4 \\hutlifut f4 }";
+        var input = "{ c4 d {e f} g }";
+        //"{ c4 { d4 e4 } f4 }";
+        //"{ c4 \\hutlifut f4 }";
+        // "{ c4 { \\hutlifut} f4 }";
+        //"{ c4 \\transpose c e { d4 e4 } f4 }";
+        //"{ c4 \\transpose c e \\hutlifut f4 }";
 
         document = loadFromLily(input, 1, 1);
 
@@ -83,7 +88,7 @@ describe("NullEventVisitor", function () {
     });
 
     it("should visit events including transformed and referenced events", function () {
-        expect(visitor.visitNote).toHaveBeenCalledTimes(4);
+        expect(visitor.visitNote).toHaveBeenCalledTimes(5);
     });
 });
 

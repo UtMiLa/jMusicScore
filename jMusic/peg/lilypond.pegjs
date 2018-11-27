@@ -74,10 +74,10 @@ ScoreThings
 	}; }
 Music
 	= Sequence /
-    "{" __ "<<" __ StaffExpression* ">>" __ "}" /
+    "{" __ "<<" __ StaffExpression* ">>" __ "}" __ /
     variable: VariableRef
 Sequence
-	= "{" __ notes:MusicElement* __ "}" { return {
+	= "{" __ notes:MusicElement* __ "}" __ { return {
 			t: "Sequence",
 			def: {
 				stem: "dir"
