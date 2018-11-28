@@ -125,7 +125,7 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
     private ref: ISequence;
     
     getEvents(globalContext: GlobalContext): IEventInfo[] {
-        return this.ref.getEvents(globalContext);//todo: concatenate ids
+        return this.getRef(globalContext).getEvents(globalContext);//todo: concatenate ids
     }
     getElementName(): string {
         return "VariableRef";
@@ -182,7 +182,7 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
     }
 
     getEventsOld(globalContext: GlobalContext): ITimedEvent[] {
-        return this.ref.getEventsOld(globalContext);
+        return this.getRef(globalContext).getEventsOld(globalContext);
     }
 
     getStaffContext(absoluteTime: AbsoluteTime) {
@@ -199,18 +199,10 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
         var varRef: VariableRef = new VariableRef(parent);
         if (memento.def && memento.def.name) { 
             varRef.name = memento.def.name; 
-            varRef.ref = <ISequence>MusicElementFactory.recreateElement(null,
+            /*varRef.ref = <ISequence>MusicElementFactory.recreateElement(null,
                 {
                 "id": "131", "t": "Sequence", "def": { "stem": 2 },
                 "children": [
-                    /*{ "id": "103", "t": "Note", "def": { "time": { "num": 1, "den": 8 },
-                    "noteId": "n1_8" },
-                     "children": [{ "id": "104", "t": "Notehead", "def": { "p": 4, "a": "" } },
-                      { "id": "157", "t": "TextSyllable", "def": { "text": "på " } }] },
-                    { "id": "105", "t": "Note", "def": { "time": { "num": 1, "den": 8 },
-                    "noteId": "n1_8" }, "children": [
-                        { "id": "106", "t": "Notehead", "def": { "p": 6, "a": "" } },
-                         { "id": "158", "t": "TextSyllable", "def": { "text": "teks-" } }] }*/
                          { "id": "11", "t": "Note",
                          "def": { "time": { "num": 1, "den": 8 }, "noteId": "n1_8" },
                          "children": [{
@@ -236,11 +228,18 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
                          ]
                      }                         
                 ]
-            });
+            });*/
         }
         
         if (parent) parent.addEvent(varRef); // todo: at index - ændres
         return varRef;
+    }
+
+    private getRef(globalContext: GlobalContext) {
+        if (!this.ref) {
+            this.ref = globalContext.getVariable(this.name);
+        }
+        return this.ref;
     }
 
     public doGetMemento(): any {

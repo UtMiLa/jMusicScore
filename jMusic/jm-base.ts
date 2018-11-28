@@ -541,7 +541,7 @@ export class PitchClass {
     }
 
     static create(pitch: Pitch) {
-        var p1 = pitch.pitch % 7;
+        var p1 = (pitch.pitch + 700) % 7;
         return new PitchClass(PitchClass.pitchToPc[p1] + 7 * Pitch.strToInt(pitch.alteration));
     }
 

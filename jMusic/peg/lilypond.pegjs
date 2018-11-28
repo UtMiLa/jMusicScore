@@ -45,8 +45,8 @@ Expression
   s:[ \t\n\r]+ { return undefined; } 
   
 TransposeFunction
-    = "\\transpose" _ p1:Pitch _ p2:Pitch _ m:Music _ { return {t: "Transpose", def: { interval: 2, alteration: -1 }, children: [m] } }
-	/ "\\modalTranspose" _ Pitch _ Pitch _ Music Music _
+    = "\\transpose" _ p1:Pitch _ p2:Pitch _ m:Music __ { return {t: "Transpose", def: { interval: 2, alteration: -1 }, children: [m] } }
+	/ "\\modalTranspose" _ Pitch _ Pitch _ Music Music __
 RepeatFunction
 	= "\\repeat" _ "unfold" _ no:[0-9]+ _ Music {return {"t": "repeat"}; }
 Score
@@ -192,7 +192,7 @@ Multiplier
 	/ "*" num:Integer { return {num:num, den:1}; }
 Pitch "pitch"
 	= pit:[a-h] i:Inflection? o:Octave tie:"~"? { 
-				    var alteration = 0;
+				    var alteration = '';
 					switch (i) {
                         case "is": alteration = "x"; break;
                         case "isis": alteration = "xx"; break;

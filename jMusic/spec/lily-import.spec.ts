@@ -55,7 +55,7 @@ describe("Lilypond Import", function () {
             let parsedObject = loadFromLily(input, 1, 1);
             
             expect(parsedObject.staffElements[0].voiceElements[0].getNoteElements(globalContext).length).toEqual(5);
-            let results: any[] = ['bb', 'b', 0, 'x', 'xx'];
+            let results: any[] = ['bb', 'b', '', 'x', 'xx'];
 
             for(var i = 0; i < 5; i++){
                 let note = parsedObject.staffElements[0].voiceElements[0].getNoteElements(globalContext)[i];

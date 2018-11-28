@@ -2,7 +2,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval, IntervalType} from '../jm-base';
-import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IEventVisitor } from '../model/jm-model-interfaces';    
+import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IEventVisitor, INoteInfo } from '../model/jm-model-interfaces';    
 import {    NoteDecorationElement, TextSyllableElement, 
     NoteLongDecorationElement, Music, MusicElementFactory, IdSequence, GlobalContext, ScoreElement, NullEventVisitor } from "../model/jm-model";  
 
@@ -67,28 +67,76 @@ describe("NullEventVisitor", function () {
 
         let hutlifut = loadFromLily("{d4 e4}", 1, 1);
 
-        var input = "{ c4 d {e f} g }";
-        //"{ c4 { d4 e4 } f4 }";
-        //"{ c4 \\hutlifut f4 }";
-        // "{ c4 { \\hutlifut} f4 }";
-        //"{ c4 \\transpose c e { d4 e4 } f4 }";
-        //"{ c4 \\transpose c e \\hutlifut f4 }";
-
-        document = loadFromLily(input, 1, 1);
-
         globalContext.addVariable('hutlifut', hutlifut.staffElements[0].voiceElements[0].getSequence(''));
 
         visitor = new NullEventVisitor();
         spyOn(visitor, "visitNote");
 
-        let events = document.staffElements[0].voiceElements[0].getEvents(globalContext);
-        for (let i = 0; i < events.length; i++){
-            events[i].visit(visitor);
-        }
     });
 
-    it("should visit events including transformed and referenced events", function () {
-        expect(visitor.visitNote).toHaveBeenCalledTimes(5);
+    function testEvents(testItem: {input: string; res:any }){
+        document = loadFromLily(testItem.input, 1, 1);
+
+        let events = document.staffElements[0].voiceElements[0].getEvents(globalContext);
+        expect(events.length).toEqual(testItem.res.length);
+        for (let i = 0; i < events.length; i++){
+            events[i].visit(visitor);
+            //console.log(events[i].source.debug());
+            //console.log((<INoteInfo>events[i]).absTime.toString());
+        }
+        expect(visitor.visitNote).toHaveBeenCalledTimes(testItem.res.length);
+        // todo: test abstime, pitch, notelen
+        for (let i = 0; i < testItem.res.length; i++){
+            const call = (<any>visitor.visitNote).calls.argsFor(i);
+            expect(call).toBeDefined();
+            expect(call[0]).toBeDefined();
+            //expect(call[0].absTime.toString()).toEqual(testItem.res[i].abs);
+            expect(call[0].heads[0].pitch.debug()).toEqual(testItem.res[i].pitch);
+        }
+    }
+
+
+    const testSet = [
+        {
+            input: "{ c4 d {e f} g }",
+            res: [
+                { abs: '0/1', pitch: "c" },
+                { abs: '1/4', pitch: "d" },
+                { abs: '1/2', pitch: "e" },
+                { abs: '3/4', pitch: "f" },
+                { abs: '1/1', pitch: "g" },
+            ]
+        },
+        {
+            input: "{ c4 \\hutlifut f4 }",
+            res: [
+                { abs: '0/1', pitch: "c" },
+                { abs: '1/4', pitch: "d" },
+                { abs: '1/2', pitch: "e" },
+                { abs: '3/4', pitch: "f" },
+            ]
+        },
+        {
+            input: "{ c4 \\transpose c e { d4 e4 } f4 }",
+            res: [
+                { abs: '0/1', pitch: "c" },
+                { abs: '1/4', pitch: "f" },
+                { abs: '1/2', pitch: "g" },
+                { abs: '3/4', pitch: "f" },
+            ]
+        },
+    ];
+
+    it("should visit events", function () {
+        testEvents(testSet[0]);
+    });
+    
+    it("should visit referenced events", function () {
+        testEvents(testSet[1]);
+    });
+
+    it("should visit transformed events", function () {
+        testEvents(testSet[2]);
     });
 });
 
