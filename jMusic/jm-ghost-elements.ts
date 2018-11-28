@@ -16,7 +16,7 @@ import { IScoreRefiner } from "./jm-interfaces";
             }
 
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, absTime: this.absTime };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
                 return [info];
             }
@@ -120,12 +120,20 @@ export class VariableSpacing {
     preWidth: number;
 }
 export class VariableRef extends MusicElement<VariableSpacing> implements ITimedEvent, IEventContainer {
-    absTime: AbsoluteTime;    
+    absTime: AbsoluteTime = new AbsoluteTime(1, 4); // todo: calculate absTime og timeSpan for container
     private name: string;
     private ref: ISequence;
-    
+
+    private updateEvents(events: IEventInfo[]){
+        for(var i = 0; i < events.length; i++){
+            events[i].absTime = events[i].absTime.add(this.absTime.diff(AbsoluteTime.startTime));
+        }
+    }
+
     getEvents(globalContext: GlobalContext): IEventInfo[] {
-        return this.getRef(globalContext).getEvents(globalContext);//todo: concatenate ids
+        let events = this.getRef(globalContext).getEvents(globalContext);//todo: concatenate ids
+        this.updateEvents(events);
+        return events;
     }
     getElementName(): string {
         return "VariableRef";

@@ -250,6 +250,7 @@ import { IGlobalContext, Point } from './jm-model';
 
         export interface IEventInfo {
             id: string;
+            absTime: AbsoluteTime;
             source: IMusicElement;
             visit(visitor: IEventVisitor): void;
         }
