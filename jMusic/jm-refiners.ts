@@ -441,7 +441,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                             // tjek om det er en synkope // 8 16* 8 *16 8  men 8 *16 4 16* 8 - måske skal designeren tjekke det!
                             var absTime = context.absTime;
                             var noteTime = note.timeVal;
-                            var res = absTime.diff(AbsoluteTime.startTime).modulo(note.timeVal.multiplyScalar(2));
+                            var res = absTime.fromStart().modulo(note.timeVal.multiplyScalar(2));
                             // todo: check if last in beam group
                             var firstNote = noteElements[iNote + beamspan[0] + 1];
                             var lastInBeamGroup = beamspan[0] + firstNote.getBeamspan()[0] === 0;

@@ -84,6 +84,9 @@ export class AbsoluteTime extends Rational {
     static createFromMemento(def: any): AbsoluteTime {
         return new AbsoluteTime(def.num, def.den);
     }
+    public fromStart(): TimeSpan {
+        return new TimeSpan(this.numerator, this.denominator);
+    }
 }
 
 /**
@@ -128,6 +131,9 @@ export class TimeSpan extends Rational {
     }
     static createFromMemento(def: any): TimeSpan {
         return new TimeSpan(def.num, def.den);
+    }
+    public fromStart(): AbsoluteTime {
+        return new AbsoluteTime(this.numerator, this.denominator);
     }
 }
 
@@ -564,7 +570,9 @@ export class PitchClass {
 }
 
 
-
+/**
+ * Interval type (pure/augmented/major etc)
+ */
 export enum IntervalType { DblDiminished = -3, Diminished = -2, Minor = -1, Pure = 0, Major = 1, Augmented = 2, DblAugmented = 3 }
 
 /**

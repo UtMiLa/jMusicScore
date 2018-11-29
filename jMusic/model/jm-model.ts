@@ -190,7 +190,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
         class BarElement extends MusicElement<IBarSpacingInfo> implements IBar {
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => { return TimeSpan.noTime;} };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => { return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitBar(info)};
                 return [info];
             }
@@ -655,7 +655,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
 
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => {return TimeSpan.noTime;} };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitStaffExpression(info)};
                 return [info];
             }
@@ -1078,7 +1078,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => {return TimeSpan.noTime;} };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitClef(info)};
                 return [info];
             }
@@ -1143,7 +1143,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => {return TimeSpan.noTime;} };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitKey(info)};
                 return [info];
             }
@@ -1203,7 +1203,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 super(parent);
             }
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => {return TimeSpan.noTime;} };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
                 return [info];
             }
@@ -1331,7 +1331,7 @@ public getContext(): INoteContext {
                     decorations: this.decorationElements.map(h => h.getInfo()),
                     longDecorations: this.longDecorationElements.map(h => h.getInfo()),
                     syllables: this.syllableElements.map(h => h.getInfo()),
-                    relTime: this.absTime.diff(AbsoluteTime.startTime), 
+                    relTime: this.absTime.fromStart(), 
                     getTimeVal: () => { return this.getTimeVal(); },
                     id: this.id,
                     visit: undefined 
@@ -2064,63 +2064,11 @@ public getContext(): INoteContext {
                 return null;
             }
 
-            /*static addNoteToVoiceX(globalContext: GlobalContext, voice: IVoice, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null, segmentId: string = null): IVoiceNote {            
-                return voice.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet, segmentId);
+            /** Add a note to voice at a specified absTime */
+            /*static addNoteX(globalContext: IGlobalContext, sequence: ISequence, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): ISequenceNote {
+                return sequence.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);     
             }*/
 
-            /** Add a note to voice at a specified absTime */
-            static addNoteX(globalContext: IGlobalContext, sequence: ISequence, noteType: NoteType, absTime: AbsoluteTime, noteId: string, timeVal: TimeSpan, beforeNote: INote = null, insert: boolean = true, dots: number = 0, tuplet: TupletDef = null): ISequenceNote {
-                return sequence.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);
-                /*if (!absTime){
-                    absTime = sequence.getEndTime();
-                }
-                var note = new NoteElement(sequence, noteId, timeVal);
-                note.absTime = absTime;
-
-                note.tupletDef = tuplet;
-
-                var fraction = Music.inTupletArea(sequence, absTime);
-                if (fraction) {
-                    note.tupletDef = new TupletDef(null, fraction);
-                }
-                var voiceTime = sequence.getEndTime();
-                if (absTime.gt(voiceTime)) {
-                    // add placeholders between voiceTime and absTime
-                    var restNote = new NoteElement(null, 'hidden', absTime.diff(voiceTime));
-                    restNote.setParent(sequence);
-                    restNote.setRest(true);
-                    restNote.absTime = AbsoluteTime.startTime;
-                    sequence.addChild(sequence.noteElements, restNote, null, false); // todo: change
-                }
-                var oldNote: INote = beforeNote;
-                if (!oldNote && voiceTime.gt(absTime)) {
-                    // find note at absTime
-                    oldNote = Music.findNote(sequence, absTime);
-                    // if placeholder shorten it
-                    if (oldNote) { // todo: shorten placeholder
-                        if (oldNote.NoteId === "hidden") {
-                            var oldTime = oldNote.getTimeVal();
-                            if (oldTime.gt(timeVal)) {
-                                oldNote.timeVal = oldTime.sub(timeVal);
-                            }
-                            else if (oldTime.eq(timeVal)) {
-                            }
-                        }
-                    }
-                }
-                note.dotNo = dots;
-                sequence.addChild(sequence.noteElements, note, oldNote); // todo: change
-                if (noteType === NoteType.Rest) {
-                    note.setRest(true);
-                }
-                else if (noteType === NoteType.Placeholder) {
-                    note.setRest(true);
-                }
-                else {
-                }
-                return note;/* */
-                // = { note: 0, rest: 1, placeholder: 2 };
-            }
             static getText(globalContext: IGlobalContext, voice: IVoice) {
                 if (voice) {
                     var txt = "";

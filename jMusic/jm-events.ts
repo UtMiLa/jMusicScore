@@ -107,7 +107,7 @@ export class TimedEventStream extends TimedEventElement implements IMusicElement
     getEvents(): TimedEventElement[] {
         let res = [];
         for (let i = 0; i < this.events.length; i++){                    
-            res.push(this.events[i].clone(this.absTime.diff(AbsoluteTime.startTime)));
+            res.push(this.events[i].clone(this.absTime.fromStart()));
         }
         return res;
     }
