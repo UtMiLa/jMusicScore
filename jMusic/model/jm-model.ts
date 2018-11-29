@@ -190,7 +190,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
         class BarElement extends MusicElement<IBarSpacingInfo> implements IBar {
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, absTime: this.absTime };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => { return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitBar(info)};
                 return [info];
             }
@@ -655,7 +655,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
 
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, absTime: this.absTime };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitStaffExpression(info)};
                 return [info];
             }
@@ -881,26 +881,23 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 }
             }
 
-            /*private updateEvents(events: IEventInfo[]){
+            private updateEvents(events: IEventInfo[]){
+                let time = new TimeSpan(0, 1);
                 for(var i = 0; i < events.length; i++){
-                    events[i].absTime = events[i].absTime.add(this.absTime)
+                    events[i].relTime = time;//events[i].absTime.add(this.absTime)
+                    time = time.add(events[i].getTimeVal())
                 }
-            }*/
+            }
 
             public getEvents(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): IEventInfo[] {
                 var events: IEventInfo[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
                 this.withChildren((child) => {
-                //for (var i = 0; i < this.children.length; i++) {
                     let addedEvents = (<IEventEnumerator><any>child).getEvents(globalContext);
                     events = events.concat(addedEvents);
                 });
-                /*this.withNotes(globalContext, (note: INoteSource, context: INoteContext, index: number) => {
-                    if (!fromTime.gt(context.absTime) && toTime.gt(context.absTime)) {
-                        events.concat(note.getEvents(globalContext));
-                    }
-                });*/
+                this.updateEvents(events);
                 return events;
             }
             public getEventsOld(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
@@ -1081,7 +1078,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, absTime: this.absTime };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitClef(info)};
                 return [info];
             }
@@ -1146,7 +1143,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, absTime: this.absTime };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitKey(info)};
                 return [info];
             }
@@ -1206,7 +1203,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 super(parent);
             }
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, absTime: this.absTime };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
                 return [info];
             }
@@ -1334,7 +1331,8 @@ public getContext(): INoteContext {
                     decorations: this.decorationElements.map(h => h.getInfo()),
                     longDecorations: this.longDecorationElements.map(h => h.getInfo()),
                     syllables: this.syllableElements.map(h => h.getInfo()),
-                    absTime: this.absTime, 
+                    relTime: this.absTime.diff(AbsoluteTime.startTime), 
+                    getTimeVal: () => { return this.getTimeVal(); },
                     id: this.id,
                     visit: undefined 
                 };

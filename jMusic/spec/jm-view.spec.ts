@@ -90,7 +90,7 @@ describe("NullEventVisitor", function () {
             const call = (<any>visitor.visitNote).calls.argsFor(i);
             expect(call).toBeDefined();
             expect(call[0]).toBeDefined();
-            expect(call[0].absTime.toString()).toEqual(testItem.res[i].abs);
+            expect(call[0].relTime.toString()).toEqual(testItem.res[i].abs);
             expect(call[0].heads[0].pitch.debug()).toEqual(testItem.res[i].pitch);
         }
     }

@@ -16,7 +16,7 @@ import { IScoreRefiner } from "./jm-interfaces";
             }
 
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, absTime: this.absTime };
+                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.diff(AbsoluteTime.startTime), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
                 return [info];
             }
@@ -126,7 +126,7 @@ export class VariableRef extends MusicElement<VariableSpacing> implements ITimed
 
     private updateEvents(events: IEventInfo[]){
         for(var i = 0; i < events.length; i++){
-            events[i].absTime = events[i].absTime.add(this.absTime.diff(AbsoluteTime.startTime));
+            events[i].relTime = events[i].relTime.add(this.absTime.diff(AbsoluteTime.startTime));
         }
     }
 

@@ -250,8 +250,9 @@ import { IGlobalContext, Point } from './jm-model';
 
         export interface IEventInfo {
             id: string;
-            absTime: AbsoluteTime;
+            relTime: TimeSpan;
             source: IMusicElement;
+            getTimeVal(): TimeSpan;
             visit(visitor: IEventVisitor): void;
         }
 
@@ -276,7 +277,6 @@ import { IGlobalContext, Point } from './jm-model';
             decorations: INoteDecoInfo<INoteDecorationElement>[];
             longDecorations: INoteDecoInfo<ILongDecorationElement>[];
             syllables: INoteDecoInfo<ITextSyllableElement>[];
-            absTime: AbsoluteTime;
         }
 
         export interface IEventEnumerator {
