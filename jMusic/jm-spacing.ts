@@ -984,7 +984,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         this.globalContext.getSpacingInfo(staff).offset.y = Metrics.staffYOffset + index * Metrics.staffYStep; // todo: index
                     });
     
-                    var events: ITimedEvent[] = score.getEventsOld(this.globalContext);
+                    var events: IEventInfo[] = score.getEvents(this.globalContext);
                     events.sort(Music.compareEvents);
     
                     var pos = Metrics.firstPos;
@@ -1001,6 +1001,66 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                                 // Find getPreWidth()
                                 var j = i;
                                 while (j < events.length && Music.compareEvents(events[i], events[j]) == 0) {
+                                    //var eventDisplayData = <SVGBaseDisplayData>(<any>events[j]).getDisplayData(this.context);
+                                    var eventSpacing = this.globalContext.getSpacingInfo(events[j]);
+                                    if (eventSpacing) {
+                                        var preWidth = eventSpacing.preWidth;
+                                        if (eventWidth < preWidth) {
+                                            eventWidth = preWidth;
+                                        }
+                                    }
+                                    j++;
+                                }
+                                pos += eventWidth;
+                                eventWidth = 0;
+                            }
+                        }
+                        oldpos = pos;
+                        var eventSpacing = this.globalContext.getSpacingInfo(events[i]);
+                        if (eventSpacing) {
+                            eventSpacing.offset.x = pos + beginPos; // todo: move svg
+                            //SVGOutput.move(<MusicElement><any>events[i], eventDisplayData);
+                            eventWidth = eventSpacing.width;
+                        }
+                        else {
+                            //alert(events[i].getElementName());
+                        }
+                    }
+                    score.withVoices((voice: IVoice, index: number): void => {
+                        this.globalContext.getSpacingInfo(voice).offset.x = 0;
+                        voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number): void => {
+                            /*todo: if (note.beam) {
+                                note.beam.updateAll();
+                            }*/
+                        });
+                    });
+                }
+    
+                private makeTimelineOld(score: IScore) {
+                    var beginPos = 0;
+                    score.withStaves((staff: IStaff, index: number): void => {
+                        var staffBeginPos = 0; //todo: staffSpacingInfo
+                        if (beginPos < staffBeginPos) beginPos = staffBeginPos;
+                        this.globalContext.getSpacingInfo(staff).offset.y = Metrics.staffYOffset + index * Metrics.staffYStep; // todo: index
+                    });
+    
+                    var events: ITimedEvent[] = score.getEventsOld(this.globalContext);
+                    events.sort(Music.compareEventsOld);
+    
+                    var pos = Metrics.firstPos;
+                    var oldpos = pos;
+                    var eventWidth = 0;
+                    for (var i = 0; i < events.length; i++) {
+                        if (i > 0) {
+                            if (Music.compareEventsOld(events[i], events[i - 1]) == 0) {
+                                pos = oldpos;
+                            }
+                            else {
+                                pos += eventWidth;
+                                eventWidth = 0;
+                                // Find getPreWidth()
+                                var j = i;
+                                while (j < events.length && Music.compareEventsOld(events[i], events[j]) == 0) {
                                     //var eventDisplayData = <SVGBaseDisplayData>(<any>events[j]).getDisplayData(this.context);
                                     var eventSpacing = this.globalContext.getSpacingInfo(events[j]);
                                     if (eventSpacing) {

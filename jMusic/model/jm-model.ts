@@ -2082,7 +2082,11 @@ public getContext(): INoteContext {
                 }
             }
 
-            public static compareEvents(a: ITimedEvent, b: ITimedEvent): number {
+            public static compareEvents(a: IEventInfo, b: IEventInfo): number {
+                return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
+            }
+
+            public static compareEventsOld(a: ITimedEvent, b: ITimedEvent): number {
                 return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
             }
 
