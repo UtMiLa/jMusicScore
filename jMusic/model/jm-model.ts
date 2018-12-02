@@ -520,7 +520,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             public getStaffContext(absTime: AbsoluteTime): StaffContext {
                 var clef: IClef;
                 let clefElements= this.clefElements;
-                clefElements.sort(Music.compareEvents);
+                clefElements.sort(Music.compareEventsOld);
                 for (var i = 0; i < clefElements.length; i++) {
                     if (clefElements[i].absTime.gt(absTime)) break;
                     clef = clefElements[i];
@@ -528,14 +528,14 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 var key: IKey;
                 //var keys = this.keyElements.length ? this.keyElements : this.parent.keyElements;
                 let keyElements = this.keyElements;
-                keyElements.sort(Music.compareEvents);
+                keyElements.sort(Music.compareEventsOld);
                 for (var i = 0; i < keyElements.length; i++) {
                     if (keyElements[i].absTime.gt(absTime)) break;
                     key = keyElements[i];
                 }
                 var meter: IMeter;
                 var meters = this.meterElements.length ? this.meterElements : this.parent.meterElements;
-                meters.sort(Music.compareEvents);
+                meters.sort(Music.compareEventsOld);
                 var barNo = 0;
                 var timeInBar = new TimeSpan(0);
                 var oldTime = AbsoluteTime.startTime;
@@ -2083,7 +2083,7 @@ public getContext(): INoteContext {
             }
 
             public static compareEvents(a: IEventInfo, b: IEventInfo): number {
-                return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
+                return HorizPosition.compareEvents((<any>a.source).getHorizPosition(), (<any>b.source).getHorizPosition());
             }
 
             public static compareEventsOld(a: ITimedEvent, b: ITimedEvent): number {
@@ -2094,20 +2094,20 @@ public getContext(): INoteContext {
                 var va = a.getVoice();
                 var vb = b.getVoice();
                 if (va !== null && vb !== null && va === vb) {
-                    return Music.compareEvents(a, b);
+                    return Music.compareEventsOld(a, b);
                 }
                 else if (!va && !!vb) {
                     if (vb === vb.parent.voiceElements[0])
-                        return Music.compareEvents(a, b);
+                        return Music.compareEventsOld(a, b);
                     return -1;
                 }
                 else if (!!va && !vb) {
                     if (va === va.parent.voiceElements[0])
-                        return Music.compareEvents(a, b);
+                        return Music.compareEventsOld(a, b);
                     return 1;
                 }
                 else if (!va && !vb) {
-                    return Music.compareEvents(a, b);
+                    return Music.compareEventsOld(a, b);
                 }
                 else {
                     var staffa = va.parent;

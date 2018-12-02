@@ -128,7 +128,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                     // get events (bar lines + notes + keys changes) sorted by absTime from all voices
                     var events = staff.getEventsOld(this.globalContext);
                     events = events.concat(scoreEvents);
-                    events.sort(Music.compareEvents);
+                    events.sort(Music.compareEventsOld);
                     // for each event:
                     for (var iEvent = 0; iEvent < events.length; iEvent++) {
                         var event = events[iEvent];
