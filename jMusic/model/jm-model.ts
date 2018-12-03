@@ -1113,7 +1113,7 @@ import { MusicElement, GlobalContext, MusicContainer } from './jm-model-base'
 
 
     /** NoteHeadElement: det faktiske element, uden transformationer. Bruges af værktøjer, der arbejder direkte på musikken. Kan bo på NoteElement.  */
-        class NoteElement extends MusicElement implements ISequenceNote {
+        class NoteElement extends MusicContainer implements ISequenceNote { // todo: ikke MusicContainer
 
 /** TODO: flyt til NoteContext */
 //(<any>note.parent.parent).getStaffContext(context.absTime); // todo: context!

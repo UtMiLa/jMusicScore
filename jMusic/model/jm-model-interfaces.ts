@@ -13,8 +13,6 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             //setSpacingInfo(info: ISpacingInfo): void;
             inviteVisitor(spacer: IVisitor): void;
             getElementName(): string;
-            addChild(theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void;
-            removeChild(theChild: IMusicElement): void;
             debug(): string;
             remove(): void;
             setProperty(name: string, value: any): void;
@@ -22,6 +20,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             visitAll(visitor: IVisitorIterator<IMusicElement>): void;
             getMemento(withChildren?: boolean): IMemento;
             //getAncestor<T extends IMusicElement>(elementName: string): T;
+        }
+
+        export interface IMusicContainer extends IMusicElement {
+            addChild(theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void;
+            removeChild(theChild: IMusicElement): void;
         }
 
         export interface IGlobalContext{ 
@@ -74,7 +77,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
 
         
-        export interface IMeterOwner extends IMusicElement {
+        export interface IMeterOwner extends IMusicContainer {
             setMeter(meter: IMeterDefinition, absTime: AbsoluteTime): void;
             withMeters(f: (meter: IMeter, index: number) => void): void;
             meterElements: IMeter[];
@@ -102,7 +105,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
-        export interface IStaff extends IEventContainer, IMusicElement, IMeterOwner {
+        export interface IStaff extends IEventContainer, IMeterOwner {
             parent: IScore;
             removeChild(theChild: IMusicElement, list?: IMusicElement[]): void;
             //spacingInfo: IStaffSpacingInfo;
@@ -133,7 +136,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
         export interface IStaffExpressionSpacingInfo extends ISpacingInfo { }
 
-        export interface IVoice extends IEventContainer, IMusicElement {
+        export interface IVoice extends IEventContainer, IMusicContainer {
             getNoteElements(globalContext: IGlobalContext): INote[];
             parent: IStaff;
             withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
@@ -149,7 +152,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
-        export interface ISequence extends IEventContainer, IMusicElement, IEventEnumerator {
+        export interface ISequence extends IEventContainer, IMusicContainer, IEventEnumerator {
             noteElements: INote[];
             //parent: IVoice | ISequence;
             withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
@@ -195,7 +198,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             remove(): void;
         }
 
-        export interface INote extends IMusicElement, ITimedEvent { // todo: fjern ITimedEvent
+        export interface INote extends IMusicContainer, ITimedEvent { // todo: fjern ITimedEvent, IMusicContainer => IMusicElement
             NoteId: string;
             timeVal: TimeSpan;
             noteheadElements: INotehead[];

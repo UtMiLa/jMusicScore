@@ -28,7 +28,7 @@ export class IdSequence {
     static next(): string { return '' + IdSequence.id++; }
 }
 
-export class MusicElement {
+export class MusicElement implements IMusicElement {
     constructor(public parent: IMusicElement) {
         //this.parent = parent;
     }
@@ -39,11 +39,51 @@ export class MusicElement {
         spacer.visitDefault(this);
     }
 
-    //protected children: IMusicElement[] = [];
-    protected removeThisChildren: IMusicElement[] = [];
     private properties: { [index: string]: any; } = {};
 
     public getElementName() { return "Element"; }
+
+    public debug() {
+        var string = this.getElementName();
+
+        return string;
+    }
+
+    public remove(): void {
+    }
+    public setParent(p: IMusicElement) {
+        this.parent = p;
+    }
+    public setProperty(name: string, value: any) {
+        this.properties[name] = value;
+    }
+    public getProperty(name: string): any {
+        return this.properties[name];
+    }
+    ///* Override this to return any parameters with non-default values. Can be a string, number, boolean or object */
+    public doGetMemento(): any {
+        return undefined;
+    }
+    public getMemento(withChildren: boolean = true): IMemento {
+        var memento: IMemento = {
+            id: this.id,
+            t: this.getElementName(),
+            def: this.doGetMemento()
+        };
+        return memento;
+    }
+    public visitAll(visitor: IVisitorIterator<IMusicElement>) {
+        var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
+        if (postFun) {
+            postFun(this);
+        }
+
+    }
+}
+
+export class MusicContainer extends MusicElement {
+    //protected children: IMusicElement[] = [];
+    protected removeThisChildren: IMusicElement[] = [];
 
     withChildren(f: (child: IMusicElement) => void) {
         for (var i = 0; i < this.removeThisChildren.length; i++) {
@@ -110,6 +150,7 @@ export class MusicElement {
     
     }
 
+
     public debug() {
         var string = this.getElementName() + ": ";
 
@@ -120,7 +161,6 @@ export class MusicElement {
         string += " :" + this.getElementName() + " ";
         return string;
     }
-
     public remove(): void {
         this.withChildren((child) => {
 
@@ -128,19 +168,7 @@ export class MusicElement {
             child.remove();
         });
     }
-    public setParent(p: IMusicElement) {
-        this.parent = p;
-    }
-    public setProperty(name: string, value: any) {
-        this.properties[name] = value;
-    }
-    public getProperty(name: string): any {
-        return this.properties[name];
-    }
-    ///* Override this to return any parameters with non-default values. Can be a string, number, boolean or object */
-    public doGetMemento(): any {
-        return undefined;
-    }
+
     public getMemento(withChildren: boolean = true): IMemento {
         var memento: IMemento = {
             id: this.id,
@@ -151,8 +179,6 @@ export class MusicElement {
             var children: IMemento[] = [];
             
             this.withChildren((child) => {
-
-//                        for (var j = 0; j < this.children.length; j++) {
                     children.push(child.getMemento(true));
                 });
             
@@ -160,11 +186,10 @@ export class MusicElement {
         }
         return memento;
     }
+    
     public visitAll(visitor: IVisitorIterator<IMusicElement>) {
         var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
         this.withChildren((child) => {
-
-        //for (var j = 0; j < this.children.length; j++) {
             child.visitAll(visitor);
         });
         if (postFun) {
@@ -172,11 +197,6 @@ export class MusicElement {
         }
 
     }
-}
-
-export class MusicContainer extends MusicElement {
-
-
 }
 
 export class GlobalContext implements IGlobalContext {
