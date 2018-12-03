@@ -39,6 +39,9 @@ export class MusicElement implements IMusicElement {
         spacer.visitDefault(this);
     }
 
+    public inviteEventVisitor(spacer: IEventVisitor) {
+    }
+
     private properties: { [index: string]: any; } = {};
 
     public getElementName() { return "Element"; }
@@ -186,7 +189,7 @@ export class MusicContainer extends MusicElement {
         }
         return memento;
     }
-    
+
     public visitAll(visitor: IVisitorIterator<IMusicElement>) {
         var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
         this.withChildren((child) => {

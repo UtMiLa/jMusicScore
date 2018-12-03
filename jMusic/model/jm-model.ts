@@ -2076,7 +2076,13 @@ export class ContextVisitor extends NullVisitor {
     }
 }
 
-export class NullEventVisitor implements IEventVisitor {
+export class NullEventVisitor implements IEventVisitor, IVisitorIterator<IMusicElement> {
+    visitPre(element: IMusicElement): (element: IMusicElement) => void {
+        element.inviteEventVisitor(this);
+        return null;
+    }
+
+
     visitNoteHead(head: INoteHeadInfo): void {
     }   
     visitNote(note: INoteInfo): void {

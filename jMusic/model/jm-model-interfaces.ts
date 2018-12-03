@@ -4,6 +4,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-base';
 
         export interface IMusicElement {
+            inviteEventVisitor(spacer: IEventVisitor): void;
             //changed(): void;
             //moved(): void;/**/
             id: string;

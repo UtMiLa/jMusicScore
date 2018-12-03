@@ -8,7 +8,7 @@ import { } from './model/jm-model';
 
 
 
-
+/*
 
 export abstract class ElementDefinition {
     public abstract visit(visitor: IVisitor, spacingInfo: ISpacingInfo): void;
@@ -124,3 +124,4 @@ export class TimedEventStream extends TimedEventElement implements IMusicElement
     }            
 }
 
+*/
