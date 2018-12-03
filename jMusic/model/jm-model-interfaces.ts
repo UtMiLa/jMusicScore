@@ -2,7 +2,6 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-base';
-import { IGlobalContext, Point } from './jm-model';
 
         export interface IMusicElement {
             //changed(): void;
@@ -25,6 +24,12 @@ import { IGlobalContext, Point } from './jm-model';
             //getAncestor<T extends IMusicElement>(elementName: string): T;
         }
 
+        export interface IGlobalContext{ 
+            getVariable(name: string): ISequence;
+            addVariable(name: string, value: ISequence):void;
+            getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T;
+            addSpacingInfo(element: IMusicElement, value: ISpacingInfo): void;
+        }
 
 
         export interface ITimedEvent extends IMusicElement, IEventEnumerator {
@@ -376,9 +381,14 @@ import { IGlobalContext, Point } from './jm-model';
             visitScore(score: IScore): void;
         }
 
+        export interface IPoint {
+            x: number;
+            y: number;
+        }
+
         export interface ISpacingInfo {
             /// Center x,y - like center of notehead or clef
-            offset: Point;
+            offset: IPoint;
             width: number;
             height: number;
             left: number;
@@ -390,21 +400,21 @@ import { IGlobalContext, Point } from './jm-model';
 
         export interface INoteHeadSpacingInfo extends ISpacingInfo {
             accidentalX: number;
-            dots: Point;
+            dots: IPoint;
             dotWidth: number;
             displacement: boolean;
-            displace: Point;
+            displace: IPoint;
             headGlyph: string;
             reversed: boolean;
-            tieStart: Point;
-            tieEnd: Point;
+            tieStart: IPoint;
+            tieEnd: IPoint;
             tieDir: number;
             graceScale: number;
             accidentalStep: number;
         }
         export interface IBeamSpacingInfo extends ISpacingInfo {
-            start: Point;
-            end: Point;
+            start: IPoint;
+            end: IPoint;
             beamDist: number;
             beamCount: number;
         }
@@ -412,7 +422,7 @@ import { IGlobalContext, Point } from './jm-model';
             constructor(public xStart: number, public xEnd: number, public y: number) { }
         }
         export interface INoteSpacingInfo extends ISpacingInfo {
-            dots: Point;
+            dots: IPoint;
             rev: boolean;
             flagNo: number;
             ledgerLinesUnder: LedgerLineSpacingInfo[];
@@ -428,7 +438,7 @@ import { IGlobalContext, Point } from './jm-model';
             stemLength: number;
             dotWidth: number;
             restGlyph: string;
-            flagDisplacement: Point;
+            flagDisplacement: IPoint;
         }
 
         export interface INoteDecorationSpacingInfo extends ISpacingInfo {
@@ -456,7 +466,7 @@ import { IGlobalContext, Point } from './jm-model';
         }
         export interface IBarSpacingInfo extends ISpacingInfo {
             barStyle: string;
-            end: Point;
+            end: IPoint;
             extraXOffset: number;
         }
         export interface IScoreSpacingInfo extends ISpacingInfo { }

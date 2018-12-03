@@ -7,9 +7,9 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         INote, INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, 
         IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, 
-        ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo } from './model/jm-model-interfaces';
-import {MusicElement,  ContextVisitor, IGlobalContext, Point, Music } from "./model/jm-model";
-
+        ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo,  IGlobalContext } from './model/jm-model-interfaces';
+import { ContextVisitor, Music } from "./model/jm-model";
+import { MusicElement, Point } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: pitchToStaffLine skal ikke kaldes med <any>
 

@@ -3,8 +3,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from '../jm-base';
 import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from '../model/jm-model-interfaces';    
-import { GlobalContext, MusicElementFactory, TransposeElement } from "../model/jm-model";  
-
+import { MusicElementFactory, TransposeElement } from "../model/jm-model";  
+import { GlobalContext } from "../model/jm-model-base";
 import  { IScoreApplication, ScoreStatusManager } from '../jm-application';
 import  { AbstractApplication } from '../jap-application';
 import  { MusicSpacing } from '../jm-spacing';

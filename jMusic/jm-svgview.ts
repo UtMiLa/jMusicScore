@@ -7,8 +7,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
-import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IMusicElement } from './model/jm-model-interfaces';    
-import {IGlobalContext, Point } from "./model/jm-model";    
+import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IMusicElement, IGlobalContext } from './model/jm-model-interfaces';    
+import {  } from "./model/jm-model";    
+import { Point } from "./model/jm-model-base";
 import { IFeedbackClient } from './jap-application';
 import { IWriterPlugIn, IReaderPlugIn } from './jap-application';
 import {  IScoreApplication, ScoreStatusManager, IScorePlugin, IScoreDesigner } from './jm-application';

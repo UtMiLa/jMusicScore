@@ -4,8 +4,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IBar, IMeter, IMusicElement } from './model/jm-model-interfaces';
-import {MusicElement, ScoreElement, GlobalContext } from "./model/jm-model";
-
+import { ScoreElement} from "./model/jm-model";
+import { GlobalContext } from "./model/jm-model-base";
     export interface IScoreApplication extends Application.AbstractApplication<IScore, ScoreStatusManager> { }
     export interface IScorePlugin extends Application.IPlugIn<IScore, ScoreStatusManager> { }
     export interface IScoreEventProcessor extends Application.IEventProcessor<IScore, ScoreStatusManager> { }

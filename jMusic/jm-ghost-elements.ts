@@ -2,19 +2,21 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
-import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence, IEventVisitor } from './model/jm-model-interfaces';    
-import {MusicElement, Point,
+import { IVoice, IScore, IStaff, IGlobalContext, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence, IEventVisitor } from './model/jm-model-interfaces';    
+import {
     Music, MusicElementFactory, ClefElement,
     KeyElement, 
     MeterElement,
-    GlobalContext,} from "./model/jm-model";
+    } from "./model/jm-model";
+import {Point, MusicElement, GlobalContext } from "./model/jm-model-base";    
 import { IScoreRefiner } from "./jm-interfaces";
 
-        export class GhostMeterElement extends MusicElement<IMeterSpacingInfo> implements IMeter {
+        export class GhostMeterElement extends MusicElement implements IMeter {
             constructor(public parent: IMusicElement, private originElement: IMeter) {
                 super(parent);
             }
 
+            
             getEvents(): IEventInfo[] {
                 let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
@@ -119,7 +121,7 @@ export class VariableSpacing {
     scale: number;
     preWidth: number;
 }
-export class VariableRef extends MusicElement<VariableSpacing> implements ITimedEvent, IEventContainer {
+export class VariableRef extends MusicElement implements ITimedEvent, IEventContainer {
     absTime: AbsoluteTime = new AbsoluteTime(1, 4); // todo: calculate absTime og timeSpan for container
     private name: string;
     private ref: ISequence;

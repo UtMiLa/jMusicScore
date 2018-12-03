@@ -4,7 +4,8 @@ import { IModel } from './datamodel/model';
 // todo: remove:
 import { LilyPondConverter } from '../../../jMusic/jm-lilypond';
 import { IScore } from '../../../jMusic/model/jm-model-interfaces';
-import { MusicElementFactory, GlobalContext } from '../../../jMusic/model/jm-model';
+import { MusicElementFactory } from '../../../jMusic/model/jm-model';
+import { GlobalContext } from '../../../jMusic/model/jm-model-base';
 
 @Component({
   selector: 'app-root',

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { LilyPondConverter } from '../../../../jMusic/jm-lilypond';
-import { GlobalContext } from '../../../../jMusic/model/jm-model';
+import { GlobalContext } from '../../../../jMusic/model/jm-model-base';
 
 @Component({
   selector: 'app-structured-music-editor',

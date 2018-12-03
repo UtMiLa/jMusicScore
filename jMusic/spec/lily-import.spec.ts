@@ -1,8 +1,9 @@
 import { IMemento, ClefDefinition, NoteType, AbsoluteTime, TimeSpan, RegularKeyDefinition } from '../jm-base';
 import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from '../model/jm-model-interfaces';
-import { MusicElementFactory, ScoreElement, Music, GlobalContext } from '../model/jm-model';
+import { MusicElementFactory, ScoreElement, Music } from '../model/jm-model';
 import { LilyPondConverter } from '../jm-lilypond';
 import { VariableRef } from '../jm-ghost-elements';
+import {  GlobalContext } from "../model/jm-model-base";
 
 describe("Lilypond Import", function () {
     //var score: IScore;

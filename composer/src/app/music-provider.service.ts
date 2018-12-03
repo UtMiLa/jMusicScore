@@ -4,7 +4,7 @@ import {IModel} from './datamodel/model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IScore, ISequence } from '../../../jMusic/model/jm-model-interfaces';
-import { GlobalContext } from '../../../jMusic/model/jm-model';
+import { GlobalContext } from '../../../jMusic/model/jm-model-base';
 import { LilyPondConverter } from '../../../jMusic/jm-lilypond';
 
 @Injectable()

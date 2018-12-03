@@ -17,8 +17,12 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IBarEventInfo,
     IClefEventInfo,
     IMeterEventInfo,
-    IKeyEventInfo,
+    IKeyEventInfo, IGlobalContext, 
     IStaffExpressionEventInfo} from './jm-model-interfaces';
+
+import { MusicElement, GlobalContext, MusicContainer } from './jm-model-base'
+
+
         // todo: Spacers out of this file
         // todo: NoteId away
 
@@ -37,158 +41,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
 /**************************************************** MusicElement stuff ****************************************************/
 
-        export class IdSequence {
-            static id: number = 1;
-            static next(): string { return '' + IdSequence.id++; }
-        }
-
-        export class MusicElement<TSpacingInfo extends ISpacingInfo> {
-            constructor(public parent: IMusicElement) {
-                //this.parent = parent;
-            }
-
-            public id = IdSequence.next();
-
-            public inviteVisitor(spacer: IVisitor) {
-                spacer.visitDefault(this);
-            }
-
-            //protected children: IMusicElement[] = [];
-            protected removeThisChildren: IMusicElement[] = [];
-            private properties: { [index: string]: any; } = {};
-
-            public getElementName() { return "Element"; }
-
-            withChildren(f: (child: IMusicElement) => void) {
-                for (var i = 0; i < this.removeThisChildren.length; i++) {
-                    f(this.removeThisChildren[i]);
-                }
-            }
-
-            getSpecialElements<T extends IMusicElement>(elementName: string): T[] {
-                let res: T[] = [];
-                //for (var i = 0; i < this.children.length; i++) {
-                    this.withChildren((child) => {
-                        if (child.getElementName() === elementName) res.push(<T>child);
-                    });
-                
-                return res;
-            }
-
-            /*getAncestor<T extends IMusicElement>(elementName: string): T {
-                if (this.getElementName() === elementName) return <T><any>this;
-                if (!this.parent) return null;
-                return this.parent.getAncestor<T>(elementName);
-            }*/
-
-            public getChild(index: number): IMusicElement{
-                return this.removeThisChildren[index];
-            }
-
-            public addChild(theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false) : void{
-                /*var index = this.childLists.indexOf(list);
-                if (index >= 0) {
-                    //this.childLists[index];
-                }
-                else {
-                    this.childLists.push(list);
-                }*/
-                var list = this.removeThisChildren;
-
-                if (before) {
-                    var i = list.indexOf(before);
-                    if (i < 0) return /*false*/;
-                    if (removeOrig) {
-                        before.remove();
-                        list.splice(i, 1, theChild);
-                    }
-                    else {
-                        list.splice(i, 0, theChild);
-                    }
-                }
-                else {
-                    list.push(theChild);
-                }
-
-                //list.push(theChild);
-                //                this.sendEvent({ type: MusicEventType.eventType.addChild, sender: this, child: theChild });
-            }
-
-            public removeChild(theChild: IMusicElement) {
-                var index = this.removeThisChildren.indexOf(theChild);
-                if (index >= 0) {
-                    this.removeThisChildren.splice(index, 1);
-                    //            this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: theChild });
-                }
-                theChild.remove();
-            
-            }
-
-            public debug() {
-                var string = this.getElementName() + ": ";
-
-                this.withChildren((child) => {
-                    //for (var j = 0; j < this.children.length; j++) {
-                    string += child.debug();
-                });
-                string += " :" + this.getElementName() + " ";
-                return string;
-            }
-
-            public remove(): void {
-                this.withChildren((child) => {
-
-                //for (var j = 0; j < this.children.length; j++) {
-                    child.remove();
-                });
-            }
-            public setParent(p: IMusicElement) {
-                this.parent = p;
-            }
-            public setProperty(name: string, value: any) {
-                this.properties[name] = value;
-            }
-            public getProperty(name: string): any {
-                return this.properties[name];
-            }
-            ///* Override this to return any parameters with non-default values. Can be a string, number, boolean or object */
-            public doGetMemento(): any {
-                return undefined;
-            }
-            public getMemento(withChildren: boolean = true): IMemento {
-                var memento: IMemento = {
-                    id: this.id,
-                    t: this.getElementName(),
-                    def: this.doGetMemento()
-                };
-                if (withChildren) {
-                    var children: IMemento[] = [];
-                    
-                    this.withChildren((child) => {
-
-//                        for (var j = 0; j < this.children.length; j++) {
-                            children.push(child.getMemento(true));
-                        });
-                    
-                    if (children.length) memento.children = children;
-                }
-                return memento;
-            }
-            public visitAll(visitor: IVisitorIterator<IMusicElement>) {
-                var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
-                this.withChildren((child) => {
-
-                //for (var j = 0; j < this.children.length; j++) {
-                    child.visitAll(visitor);
-                });
-                if (postFun) {
-                    postFun(this);
-                }
-
-            }
-        }
-
-        class BarElement extends MusicElement<IBarSpacingInfo> implements IBar {
+        class BarElement extends MusicElement implements IBar {
             getEvents(): IEventInfo[] {
                 let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => { return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitBar(info)};
@@ -225,37 +78,8 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
         }
 
-        export interface IGlobalContext{ 
-            getVariable(name: string): ISequence;
-            addVariable(name: string, value: ISequence):void;
-            getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T;
-            addSpacingInfo(element: IMusicElement, value: ISpacingInfo): void;
-        }
-
-        export class GlobalContext implements IGlobalContext {
-            private _variables: { [key: string]: ISequence } = {};
-            private _spacingInfos: { [key: string]: ISpacingInfo } = {};
-
-            getVariable(name: string): ISequence {
-                return this._variables[name];
-            }
-            addVariable(name: string, value: ISequence) {
-                this._variables[name] = value;
-            }
-
-            getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T {
-                return <T>(<any>element).spacingInfo;
-                //return <T>this._spacingInfos[element.id];
-            }
-
-            addSpacingInfo(element: IMusicElement, value: ISpacingInfo) {
-                (<any>element).spacingInfo = value;
-                //this._spacingInfos[element.id] = value;
-            }
-        }
-
         //  *  OK  *
-        export class ScoreElement extends MusicElement<IScoreSpacingInfo> implements IScore {
+        export class ScoreElement extends MusicContainer implements IScore {
             constructor(public parent: IMusicElement) {
                 super(parent);
             }
@@ -389,12 +213,6 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                     this.bars[i].changed();*/
                 return staff;
             }
-            /*private getChild(i: number): IStaff {
-                return this.staffElements[i];
-            }
-            private getChildren(): IStaff[] {
-                return this.staffElements;
-            }*/
             public setMeter(meter: IMeterDefinition, absTime: AbsoluteTime) {
                 if (!absTime) absTime = AbsoluteTime.startTime;
 
@@ -426,7 +244,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             }
         }
 
-        class StaffElement extends MusicElement<IStaffSpacingInfo> implements IStaff {
+        class StaffElement extends MusicContainer implements IStaff {
             constructor(public parent: IScore) {
                 super(parent);
             }
@@ -649,7 +467,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         }
 
 
-        class StaffExpression extends MusicElement<IStaffExpressionSpacingInfo> implements IStaffExpression {
+        class StaffExpression extends MusicElement implements IStaffExpression {
             constructor(public parent: IStaff, public text: string, public absTime: AbsoluteTime) {
                 super(parent);
             }
@@ -697,7 +515,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
 
         // VoiceElement
-        class VoiceElement extends MusicElement<IVoiceSpacingInfo> implements IVoice {
+        class VoiceElement extends MusicContainer implements IVoice {
             constructor(public parent: IStaff) {
                 super(parent);
                 //this.meterElements = { push: (meter: MeterElement) => { parent.addChild(parent.meterElements, meter); } };
@@ -817,7 +635,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         }
 
         // SequenceElement
-        class SequenceElement extends MusicElement<ISpacingInfo> implements ISequence {
+        class SequenceElement extends MusicContainer implements ISequence {
             constructor(public parent: IVoice | ISequence) {
                 super(parent);
             }
@@ -983,7 +801,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
         }
 
-        export class TransposeElement extends MusicElement<ISpacingInfo> implements ISequence {
+        export class TransposeElement extends MusicContainer implements ISequence {
             constructor(public parent: IVoice | ISequence, private sequence: ISequence, public interval: Interval){
                 super(parent);
             }
@@ -1072,7 +890,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         }
 
         // ClefElement
-        export class ClefElement extends MusicElement<IClefSpacingInfo> implements IClef {
+        export class ClefElement extends MusicElement implements IClef {
             constructor(public parent: IStaff, public definition: ClefDefinition, public absTime: AbsoluteTime = null) {
                 super(parent);
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
@@ -1137,7 +955,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
 
         // KeyElement
-        export class KeyElement extends MusicElement<IKeySpacingInfo> implements IKey {
+        export class KeyElement extends MusicElement implements IKey {
             constructor(public parent: IStaff, public definition: IKeyDefinition, public absTime: AbsoluteTime = null) {
                 super(parent);
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
@@ -1198,7 +1016,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         }
 
         // MeterElement
-        export class MeterElement extends MusicElement<IMeterSpacingInfo> implements IMeter {
+        export class MeterElement extends MusicElement implements IMeter {
             constructor(public parent: IMeterOwner, public definition: IMeterDefinition, public absTime: AbsoluteTime) {
                 super(parent);
             }
@@ -1262,7 +1080,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
         }
 
-        export class BeamElement extends MusicElement<IBeamSpacingInfo> implements IBeam {
+        export class BeamElement extends MusicElement implements IBeam {
             constructor(public parent: INote, public toNote: INote, public index: number) {
                 super(parent);
             }
@@ -1295,7 +1113,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
 
     /** NoteHeadElement: det faktiske element, uden transformationer. Bruges af værktøjer, der arbejder direkte på musikken. Kan bo på NoteElement.  */
-        class NoteElement extends MusicElement<INoteSpacingInfo> implements ISequenceNote {
+        class NoteElement extends MusicElement implements ISequenceNote {
 
 /** TODO: flyt til NoteContext */
 //(<any>note.parent.parent).getStaffContext(context.absTime); // todo: context!
@@ -1637,7 +1455,7 @@ public getContext(): INoteContext {
 
 
         // NoteheadElement
-        class NoteheadElement extends MusicElement<INoteHeadSpacingInfo> implements INotehead {
+        class NoteheadElement extends MusicElement implements INotehead {
             constructor(public parent: INote/*, noteId: string*/, public pitch: Pitch) {
                 super(parent);
             }
@@ -1712,7 +1530,7 @@ public getContext(): INoteContext {
 
 
         /** Note decoration, e.g. staccato dot, fermata */
-        export class NoteDecorationElement extends MusicElement<INoteDecorationSpacingInfo> implements INoteDecorationElement {
+        export class NoteDecorationElement extends MusicElement implements INoteDecorationElement {
             constructor(public parent: INote, private notedecorationId: NoteDecorationKind) {
                 super(parent);
             }
@@ -1760,7 +1578,7 @@ public getContext(): INoteContext {
 
 
         /** Long note decoration implementation, e.g. hairpin, trill extension and slur */
-        export class NoteLongDecorationElement extends MusicElement<ILongDecorationSpacingInfo> implements ILongDecorationElement {
+        export class NoteLongDecorationElement extends MusicElement implements ILongDecorationElement {
             constructor(public parent: INote, private duration: TimeSpan, public type: LongDecorationType) {
                 super(parent);
             }
@@ -1812,7 +1630,7 @@ public getContext(): INoteContext {
 
 
         /** Text syllable from lyrics, shown under or over a note */
-        export class TextSyllableElement extends MusicElement<ITextSyllableSpacingInfo> implements ITextSyllableElement {
+        export class TextSyllableElement extends MusicElement implements ITextSyllableElement {
             constructor(public parent: INote, private text: string) {
                 super(parent);
             }
@@ -1857,10 +1675,6 @@ public getContext(): INoteContext {
         }
 
 
-/******************************************** Spacing stuff ************************************************************/
-        export class Point {
-            constructor(public x: number, public y: number) { }
-        }
 
 /******************************************************** Helper classes **************************************************************/
         export class Music { // facade object

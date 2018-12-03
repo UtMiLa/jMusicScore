@@ -6,7 +6,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, ITimedEvent } from './model/jm-model-interfaces';
 import { 
     NoteDecorationElement, TextSyllableElement,
-    NoteLongDecorationElement, Music, GlobalContext, ScoreElement } from "./model/jm-model";    
+    NoteLongDecorationElement, Music, ScoreElement } from "./model/jm-model";   
+    import {  GlobalContext } from "./model/jm-model-base";     
 import { IFileConverter } from './jm-interfaces';
 import { IWriterPlugIn, IReaderPlugIn } from './jap-application';
 import {  IScoreApplication, ScoreStatusManager, IScorePlugin } from './jm-application';
