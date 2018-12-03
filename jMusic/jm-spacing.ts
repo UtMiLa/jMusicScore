@@ -8,8 +8,8 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, 
         ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo,  IGlobalContext } from './model/jm-model-interfaces';
-import { ContextVisitor, Music } from "./model/jm-model";
-import { MusicElement, Point } from "./model/jm-model-base";
+import { Music } from "./model/jm-model";
+import { ContextVisitor, MusicElement, Point } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: pitchToStaffLine skal ikke kaldes med <any>
 

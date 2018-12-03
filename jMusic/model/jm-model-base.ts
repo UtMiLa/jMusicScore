@@ -229,3 +229,343 @@ export class GlobalContext implements IGlobalContext {
 export class Point implements IPoint {
     constructor(public x: number, public y: number) { }
 }
+
+
+/***************** Visitors ***************** */
+
+
+
+class NullVisitor implements IVisitor, IVisitorIterator<IMusicElement> {
+    visitPre(element: IMusicElement): (element: IMusicElement) => void {
+        element.inviteVisitor(this);
+        return null;
+    }
+
+    visitNoteHead(head: INotehead) { }
+    visitNote(note: INote) { }
+    visitNoteDecoration(deco: INoteDecorationElement) { }
+    visitLongDecoration(deco: ILongDecorationElement) { }
+    visitVoice(voice: IVoice) { }
+    visitClef(clef: IClef) { }
+    visitMeter(meter: IMeter) { }
+    visitKey(key: IKey) { }
+    visitStaff(staff: IStaff) { }
+    visitScore(score: IScore) { }
+    visitTextSyllable(textSyllable: ITextSyllableElement) { }
+    visitBar(bar: IBar) { }
+    visitBeam(beam: IBeam) { }
+    visitStaffExpression(staffExpression: IStaffExpression): void { }
+
+    visitDefault(element: IMusicElement): void { }
+    visitVariable(name: string): void {}
+}
+
+export class ContextVisitor extends NullVisitor {
+    score: IScore;
+    staff: IStaff;
+    voice: IVoice;
+    noteContext: INoteContext;
+    constructor(public globalContext: IGlobalContext){
+        super();
+    }
+    visitStaff(staff: IStaff) { this.staff = staff; }
+    visitScore(score: IScore) { this.score = score; }
+    visitVoice(voice: IVoice) { this.voice = voice; }
+    getStaffContext(absTime: AbsoluteTime): StaffContext{
+        return this.staff.getStaffContext(absTime);
+    }
+    visitNoteHead(head: INotehead) {
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
+         this.doNoteHead(head, this.noteContext, spacing); 
+        }
+    visitNote(note: INote) {
+        this.noteContext = note.getContext();
+        var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
+        this.doNote(note, this.noteContext, spacing); 
+    }
+    visitNoteDecoration(deco: INoteDecorationElement) { 
+        var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco);
+        this.doNoteDecoration(deco, this.noteContext, spacing); 
+    }
+    visitLongDecoration(deco: ILongDecorationElement) { 
+        var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
+        this.doLongDecoration(deco, this.noteContext, spacing); 
+    }
+    visitTextSyllable(textSyllable: ITextSyllableElement) { 
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
+        this.doTextSyllable(textSyllable, this.noteContext, spacing); 
+    }
+    visitBeam(beam: IBeam) { 
+        var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
+        this.doBeam(beam, this.noteContext, spacing); 
+    }
+
+    doNote(note: INote, context: INoteContext, spacing: INoteSpacingInfo) { }
+    doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) { }
+    doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) { }
+    doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) { }
+    doTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) { }
+    doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) { }
+    visitVariable(name: string): void {
+        let val = this.globalContext.getVariable(name);
+        if (val) val.visitAll(this);
+    }
+}
+
+export class NullEventVisitor implements IEventVisitor, IVisitorIterator<IMusicElement> {
+    visitPre(element: IMusicElement): (element: IMusicElement) => void {
+        element.inviteEventVisitor(this);
+        return null;
+    }
+
+
+    visitNoteHead(head: INoteHeadInfo): void {
+    }   
+    visitNote(note: INoteInfo): void {
+    }
+    visitNoteDecoration(deco: INoteDecorationEventInfo): void {
+    }
+    visitLongDecoration(deco: ILongDecorationEventInfo): void {
+    }
+    visitTextSyllable(text: ITextSyllableEventInfo): void {
+    }
+    visitBeam(beam: IBeamEventInfo): void {
+    }
+    visitBar(bar: IBarEventInfo): void {
+    }
+    visitClef(clef: IClefEventInfo): void {
+    }
+    visitMeter(meter: IMeterEventInfo): void {
+    }
+    visitKey(key: IKeyEventInfo): void {
+    }
+    visitStaffExpression(staffExpression: IStaffExpressionEventInfo): void {
+    }
+    visitVoice(voice: IVoice): void {
+    }
+    visitStaff(staff: IStaff): void {
+    }
+    visitScore(score: IScore): void {
+    }
+
+/*    visitVoice(voice: IVoice) { 
+        super.visitVoice(voice);
+        const events = voice.getEvents(this.globalContext);
+        for (var i = 0; i < events.length; i++){
+            events[i].visit(this);
+        }
+    }
+
+
+
+    visitNoteHead(head: INotehead) {
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
+         //this.doNoteHead(head, this.noteContext, spacing); 
+        }
+    visitNote(note: INote) {
+        this.noteContext = note.getContext();
+        var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
+        //this.doNote(note, this.noteContext, spacing); 
+    }
+    visitNoteDecoration(deco: INoteDecorationElement) { 
+        var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco);
+        //this.doNoteDecoration(deco, this.noteContext, spacing); 
+    }
+    visitLongDecoration(deco: ILongDecorationElement) { 
+        var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
+        //this.doLongDecoration(deco, this.noteContext, spacing); 
+    }
+    visitTextSyllable(textSyllable: ITextSyllableElement) { 
+        //this.doTextSyllable(textSyllable, this.noteContext, spacing); 
+        //var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
+    }
+    visitBeam(beam: IBeam) { 
+        var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
+        //this.doBeam(beam, this.noteContext, spacing); 
+    }
+*/
+}
+
+export class ContextEventVisitor extends NullEventVisitor {
+    score: IScore;
+    staff: IStaff;
+    voice: IVoice;
+    noteContext: INoteContext;
+    constructor(public globalContext: IGlobalContext){
+        super();
+    }
+    visitStaff(staff: IStaff) { this.staff = staff; }
+    visitScore(score: IScore) { this.score = score; }
+    visitVoice(voice: IVoice) { this.voice = voice; }
+    getStaffContext(absTime: AbsoluteTime): StaffContext{
+        return this.staff.getStaffContext(absTime);
+    }
+    /*visitNoteHead(head: INoteHeadInfo) {
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
+         this.doNoteHead(head, this.noteContext, spacing); 
+        }
+    visitNote(note: INoteInfo) {
+        this.noteContext = note.getContext();
+        var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
+        this.doNote(note, this.noteContext, spacing); 
+    }
+    visitNoteDecoration(deco: INoteDecorationEventInfo) { 
+        var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco);
+        this.doNoteDecoration(deco, this.noteContext, spacing); 
+    }
+    visitLongDecoration(deco: ILongDecorationEventInfo) { 
+        var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
+        this.doLongDecoration(deco, this.noteContext, spacing); 
+    }
+    visitTextSyllable(textSyllable: ITextSyllableEventInfo) { 
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
+        this.doTextSyllable(textSyllable, this.noteContext, spacing); 
+    }
+    visitBeam(beam: IBeamEventInfo) { 
+        var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
+        this.doBeam(beam, this.noteContext, spacing); 
+    }
+
+    doNote(note: INote, context: INoteContext, spacing: INoteSpacingInfo) { }
+    doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) { }
+    doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) { }
+    doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) { }
+    doTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) { }
+    doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) { }
+    visitVariable(name: string): void {
+        let val = this.globalContext.getVariable(name);
+        if (val) val.visitAll(this);
+    }
+*/
+}
+
+
+export class NoteVisitor extends ContextVisitor {
+    constructor(globalContext: IGlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
+        super(globalContext);
+    }
+    no: number = 0;
+    doNote(note:INoteSource, context: INoteContext, spacing: INoteSpacingInfo): void {
+        this.callback(note, context, this.no++, spacing);
+    }
+}   
+
+
+export class StaffVisitor extends NullVisitor {
+    constructor(private callback: (node:IStaff, index: number) => void) {
+        super();
+    }
+    no: number = 0;
+    visitStaff(note: IStaff): void {
+        this.callback(note, this.no++);
+    }
+}   
+
+export class BarVisitor extends NullVisitor {
+    constructor(private callback: (bar:IBar, index: number) => void) {
+        super()
+    }
+    no: number = 0;
+    visitBar(bar: IBar): void {
+        this.callback(bar, this.no++);
+    }
+}   
+
+export class VoiceVisitor extends NullVisitor {
+    constructor(private callback: (voice:IVoice, index: number) => void) {
+        super()
+    }
+    no: number = 0;
+    visitVoice(voice: IVoice): void {
+        this.callback(voice, this.no++);
+    }
+}   
+
+export class NoteHeadVisitor extends ContextVisitor {
+    constructor(globalContext: IGlobalContext, private callback: (node:INotehead, index: number, spacing: INoteHeadSpacingInfo) => void) {
+        super(globalContext)
+    }
+    no: number = 0;
+    doNoteHead(notehead: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo): void {
+        this.callback(notehead, this.no++, spacing);
+    }
+}   
+
+export class MeterVisitor extends NullVisitor {
+    constructor(private callback: (node:IMeter, index: number) => void) {
+        super();
+    }
+    no: number = 0;
+    visitMeter(meter: IMeter): void {
+        this.callback(meter, this.no++);
+    }
+}   
+
+export class KeyVisitor extends NullVisitor {
+    constructor(private callback: (node:IKey, index: number) => void) {
+        super()
+    }
+    no: number = 0;
+    visitKey(key: IKey): void {
+        this.callback(key, this.no++);
+    }
+}   
+
+export class ClefVisitor extends NullVisitor {
+    constructor(private callback: (node:IClef, index: number) => void) {
+        super()
+    }
+    no: number = 0;
+    visitClef(clef: IClef): void {
+        this.callback(clef, this.no++);
+    }
+}   
+
+export class TimedEventVisitor extends NullVisitor {
+    constructor(private callback: (node:ITimedVoiceEvent, index: number) => void) {
+        super()
+    }
+    no: number = 0;
+    visitKey(key: IKey): void {
+        this.callback(key, this.no++);
+    }
+    visitMeter(meter: IMeter): void {
+        this.callback(meter, this.no++);
+    }
+    visitClef(clef: IClef): void {
+        this.callback(clef, this.no++);
+    }
+    visitStaffExpression(exp: IStaffExpression): void {
+        this.callback(exp, this.no++);
+    }
+}   
+
+export class NoteDecorationVisitor extends ContextVisitor {
+    constructor(globalContext: IGlobalContext, private callback: (node:INoteDecorationElement, index: number, spacing: INoteDecorationSpacingInfo) => void) {
+        super(globalContext)
+    }
+    no: number = 0;
+    doNoteDecoration(clef: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo): void {
+        this.callback(clef, this.no++, spacing);
+    }
+}   
+
+export class LongDecorationVisitor extends ContextVisitor {
+    constructor(globalContext: IGlobalContext, private callback: (node:ILongDecorationElement, index: number, spacing: ILongDecorationSpacingInfo) => void) {
+        super(globalContext)
+    }
+    no: number = 0;
+    doLongDecoration(clef: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo): void {
+        this.callback(clef, this.no++, spacing);
+    }
+}   
+
+export class TextSyllableVisitor extends ContextVisitor {
+    constructor(globalContext: IGlobalContext, private callback: (node:ITextSyllableElement, index: number, spacing: ITextSyllableSpacingInfo) => void) {
+        super(globalContext)
+    }
+    no: number = 0;
+    doTextSyllable(clef: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo): void {
+        this.callback(clef, this.no++, spacing);
+    }
+}   

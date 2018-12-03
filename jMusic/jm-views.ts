@@ -8,8 +8,8 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, 
         ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, IGlobalContext } from './model/jm-model-interfaces';
-import { ContextVisitor, Music     } from "./model/jm-model";    
-import { Point } from "./model/jm-model-base";
+import { Music     } from "./model/jm-model";    
+import { Point, ContextVisitor } from "./model/jm-model-base";
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
 import { NoteDecorations } from './jm-glyph-details';
