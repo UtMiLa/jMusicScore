@@ -1,13 +1,5 @@
-import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
-    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
-    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
-import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInfo, IScore, IVoice, IStaff, ISequence, IScoreSpacingInfo,
-        IMeter, ITimedVoiceEvent, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, 
-        INote, INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, 
-        IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
-        ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, 
-        ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, IGlobalContext } from './model/jm-model-interfaces';
+import { IKeyDefinition, ClefDefinition, IMeterDefinition, LongDecorationType, IVisitorIterator, NoteDecorationKind } from './jm-base'
+import { ISpacingInfo, ILongDecorationElement, IGlobalContext, ILongDecorationSpacingInfo, IMusicElement, IVisitor, INotehead, INoteSource, INoteDecorationElement, IVoice, IClef, IMeter, IKey, IStaff, IScore, ITextSyllableElement, IBar, IBeam, IStaffExpression, INoteContext, INoteHeadSpacingInfo, INoteSpacingInfo, INoteDecorationSpacingInfo, ITextSyllableSpacingInfo, IBarSpacingInfo, IBeamSpacingInfo, IClefSpacingInfo, IMeterSpacingInfo, IKeySpacingInfo, IStaffSpacingInfo } from './model/jm-model-interfaces';
 import { Music     } from "./model/jm-model";    
 import { Point, ContextVisitor } from "./model/jm-model-base";
 import {MusicSpacing} from "./jm-spacing";

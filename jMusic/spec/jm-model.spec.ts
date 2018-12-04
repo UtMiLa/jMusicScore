@@ -1,13 +1,8 @@
-import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
-    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
-    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval, IntervalType} from '../jm-base'
-import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from '../model/jm-model-interfaces';
+import {AbsoluteTime, ClefDefinition, ClefType, Pitch, PitchClass, 
+    RegularKeyDefinition, RegularMeterDefinition, Interval, IntervalType} from '../jm-base'
+import { IScore, IStaff } from '../model/jm-model-interfaces';
 import {  ScoreElement, MusicElementFactory } from "../model/jm-model";  
 import { GlobalContext } from "../model/jm-model-base";
-import  { IScoreApplication, ScoreStatusManager } from '../jm-application';
-import  { AbstractApplication } from '../jap-application';
-import  { MusicSpacing } from '../jm-spacing';
 import  { JsonHelper } from '../jm-json';
 import { VariableRef } from '../jm-ghost-elements';
 import { ISequence } from '../model/jm-model-interfaces';
@@ -54,7 +49,7 @@ describe("Score", function () {
         });
         it("should enumerate 11 notes in first voice", function () {
             let i = 0;
-            document.staffElements[0].voiceElements[0].withNotes(globalContext, (note, index) => {
+            document.staffElements[0].voiceElements[0].withNotes(globalContext, () => {
                 i++;
             });
             expect(i).toEqual(11);

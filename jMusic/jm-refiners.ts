@@ -1,22 +1,7 @@
-import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
-    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
-    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
-import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInfo, IScore, IVoice, IStaff, ISequence, IScoreSpacingInfo,
-         IMeter, ITimedVoiceEvent, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, 
-         INote, INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, 
-         IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
-         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, 
-         ITextSyllableSpacingInfo, IMusicElementCreator, IGlobalContext,  IVoiceNote } from './model/jm-model-interfaces';
+import {AbsoluteTime, TimeSpan} from './jm-base';
+import { IBar, IScore, IVoice, IStaff, IMeter, IKey, INote, INoteSource, INoteContext, ITimedEvent, IBeam, INotehead, IGlobalContext,  IVoiceNote } from './model/jm-model-interfaces';
 import {  Music,      BeamElement   } from "./model/jm-model";    
-import {      Point   } from "./model/jm-model-base";
-import {MusicSpacing} from "./jm-spacing";
-import { IScoreDesigner, IScoreRefiner } from './jm-interfaces';
-import { NoteDecorations } from './jm-glyph-details';
-import {emmentalerNotes} from "./fonts/emmentaler";
-import {fontCodePoints} from "./fonts/font-codepoints";
-//import {} from "./jm-views";
-import {IScorePlugin, IScoreApplication} from "./jm-application";
+import { IScoreRefiner } from './jm-interfaces';
 
 //module JMusicScore {
  /*   import {Model} from "./jMusicScore";
@@ -124,8 +109,8 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                 var pitchClassChanges: string[] = [];
 
                 // for each staff:
-                var scoreEvents: ITimedVoiceEvent[] = score.getEventsOld(this.globalContext, true);
-                score.withStaves((staff: IStaff, index: number): void => {
+                var scoreEvents: ITimedEvent[] = score.getEventsOld(this.globalContext, true);
+                score.withStaves((staff: IStaff): void => {
                     // get events (bar lines + notes + keys changes) sorted by absTime from all voices
                     var events = staff.getEventsOld(this.globalContext);
                     events = events.concat(scoreEvents);
@@ -149,7 +134,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                         else if (event.getElementName() === "Note") {
                             // for each pitch:
                             var note = <IVoiceNote><any>event; // todo: problem
-                            note.withHeads(this.globalContext, (head: INotehead, index: number): void => {
+                            note.withHeads(this.globalContext, (head: INotehead): void => {
                                 var alteration = head.pitch.alteration;
                                 alteration = alteration ? alteration : "n";
                                 var pitchAbsolute = head.pitch.pitch;
@@ -433,15 +418,12 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
           
                 //for (var iNote = 0; iNote < noteElements.length; iNote++) { // todo: problem
                 voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, iNote: number) => {
-                    //var note: INote = noteElements[iNote];
-                    var staffContext = voice.parent.getStaffContext(context.absTime);
                     var beamspan = note.getBeamspan();
                     for (var i = 1; i < beamspan.length; i++) {
                         if (beamspan[i] === 1 && beamspan[0] < 0) {
                             // check syncopation
                             // tjek om det er en synkope // 8 16* 8 *16 8  men 8 *16 4 16* 8 - måske skal designeren tjekke det!
                             var absTime = context.absTime;
-                            var noteTime = note.timeVal;
                             var res = absTime.fromStart().modulo(note.timeVal.multiplyScalar(2));
                             // todo: check if last in beam group
                             var firstNote = noteElements[iNote + beamspan[0] + 1];
@@ -536,13 +518,13 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
         export class TieValidator implements IScoreValidator {
             constructor(private globalContext: IGlobalContext) {}
             public refine(score: IScore) {
-                score.withVoices((voice: IVoice, index: number) => {
+                score.withVoices((voice: IVoice) => {
                     this.validateVoice(voice);
                 });
             }
 
             private validateVoice(voice: IVoice) {
-                voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number) => {
+                voice.withNotes(this.globalContext, (note: INoteSource) => {
                     var nextNote = Music.nextNote(this.globalContext, note);
                         /*: NoteElement;
                     if (index < voice.noteElements.length - 1) {
@@ -556,7 +538,7 @@ import {IScorePlugin, IScoreApplication} from "./jm-application";
                             // update slurredTo property
                             head.setProperty("tiedTo", undefined);
                             if (nextNote) {
-                                nextNote.withHeads(this.globalContext, (nextHead: INotehead, nextHeadIndex: number) => {
+                                nextNote.withHeads(this.globalContext, (nextHead: INotehead) => {
                                     if (nextHead.pitch.equals(head.pitch)) {
                                         head.setProperty("tiedTo", nextHead);
                                     }

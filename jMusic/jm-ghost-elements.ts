@@ -2,7 +2,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
-import { IVoice, IScore, IStaff, IGlobalContext, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence, IEventVisitor } from './model/jm-model-interfaces';    
+import { IVoice, IScore, IStaff, IGlobalContext, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence, IEventVisitor, ITimedObjectEvent } from './model/jm-model-interfaces';    
 import {
     Music, MusicElementFactory, ClefElement,
     KeyElement, 
@@ -121,7 +121,7 @@ export class VariableSpacing {
     scale: number;
     preWidth: number;
 }
-export class VariableRef extends MusicElement implements ITimedEvent, IEventContainer {
+export class VariableRef extends MusicElement implements ITimedObjectEvent, IEventContainer {
     absTime: AbsoluteTime = new AbsoluteTime(1, 4); // todo: calculate absTime og timeSpan for container
     private name: string;
     private ref: ISequence;

@@ -4,7 +4,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-base';
 import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInfo, IScore, IVoice, IStaff, ISequence, IScoreSpacingInfo, 
-    IMeter, ITimedVoiceEvent, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, INote, 
+    IMeter, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, INote, 
     INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, IMeterSpacingInfo, 
     IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, ITextSyllableElement, 
     INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, 
@@ -155,8 +155,8 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 }
             }
 
-            public getEventsOld(globalContext: IGlobalContext, ignoreStaves = false): ITimedVoiceEvent[] {
-                var events: ITimedVoiceEvent[] = [];
+            public getEventsOld(globalContext: IGlobalContext, ignoreStaves = false): ITimedEvent[] {
+                var events: ITimedEvent[] = [];
                 if (!ignoreStaves) {
                     this.withStaves((staff: IStaff) => {
                         events = events.concat(staff.getEventsOld(globalContext));
@@ -321,7 +321,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 }*/
             }
 
-            public withTimedEvents(f: (ev: ITimedVoiceEvent, index: number) => void): void {
+            public withTimedEvents(f: (ev: ITimedEvent, index: number) => void): void {
                 this.visitAll(new TimedEventVisitor(f));
                 /*for (var i = 0; i < this.keyElements.length; i++) {
                     f(this.keyElements[i], i);
@@ -388,8 +388,8 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             public getKeyElements(): IKey[] {
                 return this.keyElements;
             }
-            public getEventsOld(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
-                var events: ITimedVoiceEvent[] = [];
+            public getEventsOld(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
+                var events: ITimedEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
 
@@ -397,7 +397,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                     events = events.concat(voice.getEventsOld(globalContext, fromTime, toTime));
                 });
 
-                var f = (elm: ITimedVoiceEvent, index: number) => {
+                var f = (elm: ITimedEvent, index: number) => {
                     if (elm.absTime.ge(fromTime) && toTime.gt(elm.absTime)) events.push(elm);
                 }
 
@@ -602,8 +602,8 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
 
-            public getEventsOld(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedVoiceEvent[] {
-                var events: ITimedVoiceEvent[] = [];
+            public getEventsOld(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
+                var events: ITimedEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
                 if (!toTime) toTime = AbsoluteTime.infinity;
                 this.withNotes(globalContext, (note: INoteSource, context: INoteContext, index: number) => {
@@ -641,6 +641,10 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             constructor(public parent: IVoice | ISequence) {
                 super(parent);
             }
+            public absTime: AbsoluteTime;
+            //debug(): string { return }
+            getSortOrder() { return 100; }
+            getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
 
             static createFromMemento(parent: IVoice, memento: IMemento): ISequence {
                 var seq = new SequenceElement(parent);
@@ -807,6 +811,11 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             constructor(public parent: IVoice | ISequence, private sequence: ISequence, public interval: Interval){
                 super(parent);
             }
+            
+            public absTime: AbsoluteTime;
+            //debug(): string { return }
+            getSortOrder() { return 100; }
+            getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
 
             static createFromMemento(parent: IVoice, memento: IMemento): ISequence {
                 const interval = new Interval(memento.def.interval, memento.def.alteration);
@@ -1328,9 +1337,12 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
             }
 
-            public static compareEventsByVoice(a: ITimedVoiceEvent, b: ITimedVoiceEvent) {
-                var va = a.getVoice();
-                var vb = b.getVoice();
+            public static compareEventsByVoice(a: ITimedEvent, b: ITimedEvent) {
+                if (!(<any>a).getVoice || !(<any>b).getVoice) {
+                    return Music.compareEventsOld(a, b);
+                }
+                var va = (<any>a).getVoice();
+                var vb = (<any>b).getVoice();
                 if (va !== null && vb !== null && va === vb) {
                     return Music.compareEventsOld(a, b);
                 }

@@ -1,14 +1,6 @@
-import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
-    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
-    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from '../jm-base';
-import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from '../model/jm-model-interfaces';    
+import { IScore, INote } from '../model/jm-model-interfaces';    
 import { MusicElementFactory, TransposeElement } from "../model/jm-model";  
 import { GlobalContext } from "../model/jm-model-base";
-import  { IScoreApplication, ScoreStatusManager } from '../jm-application';
-import  { AbstractApplication } from '../jap-application';
-import  { MusicSpacing } from '../jm-spacing';
-import  { JsonHelper } from '../jm-json';
 import { INoteInfo } from '../model/jm-model-interfaces';
 
 
@@ -16,7 +8,6 @@ describe("Mementos", function () {
     //var score: IScore;
     //var app: IScoreApplication;
     var globalContext = new GlobalContext();
-    var document: IScore;
 
     it("should create an empty score", function () {
         const data = <any>{ "id": "2", "t": "Score", "def": { "metadata": {} }, "children": [] };

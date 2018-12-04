@@ -60,17 +60,33 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getHorizPosition(): HorizPosition;
         }
 
-        export interface ITimedVoiceEvent extends ITimedEvent {
+        /**
+         * Events that change some parameter - lasting until next change event
+         * e.g. clef, meter, tempo marks, dynamic marks
+         */
+        export interface ITimedChangeEvent extends ITimedEvent { 
+
+        }
+
+        /**
+         * Events that begin at the time and lasts a fixed time
+         * e.g. notes, sequences, bar lines
+         */
+        export interface ITimedObjectEvent extends ITimedEvent {
+
+        }
+
+        /*export interface ITimedVoiceEvent extends ITimedEvent {
             getVoice(): IVoice;
             getStaff(): IStaff;
-        }
+        }*/
 
         export interface IEventContainer {
             getEventsOld(globalContext: IGlobalContext): ITimedEvent[];
             //getEvents(globalContext: GlobalContext): IEventInfo[];
         }
 
-        export interface IBar extends ITimedVoiceEvent {
+        export interface IBar extends ITimedObjectEvent {
             //parent: IScore;
             absTime: AbsoluteTime;
             //spacingInfo: IBarSpacingInfo;
@@ -96,7 +112,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
             clear(): void;
             findBar(absTime: AbsoluteTime): IBar;
-            getEventsOld(globalContext: IGlobalContext, ignoreStaves?: boolean): ITimedVoiceEvent[];
+            getEventsOld(globalContext: IGlobalContext, ignoreStaves?: boolean): ITimedEvent[];
             withStaves(f: (staff: IStaff, index: number) => void): void;
             withVoices(f: (voice: IVoice, index: number) => void): void;
             withBars(f: (bar: IBar, index: number) => void): void;
@@ -122,7 +138,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getStaffContext(absTime: AbsoluteTime): StaffContext;
             //getMeterElements(): IMeter[];
             getKeyElements(): IKey[];
-            getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
+            getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
             addVoice(): IVoice;
             //setMeter(meter: MeterDefinition, absTime: AbsoluteTime): void;
             setClef(type: ClefDefinition, absTime: AbsoluteTime): void;
@@ -131,7 +147,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
-        export interface IStaffExpression extends ITimedVoiceEvent {
+        export interface IStaffExpression extends ITimedChangeEvent {
             //parent: IStaff;
             text: string;
         }
@@ -143,7 +159,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
             getStemDirection(): StemDirectionType;
             setStemDirection(dir: StemDirectionType): void;
-            getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedVoiceEvent[];
+            getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
             getEvents(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): IEventInfo[];
             getEndTime(globalContext: IGlobalContext): AbsoluteTime;
             removeChild(child: INote): void;
@@ -153,7 +169,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
-        export interface ISequence extends IEventContainer, IMusicContainer, IEventEnumerator {
+        export interface ISequence extends IEventContainer, IMusicContainer, IEventEnumerator, ITimedObjectEvent {
             noteElements: INote[];
             //parent: IVoice | ISequence;
             withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void): void;
@@ -168,20 +184,20 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         }
 
 
-        export interface IClef extends ITimedVoiceEvent {
+        export interface IClef extends ITimedChangeEvent {
             //parent: IStaff;
             definition: ClefDefinition;            
             pitchToStaffLine(pitch: Pitch): number;
             staffLineToPitch(line: number): Pitch;
         }
-        export interface IKey extends ITimedVoiceEvent {
+        export interface IKey extends ITimedChangeEvent {
             //parent: IStaff;
             definition: IKeyDefinition;
             getFixedAlteration(pitch: number): string;
             getTonic(): PitchClass;
         }
 
-        export interface IMeter extends ITimedVoiceEvent {
+        export interface IMeter extends ITimedChangeEvent {
             parent: IMusicElement;
             definition: IMeterDefinition;
 
@@ -199,7 +215,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             remove(): void;
         }
 
-        export interface INote extends IMusicContainer, ITimedEvent { // todo: fjern ITimedEvent, IMusicContainer => IMusicElement
+        export interface INote extends IMusicContainer, ITimedObjectEvent { // todo: fjern ITimedEvent, IMusicContainer => IMusicElement
             NoteId: string;
             timeVal: TimeSpan;
             noteheadElements: INotehead[];
@@ -244,7 +260,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 
 
 
-        export interface INoteSource  extends INote, ITimedEvent {
+        export interface INoteSource  extends INote, ITimedObjectEvent {
         }
         export interface INoteHeadInfo {
             source: INotehead;
@@ -292,7 +308,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getEvents(globalContext: IGlobalContext): IEventInfo[];
             //visitEvents(globalContext: IGlobalContext, f: (visitor: IEventVisitor) => void): void;
         }
-        export interface INoteContext extends INote,  ITimedEvent {
+        export interface INoteContext extends INote,  ITimedObjectEvent {
             //spacingInfo: INoteSpacingInfo;
             getStaffContext(): StaffContext;
             voice: IVoice;
