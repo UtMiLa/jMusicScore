@@ -64,6 +64,10 @@ public getContext(): INoteContext {
     return this;
 }
 
+public inviteEventVisitor(spacer: IEventVisitor): void {
+    spacer.visitNote(this.getInfo());
+}
+
             getEvents(): IEventInfo[] {
                 return [this.getInfo()];
             }

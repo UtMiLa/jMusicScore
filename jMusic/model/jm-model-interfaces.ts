@@ -281,15 +281,15 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             visit(visitor: IEventVisitor): void;
         }
 
-        export interface IKeyEventInfo extends IEventInfo {}
-        export interface IClefEventInfo extends IEventInfo {}
-        export interface IMeterEventInfo extends IEventInfo {}
-        export interface IBarEventInfo extends IEventInfo {}
-        export interface IBeamEventInfo extends IEventInfo {}
-        export interface INoteDecorationEventInfo extends IEventInfo {}
-        export interface ILongDecorationEventInfo extends IEventInfo {}
-        export interface IStaffExpressionEventInfo extends IEventInfo {}
-        export interface ITextSyllableEventInfo extends IEventInfo {}
+        export interface IKeyEventInfo extends IEventInfo { source: IKey; }
+        export interface IClefEventInfo extends IEventInfo {source: IClef; }
+        export interface IMeterEventInfo extends IEventInfo { source: IMeter;}
+        export interface IBarEventInfo extends IEventInfo { source: IBar;}
+        export interface IBeamEventInfo extends IEventInfo { source: IBeam; }
+        export interface INoteDecorationEventInfo extends IEventInfo {source: INoteDecorationElement; }
+        export interface ILongDecorationEventInfo extends IEventInfo { source: ILongDecorationElement; }
+        export interface IStaffExpressionEventInfo extends IEventInfo { source: IStaffExpression; }
+        export interface ITextSyllableEventInfo extends IEventInfo { source: ITextSyllableElement; }
 
         /**INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
          *      Id er konkateneret af variables og NoteElement's Id. NoteSpacingInfo og AbsTime er knyttet til denne. 

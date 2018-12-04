@@ -2,7 +2,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
-import { IVoice, IScore, IStaff, IGlobalContext, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence, IEventVisitor, ITimedObjectEvent } from './model/jm-model-interfaces';    
+import { IVoice, IScore, IStaff, IGlobalContext, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence, IEventVisitor, ITimedObjectEvent, IMeterEventInfo } from './model/jm-model-interfaces';    
 import {
     Music, MusicElementFactory, ClefElement,
     KeyElement, 
@@ -18,7 +18,7 @@ import { IScoreRefiner } from "./jm-interfaces";
 
             
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
+                let info: IMeterEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
                 return [info];
             }

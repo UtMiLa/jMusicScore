@@ -45,7 +45,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
 
         class BarElement extends MusicElement implements IBar {
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => { return TimeSpan.noTime;} };
+                let info: IBarEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => { return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitBar(info)};
                 return [info];
             }
@@ -475,7 +475,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
+                let info: IStaffExpressionEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitStaffExpression(info)};
                 return [info];
             }
@@ -907,7 +907,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
+                let info: IClefEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitClef(info)};
                 return [info];
             }
@@ -972,7 +972,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
+                let info: IKeyEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitKey(info)};
                 return [info];
             }
@@ -1032,7 +1032,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 super(parent);
             }
             getEvents(): IEventInfo[] {
-                let info: IEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
+                let info: IMeterEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
                 return [info];
             }
