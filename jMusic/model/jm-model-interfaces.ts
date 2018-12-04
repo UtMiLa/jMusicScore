@@ -329,12 +329,17 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             getDecorationId(): NoteDecorationKind;
             getInfo(): INoteDecoInfo<INoteDecorationElement>;
         }
+
+        export interface INoteFinder{
+            nextNote(note: INote): INote;
+        }
+
         /** Long note decoration interface, e.g. hairpin, trill extension and slur */
         export interface ILongDecorationElement extends IMusicElement {
             parent: INote;
             placement: string;
             //spacingInfo: ILongDecorationSpacingInfo;
-            endEvent: ITimedEvent;
+            getEndEvent(noteFinder: INoteFinder): ITimedEvent;
             type: LongDecorationType;
             getInfo(): INoteDecoInfo<ILongDecorationElement>;
         }

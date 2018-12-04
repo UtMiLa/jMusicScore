@@ -4,8 +4,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
 import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from './model/jm-model-interfaces';
-import {     NoteDecorationElement, TextSyllableElement, 
-    NoteLongDecorationElement, Music, MusicElementFactory } from "./model/jm-model";    
+import { Music, MusicElementFactory } from "./model/jm-model";    
+import { NoteDecorationElement, TextSyllableElement, NoteLongDecorationElement } from "./model/jm-model-notes";   
 import { IFileConverter } from './jm-interfaces';
 import { IWriterPlugIn, IReaderPlugIn } from './jap-application';
 import {  IScoreApplication, ScoreStatusManager, IScorePlugin } from './jm-application';

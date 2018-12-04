@@ -569,10 +569,12 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                     return null;
                 }
+
                 public static longDecoCalculations(deco: ILongDecorationElement, noteCtx: INoteContext, globalContext: IGlobalContext) {
                     var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx);
                     var notedecoSpacing = globalContext.getSpacingInfo<LongDecorationSpacingInfo>(deco);
-                    var tiedToNoteSpacing = globalContext.getSpacingInfo(deco.endEvent); //todo: if (deco.EndEvent)
+                    var noteFinder = { nextNote(note: INote) { return Music.nextNote(globalContext, note); }};
+                    var tiedToNoteSpacing = globalContext.getSpacingInfo(deco.getEndEvent(noteFinder)); //todo: if (deco.EndEvent)
                     var stemDir = globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx).rev;
     
                     // todo: if length is changed
