@@ -214,13 +214,13 @@ export class GlobalContext implements IGlobalContext {
     }
 
     getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T {
-        return <T>(<any>element).spacingInfo;
-        //return <T>this._spacingInfos[element.id];
+        //return <T>(<any>element).spacingInfo;
+        return <T>this._spacingInfos[element.id];
     }
 
     addSpacingInfo(element: IMusicElement, value: ISpacingInfo) {
-        (<any>element).spacingInfo = value;
-        //this._spacingInfos[element.id] = value;
+        //(<any>element).spacingInfo = value;
+        this._spacingInfos[element.id] = value;
     }
 }
 
@@ -434,7 +434,7 @@ export class BarVisitor extends NullVisitor {
     }
 }   
 
-export class VoiceVisitor extends NullVisitor {
+export class VoiceVisitor extends NullEventVisitor {
     constructor(private callback: (voice:IVoice, index: number) => void) {
         super()
     }

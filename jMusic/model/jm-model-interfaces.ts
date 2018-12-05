@@ -113,6 +113,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             clear(): void;
             findBar(absTime: AbsoluteTime): IBar;
             getEventsOld(globalContext: IGlobalContext, ignoreStaves?: boolean): ITimedEvent[];
+            getEvents(globalContext: IGlobalContext, ignoreStaves: boolean): IEventInfo[];
             withStaves(f: (staff: IStaff, index: number) => void): void;
             withVoices(f: (voice: IVoice, index: number) => void): void;
             withBars(f: (bar: IBar, index: number) => void): void;
@@ -139,6 +140,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             //getMeterElements(): IMeter[];
             getKeyElements(): IKey[];
             getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
+            getEvents(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): IEventInfo[];
             addVoice(): IVoice;
             //setMeter(meter: MeterDefinition, absTime: AbsoluteTime): void;
             setClef(type: ClefDefinition, absTime: AbsoluteTime): void;

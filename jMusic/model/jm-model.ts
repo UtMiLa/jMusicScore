@@ -155,6 +155,17 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 }
             }
 
+            public getEvents(globalContext: IGlobalContext, ignoreStaves = false): IEventInfo[] {
+                var events: IEventInfo[] = [];
+                if (!ignoreStaves) {
+                    this.withStaves((staff: IStaff) => {
+                        events = events.concat(staff.getEvents(globalContext));
+                    });
+                }
+                this.bars.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });
+                this.meterElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
+                return events;
+            }
             public getEventsOld(globalContext: IGlobalContext, ignoreStaves = false): ITimedEvent[] {
                 var events: ITimedEvent[] = [];
                 if (!ignoreStaves) {
@@ -388,6 +399,18 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             public getKeyElements(): IKey[] {
                 return this.keyElements;
             }
+            public getEvents(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): IEventInfo[]{
+                var events: IEventInfo[] = [];
+                this.withVoices((voice: IVoice) => {
+                    events = events.concat(voice.getEvents(globalContext));
+                });
+            
+                this.meterElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
+                this.keyElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
+                this.clefElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
+                this.expressions.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
+                return events;
+            }
             public getEventsOld(globalContext: IGlobalContext, fromTime: AbsoluteTime = null, toTime: AbsoluteTime = null): ITimedEvent[] {
                 var events: ITimedEvent[] = [];
                 if (!fromTime) fromTime = AbsoluteTime.startTime;
@@ -540,6 +563,10 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
             public inviteVisitor(visitor: IVisitor) {
+                visitor.visitVoice(this);
+            }
+
+            public inviteEventVisitor(visitor: IEventVisitor) {
                 visitor.visitVoice(this);
             }
 
@@ -1431,4 +1458,26 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 return res;
             }
         }
-   
+
+export class EventEnumerator {
+    constructor(private globalContext: IGlobalContext){}
+    public doScore(score: IScore, visitor: IEventVisitor){
+        visitor.visitScore(score);
+        // todo: score.meters, score.keys
+        score.withStaves((staff) => { this.doStaff(staff, visitor); });        
+    }
+    public doStaff(staff: IStaff, visitor: IEventVisitor){
+        visitor.visitStaff(staff);
+        // todo: staff.meters, staff.keys, staff.clefs
+        staff.withVoices((voice) => { this.doVoice(voice, visitor); });
+    }
+    public doVoice(voice: IVoice, visitor: IEventVisitor){
+        /*visitor.visitScore(voice.parent.parent);
+        visitor.visitStaff(voice.parent);*/
+        visitor.visitVoice(voice);
+        let events = voice.getEvents(this.globalContext);
+        for (let i = 0; i < events.length; i++){
+            events[i].visit(visitor);
+        }
+    }
+}

@@ -986,15 +986,15 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         this.globalContext.getSpacingInfo(staff).offset.y = Metrics.staffYOffset + index * Metrics.staffYStep; // todo: index
                     });
     
-                    var events: ITimedEvent[] = score.getEventsOld(this.globalContext);
-                    events.sort(Music.compareEventsOld);
+                    var events: IEventInfo[] = score.getEvents(this.globalContext, false);
+                    events.sort(Music.compareEvents);
     
                     var pos = Metrics.firstPos;
                     var oldpos = pos;
                     var eventWidth = 0;
                     for (var i = 0; i < events.length; i++) {
                         if (i > 0) {
-                            if (Music.compareEventsOld(events[i], events[i - 1]) == 0) {
+                            if (Music.compareEvents(events[i], events[i - 1]) == 0) {
                                 pos = oldpos;
                             }
                             else {
@@ -1002,9 +1002,9 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                                 eventWidth = 0;
                                 // Find getPreWidth()
                                 var j = i;
-                                while (j < events.length && Music.compareEventsOld(events[i], events[j]) == 0) {
+                                while (j < events.length && Music.compareEvents(events[i], events[j]) == 0) {
                                     //var eventDisplayData = <SVGBaseDisplayData>(<any>events[j]).getDisplayData(this.context);
-                                    var eventSpacing = this.globalContext.getSpacingInfo(events[j]);
+                                    var eventSpacing = this.globalContext.getSpacingInfo(events[j].source);
                                     if (eventSpacing) {
                                         var preWidth = eventSpacing.preWidth;
                                         if (eventWidth < preWidth) {
@@ -1018,7 +1018,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                             }
                         }
                         oldpos = pos;
-                        var eventSpacing = this.globalContext.getSpacingInfo(events[i]);
+                        var eventSpacing = this.globalContext.getSpacingInfo(events[i].source);
                         if (eventSpacing) {
                             eventSpacing.offset.x = pos + beginPos; // todo: move svg
                             //SVGOutput.move(<MusicElement><any>events[i], eventDisplayData);

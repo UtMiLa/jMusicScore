@@ -715,6 +715,8 @@ function $(elm: HTMLElement): DOMHelper {
                 doNote(note: INoteSource, context: INoteContext, noteSpacing: INoteSpacingInfo) {
                     // note stem
                     //console.log("note");
+                    //debugger;
+                    //console.log(note);
                     if (!note.rest) {
                         var dirFactor = noteSpacing.rev ? -1 : 1;
                         this.graphEngine.createPathObject("m " + noteSpacing.stemX + "," + noteSpacing.stemRootY
@@ -822,8 +824,10 @@ function $(elm: HTMLElement): DOMHelper {
                 }
                 visitKey(key: IKey) {
                     const spacing = this.globalContext.getSpacingInfo<IKeySpacingInfo>(key);
-                    var staffContext = /*key.parent*/this.staff.getStaffContext(key.absTime);
-                    KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef, 0, 0);
+                    if (this.staff) {
+                        var staffContext = /*key.parent*/this.staff.getStaffContext(key.absTime);
+                        KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef, 0, 0);
+                    }
                 }
                 visitStaff(staff: IStaff) {
                     const spacing = this.globalContext.getSpacingInfo<IStaffSpacingInfo>(staff);

@@ -118,6 +118,7 @@ export class JmusicScoreViewComponent implements OnInit {
         // console.log(MusicElementFactory.mementoCreators);
 
     const score = value;
+    if (!score) return;
     this.painter = new CanvasView.CanvasQuickPainter(score.globalContext);
 
     const key = new RegularKeyDefinition('b', 1);

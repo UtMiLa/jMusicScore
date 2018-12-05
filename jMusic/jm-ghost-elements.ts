@@ -150,7 +150,7 @@ export class VariableRef extends MusicElement implements ITimedObjectEvent, IEve
     getStaff(): IStaff {
         return null;
     }
-    spacingInfo: VariableSpacing;
+    //spacingInfo: VariableSpacing;
     getHorizPosition(): HorizPosition {
         throw new Error("Method not implemented.");
     }
