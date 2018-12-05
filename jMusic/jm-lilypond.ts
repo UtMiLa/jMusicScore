@@ -2,7 +2,7 @@ import { IFileConverter } from './jm-interfaces';
 import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base'
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-music-basics'
 import { IVoice, IScore,  IGlobalContext, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from './model/jm-model-interfaces';
 
 import { MusicElementFactory,     ScoreElement } from "./model/jm-model";

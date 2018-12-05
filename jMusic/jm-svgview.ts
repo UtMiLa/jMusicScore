@@ -6,7 +6,7 @@ import { Validators } from './jm-refiners';
 import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-base';
+    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-music-basics';
 import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IMusicElement, IGlobalContext } from './model/jm-model-interfaces';    
 import {  } from "./model/jm-model";    
 import { Point } from "./model/jm-model-base";

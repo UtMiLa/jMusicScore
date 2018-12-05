@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 
-import { IMemento, ClefDefinition, NoteType, AbsoluteTime, TimeSpan, RegularKeyDefinition } from '../../../../jMusic/jm-base';
+import { IMemento, ClefDefinition, NoteType, AbsoluteTime, TimeSpan, RegularKeyDefinition } from '../../../../jMusic/jm-music-basics';
 import { MusicElementFactory,  ScoreElement, Music } from '../../../../jMusic/model/jm-model';
 import { GlobalContext } from '../../../../jMusic/model/jm-model-base';
 import { IScore } from '../../../../jMusic/model/jm-model-interfaces';

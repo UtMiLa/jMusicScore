@@ -1,4 +1,4 @@
-import {AbsoluteTime, TimeSpan} from './jm-base';
+import {AbsoluteTime, TimeSpan} from './jm-music-basics';
 import { IBar, IScore, IVoice, IStaff, IMeter, IKey, INote, INoteSource, INoteContext, ITimedEvent, IBeam, INotehead, IGlobalContext,  IVoiceNote } from './model/jm-model-interfaces';
 import {  Music,      BeamElement   } from "./model/jm-model";    
 import { IScoreRefiner } from './jm-interfaces';

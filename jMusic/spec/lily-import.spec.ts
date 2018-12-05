@@ -1,4 +1,4 @@
-import { TimeSpan } from '../jm-base';
+import { TimeSpan } from '../jm-music-basics';
 import { LilyPondConverter } from '../jm-lilypond';
 import { VariableRef } from '../jm-ghost-elements';
 import {  GlobalContext } from "../model/jm-model-base";

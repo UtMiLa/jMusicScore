@@ -1,5 +1,5 @@
 import {AbsoluteTime, ClefDefinition, ClefType, Pitch, PitchClass, 
-    RegularKeyDefinition, RegularMeterDefinition, Interval, IntervalType} from '../jm-base'
+    RegularKeyDefinition, RegularMeterDefinition, Interval, IntervalType} from '../jm-music-basics'
 import { IScore, IStaff } from '../model/jm-model-interfaces';
 import {  ScoreElement, MusicElementFactory } from "../model/jm-model";  
 import { GlobalContext } from "../model/jm-model-base";

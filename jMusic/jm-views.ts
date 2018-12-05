@@ -1,4 +1,4 @@
-import { IKeyDefinition, ClefDefinition, IMeterDefinition, LongDecorationType, IVisitorIterator, NoteDecorationKind } from './jm-base'
+import { IKeyDefinition, ClefDefinition, IMeterDefinition, LongDecorationType, IVisitorIterator, NoteDecorationKind } from './jm-music-basics'
 import { ISpacingInfo, ILongDecorationElement, IGlobalContext, ILongDecorationSpacingInfo, IMusicElement, IVisitor, INotehead, INoteSource, INoteDecorationElement, IVoice, IClef, IMeter, IKey, IStaff, IScore, ITextSyllableElement, IBar, IBeam, IStaffExpression, INoteContext, INoteHeadSpacingInfo, INoteSpacingInfo, INoteDecorationSpacingInfo, ITextSyllableSpacingInfo, IBarSpacingInfo, IBeamSpacingInfo, IClefSpacingInfo, IMeterSpacingInfo, IKeySpacingInfo, IStaffSpacingInfo } from './model/jm-model-interfaces';
 import { Music     } from "./model/jm-model";    
 import { Point, ContextVisitor } from "./model/jm-model-base";
