@@ -163,29 +163,23 @@ export class VariableRef extends MusicElement implements ITimedObjectEvent, IEve
     id: string;
     parent: IMusicElement;
     inviteVisitor(spacer: IVisitor): void {
-
         spacer.visitVariable(this.name);
         //this.ref.inviteVisitor(spacer);
     }
-    /*addChild(list: IMusicElement[], theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void {
-        throw new Error("Cannot add children to variable.");
+
+
+    public inviteEventVisitor(visitor: IEventVisitor, globalContext: IGlobalContext) {
+        //visitor.visitSequence(this.getRef(globalContext), globalContext);
+        const events = this.getRef(globalContext).getEvents(globalContext);
+        for ( var i = 0; i < events.length; i++){
+            events[i].visit(visitor);
+        }
     }
-    removeChild(theChild: IMusicElement, list?: IMusicElement[]): void {
-        throw new Error("Cannot add children to variable.");
-    }
-    remove(): void {
-        throw new Error("Method not implemented.");
-    }*/
-    /*setProperty(name: string, value: any): void {
-        throw new Error("Method not implemented.");
-    }
-    getProperty(name: string) {
-        throw new Error("Method not implemented.");
-    }*/
 
     public visitAll(visitor: IVisitorIterator<IMusicElement>) {
         var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
         //this.visitAll(visitor);
+        //this.ref.visitAll(visitor);
         if (postFun) {
             postFun(this);
         }
@@ -208,44 +202,14 @@ export class VariableRef extends MusicElement implements ITimedObjectEvent, IEve
     static createFromMemento(parent: IVoice, memento: IMemento): VariableRef {
         var varRef: VariableRef = new VariableRef(parent);
         if (memento.def && memento.def.name) { 
-            varRef.name = memento.def.name; 
-            /*varRef.ref = <ISequence>MusicElementFactory.recreateElement(null,
-                {
-                "id": "131", "t": "Sequence", "def": { "stem": 2 },
-                "children": [
-                         { "id": "11", "t": "Note",
-                         "def": { "time": { "num": 1, "den": 8 }, "noteId": "n1_8" },
-                         "children": [{
-                                 "id": "12",
-                                 "t": "Notehead",
-                                 "def": {
-                                     "p": 2,
-                                     "a": ""
-                                 }
-                             }
-                         ]
-                     },
-                     { "id": "12", "t": "Note",
-                         "def": { "time": { "num": 1, "den": 4 }, "noteId": "n1_8" },
-                         "children": [{
-                                 "id": "12",
-                                 "t": "Notehead",
-                                 "def": {
-                                     "p": 3,
-                                     "a": ""
-                                 }
-                             }
-                         ]
-                     }                         
-                ]
-            });*/
+            varRef.name = memento.def.name;       
         }
         
         if (parent) parent.addEvent(varRef); // todo: at index - ændres
         return varRef;
     }
 
-    private getRef(globalContext: GlobalContext) {
+    private getRef(globalContext: IGlobalContext) {
         if (!this.ref) {
             this.ref = globalContext.getVariable(this.name);
         }

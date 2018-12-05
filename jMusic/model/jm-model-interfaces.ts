@@ -4,7 +4,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-music-basics';
 
         export interface IMusicElement {
-            inviteEventVisitor(spacer: IEventVisitor): void;
+            inviteEventVisitor(spacer: IEventVisitor, globalContext: IGlobalContext): void;
             //changed(): void;
             //moved(): void;/**/
             id: string;
@@ -403,7 +403,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             visitKey(key: IKeyEventInfo): void;
             visitStaffExpression(staffExpression: IStaffExpressionEventInfo): void;
 
-            visitSequence(sequence: ISequence): void;
+            visitSequence(sequence: ISequence, globalContext: IGlobalContext): void;
             visitVoice(voice: IVoice): void;
             visitStaff(staff: IStaff): void;
             visitScore(score: IScore): void;

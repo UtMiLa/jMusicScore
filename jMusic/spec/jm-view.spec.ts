@@ -59,7 +59,7 @@ describe("NullEventVisitor", function () {
 
         globalContext.addVariable('hutlifut', hutlifut.staffElements[0].voiceElements[0].getSequence(''));
 
-        visitor = new NullEventVisitor();
+        visitor = new NullEventVisitor(globalContext);
         spyOn(visitor, "visitNote");
 
     });

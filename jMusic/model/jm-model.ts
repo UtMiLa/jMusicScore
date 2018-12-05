@@ -179,7 +179,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
             
             public withStaves(f: (staff: IStaff, index: number) => void) {
-                this.visitAll(new StaffVisitor(f));
+                this.visitAll(new StaffVisitor(f, new GlobalContext()));
 
                 /*for (var i = 0; i < this.staffElements.length; i++) {
                     f(this.staffElements[i], i);
@@ -187,7 +187,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
             public withVoices(f: (voice: IVoice, index: number) => void) {
-                this.visitAll(new VoiceVisitor(f));
+                this.visitAll(new VoiceVisitor(f, new GlobalContext()));
                 /*this.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices(f);
                 });*/
@@ -309,7 +309,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
             public withVoices(f: (voice: IVoice, index: number) => void) {
-                this.visitAll(new VoiceVisitor(f));
+                this.visitAll(new VoiceVisitor(f, new GlobalContext()));
                 /*for (var i = 0; i < this.voiceElements.length; i++) {
                     f(this.voiceElements[i], i);
                 }*/
@@ -706,8 +706,8 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 return val;
             }
 
-            public inviteEventVisitor(visitor: IEventVisitor) {
-                visitor.visitSequence(this);
+            public inviteEventVisitor(visitor: IEventVisitor, globalContext: IGlobalContext) {
+                visitor.visitSequence(this, globalContext);
             }
 
             public inviteVisitor(visitor: IVisitor) {

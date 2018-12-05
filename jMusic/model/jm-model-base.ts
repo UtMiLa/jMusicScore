@@ -39,7 +39,7 @@ export class MusicElement implements IMusicElement {
         spacer.visitDefault(this);
     }
 
-    public inviteEventVisitor(spacer: IEventVisitor) {
+    public inviteEventVisitor(spacer: IEventVisitor, globalContext: IGlobalContext) {
     }
 
     private properties: { [index: string]: any; } = {};
@@ -313,8 +313,10 @@ export class ContextVisitor extends NullVisitor {
 }
 
 export class NullEventVisitor implements IEventVisitor, IVisitorIterator<IMusicElement> {
+    constructor(protected globalContext: IGlobalContext){}
+
     visitPre(element: IMusicElement): (element: IMusicElement) => void {
-        element.inviteEventVisitor(this);
+        element.inviteEventVisitor(this, this.globalContext);
         return null;
     }
 
@@ -356,8 +358,8 @@ export class ContextEventVisitor extends NullEventVisitor {
     staff: IStaff;
     voice: IVoice;
     noteContext: INoteContext;
-    constructor(public globalContext: IGlobalContext){
-        super();
+    constructor(globalContext: IGlobalContext){
+        super(globalContext);
     }
     visitStaff(staff: IStaff) { this.staff = staff; }
     visitScore(score: IScore) { this.score = score; }
@@ -419,8 +421,8 @@ export class NoteVisitor extends ContextEventVisitor {
 
 
 export class StaffVisitor extends NullEventVisitor {
-    constructor(private callback: (node:IStaff, index: number) => void) {
-        super();
+    constructor(private callback: (node:IStaff, index: number) => void, globalContext: IGlobalContext) {
+        super(globalContext);
     }
     no: number = 0;
     visitStaff(note: IStaff): void {
@@ -439,8 +441,8 @@ export class BarVisitor extends NullVisitor {
 }   
 
 export class VoiceVisitor extends NullEventVisitor {
-    constructor(private callback: (voice:IVoice, index: number) => void) {
-        super()
+    constructor(private callback: (voice:IVoice, index: number) => void, globalContext: IGlobalContext) {
+        super(globalContext)
     }
     no: number = 0;
     visitVoice(voice: IVoice): void {
