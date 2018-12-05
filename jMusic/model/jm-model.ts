@@ -300,6 +300,10 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
 
+            public inviteEventVisitor(visitor: IEventVisitor) {
+                visitor.visitStaff(this);
+            }
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitStaff(this);
             }

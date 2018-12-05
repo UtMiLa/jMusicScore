@@ -414,7 +414,7 @@ export class NoteVisitor extends ContextEventVisitor {
 }   
 
 
-export class StaffVisitor extends NullVisitor {
+export class StaffVisitor extends NullEventVisitor {
     constructor(private callback: (node:IStaff, index: number) => void) {
         super();
     }
