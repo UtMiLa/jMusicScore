@@ -341,6 +341,8 @@ export class NullEventVisitor implements IEventVisitor, IVisitorIterator<IMusicE
     }
     visitStaffExpression(staffExpression: IStaffExpressionEventInfo): void {
     }
+    visitSequence(sequence: ISequence): void {        
+    }
     visitVoice(voice: IVoice): void {
     }
     visitStaff(staff: IStaff): void {
@@ -360,6 +362,8 @@ export class ContextEventVisitor extends NullEventVisitor {
     visitStaff(staff: IStaff) { this.staff = staff; }
     visitScore(score: IScore) { this.score = score; }
     visitVoice(voice: IVoice) { this.voice = voice; }
+    visitSequence(sequence: ISequence) { }
+
     getStaffContext(absTime: AbsoluteTime): StaffContext{
         return this.staff.getStaffContext(absTime);
     }

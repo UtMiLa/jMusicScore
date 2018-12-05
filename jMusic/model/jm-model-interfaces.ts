@@ -403,6 +403,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             visitKey(key: IKeyEventInfo): void;
             visitStaffExpression(staffExpression: IStaffExpressionEventInfo): void;
 
+            visitSequence(sequence: ISequence): void;
             visitVoice(voice: IVoice): void;
             visitStaff(staff: IStaff): void;
             visitScore(score: IScore): void;

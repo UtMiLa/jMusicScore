@@ -706,6 +706,10 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 return val;
             }
 
+            public inviteEventVisitor(visitor: IEventVisitor) {
+                visitor.visitSequence(this);
+            }
+
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitDefault(this);
             }
