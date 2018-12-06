@@ -37,6 +37,7 @@ export class AppComponent {
     });
   }
 
+  // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
     this.model = this.musicProvider.constRes;
     /*this.musicProvider.getModel().subscribe((data: IModel) => {
@@ -65,8 +66,8 @@ export class AppComponent {
               maxLen = cnt;
             }
           });
-        });
-      });
+        }, globalCtx);
+      }, globalCtx);
 
       // funktion til at splitte akkorder: tag nr. m ud af n.
       // hvis der er flere eller færre stemmer end n, skal de fordeles efter regler
@@ -97,10 +98,10 @@ export class AppComponent {
               }
             }
           });
-        });
-      });
+        }, globalCtx);
+      }, globalCtx);
 
-      const elm = <IScore>MusicElementFactory.recreateElement(null, data);
+      const elm = <IScore>MusicElementFactory.recreateElement(null, data, globalCtx);
 
       this.output = parser.write(elm);
     } catch (e) {

@@ -118,11 +118,11 @@ export class JmusicScoreViewComponent implements OnInit {
         // console.log(MusicElementFactory.mementoCreators);
 
     const score = value;
-    if (!score) return;
+    if (!score) { return; }
     this.painter = new CanvasView.CanvasQuickPainter(score.globalContext);
 
     const key = new RegularKeyDefinition('b', 1);
-    score.setKey(key, AbsoluteTime.startTime);
+    score.setKey(key, AbsoluteTime.startTime, score.globalContext);
 
     const memento = score.getMemento(true);
     this.theScore = score;
@@ -161,7 +161,7 @@ export class JmusicScoreViewComponent implements OnInit {
     // console.log(MusicElementFactory.mementoCreators);
     const globalCtx = new GlobalContext();
 
-    const score = new ScoreElement(null);
+    const score = new ScoreElement(null, globalCtx);
     const staff = score.addStaff(ClefDefinition.clefCAlto);
     const voice = staff.addVoice();
     const note = voice.getSequence('0').addNote(globalCtx, NoteType.Note, new AbsoluteTime(1, 4), 'n1_4',  TimeSpan.quarterNote);

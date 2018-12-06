@@ -170,6 +170,7 @@ export class VariableRef extends MusicElement implements ITimedObjectEvent, IEve
 
     public inviteEventVisitor(visitor: IEventVisitor, globalContext: IGlobalContext) {
         //visitor.visitSequence(this.getRef(globalContext), globalContext);
+        debugger;
         const events = this.getRef(globalContext).getEvents(globalContext);
         for ( var i = 0; i < events.length; i++){
             events[i].visit(visitor);
