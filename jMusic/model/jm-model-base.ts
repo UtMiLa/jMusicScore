@@ -409,7 +409,7 @@ export class ContextEventVisitor extends NullEventVisitor {
 }
 
 
-export class NoteVisitor extends ContextEventVisitor {
+export class NoteVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
         super(globalContext);
     }
