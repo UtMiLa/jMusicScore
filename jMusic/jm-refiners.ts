@@ -30,8 +30,8 @@ import { IScoreRefiner } from './jm-interfaces';
                         voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext): void => {
                             if (context.absTime.add(note.timeVal).gt(maxTime)) maxTime = context.absTime.add(note.timeVal);
                         });
-                    });
-                });
+                    }, this.globalContext);
+                }, this.globalContext);
 
                 // maxTime sat
 
@@ -79,8 +79,8 @@ import { IScoreRefiner } from './jm-interfaces';
                             absTime = absTime.add(note.getTimeVal());
                             events.push(context);
                         });
-                    });
-                });
+                    }, this.globalContext);
+                }, this.globalContext);
 
                 /*for (var i = 0; i < score.getChildren().length; i++) {
                     for (var j = 0; j < score.getChild(i).getChildren().length; j++) {
@@ -176,7 +176,7 @@ import { IScoreRefiner } from './jm-interfaces';
                             });
                         }
                     }
-                });
+                }, this.globalContext);
             }
         }
 /*
@@ -322,8 +322,8 @@ import { IScoreRefiner } from './jm-interfaces';
                 score.withStaves((staff: IStaff) => {
                     staff.withVoices((voice: IVoice) => {
                         this.validateVoice(voice);
-                    });
-                });
+                    },this.globalContext);
+                }, this.globalContext);
             }
 
             private validateVoice(voice: IVoice) {
@@ -520,7 +520,7 @@ import { IScoreRefiner } from './jm-interfaces';
             public refine(score: IScore) {
                 score.withVoices((voice: IVoice) => {
                     this.validateVoice(voice);
-                });
+                }, this.globalContext);
             }
 
             private validateVoice(voice: IVoice) {

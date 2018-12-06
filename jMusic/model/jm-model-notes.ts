@@ -20,7 +20,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IStaffExpressionEventInfo,
     INoteFinder} from './jm-model-interfaces';
 
-    import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor } from './jm-model-base'
+    import { MusicElement, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor } from './jm-model-base'
 
 
         /*
@@ -139,7 +139,7 @@ public inviteEventVisitor(spacer: IEventVisitor): void {
                 return null;
             }
 
-            static createFromMemento(parent: IVoice, memento: IMemento): INote {
+            static createFromMemento(parent: IVoice, memento: IMemento, globalContext: IGlobalContext): INote {
                 //var timeVal = TimeSpan.createFromMemento(memento.def.time);
                 //var note: INote = new NoteElement(parent, memento.def.noteId, timeVal);
                 //note.absTime = AbsoluteTime.createFromMemento(memento.def.abs);
@@ -161,7 +161,7 @@ public inviteEventVisitor(spacer: IEventVisitor): void {
                     var noteType: NoteType = memento.def.hidden ? NoteType.Placeholder : memento.def.rest ? NoteType.Rest : NoteType.Note;
                     var beforeNote: INote = null;
                     var absTime = memento.def.abs ? AbsoluteTime.createFromMemento(memento.def.abs) : null;
-                    var note = parent.addNote(new GlobalContext(), noteType, absTime, memento.def.noteId, //todo: problem
+                    var note = parent.addNote(globalContext, noteType, absTime, memento.def.noteId, //todo: problem
                         TimeSpan.createFromMemento(memento.def.time), beforeNote, true, memento.def.dots, tupletDef);
                     if (memento.def.grace) { note.graceType = memento.def.grace; }
                     if (memento.def.stem) { note.setStemDirection(memento.def.stem); }

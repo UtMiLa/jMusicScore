@@ -1010,10 +1010,10 @@ export class SvgEditorManager {
         }*/
     }
 
-    public static activateAllVoiceSensors(score: IScore, context: string, activate: boolean) {
+    public static activateAllVoiceSensors(score: IScore, context: string, activate: boolean, globalContext: IGlobalContext) {
         score.withVoices((voice: IVoice, index: number) => {
             SvgEditorManager.activateVoiceSensors(voice, context, activate);
-        });
+        }, globalContext);
     }
 
     /*todo: 

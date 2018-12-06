@@ -8,7 +8,7 @@ import {
     KeyElement, 
     MeterElement,
     } from "./model/jm-model";
-import {Point, MusicElement, GlobalContext } from "./model/jm-model-base";    
+import {Point, MusicElement } from "./model/jm-model-base";    
 import { IScoreRefiner } from "./jm-interfaces";
 
         export class GhostMeterElement extends MusicElement implements IMeter {
@@ -103,7 +103,7 @@ import { IScoreRefiner } from "./jm-interfaces";
                             }
                         }
                     });
-                });
+                }, document.globalContext);
             }
         }
 
@@ -132,7 +132,7 @@ export class VariableRef extends MusicElement implements ITimedObjectEvent, IEve
         }
     }
 
-    getEvents(globalContext: GlobalContext): IEventInfo[] {
+    getEvents(globalContext: IGlobalContext): IEventInfo[] {
         let events = this.getRef(globalContext).getEvents(globalContext);//todo: concatenate ids
         this.updateEvents(events);
         return events;
@@ -185,7 +185,7 @@ export class VariableRef extends MusicElement implements ITimedObjectEvent, IEve
         }
     }
 
-    getEventsOld(globalContext: GlobalContext): ITimedEvent[] {
+    getEventsOld(globalContext: IGlobalContext): ITimedEvent[] {
         return this.getRef(globalContext).getEventsOld(globalContext);
     }
 

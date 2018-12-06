@@ -11,31 +11,31 @@ describe("Mementos", function () {
 
     it("should create an empty score", function () {
         const data = <any>{ "id": "2", "t": "Score", "def": { "metadata": {} }, "children": [] };
-        const elm: any = MusicElementFactory.recreateElement(null, data);
+        const elm: any = MusicElementFactory.recreateElement(null, data, globalContext);
         expect(elm.getElementName()).toEqual("Score");
         expect(elm.staffElements.length).toEqual(0);
     });
     it("should create an empty staff", function () {
         const data = <any>{ "id": "2", "t": "Staff", "def": { "metadata": {} }, "children": [] };
-        const elm: any = MusicElementFactory.recreateElement(null, data);
+        const elm: any = MusicElementFactory.recreateElement(null, data, globalContext);
         expect(elm.getElementName()).toEqual("Staff");
         expect(elm.voiceElements.length).toEqual(0);
     });
     it("should create a score with one empty staff", function () {
         const data = <any>{ "id": "3", "t": "Score", "def": { "metadata": {} }, "children": [{ "id": "3", "t": "Staff", "def": { "metadata": {} }, "children": [] }] };
-        const elm: any = MusicElementFactory.recreateElement(null, data);
+        const elm: any = MusicElementFactory.recreateElement(null, data, globalContext);
         expect(elm.getElementName()).toEqual("Score");
         expect(elm.staffElements.length).toEqual(1);
     });
     it("should create an empty voice", function () {
         const data = <any>{ "id": "2", "t": "Voice", "def": { "metadata": {} }, "children": [] };
-        const elm: any = MusicElementFactory.recreateElement(null, data);
+        const elm: any = MusicElementFactory.recreateElement(null, data, globalContext);
         expect(elm.getElementName()).toEqual("Voice");
         expect(elm.getNoteElements().length).toEqual(0);
     });
     it("should create an empty sequence", function () {
         const data = <any>{ "id": "2", "t": "Sequence", "def": { "metadata": {} }, "children": [] };
-        const elm: any = MusicElementFactory.recreateElement(null, data);
+        const elm: any = MusicElementFactory.recreateElement(null, data, globalContext);
         expect(elm.getElementName()).toEqual("Sequence");
         expect(elm.getNoteElements().length).toEqual(0);
     });
@@ -73,7 +73,7 @@ describe("Mementos", function () {
             }
         ]
     }] };
-        const elm: any = MusicElementFactory.recreateElement(null, data);
+        const elm: any = MusicElementFactory.recreateElement(null, data, globalContext);
         expect(elm.getElementName()).toEqual("Voice");
         expect(elm.getNoteElements(globalContext).length).toEqual(1);
         const note = <INote>elm.getNoteElements(globalContext)[0];
@@ -111,7 +111,7 @@ describe("Mementos", function () {
                 ]
             }
         ] };
-        const elm: any = MusicElementFactory.recreateElement(null, data);
+        const elm: any = MusicElementFactory.recreateElement(null, data, globalContext);
         expect(elm.getElementName()).toEqual("Voice");
         expect(elm.getNoteElements(globalContext).length).toEqual(2);
         const note1 = <INote>elm.getNoteElements(globalContext)[0];
@@ -158,7 +158,7 @@ describe("Mementos", function () {
                 ]
             }
         ] };
-        const elm: any = MusicElementFactory.recreateElement(null, data);
+        const elm: any = MusicElementFactory.recreateElement(null, data, globalContext);
         expect(elm.getElementName()).toEqual("Sequence");
         expect(elm.getNoteElements(globalContext).length).toEqual(2);
         const note1 = <INote>elm.getNoteElements(globalContext)[0];
@@ -207,7 +207,7 @@ describe("Mementos", function () {
                     ]
                 }
         ] } ] };
-        const elm: TransposeElement = <any>MusicElementFactory.recreateElement(null, data);
+        const elm: TransposeElement = <any>MusicElementFactory.recreateElement(null, data, globalContext);
         expect(elm.getElementName()).toEqual("Transpose");
 
         const notes = elm.getEvents(globalContext);

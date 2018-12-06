@@ -23,7 +23,7 @@ describe("Score", function () {
         //score = app.score;
         app.addPlugin(new JsonPlugin());*/
         VariableRef.register();
-        document = new ScoreElement(null);
+        document = new ScoreElement(null, globalContext);
     });
 
     it("should be empty when created", function () {
@@ -32,7 +32,7 @@ describe("Score", function () {
 
     describe("when a test song is loaded", function () {
         beforeEach(function () {
-            var helper = new JsonHelper();
+            var helper = new JsonHelper(globalContext);
             document = helper.read(initScore);            
             //var s = helper.write(document);
         });
@@ -160,8 +160,8 @@ describe("Score", function () {
             //name: 'minVar'
             let staff = document.addStaff(ClefDefinition.clefG);
             let voice = staff.addVoice();
-            let sequence = <ISequence>MusicElementFactory.recreateElement(voice, seq);
-            let variable = <ISequence>MusicElementFactory.recreateElement(null, varVal);
+            let sequence = <ISequence>MusicElementFactory.recreateElement(voice, seq, globalContext);
+            let variable = <ISequence>MusicElementFactory.recreateElement(null, varVal, globalContext);
             globalContext.addVariable("minVar", variable);
             let notes = sequence.getNoteElements(globalContext);
             expect(notes.length).toEqual(2);

@@ -27,7 +27,7 @@ describe("NullVisitor", function () {
 
     beforeEach(function () {
         VariableRef.register();
-        document = new ScoreElement(null);
+        document = new ScoreElement(null, globalContext);
     });
 
     it("should visit every element once", function () {
@@ -40,7 +40,7 @@ describe("ContextVisitor", function () {
 
     beforeEach(function () {
         VariableRef.register();
-        document = new ScoreElement(null);
+        document = new ScoreElement(null, globalContext);
     });
 
     it("should visit every element once with context", function () {

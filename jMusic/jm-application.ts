@@ -3,9 +3,8 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-music-basics'
-import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IBar, IMeter, IMusicElement } from './model/jm-model-interfaces';
+import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IBar, IMeter, IMusicElement, IGlobalContext } from './model/jm-model-interfaces';
 import { ScoreElement} from "./model/jm-model";
-import { GlobalContext } from "./model/jm-model-base";
     export interface IScoreApplication extends Application.AbstractApplication<IScore, ScoreStatusManager> { }
     export interface IScorePlugin extends Application.IPlugIn<IScore, ScoreStatusManager> { }
     export interface IScoreEventProcessor extends Application.IEventProcessor<IScore, ScoreStatusManager> { }
@@ -24,7 +23,7 @@ import { GlobalContext } from "./model/jm-model-base";
 
 
     export class ScoreStatusManager implements Application.IStatusManager {
-        constructor(private globalContext: GlobalContext) {}
+        constructor(private globalContext: IGlobalContext) {}
 
         private feedbackManager: Application.IFeedbackManager;
 

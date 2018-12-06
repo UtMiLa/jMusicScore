@@ -6,11 +6,11 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
 import { IVoice, IScore,  IGlobalContext, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from './model/jm-model-interfaces';
 
 import { MusicElementFactory,     ScoreElement } from "./model/jm-model";
-import { MusicElement, GlobalContext } from "./model/jm-model-base";
+import { MusicElement } from "./model/jm-model-base";
 import { parse } from './peg/lilypond';
 
 export class LilyPondConverter implements IFileConverter {    
-    constructor(private globalContext: GlobalContext) {}
+    constructor(private globalContext: IGlobalContext) {}
     
     read(data: any): IScore{
         var parsed = parse(data);
@@ -24,7 +24,7 @@ export class LilyPondConverter implements IFileConverter {
             var staffMemento = {def:{}, t:"Staff", children:[{ "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, voiceMemento], id: '2'};
             scoreMemento.children.push(staffMemento);
         }
-        var score = <IScore>MusicElementFactory.recreateElement(null, scoreMemento);
+        var score = <IScore>MusicElementFactory.recreateElement(null, scoreMemento, this.globalContext);
 
     
         return score;
@@ -104,7 +104,7 @@ class LilypondHelper {
     }
 
 
-    static getAsLilypond(globalContext: GlobalContext, document: IScore): string {
+    static getAsLilypond(globalContext: IGlobalContext, document: IScore): string {
         var res = "<<\n";
         document.withStaves((staff: IStaff, indexS: number) => {
             res += "\\new Staff {\n"; // relative c"første tones oktav"
@@ -137,14 +137,14 @@ class LilypondHelper {
                     res += "\t\t" + this.getEventsAsLilypond(globalContext, voice) + "\n";
                     res += "\t\t}\n";
 
-                });
+                }, globalContext);
                 res += "\t>>\n";
             }
             else if (staff.voiceElements.length === 1) {
                 res += "\t" + this.getEventsAsLilypond(globalContext, staff.voiceElements[0]) + "\n";
             }
             res += "}\n";
-        });
+        }, globalContext);
         res += ">>\n";
         return res;
     }
@@ -177,7 +177,7 @@ class LilypondHelper {
         return '\t\\clef "' + clefName + '" \n';
     }
 
-    private static getEventsAsLilypond(globalContext: GlobalContext, voice: IVoice): string {
+    private static getEventsAsLilypond(globalContext: IGlobalContext, voice: IVoice): string {
         var res = "";
         var events = voice.getEventsOld(globalContext); // + staff.keys, .meters, .clefs, + score.bars
         for (var i = 0; i < events.length; i++) {
@@ -193,7 +193,7 @@ class LilypondHelper {
         return res;
     }
 
-    private static getNoteAsLilypond(globalContext: GlobalContext, note: INote): string {
+    private static getNoteAsLilypond(globalContext: IGlobalContext, note: INote): string {
         var res = "";
         if (note.graceType) res += '\\grace ';
         if (note.NoteId === "hidden") {

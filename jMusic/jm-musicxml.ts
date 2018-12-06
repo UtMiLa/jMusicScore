@@ -3,10 +3,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-music-basics'
-    import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, ITimedEvent } from './model/jm-model-interfaces';
+    import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, ITimedEvent, IGlobalContext } from './model/jm-model-interfaces';
 import { Music, ScoreElement } from "./model/jm-model";   
 import { NoteDecorationElement, TextSyllableElement, NoteLongDecorationElement } from "./model/jm-model-notes";   
-import {  GlobalContext } from "./model/jm-model-base";     
 import { IFileConverter } from './jm-interfaces';
 
 import { IWriterPlugIn, IReaderPlugIn } from './jap-application';
@@ -15,14 +14,14 @@ import {  IScoreApplication, ScoreStatusManager, IScorePlugin } from './jm-appli
 
 
 export class MusicXmlConverter implements IFileConverter {    
-    constructor(private globalContext: GlobalContext){}
+    constructor(private globalContext: IGlobalContext){}
 
     read(data: any): IScore{
         /*if (typeof (data) === "string") {
             data = jQuery.parseXML(data);
         }*/
 
-        var score = new ScoreElement(null);
+        var score = new ScoreElement(null, this.globalContext);
         var helper = new MusicXmlHelper(this.globalContext, score);
 
         // parse
@@ -63,7 +62,7 @@ export class MusicXmlConverter implements IFileConverter {
         */
 
         class MusicXmlHelper {
-            constructor(private globalContext: GlobalContext, public document: IScore){
+            constructor(private globalContext: IGlobalContext, public document: IScore){
             }
 
             static noteTypes: { [index: string]: string } = {

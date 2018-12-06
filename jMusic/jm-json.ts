@@ -3,7 +3,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-music-basics'
-import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead } from './model/jm-model-interfaces';
+import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IGlobalContext } from './model/jm-model-interfaces';
 import { Music, MusicElementFactory } from "./model/jm-model";    
 import { NoteDecorationElement, TextSyllableElement, NoteLongDecorationElement } from "./model/jm-model-notes";   
 import { IFileConverter } from './jm-interfaces';
@@ -13,6 +13,7 @@ import {  IScoreApplication, ScoreStatusManager, IScorePlugin } from './jm-appli
 
 
     export class JsonHelper {
+        constructor(private globalContext: IGlobalContext){}
         read(data: any): IScore{
             if (typeof (data) === "string") {
                 data = JSON.parse(data);
@@ -21,7 +22,7 @@ import {  IScoreApplication, ScoreStatusManager, IScorePlugin } from './jm-appli
             while (score.staffElements.length)
                 score.removeChild(score.staffElements[0], score.staffElements);*/
             
-            return <IScore>MusicElementFactory.recreateElement(null, data); // memento format
+            return <IScore>MusicElementFactory.recreateElement(null, data, this.globalContext); // memento format
 
         }
 

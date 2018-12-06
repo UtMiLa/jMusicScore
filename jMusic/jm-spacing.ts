@@ -9,7 +9,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, 
         ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo,  IGlobalContext } from './model/jm-model-interfaces';
 import { Music } from "./model/jm-model";
-import { ContextVisitor, MusicElement, Point } from "./model/jm-model-base";
+import { ContextVisitor, Point } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: pitchToStaffLine skal ikke kaldes med <any>
 
@@ -952,8 +952,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                                     }
                                 }
                             });
-                        });
-                    });
+                        }, this.globalContext);
+                    }, this.globalContext);
                 }
     
     
@@ -974,8 +974,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                             voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number): void => {
                                 note.inviteVisitor(this.spacer);
                             });
-                        });
-                    });
+                        }, this.globalContext);
+                    }, this.globalContext);
                 }
     
                 private makeTimeline(score: IScore) {
@@ -984,7 +984,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         var staffBeginPos = 0; //todo: staffSpacingInfo
                         if (beginPos < staffBeginPos) beginPos = staffBeginPos;
                         this.globalContext.getSpacingInfo(staff).offset.y = Metrics.staffYOffset + index * Metrics.staffYStep; // todo: index
-                    });
+                    }, this.globalContext);
     
                     var events: IEventInfo[] = score.getEvents(this.globalContext, false);
                     events.sort(Music.compareEvents);
@@ -1035,7 +1035,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                                 note.beam.updateAll();
                             }*/
                         });
-                    });
+                    }, this.globalContext);
                 }
     
                 private makeTimelineOld(score: IScore) {
@@ -1044,7 +1044,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         var staffBeginPos = 0; //todo: staffSpacingInfo
                         if (beginPos < staffBeginPos) beginPos = staffBeginPos;
                         this.globalContext.getSpacingInfo(staff).offset.y = Metrics.staffYOffset + index * Metrics.staffYStep; // todo: index
-                    });
+                    }, this.globalContext);
     
                     var events: ITimedEvent[] = score.getEventsOld(this.globalContext);
                     events.sort(Music.compareEventsOld);
@@ -1095,7 +1095,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                                 note.beam.updateAll();
                             }*/
                         });
-                    });
+                    }, this.globalContext);
                 }
     
                 public design(score: IScore) {

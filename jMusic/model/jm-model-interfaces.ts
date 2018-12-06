@@ -114,12 +114,12 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             findBar(absTime: AbsoluteTime): IBar;
             getEventsOld(globalContext: IGlobalContext, ignoreStaves?: boolean): ITimedEvent[];
             getEvents(globalContext: IGlobalContext, ignoreStaves: boolean): IEventInfo[];
-            withStaves(f: (staff: IStaff, index: number) => void): void;
-            withVoices(f: (voice: IVoice, index: number) => void): void;
+            withStaves(f: (staff: IStaff, index: number) => void, globalContext: IGlobalContext): void;
+            withVoices(f: (voice: IVoice, index: number) => void, globalContext: IGlobalContext): void;
             withBars(f: (bar: IBar, index: number) => void): void;
             removeBars(f: (bar: IBar, index: number) => boolean): void;
             addStaff(clefDef: ClefDefinition): IStaff;
-            setKey(key: IKeyDefinition, absTime: AbsoluteTime): void;
+            setKey(key: IKeyDefinition, absTime: AbsoluteTime, globalContext: IGlobalContext): void;
         }
 
 
@@ -131,7 +131,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
             voiceElements: IVoice[];
             title: string;
 
-            withVoices(f: (voice: IVoice, index: number) => void): void;
+            withVoices(f: (voice: IVoice, index: number) => void, globalContext: IGlobalContext): void;
             withKeys(f: (key: IKey, index: number) => void): void;
             //withMeters(f: (meter: IMeter, index: number) => void): void;
             withClefs(f: (clef: IClef, index: number) => void): void;
@@ -500,5 +500,5 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
         export interface IScoreSpacingInfo extends ISpacingInfo { }
         export interface ITextSyllableSpacingInfo extends ISpacingInfo { }
 
-        export interface IMusicElementCreator { createFromMemento: (parent: any, memento: any) => IMusicElement }
+        export interface IMusicElementCreator { createFromMemento: (parent: any, memento: any, globalContext: IGlobalContext) => IMusicElement }
 

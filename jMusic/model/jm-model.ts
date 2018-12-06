@@ -82,7 +82,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
 
         //  *  OK  *
         export class ScoreElement extends MusicContainer implements IScore {
-            constructor(public parent: IMusicElement) {
+            constructor(public parent: IMusicElement, public globalContext: IGlobalContext) {
                 super(parent);
             }
             public bars: IBar[] = [];
@@ -97,14 +97,13 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             public author: string;
             public subTitle: string;
             public metadata = {};
-            public globalContext: IGlobalContext = new GlobalContext(); // todo: flyt til application
 
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitScore(this);
             }
 
-            static createFromMemento(parent: IMusicElement, memento: IMemento): IScore {
-                var score: IScore = new ScoreElement(parent);
+            static createFromMemento(parent: IMusicElement, memento: IMemento, globalContext: IGlobalContext): IScore {
+                var score: IScore = new ScoreElement(parent, globalContext);
                 if (memento.def) {
                     score.title = memento.def.title;
                     score.composer = memento.def.composer;
@@ -160,7 +159,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 if (!ignoreStaves) {
                     this.withStaves((staff: IStaff) => {
                         events = events.concat(staff.getEvents(globalContext));
-                    });
+                    }, globalContext);
                 }
                 this.bars.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });
                 this.meterElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
@@ -171,23 +170,23 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 if (!ignoreStaves) {
                     this.withStaves((staff: IStaff) => {
                         events = events.concat(staff.getEventsOld(globalContext));
-                    });
+                    }, globalContext);
                 }
                 events = events.concat(this.bars);
                 events = events.concat(this.meterElements);
                 return events;
             }
             
-            public withStaves(f: (staff: IStaff, index: number) => void) {
-                this.visitAll(new StaffVisitor(f, new GlobalContext()));
+            public withStaves(f: (staff: IStaff, index: number) => void, globalContext: IGlobalContext) {
+                this.visitAll(new StaffVisitor(f, globalContext));
 
                 /*for (var i = 0; i < this.staffElements.length; i++) {
                     f(this.staffElements[i], i);
                 }*/
             }
 
-            public withVoices(f: (voice: IVoice, index: number) => void) {
-                this.visitAll(new VoiceVisitor(f, new GlobalContext()));
+            public withVoices(f: (voice: IVoice, index: number) => void, globalContext: IGlobalContext) {
+                this.visitAll(new VoiceVisitor(f, globalContext));
                 /*this.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices(f);
                 });*/
@@ -250,10 +249,10 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 this.addChild(new BarElement(this, absTime));
             }
 
-            public setKey(key: IKeyDefinition, absTime: AbsoluteTime) {
+            public setKey(key: IKeyDefinition, absTime: AbsoluteTime, globalContext: IGlobalContext) {
                 this.withStaves((staff: IStaff) => { 
                     staff.setKey(key, absTime);
-                });
+                }, globalContext);
             }
         }
 
@@ -308,8 +307,8 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 visitor.visitStaff(this);
             }
 
-            public withVoices(f: (voice: IVoice, index: number) => void) {
-                this.visitAll(new VoiceVisitor(f, new GlobalContext()));
+            public withVoices(f: (voice: IVoice, index: number) => void, globalContext: IGlobalContext) {
+                this.visitAll(new VoiceVisitor(f, globalContext));
                 /*for (var i = 0; i < this.voiceElements.length; i++) {
                     f(this.voiceElements[i], i);
                 }*/
@@ -407,7 +406,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 var events: IEventInfo[] = [];
                 this.withVoices((voice: IVoice) => {
                     events = events.concat(voice.getEvents(globalContext));
-                });
+                }, globalContext);
             
                 this.meterElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
                 this.keyElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
@@ -422,7 +421,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
 
                 this.withVoices((voice: IVoice, index: number) => {
                     events = events.concat(voice.getEventsOld(globalContext, fromTime, toTime));
-                });
+                }, globalContext);
 
                 var f = (elm: ITimedEvent, index: number) => {
                     if (elm.absTime.ge(fromTime) && toTime.gt(elm.absTime)) events.push(elm);
@@ -1453,17 +1452,17 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             static register(key: string, creator: IMusicElementCreator) {
                 mementoCreators[key] = creator;
             }
-            public static recreateElement(parent: IMusicElement, memento: IMemento): IMusicElement {
+            public static recreateElement(parent: IMusicElement, memento: IMemento, globalContext: IGlobalContext): IMusicElement {
                 var res: IMusicElement;
                 var creator = mementoCreators[memento.t];
                 if (creator) {
-                    res = creator.createFromMemento(parent, memento);
+                    res = creator.createFromMemento(parent, memento, globalContext);
                     var children = memento.children;
                     if (children) {
                         for (var i = 0; i < children.length; i++) {
                             var child = children[i];
                             if (child) {
-                                MusicElementFactory.recreateElement(res, child);
+                                MusicElementFactory.recreateElement(res, child, globalContext);
                             }
                         }
                     }
@@ -1477,12 +1476,12 @@ export class EventEnumerator {
     public doScore(score: IScore, visitor: IEventVisitor){
         visitor.visitScore(score);
         // todo: score.meters, score.keys
-        score.withStaves((staff) => { this.doStaff(staff, visitor); });        
+        score.withStaves((staff) => { this.doStaff(staff, visitor); }, this.globalContext);        
     }
     public doStaff(staff: IStaff, visitor: IEventVisitor){
         visitor.visitStaff(staff);
         // todo: staff.meters, staff.keys, staff.clefs
-        staff.withVoices((voice) => { this.doVoice(voice, visitor); });
+        staff.withVoices((voice) => { this.doVoice(voice, visitor); }, this.globalContext);
     }
     public doVoice(voice: IVoice, visitor: IEventVisitor){
         /*visitor.visitScore(voice.parent.parent);
