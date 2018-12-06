@@ -595,6 +595,8 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
             public withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
+                /*const enumerator = new EventEnumerator(globalContext);
+                enumerator.doVoice(this, new NoteVisitor(globalContext, f));*/
                 this.visitAll(new NoteVisitor(globalContext, f));
             }
 
@@ -728,6 +730,9 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             private stemDirection: StemDirectionType = StemDirectionType.StemFree;
 
             public withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
+                /*const enumerator = new EventEnumerator(globalContext);
+                enumerator.doSequence(this, new NoteVisitor(globalContext, f));*/
+
                 this.visitAll(new NoteVisitor(globalContext, f));
             }
             public getStemDirection(): StemDirectionType {
@@ -1484,6 +1489,15 @@ export class EventEnumerator {
         visitor.visitStaff(voice.parent);*/
         visitor.visitVoice(voice);
         let events = voice.getEvents(this.globalContext);
+        for (let i = 0; i < events.length; i++){
+            events[i].visit(visitor);
+        }
+    }
+    public doSequence(sequence: ISequence, visitor: IEventVisitor){
+        /*visitor.visitScore(voice.parent.parent);
+        visitor.visitStaff(voice.parent);*/
+        visitor.visitSequence(sequence, this.globalContext);
+        let events = sequence.getEvents(this.globalContext);
         for (let i = 0; i < events.length; i++){
             events[i].visit(visitor);
         }
