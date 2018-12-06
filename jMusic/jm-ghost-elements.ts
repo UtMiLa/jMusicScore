@@ -19,7 +19,7 @@ import { IScoreRefiner } from "./jm-interfaces";
             
             getEvents(): IEventInfo[] {
                 let info: IMeterEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
+                info.visit = (visitor: IEventVisitor) => {visitor.visitMeterInfo(info)};
                 return [info];
             }
 

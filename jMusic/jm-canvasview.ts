@@ -3,7 +3,7 @@ import { IScore, IGlobalContext } from './model/jm-model-interfaces';
 import { MusicSpacing } from "./jm-spacing";
 import { emmentalerNotes } from "./fonts/emmentaler";
 import { fontCodePoints } from "./fonts/font-codepoints";
-import { IGraphicsEngine, ISensorGraphicsEngine, PrefixVisitor, RedrawVisitor } from "./jm-views";
+import { IGraphicsEngine, ISensorGraphicsEngine, PrefixVisitor, RedrawVisitor, PrefixEventVisitor } from "./jm-views";
 import { Validators } from './jm-refiners';
 
     export module CanvasView {
@@ -657,7 +657,7 @@ import { Validators } from './jm-refiners';
 
                         var spacer = new MusicSpacing.SpacingDesigner(score.globalContext);
                         spacer.design(score);
-                        var visitor = new PrefixVisitor(this.globalContext, new RedrawVisitor(this.globalContext, canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
+                        var visitor = new PrefixEventVisitor(this.globalContext, new RedrawVisitor(this.globalContext, canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
                         //canvasHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
                         canvasHelper.MusicGraphicsHelper.beginDraw();
                         score.visitAll(visitor);

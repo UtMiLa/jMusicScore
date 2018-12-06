@@ -390,18 +390,18 @@ export interface IVisitor {
 }
 
 export interface IEventVisitor {
-    visitNoteHead(head: INoteHeadInfo): void;
-    visitNote(note: INoteInfo): void;
-    visitNoteDecoration(deco: INoteDecorationEventInfo): void;
-    visitLongDecoration(deco: ILongDecorationEventInfo): void;
-    visitTextSyllable(text: ITextSyllableEventInfo): void;
-    visitBeam(beam: IBeamEventInfo): void;
+    visitNoteHeadInfo(head: INoteHeadInfo): void;
+    visitNoteInfo(note: INoteInfo): void;
+    visitNoteDecorationInfo(deco: INoteDecorationEventInfo): void;
+    visitLongDecorationInfo(deco: ILongDecorationEventInfo): void;
+    visitTextSyllableInfo(text: ITextSyllableEventInfo): void;
+    visitBeamInfo(beam: IBeamEventInfo): void;
 
-    visitBar(bar: IBarEventInfo): void;
-    visitClef(clef: IClefEventInfo): void;
-    visitMeter(meter: IMeterEventInfo): void;
-    visitKey(key: IKeyEventInfo): void;
-    visitStaffExpression(staffExpression: IStaffExpressionEventInfo): void;
+    visitBarInfo(bar: IBarEventInfo): void;
+    visitClefInfo(clef: IClefEventInfo): void;
+    visitMeterInfo(meter: IMeterEventInfo): void;
+    visitKeyInfo(key: IKeyEventInfo): void;
+    visitStaffExpressionInfo(staffExpression: IStaffExpressionEventInfo): void;
 
     visitSequence(sequence: ISequence, globalContext: IGlobalContext): void;
     visitVoice(voice: IVoice): void;

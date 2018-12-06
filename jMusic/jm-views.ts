@@ -1,7 +1,7 @@
 import { IKeyDefinition, ClefDefinition, IMeterDefinition, LongDecorationType, IVisitorIterator, NoteDecorationKind } from './jm-music-basics'
-import { ISpacingInfo, ILongDecorationElement, IGlobalContext, ILongDecorationSpacingInfo, IMusicElement, IVisitor, INotehead, INoteSource, INoteDecorationElement, IVoice, IClef, IMeter, IKey, IStaff, IScore, ITextSyllableElement, IBar, IBeam, IStaffExpression, INoteContext, INoteHeadSpacingInfo, INoteSpacingInfo, INoteDecorationSpacingInfo, ITextSyllableSpacingInfo, IBarSpacingInfo, IBeamSpacingInfo, IClefSpacingInfo, IMeterSpacingInfo, IKeySpacingInfo, IStaffSpacingInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IBarEventInfo, IStaffExpressionEventInfo } from './model/jm-model-interfaces';
+import { ISpacingInfo, ILongDecorationElement, IGlobalContext, ILongDecorationSpacingInfo, IMusicElement, IVisitor, INotehead, INoteSource, INoteDecorationElement, IVoice, IClef, IMeter, IKey, IStaff, IScore, ITextSyllableElement, IBar, IBeam, IStaffExpression, INoteContext, INoteHeadSpacingInfo, INoteSpacingInfo, INoteDecorationSpacingInfo, ITextSyllableSpacingInfo, IBarSpacingInfo, IBeamSpacingInfo, IClefSpacingInfo, IMeterSpacingInfo, IKeySpacingInfo, IStaffSpacingInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IBarEventInfo, IStaffExpressionEventInfo, IEventVisitor } from './model/jm-model-interfaces';
 import { Music     } from "./model/jm-model";    
-import { Point, ContextVisitor } from "./model/jm-model-base";
+import { Point, ContextVisitor, FakeContextVisitor } from "./model/jm-model-base";
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
 import { NoteDecorations } from './jm-glyph-details';
@@ -657,7 +657,7 @@ function $(elm: HTMLElement): DOMHelper {
     
     
     
-            export class RedrawVisitor extends ContextVisitor {
+            export class RedrawVisitor extends FakeContextVisitor {
                 constructor(globalContext: IGlobalContext, private graphEngine: IGraphicsEngine) { super(globalContext); }
     
                 static getTie(spacing: INoteHeadSpacingInfo): string {
@@ -874,4 +874,20 @@ function $(elm: HTMLElement): DOMHelper {
     
         
     
+            export class PrefixEventVisitor implements IVisitorIterator<IMusicElement> {
+                constructor(private globalContext: IGlobalContext, private visitor: IEventVisitor, private cge: IBaseGraphicsEngine, private prefix = '') {
+                }
+                public visitPre(element: IMusicElement): (element: IMusicElement) => void {
+                    //var spacing = element.spacingInfo;
+                    var spacing = this.globalContext.getSpacingInfo(element);
+                    if (spacing) {
+                        var grp = this.cge.beginGroup(this.prefix + element.id, spacing.offset.x, spacing.offset.y, spacing.scale, element.getElementName());
+                        element.inviteEventVisitor(this.visitor, this.globalContext);
+                        //spacing.InviteVisitor(this.visitor);
+                        return (element: IMusicElement) => { this.cge.endGroup(grp); };
+                    }
+                }
+            }
     
+    
+        

@@ -46,7 +46,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
         class BarElement extends MusicElement implements IBar {
             getEvents(): IEventInfo[] {
                 let info: IBarEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => { return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitBar(info)};
+                info.visit = (visitor: IEventVisitor) => {visitor.visitBarInfo(info)};
                 return [info];
             }
 
@@ -502,7 +502,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
 
             getEvents(): IEventInfo[] {
                 let info: IStaffExpressionEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitStaffExpression(info)};
+                info.visit = (visitor: IEventVisitor) => {visitor.visitStaffExpressionInfo(info)};
                 return [info];
             }
 
@@ -947,7 +947,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
             getEvents(): IEventInfo[] {
                 let info: IClefEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitClef(info)};
+                info.visit = (visitor: IEventVisitor) => {visitor.visitClefInfo(info)};
                 return [info];
             }
 
@@ -1012,7 +1012,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
             getEvents(): IEventInfo[] {
                 let info: IKeyEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitKey(info)};
+                info.visit = (visitor: IEventVisitor) => {visitor.visitKeyInfo(info)};
                 return [info];
             }
 
@@ -1072,7 +1072,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
             getEvents(): IEventInfo[] {
                 let info: IMeterEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitMeter(info)};
+                info.visit = (visitor: IEventVisitor) => {visitor.visitMeterInfo(info)};
                 return [info];
             }
 

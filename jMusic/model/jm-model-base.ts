@@ -76,11 +76,15 @@ export class MusicElement implements IMusicElement {
         return memento;
     }
     public visitAll(visitor: IVisitorIterator<IMusicElement>) {
-        var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
-        if (postFun) {
-            postFun(this);
+        /*if ((<any>visitor).visitNoteInfo) {
+            alert("event");
         }
-
+        else {*/
+            var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
+            if (postFun) {
+                postFun(this);
+            }
+        //}
     }
 }
 
@@ -321,27 +325,27 @@ export class NullEventVisitor implements IEventVisitor, IVisitorIterator<IMusicE
     }
 
 
-    visitNoteHead(head: INoteHeadInfo): void {
+    visitNoteHeadInfo(head: INoteHeadInfo): void {
     }   
-    visitNote(note: INoteInfo): void {
+    visitNoteInfo(note: INoteInfo): void {
     }
-    visitNoteDecoration(deco: INoteDecorationEventInfo): void {
+    visitNoteDecorationInfo(deco: INoteDecorationEventInfo): void {
     }
-    visitLongDecoration(deco: ILongDecorationEventInfo): void {
+    visitLongDecorationInfo(deco: ILongDecorationEventInfo): void {
     }
-    visitTextSyllable(text: ITextSyllableEventInfo): void {
+    visitTextSyllableInfo(text: ITextSyllableEventInfo): void {
     }
-    visitBeam(beam: IBeamEventInfo): void {
+    visitBeamInfo(beam: IBeamEventInfo): void {
     }
-    visitBar(bar: IBarEventInfo): void {
+    visitBarInfo(bar: IBarEventInfo): void {
     }
-    visitClef(clef: IClefEventInfo): void {
+    visitClefInfo(clef: IClefEventInfo): void {
     }
-    visitMeter(meter: IMeterEventInfo): void {
+    visitMeterInfo(meter: IMeterEventInfo): void {
     }
-    visitKey(key: IKeyEventInfo): void {
+    visitKeyInfo(key: IKeyEventInfo): void {
     }
-    visitStaffExpression(staffExpression: IStaffExpressionEventInfo): void {
+    visitStaffExpressionInfo(staffExpression: IStaffExpressionEventInfo): void {
     }
     visitSequence(sequence: ISequence): void {        
     }
@@ -369,28 +373,28 @@ export class ContextEventVisitor extends NullEventVisitor {
     getStaffContext(absTime: AbsoluteTime): StaffContext{
         return this.staff.getStaffContext(absTime);
     }
-    visitNoteHead(head: INoteHeadInfo) {
+    visitNoteHeadInfo(head: INoteHeadInfo) {
         var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head.source);
          this.doNoteHead(head.source, this.noteContext, spacing); 
         }
-    visitNote(note: INoteInfo) {
+    visitNoteInfo(note: INoteInfo) {
         this.noteContext = note.source.getContext();
         var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note.source);
         this.doNote(note.source, this.noteContext, spacing); 
     }
-    visitNoteDecoration(deco: INoteDecorationEventInfo) { 
+    visitNoteDecorationInfo(deco: INoteDecorationEventInfo) { 
         var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco.source);
         this.doNoteDecoration(deco.source, this.noteContext, spacing); 
     }
-    visitLongDecoration(deco: ILongDecorationEventInfo) { 
+    visitLongDecorationInfo(deco: ILongDecorationEventInfo) { 
         var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco.source);
         this.doLongDecoration(deco.source, this.noteContext, spacing); 
     }
-    visitTextSyllable(textSyllable: ITextSyllableEventInfo) { 
+    visitTextSyllableInfo(textSyllable: ITextSyllableEventInfo) { 
         var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable.source);
         this.doTextSyllable(textSyllable.source, this.noteContext, spacing); 
     }
-    visitBeam(beam: IBeamEventInfo) { 
+    visitBeamInfo(beam: IBeamEventInfo) { 
         var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam.source);
         this.doBeam(beam.source, this.noteContext, spacing); 
     }
@@ -404,6 +408,72 @@ export class ContextEventVisitor extends NullEventVisitor {
     visitVariable(name: string): void {
         let val = this.globalContext.getVariable(name);
         if (val) val.visitAll(this);
+    }
+
+}
+
+export class FakeContextVisitor extends ContextEventVisitor implements IVisitor{
+    visitNoteHead(head: INotehead): void {        
+    }
+    visitNote(note: INoteSource): void {        
+    }
+    visitNoteDecoration(deco: INoteDecorationElement): void {        
+    }
+    visitLongDecoration(deco: ILongDecorationElement): void {        
+    }
+    visitTextSyllable(text: ITextSyllableElement): void {        
+    }
+    visitBeam(beam: IBeam): void {        
+    }
+    visitClef(clef: IClef): void {        
+    }
+    visitMeter(meter: IMeter): void {        
+    }
+    visitKey(key: IKey): void {        
+    }
+    visitBar(bar: IBar): void {        
+    }
+    visitStaffExpression(staffExpression: IStaffExpression): void {        
+    }
+    visitDefault(element: IMusicElement): void {        
+    }
+
+
+    visitNoteHeadInfo(head: INoteHeadInfo) {
+        super.visitNoteHeadInfo(head);
+        this.visitNoteHead(head.source);
+    }
+    visitNoteInfo(note: INoteInfo) {
+        super.visitNoteInfo(note);
+        this.visitNote(note.source);
+    }
+    visitNoteDecorationInfo(deco: INoteDecorationEventInfo) { 
+        super.visitNoteDecorationInfo(deco);
+        this.visitNoteDecoration(deco.source);
+    }
+    visitLongDecorationInfo(deco: ILongDecorationEventInfo) { 
+        super.visitLongDecorationInfo(deco);
+        this.visitLongDecoration(deco.source);
+    }
+    visitTextSyllableInfo(textSyllable: ITextSyllableEventInfo) { 
+        super.visitTextSyllableInfo(textSyllable);
+        this.visitTextSyllable(textSyllable.source);
+    }
+    visitBeamInfo(beam: IBeamEventInfo) { 
+        super.visitBeamInfo(beam);
+        this.visitBeam(beam.source);
+    }
+    visitBarInfo(bar: IBarEventInfo): void {
+        this.visitBar(bar.source);
+    }
+    visitClefInfo(clef: IClefEventInfo): void {
+        this.visitClef(clef.source);
+    }
+    visitMeterInfo(meter: IMeterEventInfo): void {
+        this.visitMeter(meter.source);
+    }
+    visitKeyInfo(key: IKeyEventInfo): void {
+        this.visitKey(key.source);
     }
 
 }
