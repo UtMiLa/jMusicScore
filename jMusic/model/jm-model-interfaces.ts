@@ -267,11 +267,13 @@ export interface INoteSource  extends INote, ITimedObjectEvent {
 export interface INoteHeadInfo {
     source: INotehead;
     pitch: Pitch;
+    //visit(visitor: IEventVisitor): void;
     id: string;
 }
 export interface INoteDecoInfo<T> {
     source: T;
     id: string;
+    //visit(visitor: IEventVisitor): void;
 }
 
 

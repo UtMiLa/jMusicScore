@@ -446,6 +446,13 @@ export class FakeContextVisitor extends ContextEventVisitor implements IVisitor{
     visitNoteInfo(note: INoteInfo) {
         super.visitNoteInfo(note);
         this.visitNote(note.source);
+        for (let i = 0; i < note.heads.length; i++){
+            this.visitNoteHeadInfo(note.heads[i]);
+            //note.heads[i].visit(this);
+        }
+        for (let i = 0; i < note.decorations.length; i++){
+            //this.visitNoteDecorationInfo(note.decorations[i]);
+        }
     }
     visitNoteDecorationInfo(deco: INoteDecorationEventInfo) { 
         super.visitNoteDecorationInfo(deco);

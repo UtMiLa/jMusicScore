@@ -407,7 +407,8 @@ public inviteEventVisitor(spacer: IEventVisitor): void {
                 return {
                     id: this.id,
                     source: this,
-                    pitch: this.pitch
+                    pitch: this.pitch,
+                    //visit: (visitor: IEventVisitor) => { this.inviteEventVisitor(visitor); }
                 };
             }
 
