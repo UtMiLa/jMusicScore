@@ -60,7 +60,7 @@ describe("NullEventVisitor", function () {
         globalContext.addVariable('hutlifut', hutlifut.staffElements[0].voiceElements[0].getSequence(''));
 
         visitor = new NullEventVisitor(globalContext);
-        spyOn(visitor, "visitNote");
+        spyOn(visitor, "visitNoteInfo");
 
     });
 
@@ -74,10 +74,10 @@ describe("NullEventVisitor", function () {
             //console.log(events[i].source.debug());
             //console.log((<INoteInfo>events[i]).absTime.toString());
         }
-        expect(visitor.visitNote).toHaveBeenCalledTimes(testItem.res.length);
+        expect(visitor.visitNoteInfo).toHaveBeenCalledTimes(testItem.res.length);
         // todo: test abstime, pitch, notelen
         for (let i = 0; i < testItem.res.length; i++){
-            const call = (<any>visitor.visitNote).calls.argsFor(i);
+            const call = (<any>visitor.visitNoteInfo).calls.argsFor(i);
             expect(call).toBeDefined();
             expect(call[0]).toBeDefined();
             expect(call[0].relTime.toString()).toEqual(testItem.res[i].abs);

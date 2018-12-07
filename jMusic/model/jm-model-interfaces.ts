@@ -411,6 +411,11 @@ export interface IEventVisitor {
     visitScore(score: IScore): void;
 }
 
+export interface IEventVisitorTarget { //todo: både IEvent og IMusicContainer skal understøtte denne - og Sequence skal sende videre til events
+    visitAll(visitor: IEventVisitor): void;
+    inviteEventVisitor(visitor: IEventVisitor): void;
+}
+
 export interface IPoint {
     x: number;
     y: number;

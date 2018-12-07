@@ -345,11 +345,13 @@ import { Validators } from './jm-refiners';
                     public beginGroup(id: string, x: number, y: number, scale: number, className: string): any {
                         this.setTranslation(x, y);
                         this.context.scale(scale, scale);
+                        console.log('grp begin', (<any>this.context).mozCurrentTransform);
                         return { x: x, y: y, scale: scale };
                     }
                     public endGroup(group: any) {
                         this.context.scale(1 / group.scale, 1 / group.scale);
                         this.setTranslation(-group.x, -group.y);
+                        console.log('grp end', (<any>this.context).mozCurrentTransform);
                     }
                 }
         
