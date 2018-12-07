@@ -6,7 +6,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IMeter, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, INote, 
     INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, IMeterSpacingInfo, 
     IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, ITextSyllableElement, 
-    INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, 
+    INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, 
     IMusicElementCreator, 
     IEventVisitor,
     INoteDecorationEventInfo,
@@ -18,10 +18,132 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IMeterEventInfo,
     IKeyEventInfo, IGlobalContext, 
     IStaffExpressionEventInfo,
-    INoteFinder} from './jm-model-interfaces';
+    INoteFinder,
+    IEventVisitorTarget} from './jm-model-interfaces';
 
-    import { MusicElement, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor } from './jm-model-base'
+    import { MusicElement, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo } from './jm-model-base'
 
+    class NoteEventInfo extends EventInfo implements INoteInfo {
+        source: INote;
+        heads: INoteHeadInfo[];
+        decorations: INoteDecorationEventInfo[];
+        longDecorations: ILongDecorationEventInfo[];
+        syllables: ITextSyllableEventInfo[];
+        id: string;
+        relTime: TimeSpan;
+        getTimeVal(): TimeSpan {
+            return this.source.getTimeVal();
+        }
+        visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {
+            var postFun: (element: IEventVisitorTarget) => void = visitor.visitPre(this);
+            for (var i = 0; i < this.heads.length; i++) {
+                //visitor.visitNoteHeadInfo(this.heads[i]);
+                const post = visitor.visitPre(this.heads[i]);
+                post(this.heads[i]);
+            }
+            for (var i = 0; i < this.decorations.length; i++) {
+                //visitor.visitNoteDecorationInfo(this.decorations[i]);
+                const post = visitor.visitPre(this.decorations[i]);
+                post(this.decorations[i]);
+            }
+            for (var i = 0; i < this.longDecorations.length; i++) {
+                //visitor.visitLongDecorationInfo(this.longDecorations[i]);
+                const post = visitor.visitPre(this.longDecorations[i]);
+                post(this.longDecorations[i]);
+            }
+            for (var i = 0; i < this.syllables.length; i++) {
+                //visitor.visitTextSyllableInfo(this.syllables[i]);
+                const post = visitor.visitPre(this.syllables[i]);
+                post(this.syllables[i]);
+            }
+            if (postFun) {
+                postFun(this);
+            }
+        }
+        inviteEventVisitor(visitor: IEventVisitor): void {
+            visitor.visitNoteInfo(this);
+        }
+        
+        constructor(note: NoteElement){
+            super();
+            this.source = note;
+            this.heads = note.noteheadElements.map(h => h.getInfo());
+            this.decorations = note.decorationElements.map(h => h.getInfo());
+            this.longDecorations = note.longDecorationElements.map(h => h.getInfo());
+            this.syllables = note.syllableElements.map(h => h.getInfo());
+            this.relTime = note.absTime.fromStart();
+            this.id = note.id;
+        }
+    }
+
+
+    class NoteHeadInfo extends EventInfo implements INoteHeadInfo {
+        source: INotehead;
+        pitch: Pitch;
+        
+        constructor(notehead: NoteheadElement){
+            super();
+            this.source = notehead;
+            this.pitch = notehead.pitch;
+            this.id = notehead.id;
+        }
+        inviteEventVisitor(visitor: IEventVisitor): void {
+            visitor.visitNoteHeadInfo(this);
+        }
+        visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {}
+    }
+/*
+
+            getInfo(): ITextSyllableEventInfo {
+                return {
+                    id: this.id,
+                    source: this
+                };
+            }
+
+*/
+
+    class NoteDecorationEventInfo extends EventInfo implements INoteDecorationEventInfo {
+        source: NoteDecorationElement;
+        
+        constructor(deco: NoteDecorationElement){
+            super();
+            this.source = deco;
+            this.id = deco.id;
+        }
+        inviteEventVisitor(visitor: IEventVisitor): void {
+            visitor.visitNoteDecorationInfo(this);
+        }
+        
+    }
+
+    class LongDecorationEventInfo extends EventInfo implements ILongDecorationEventInfo {
+        source: NoteLongDecorationElement;
+        
+        constructor(deco: NoteLongDecorationElement){
+            super();
+            this.source = deco;
+            this.id = deco.id;
+        }
+        inviteEventVisitor(visitor: IEventVisitor): void {
+            visitor.visitLongDecorationInfo(this);
+        }
+        
+    }
+
+    class TextSyllableEventInfo extends EventInfo implements ITextSyllableEventInfo {
+        source: TextSyllableElement;
+        
+        constructor(txt: TextSyllableElement){
+            super();
+            this.source = txt;
+            this.id = txt.id;
+        }
+        inviteEventVisitor(visitor: IEventVisitor): void {
+            visitor.visitTextSyllableInfo(this);
+        }
+        
+    }
 
         /*
          * NoteElement: det faktiske element, uden transformationer. Bruges af værktøjer, der arbejder direkte på musikken. Kan bo på en Voice, Sequence eller Variable.
@@ -63,8 +185,12 @@ public get voice(): IVoice {
 public getContext(): INoteContext {
     return this;
 }
+public visitAllEvents(visitor: IEventVisitor, globalContext: IGlobalContext): void {
+    alert("Should not come here");
+    throw "Visitor error";
+}
 
-public inviteEventVisitor(spacer: IEventVisitor): void {
+public inviteEventVisitor(spacer: IEventVisitor, globalContext: IGlobalContext): void {
     spacer.visitNoteInfo(this.getInfo());
 }
 
@@ -73,7 +199,7 @@ public inviteEventVisitor(spacer: IEventVisitor): void {
             }
 
             getInfo(): INoteInfo {
-                let info: INoteInfo = { 
+                /*let info: INoteInfo = { 
                     source: this,
                     heads: this.noteheadElements.map(h => h.getInfo()),
                     decorations: this.decorationElements.map(h => h.getInfo()),
@@ -82,10 +208,10 @@ public inviteEventVisitor(spacer: IEventVisitor): void {
                     relTime: this.absTime.fromStart(), 
                     getTimeVal: () => { return this.getTimeVal(); },
                     id: this.id,
-                    visit: undefined 
+                    visitAllEvents: undefined 
                 };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitNoteInfo(info)};
-                return info;                
+                info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitNoteInfo(info)};*/
+                return new NoteEventInfo(this);                
             }
 
 
@@ -404,12 +530,12 @@ public inviteEventVisitor(spacer: IEventVisitor): void {
                 super(parent);
             }
             getInfo(): INoteHeadInfo {
-                return {
+                return new NoteHeadInfo(this);/* {
                     id: this.id,
                     source: this,
                     pitch: this.pitch,
                     //visit: (visitor: IEventVisitor) => { this.inviteEventVisitor(visitor); }
-                };
+                };*/
             }
 
 
@@ -480,11 +606,12 @@ public inviteEventVisitor(spacer: IEventVisitor): void {
                 super(parent);
             }
 
-            getInfo(): INoteDecoInfo<INoteDecorationElement>{
-                return {
+            getInfo(): INoteDecorationEventInfo{
+                return new NoteDecorationEventInfo(this);/* {
                     id: this.id,
-                    source: this
-                };
+                    source: this,
+                    relTime: null
+                };*/
             }
 
 
@@ -528,11 +655,11 @@ public inviteEventVisitor(spacer: IEventVisitor): void {
                 super(parent);
             }
 
-            getInfo(): INoteDecoInfo<ILongDecorationElement>{
-                return {
+            getInfo(): ILongDecorationEventInfo {
+                return new LongDecorationEventInfo(this);/* {
                     id: this.id,
                     source: this
-                };
+                };*/
             }
 
 
@@ -580,11 +707,11 @@ public inviteEventVisitor(spacer: IEventVisitor): void {
                 super(parent);
             }
 
-            getInfo(): INoteDecoInfo<ITextSyllableElement>{
-                return {
+            getInfo(): ITextSyllableEventInfo {
+                return new TextSyllableEventInfo(this);/*{
                     id: this.id,
                     source: this
-                };
+                };*/
             }
 
             public inviteVisitor(visitor: IVisitor) {

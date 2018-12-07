@@ -17,10 +17,10 @@ import { IScoreRefiner } from "./jm-interfaces";
             }
 
             
-            getEvents(): IEventInfo[] {
-                let info: IMeterEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitMeterInfo(info)};
-                return [info];
+            getEvents(globalContext: IGlobalContext): IMeterEventInfo[] {
+                let info: IMeterEventInfo[] = this.originElement.getEvents(globalContext);// { source: this, id: this.id, visitAllEvents: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
+                //info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitMeterInfo(info)};
+                return info;
             }
 
 
@@ -173,7 +173,7 @@ export class VariableRef extends MusicElement implements ITimedObjectEvent, IEve
         debugger;
         const events = this.getRef(globalContext).getEvents(globalContext);
         for ( var i = 0; i < events.length; i++){
-            events[i].visit(visitor);
+            events[i].visitAllEvents(visitor);
         }
     }
 

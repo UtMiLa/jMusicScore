@@ -2,9 +2,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-music-basics';
+import { GlobalContext } from './jm-model-base';
 
 export interface IMusicElement {
-    inviteEventVisitor(spacer: IEventVisitor, globalContext: IGlobalContext): void;
     //changed(): void;
     //moved(): void;/**/
     id: string;
@@ -23,7 +23,7 @@ export interface IMusicElement {
     //getAncestor<T extends IMusicElement>(elementName: string): T;
 }
 
-export interface IMusicContainer extends IMusicElement {
+export interface IMusicContainer extends IMusicElement, IEventVisitorTarget  {
     addChild(theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void;
     removeChild(theChild: IMusicElement): void;
 }
@@ -31,8 +31,8 @@ export interface IMusicContainer extends IMusicElement {
 export interface IGlobalContext{ 
     getVariable(name: string): ISequence;
     addVariable(name: string, value: ISequence):void;
-    getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T;
-    addSpacingInfo(element: IMusicElement, value: ISpacingInfo): void;
+    getSpacingInfo<T extends ISpacingInfo>(element: {id: string}): T;
+    addSpacingInfo(element: {id: string}, value: ISpacingInfo): void;
 }
 
 
@@ -203,6 +203,7 @@ export interface IMeter extends ITimedChangeEvent {
     parent: IMusicElement;
     definition: IMeterDefinition;
 
+    getEvents(globalContext: IGlobalContext): IMeterEventInfo[];
     getMeasureTime(): TimeSpan;
     nextBoundary(abstime: AbsoluteTime): AbsoluteTime;
     nextBar(abstime: AbsoluteTime): AbsoluteTime;
@@ -264,27 +265,31 @@ export interface INote extends IMusicContainer, ITimedObjectEvent { // todo: fje
 
 export interface INoteSource  extends INote, ITimedObjectEvent {
 }
-export interface INoteHeadInfo {
+
+/*export interface INoteDecoInfo<T> {
+    source: T;
+    id: string;
+    //visit(visitor: IEventVisitor): void;
+}*/
+
+
+export interface IEventInfo extends IEventVisitorTarget {
+    id: string;
+    relTime: TimeSpan;
+    source: IMusicElement;
+    getElementName(): string;
+    getTimeVal(): TimeSpan;
+    visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void;
+    inviteEventVisitor(visitor: IEventVisitor): void;
+}
+export interface INoteHeadInfo extends IEventInfo {
     source: INotehead;
     pitch: Pitch;
     //visit(visitor: IEventVisitor): void;
     id: string;
+    inviteEventVisitor(visitor: IEventVisitor): void;
+    visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void;
 }
-export interface INoteDecoInfo<T> {
-    source: T;
-    id: string;
-    //visit(visitor: IEventVisitor): void;
-}
-
-
-export interface IEventInfo {
-    id: string;
-    relTime: TimeSpan;
-    source: IMusicElement;
-    getTimeVal(): TimeSpan;
-    visit(visitor: IEventVisitor): void;
-}
-
 export interface IKeyEventInfo extends IEventInfo { source: IKey; }
 export interface IClefEventInfo extends IEventInfo {source: IClef; }
 export interface IMeterEventInfo extends IEventInfo { source: IMeter;}
@@ -303,9 +308,9 @@ export interface ITextSyllableEventInfo extends IEventInfo { source: ITextSyllab
 export interface INoteInfo extends IEventInfo {
     source: INote;
     heads: INoteHeadInfo[];
-    decorations: INoteDecoInfo<INoteDecorationElement>[];
-    longDecorations: INoteDecoInfo<ILongDecorationElement>[];
-    syllables: INoteDecoInfo<ITextSyllableElement>[];
+    decorations: INoteDecorationEventInfo[];
+    longDecorations: ILongDecorationEventInfo[];
+    syllables: ITextSyllableEventInfo[];
 }
 
 export interface IEventEnumerator {
@@ -347,7 +352,7 @@ export interface INoteDecorationElement extends IMusicElement {
     parent: INote;
     placement: string;
     getDecorationId(): NoteDecorationKind;
-    getInfo(): INoteDecoInfo<INoteDecorationElement>;
+    getInfo(): INoteDecorationEventInfo;
 }
 
 export interface INoteFinder{
@@ -361,13 +366,13 @@ export interface ILongDecorationElement extends IMusicElement {
     //spacingInfo: ILongDecorationSpacingInfo;
     getEndEvent(noteFinder: INoteFinder): ITimedEvent;
     type: LongDecorationType;
-    getInfo(): INoteDecoInfo<ILongDecorationElement>;
+    getInfo(): ILongDecorationEventInfo;
 }
 export interface ITextSyllableElement extends IMusicElement {
     placement: string;
     Text: string;
     parent: INote;
-    getInfo(): INoteDecoInfo<ITextSyllableElement>;
+    getInfo(): ITextSyllableEventInfo;
 }
 
 export interface IVisitor {
@@ -391,7 +396,7 @@ export interface IVisitor {
     visitVariable(name: string): void;
 }
 
-export interface IEventVisitor {
+export interface IEventVisitor extends IVisitorIterator<IEventVisitorTarget> {
     visitNoteHeadInfo(head: INoteHeadInfo): void;
     visitNoteInfo(note: INoteInfo): void;
     visitNoteDecorationInfo(deco: INoteDecorationEventInfo): void;
@@ -412,8 +417,10 @@ export interface IEventVisitor {
 }
 
 export interface IEventVisitorTarget { //todo: både IEvent og IMusicContainer skal understøtte denne - og Sequence skal sende videre til events
-    visitAll(visitor: IEventVisitor): void;
-    inviteEventVisitor(visitor: IEventVisitor): void;
+    visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void;
+    inviteEventVisitor(visitor: IEventVisitor, globalContext: IGlobalContext): void;
+    getElementName(): string;
+    id: string;
 }
 
 export interface IPoint {

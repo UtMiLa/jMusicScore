@@ -1,5 +1,5 @@
 import { IKeyDefinition, ClefDefinition, IMeterDefinition, LongDecorationType, IVisitorIterator, NoteDecorationKind } from './jm-music-basics'
-import { ISpacingInfo, ILongDecorationElement, IGlobalContext, ILongDecorationSpacingInfo, IMusicElement, IVisitor, INotehead, INoteSource, INoteDecorationElement, IVoice, IClef, IMeter, IKey, IStaff, IScore, ITextSyllableElement, IBar, IBeam, IStaffExpression, INoteContext, INoteHeadSpacingInfo, INoteSpacingInfo, INoteDecorationSpacingInfo, ITextSyllableSpacingInfo, IBarSpacingInfo, IBeamSpacingInfo, IClefSpacingInfo, IMeterSpacingInfo, IKeySpacingInfo, IStaffSpacingInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IBarEventInfo, IStaffExpressionEventInfo, IEventVisitor } from './model/jm-model-interfaces';
+import { ISpacingInfo, ILongDecorationElement, IGlobalContext, ILongDecorationSpacingInfo, IMusicElement, IVisitor, INotehead, INoteSource, INoteDecorationElement, IVoice, IClef, IMeter, IKey, IStaff, IScore, ITextSyllableElement, IBar, IBeam, IStaffExpression, INoteContext, INoteHeadSpacingInfo, INoteSpacingInfo, INoteDecorationSpacingInfo, ITextSyllableSpacingInfo, IBarSpacingInfo, IBeamSpacingInfo, IClefSpacingInfo, IMeterSpacingInfo, IKeySpacingInfo, IStaffSpacingInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IBarEventInfo, IStaffExpressionEventInfo, IEventVisitor, IEventVisitorTarget } from './model/jm-model-interfaces';
 import { Music     } from "./model/jm-model";    
 import { Point, ContextVisitor, FakeContextVisitor } from "./model/jm-model-base";
 import {MusicSpacing} from "./jm-spacing";
@@ -699,7 +699,7 @@ export class RedrawVisitor extends FakeContextVisitor {
 
 
     doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) {
-        console.log('do notehead', head.pitch.debug());
+        //console.log('do notehead', head.pitch.debug());
         this.graphEngine.createMusicObject(null, spacing.headGlyph, spacing.displace.x, spacing.displace.y, spacing.graceScale);
         if (head.getAccidental()) {
             this.graphEngine.createMusicObject(null, this.accidentalDefs[head.getAccidental()], spacing.offset.x + spacing.accidentalX, 0, spacing.graceScale);
@@ -718,7 +718,7 @@ export class RedrawVisitor extends FakeContextVisitor {
         //console.log("note");
         //debugger;
         //console.log(note);
-        console.log('do note', note.debug());
+        //console.log('do note', note.debug());
         if (!note.rest) {
             var dirFactor = noteSpacing.rev ? -1 : 1;
             this.graphEngine.createPathObject("m " + noteSpacing.stemX + "," + noteSpacing.stemRootY
@@ -876,17 +876,17 @@ export class PrefixVisitor implements IVisitorIterator<IMusicElement> {
 
 
 
-export class PrefixEventVisitor implements IVisitorIterator<IMusicElement> {
+export class PrefixEventVisitor implements IVisitorIterator<IEventVisitorTarget> {
     constructor(private globalContext: IGlobalContext, private visitor: IEventVisitor, private cge: IBaseGraphicsEngine, private prefix = '') {
     }
-    public visitPre(element: IMusicElement): (element: IMusicElement) => void {
+    public visitPre(element: IEventVisitorTarget): (element: IEventVisitorTarget) => void {
         //var spacing = element.spacingInfo;
         var spacing = this.globalContext.getSpacingInfo(element);
         if (spacing) {
             var grp = this.cge.beginGroup(this.prefix + element.id, spacing.offset.x, spacing.offset.y, spacing.scale, element.getElementName());
             element.inviteEventVisitor(this.visitor, this.globalContext);
             //spacing.InviteVisitor(this.visitor);
-            return (element: IMusicElement) => { this.cge.endGroup(grp); };
+            return (element: IEventVisitorTarget) => { this.cge.endGroup(grp); };
         }
     }
 }

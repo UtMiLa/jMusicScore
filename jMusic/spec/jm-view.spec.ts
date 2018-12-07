@@ -70,7 +70,7 @@ describe("NullEventVisitor", function () {
         let events = document.staffElements[0].voiceElements[0].getEvents(globalContext);
         expect(events.length).toEqual(testItem.res.length);
         for (let i = 0; i < events.length; i++){
-            events[i].visit(visitor);
+            events[i].visitAllEvents(visitor);
             //console.log(events[i].source.debug());
             //console.log((<INoteInfo>events[i]).absTime.toString());
         }

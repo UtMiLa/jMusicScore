@@ -662,7 +662,7 @@ import { Validators } from './jm-refiners';
                         var visitor = new PrefixEventVisitor(this.globalContext, new RedrawVisitor(this.globalContext, canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
                         //canvasHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
                         canvasHelper.MusicGraphicsHelper.beginDraw();
-                        score.visitAll(visitor);
+                        score.visitAllEvents(visitor, this.globalContext);
                         canvasHelper.MusicGraphicsHelper.endDraw();
         
                         /*if (!this.checkSensors) {

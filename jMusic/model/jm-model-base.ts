@@ -6,7 +6,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IMeter, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, INote, 
     INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, IMeterSpacingInfo, 
     IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, ITextSyllableElement, 
-    INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, 
+    INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo,  ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, 
     IMusicElementCreator, 
     IEventVisitor,
     INoteDecorationEventInfo,
@@ -19,7 +19,8 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IKeyEventInfo,
     IStaffExpressionEventInfo,
     IPoint,
-    IGlobalContext} from './jm-model-interfaces';
+    IGlobalContext,
+    IEventVisitorTarget} from './jm-model-interfaces';
 
 
 
@@ -88,7 +89,7 @@ export class MusicElement implements IMusicElement {
     }
 }
 
-export class MusicContainer extends MusicElement {
+export class MusicContainer extends MusicElement implements IEventVisitorTarget {
     //protected children: IMusicElement[] = [];
     protected removeThisChildren: IMusicElement[] = [];
 
@@ -192,6 +193,17 @@ export class MusicContainer extends MusicElement {
             if (children.length) memento.children = children;
         }
         return memento;
+    }
+
+    protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+    }
+
+    visitAllEvents(visitor: IEventVisitor, globalContext: IGlobalContext): void {
+        var postFun: (element: IEventVisitorTarget) => void = visitor.visitPre(this);
+        this.visitChildEvents(visitor, globalContext);
+        if (postFun) {
+            postFun(this);
+        }
     }
 
     public visitAll(visitor: IVisitorIterator<IMusicElement>) {
@@ -316,10 +328,10 @@ export class ContextVisitor extends NullVisitor {
     }
 }
 
-export class NullEventVisitor implements IEventVisitor, IVisitorIterator<IMusicElement> {
+export class NullEventVisitor implements IEventVisitor, IVisitorIterator<IEventVisitorTarget> {
     constructor(protected globalContext: IGlobalContext){}
 
-    visitPre(element: IMusicElement): (element: IMusicElement) => void {
+    visitPre(element: IEventVisitorTarget): (element: IEventVisitorTarget) => void {
         element.inviteEventVisitor(this, this.globalContext);
         return null;
     }
@@ -407,7 +419,7 @@ export class ContextEventVisitor extends NullEventVisitor {
     doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) { }
     visitVariable(name: string): void {
         let val = this.globalContext.getVariable(name);
-        if (val) val.visitAll(this);
+        if (val) val.visitAllEvents(this, this.globalContext);
     }
 
 }
@@ -446,13 +458,6 @@ export class FakeContextVisitor extends ContextEventVisitor implements IVisitor{
     visitNoteInfo(note: INoteInfo) {
         super.visitNoteInfo(note);
         this.visitNote(note.source);
-        for (let i = 0; i < note.heads.length; i++){
-            this.visitNoteHeadInfo(note.heads[i]);
-            //note.heads[i].visit(this);
-        }
-        for (let i = 0; i < note.decorations.length; i++){
-            //this.visitNoteDecorationInfo(note.decorations[i]);
-        }
     }
     visitNoteDecorationInfo(deco: INoteDecorationEventInfo) { 
         super.visitNoteDecorationInfo(deco);
@@ -497,6 +502,16 @@ export class NoteVisitor extends ContextVisitor {
 }   
 
 
+export class StructuralStaffVisitor extends NullVisitor {
+    constructor(private callback: (node:IStaff, index: number) => void) {
+        super();
+    }
+    no: number = 0;
+    visitStaff(note: IStaff): void {
+        this.callback(note, this.no++);
+    }
+}   
+
 export class StaffVisitor extends NullEventVisitor {
     constructor(private callback: (node:IStaff, index: number) => void, globalContext: IGlobalContext) {
         super(globalContext);
@@ -514,6 +529,16 @@ export class BarVisitor extends NullVisitor {
     no: number = 0;
     visitBar(bar: IBar): void {
         this.callback(bar, this.no++);
+    }
+}   
+
+export class StructuralVoiceVisitor extends NullVisitor {
+    constructor(private callback: (voice:IVoice, index: number) => void) {
+        super();
+    }
+    no: number = 0;
+    visitVoice(voice: IVoice): void {
+        this.callback(voice, this.no++);
     }
 }   
 
@@ -615,3 +640,20 @@ export class TextSyllableVisitor extends ContextVisitor {
         this.callback(clef, this.no++, spacing);
     }
 }   
+
+export class EventInfo implements IEventInfo {
+    id: string;        
+    relTime: TimeSpan;
+    source: IMusicElement;
+    getElementName(): string { 
+        return this.source.getElementName(); 
+    }
+    getTimeVal(): TimeSpan {
+        throw new Error("Method not implemented.");
+    }
+    inviteEventVisitor(visitor: IEventVisitor): void {
+        throw new Error("Method not implemented.");
+    }
+    visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {}
+}
+

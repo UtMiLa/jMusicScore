@@ -7,7 +7,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IMeter, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, INote, 
     INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, IMeterSpacingInfo, 
     IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, ITextSyllableElement, 
-    INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, INoteDecoInfo, ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, 
+    INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, 
     IMusicElementCreator, 
     IEventVisitor,
     INoteDecorationEventInfo,
@@ -21,7 +21,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IStaffExpressionEventInfo,
     INoteFinder} from './jm-model-interfaces';
 
-import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor } from './jm-model-base';
+import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, StructuralStaffVisitor, StructuralVoiceVisitor } from './jm-model-base';
 import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, NoteElement, NoteheadElement } from './jm-model-notes';
 
 
@@ -39,14 +39,78 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
         score -> firstStaff, lastStaff, firstVoice, lastVoice, firstKey, firstMeter, firstClef, firstBar
         notelink: LinkedList<INote>
          */
+class BarEventInfo extends EventInfo implements IBarEventInfo{
+    source: BarElement;
+        
+    constructor(source: BarElement){
+        super();
+        this.source = source;
+        this.id = source.id;
+        //{ source: this, id: this.id, visitAllEvents: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => { return TimeSpan.noTime;} }
+    }
+}
+class ClefEventInfo extends EventInfo implements IClefEventInfo{
+    source: ClefElement;
+        
+    constructor(source: ClefElement){
+        super();
+        this.source = source;
+        this.id = source.id;
+    }
+    //{ source: this, id: this.id, visitAllEvents: undefined, relTime: this.absTime.fromStart(), }
+    getTimeVal(): TimeSpan {
+        return TimeSpan.noTime;
+    }
+}
+class MeterEventInfo extends EventInfo implements IMeterEventInfo{
+    source: IMeter;
+        
+    constructor(source: IMeter){
+        super();
+        this.source = source;
+        this.id = source.id;
+    }
+    // { source: this, id: this.id, visitAllEvents: undefined, relTime: this.absTime.fromStart(), }
+    
+    getTimeVal(): TimeSpan {
+        return TimeSpan.noTime;
+    }
+}
+class StaffExpressionEventInfo extends EventInfo implements IStaffExpressionEventInfo{
+    source: StaffExpression;
+        
+    constructor(source: StaffExpression){
+        super();
+        this.source = source;
+        this.id = source.id; 
+    }
+    //{ source: this, id: this.id, visitAllEvents: undefined, relTime: this.absTime.fromStart(),}
+    
+    getTimeVal(): TimeSpan {
+        return TimeSpan.noTime;
+    }
+}
+class KeyEventInfo extends EventInfo implements IKeyEventInfo{
+    source: KeyElement;
+        
+    constructor(source: KeyElement){
+        super();
+        this.source = source;
+        this.id = source.id;
+    }
+    // { source: this, id: this.id, visitAllEvents: undefined, relTime: this.absTime.fromStart(),  }
 
 
+    getTimeVal(): TimeSpan {
+        return TimeSpan.noTime;
+    }
+}
 /**************************************************** MusicElement stuff ****************************************************/
 
         class BarElement extends MusicElement implements IBar {
             getEvents(): IEventInfo[] {
-                let info: IBarEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => { return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitBarInfo(info)};
+                let info: IBarEventInfo = new BarEventInfo(this);
+                info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitBarInfo(info)};
                 return [info];
             }
 
@@ -178,7 +242,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
             
             public withStaves(f: (staff: IStaff, index: number) => void, globalContext: IGlobalContext) {
-                this.visitAll(new StaffVisitor(f, globalContext));
+                this.visitAll(new StructuralStaffVisitor(f));
 
                 /*for (var i = 0; i < this.staffElements.length; i++) {
                     f(this.staffElements[i], i);
@@ -186,7 +250,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
             public withVoices(f: (voice: IVoice, index: number) => void, globalContext: IGlobalContext) {
-                this.visitAll(new VoiceVisitor(f, globalContext));
+                this.visitAll(new StructuralVoiceVisitor(f));
                 /*this.withStaves((staff: IStaff, index: number): void => {
                     staff.withVoices(f);
                 });*/
@@ -254,6 +318,13 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                     staff.setKey(key, absTime);
                 }, globalContext);
             }
+
+            protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+                this.withStaves((child: IStaff) => {
+                    child.visitAllEvents(visitor, globalContext);
+                }, globalContext);
+            }
+        
         }
 
         class StaffElement extends MusicContainer implements IStaff {
@@ -308,7 +379,7 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
             public withVoices(f: (voice: IVoice, index: number) => void, globalContext: IGlobalContext) {
-                this.visitAll(new VoiceVisitor(f, globalContext));
+                this.visitAll(new StructuralVoiceVisitor(f));
                 /*for (var i = 0; i < this.voiceElements.length; i++) {
                     f(this.voiceElements[i], i);
                 }*/
@@ -492,6 +563,13 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 //keyRef.changed();
                 this.addChild(keyRef);
             }
+
+            protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+                this.withVoices((child: IVoice) => {
+                    child.visitAllEvents(visitor, globalContext);
+                }, globalContext);
+            }
+
         }
 
 
@@ -501,8 +579,8 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             }
 
             getEvents(): IEventInfo[] {
-                let info: IStaffExpressionEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitStaffExpressionInfo(info)};
+                let info: IStaffExpressionEventInfo = new StaffExpressionEventInfo(this);
+                //info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitStaffExpressionInfo(info)};
                 return [info];
             }
 
@@ -666,6 +744,10 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 let seqNote = segment.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);
                 return seqNote; // new NoteProxy(seqNote, this);
             }
+            protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+                this.sequence.visitAllEvents(visitor, globalContext);
+            }
+
         }
 
         // SequenceElement
@@ -841,7 +923,14 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 }
                 return note;
                 // = { note: 0, rest: 1, placeholder: 2 };
+            }
 
+
+            protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+                let events = this.getEvents(globalContext);
+                for (let i = 0; i < events.length; i++) {
+                    events[i].visitAllEvents(visitor);
+                }
             }
 
         }
@@ -946,8 +1035,8 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                let info: IClefEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitClefInfo(info)};
+                let info: IClefEventInfo = new ClefEventInfo(this);
+                //info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitClefInfo(info)};
                 return [info];
             }
 
@@ -1011,8 +1100,8 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
             }
             getEvents(): IEventInfo[] {
-                let info: IKeyEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitKeyInfo(info)};
+                let info: IKeyEventInfo = new KeyEventInfo(this);
+                //info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitKeyInfo(info)};
                 return [info];
             }
 
@@ -1070,9 +1159,9 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
             constructor(public parent: IMeterOwner, public definition: IMeterDefinition, public absTime: AbsoluteTime) {
                 super(parent);
             }
-            getEvents(): IEventInfo[] {
-                let info: IMeterEventInfo = { source: this, id: this.id, visit: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
-                info.visit = (visitor: IEventVisitor) => {visitor.visitMeterInfo(info)};
+            getEvents(): IMeterEventInfo[] {
+                let info: IMeterEventInfo = new MeterEventInfo(this);
+                //info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitMeterInfo(info)};
                 return [info];
             }
 
@@ -1489,7 +1578,7 @@ export class EventEnumerator {
         visitor.visitVoice(voice);
         let events = voice.getEvents(this.globalContext);
         for (let i = 0; i < events.length; i++){
-            events[i].visit(visitor);
+            events[i].visitAllEvents(visitor);
         }
     }
     public doSequence(sequence: ISequence, visitor: IEventVisitor){
@@ -1498,7 +1587,7 @@ export class EventEnumerator {
         visitor.visitSequence(sequence, this.globalContext);
         let events = sequence.getEvents(this.globalContext);
         for (let i = 0; i < events.length; i++){
-            events[i].visit(visitor);
+            events[i].visitAllEvents(visitor);
         }
     }
 }
