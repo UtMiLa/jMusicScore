@@ -7,9 +7,9 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         INote, INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, 
         IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo,  ILongDecorationSpacingInfo, 
-        ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo,  IGlobalContext } from './model/jm-model-interfaces';
+        ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo,  IGlobalContext, IEventVisitor, IEventVisitorTarget } from './model/jm-model-interfaces';
 import { Music } from "./model/jm-model";
-import { ContextVisitor, Point } from "./model/jm-model-base";
+import { ContextVisitor, Point, ContextEventVisitor, NoteHeadVisitor, NoteVisitor } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: pitchToStaffLine skal ikke kaldes med <any>
 
@@ -437,7 +437,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 static tieY1 = 0.4;
             }
     
-            class MinimalSpacer extends ContextVisitor {
+            class MinimalSpacer extends ContextEventVisitor {
 
                 /*public getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T{
                     return <T>element.spacingInfo;
@@ -921,7 +921,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
             }
     
             export class SpacingDesigner implements IScoreDesigner {
-                constructor(private globalContext: IGlobalContext, private spacer: IVisitor = null) {
+                constructor(private globalContext: IGlobalContext, private spacer: IEventVisitor = null) {
                     if (!spacer) {
                         this.spacer = new MinimalSpacer(globalContext);
                     }
@@ -934,25 +934,38 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 private checkUpdateAll(score: IScore) {
                     var spacer = this.spacer;
     
-                    score.visitAll({
-                        visitPre: (element: IMusicElement): (element: IMusicElement) => void => {
+                    score.visitAllEvents({
+                        visitPre: (element: IEventVisitorTarget): (element: IEventVisitorTarget) => void => {
                             var spacing = this.globalContext.getSpacingInfo(element);
                             if (spacing) {
-                                element.inviteVisitor(spacer);
+                                element.inviteEventVisitor(spacer, this.globalContext);
                                 return null;
                             }
                         }
-                    });
+                    }, this.globalContext);
                     score.withStaves((staff: IStaff): void => {
                         staff.withVoices((voice: IVoice): void => {
-                            voice.withNotes(this.globalContext, (note: INote): void => {
+                            /*voice.withNotes(this.globalContext, (note: INote): void => {
                                 for (var i = 0; i < note.Beams.length; i++) {
                                     var beam = note.Beams[i];
                                     if (beam) {
                                         beam.inviteVisitor(spacer);
                                     }
                                 }
-                            });
+                            });*/
+                            const events = voice.getEvents(this.globalContext);
+                            for (let i = 0; i < events.length; i++){
+                                if (events[i].getElementName() === "Note") { //todo: uelegant
+                                    let note = <INoteInfo>(events[i]);
+                                    
+                                    for (var j = 0; j < note.source.Beams.length; j++) { //todo: beamInfo
+                                        /*var beam = note.Beams[j];
+                                        if (beam) {
+                                            beam.inviteVisitor(spacer);
+                                        }*/
+                                    }
+                                }
+                            }
                         }, this.globalContext);
                     }, this.globalContext);
                 }
@@ -960,21 +973,28 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
                 private checkBars(score: IScore) {
                     score.withBars((bar: IBar) => {
-                        var barSpacing = this.globalContext.getSpacingInfo<BarSpacingInfo>(bar);
-                        this.spacer.visitBar(bar);
+                        //var barSpacing = this.globalContext.getSpacingInfo<BarSpacingInfo>(bar);
+                        //this.spacer.visitBar(bar); //todo: barInfo spacing
                     });
                 }
     
                 private calculateSizes(score: IScore) {
                     score.withStaves((staff: IStaff, index: number): void => {
-                        staff.withTimedEvents((elm: ITimedEvent, index: number) => {
-                            elm.inviteVisitor(this.spacer);
-                        });
+                        /*staff.withTimedEvents((elm: ITimedEvent, index: number) => {
+                            elm.inviteEventVisitor(this.spacer);
+                        });*/ //todo: staff getOwnEvents()
     
                         staff.withVoices((voice: IVoice, index: number): void => {
-                            voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number): void => {
-                                note.inviteVisitor(this.spacer);
-                            });
+                            /*voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number): void => {
+                                note.inviteEventVisitor(this.spacer);
+                            });*/
+                            const events = voice.getEvents(this.globalContext);
+                            for (let i = 0; i < events.length; i++){
+                                if (events[i].getElementName() === "Note") { //todo: uelegant
+                                    let note = <INoteInfo>(events[i]);
+                                    note.inviteEventVisitor(this.spacer);
+                                }
+                            }
                         }, this.globalContext);
                     }, this.globalContext);
                 }

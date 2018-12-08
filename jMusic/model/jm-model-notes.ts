@@ -39,22 +39,22 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             for (var i = 0; i < this.heads.length; i++) {
                 //visitor.visitNoteHeadInfo(this.heads[i]);
                 const post = visitor.visitPre(this.heads[i]);
-                post(this.heads[i]);
+                if (post) post(this.heads[i]);
             }
             for (var i = 0; i < this.decorations.length; i++) {
                 //visitor.visitNoteDecorationInfo(this.decorations[i]);
                 const post = visitor.visitPre(this.decorations[i]);
-                post(this.decorations[i]);
+                if (post) post(this.decorations[i]);
             }
             for (var i = 0; i < this.longDecorations.length; i++) {
                 //visitor.visitLongDecorationInfo(this.longDecorations[i]);
                 const post = visitor.visitPre(this.longDecorations[i]);
-                post(this.longDecorations[i]);
+                if (post) post(this.longDecorations[i]);
             }
             for (var i = 0; i < this.syllables.length; i++) {
                 //visitor.visitTextSyllableInfo(this.syllables[i]);
                 const post = visitor.visitPre(this.syllables[i]);
-                post(this.syllables[i]);
+                if (post) post(this.syllables[i]);
             }
             if (postFun) {
                 postFun(this);
