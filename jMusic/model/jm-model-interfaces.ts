@@ -274,6 +274,7 @@ export interface INoteSource  extends INote, ITimedObjectEvent {
 
 
 export interface IEventInfo extends IEventVisitorTarget {
+    getHorizPosition(): HorizPosition;
     id: string;
     relTime: TimeSpan;
     source: IMusicElement;
@@ -284,6 +285,7 @@ export interface IEventInfo extends IEventVisitorTarget {
     clone(addId: string): IEventInfo;
 }
 export interface INoteHeadInfo extends IEventInfo {
+    getAccidental(): string;
     getPitch(): Pitch;
     source: INotehead;
     pitch: Pitch;
@@ -308,12 +310,13 @@ export interface ITextSyllableEventInfo extends IEventInfo { source: ITextSyllab
  *      Linker til foregående og næste node og Voice.
  *      Hver Sequence og variabel kopierer INoteInfo (og transformerer evt.). */
 export interface INoteInfo extends IEventInfo {
-    NoteId: any;
-    Beams: any;
-    graceType: any;
-    timeVal: any;
+    dotNo: number;
+    NoteId: string;
+    Beams: IBeam[];
+    graceType: string;
+    timeVal: TimeSpan;
     getBeamspan(): any;
-    rest: any;
+    rest: boolean;
     source: INote;
     heads: INoteHeadInfo[];
     decorations: INoteDecorationEventInfo[];

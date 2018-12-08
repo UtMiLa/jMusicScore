@@ -1493,7 +1493,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
 
             public static compareEvents(a: IEventInfo, b: IEventInfo): number {
-                return HorizPosition.compareEvents((<any>a.source).getHorizPosition(), (<any>b.source).getHorizPosition());
+                return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
             }
 
             public static compareEventsOld(a: ITimedEvent, b: ITimedEvent): number {

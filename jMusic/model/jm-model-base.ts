@@ -644,6 +644,11 @@ export class TextSyllableVisitor extends ContextVisitor {
 }   
 
 export abstract class EventInfo implements IEventInfo {
+    getHorizPosition(): HorizPosition {
+        if (!this.relTime) return new HorizPosition(AbsoluteTime.startTime, 0);
+        if ((<ITimedEvent>this.source).getSortOrder)  return new HorizPosition(this.relTime.fromStart(), (<ITimedEvent>this.source).getSortOrder());
+        return new HorizPosition(this.relTime.fromStart(), 0);
+    }
     id: string;        
     relTime: TimeSpan;
     source: IMusicElement;
