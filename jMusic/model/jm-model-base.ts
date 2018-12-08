@@ -374,45 +374,47 @@ export class ContextEventVisitor extends NullEventVisitor {
     staff: IStaff;
     voice: IVoice;
     noteContext: INoteContext;
+    currentNote: INoteInfo;
     constructor(globalContext: IGlobalContext){
         super(globalContext);
     }
-    visitStaff(staff: IStaff) { this.staff = staff; }
-    visitScore(score: IScore) { this.score = score; }
-    visitVoice(voice: IVoice) { this.voice = voice; }
+    visitStaff(staff: IStaff) { this.staff = staff; this.currentNote = null; }
+    visitScore(score: IScore) { this.score = score; this.currentNote = null; }
+    visitVoice(voice: IVoice) { this.voice = voice; this.currentNote = null; }
     visitSequence(sequence: ISequence) { }
 
     getStaffContext(absTime: AbsoluteTime): StaffContext{
         return this.staff.getStaffContext(absTime);
     }
     visitNoteHeadInfo(head: INoteHeadInfo) {
-        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head.source);
-         this.doNoteHead(head.source, this.noteContext, spacing); 
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
+         this.doNoteHead(head.source, this.noteContext, spacing, this.currentNote); 
         }
     visitNoteInfo(note: INoteInfo) {
         this.noteContext = note.source.getContext();
-        var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note.source);
+        this.currentNote = note;
+        var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
         this.doNote(note.source, this.noteContext, spacing); 
     }
     visitNoteDecorationInfo(deco: INoteDecorationEventInfo) { 
-        var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco.source);
+        var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco);
         this.doNoteDecoration(deco.source, this.noteContext, spacing); 
     }
     visitLongDecorationInfo(deco: ILongDecorationEventInfo) { 
-        var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco.source);
+        var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
         this.doLongDecoration(deco.source, this.noteContext, spacing); 
     }
     visitTextSyllableInfo(textSyllable: ITextSyllableEventInfo) { 
-        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable.source);
+        var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
         this.doTextSyllable(textSyllable.source, this.noteContext, spacing); 
     }
     visitBeamInfo(beam: IBeamEventInfo) { 
-        var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam.source);
+        var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
         this.doBeam(beam.source, this.noteContext, spacing); 
     }
 
     doNote(note: INote, context: INoteContext, spacing: INoteSpacingInfo) { }
-    doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo) { }
+    doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo, noteInfo: INoteInfo) { }
     doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) { }
     doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) { }
     doTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) { }

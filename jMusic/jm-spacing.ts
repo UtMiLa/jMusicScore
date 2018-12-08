@@ -7,7 +7,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         INote, INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, 
         IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo,  ILongDecorationSpacingInfo, 
-        ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo,  IGlobalContext, IEventVisitor, IEventVisitorTarget } from './model/jm-model-interfaces';
+        ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo,  IGlobalContext, IEventVisitor, IEventVisitorTarget, INoteDecorationEventInfo, ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo } from './model/jm-model-interfaces';
 import { Music } from "./model/jm-model";
 import { ContextVisitor, Point, ContextEventVisitor, NoteHeadVisitor, NoteVisitor } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
@@ -442,11 +442,16 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 /*public getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T{
                     return <T>element.spacingInfo;
                 }*/
+
+                /*visitNoteHeadInfo(head: INoteHeadInfo) {
+                    var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
+                    this.doNoteHead(head.source, this.noteContext, spacing); 
+                }*/
     
-                public doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
-                    const headSpacingInfo = this.globalContext.getSpacingInfo<NoteHeadSpacingInfo>(head);
-                    const noteSpacingInfo = this.globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx);
-                    if (headSpacingInfo !== spacing) alert('wrong');
+                public doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo, noteInfo: INoteInfo) {
+                    const headSpacingInfo = spacing;//this.globalContext.getSpacingInfo<NoteHeadSpacingInfo>(head);
+                    const noteSpacingInfo = this.globalContext.getSpacingInfo<NoteSpacingInfo>(noteInfo);
+                    //if (headSpacingInfo !== spacing) alert('wrong');
 
                     spacing.accidentalX = -headSpacingInfo.offset.x * 2 + Metrics.accidentalX + headSpacingInfo.accidentalStep * Metrics.accidentalXstep;
                     spacing.graceScale = noteSpacingInfo.graceScale;
@@ -811,42 +816,57 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
             }
     
-            class SpacingFactory extends ContextVisitor implements IVisitorIterator<IMusicElement>, IVisitor {
-                visitPre(element: IMusicElement): (element: IMusicElement) => void {
-                    element.inviteVisitor(this);
+            class SpacingFactory extends ContextEventVisitor implements IVisitorIterator<IEventVisitorTarget>, IEventVisitor {
+                visitPreEvent(element: IEventVisitorTarget): (element: IEventVisitorTarget) => void {
+                    element.inviteEventVisitor(this, this.globalContext);
                     return null;
                 }
-    
-                doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
+
+
+                visitNoteHeadInfo(head: INoteHeadInfo) {
+                    var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
                     if (!spacing) {
                         //head.spacingInfo = new NoteHeadSpacingInfo(head);
-                        this.globalContext.addSpacingInfo(head, new NoteHeadSpacingInfo(head));
+                        this.globalContext.addSpacingInfo(head, new NoteHeadSpacingInfo(head.source));
                     }
                 }
-                doNote(note: INoteSource, context: INoteContext, spacing: INoteSpacingInfo) {
+                visitNoteInfo(note: INoteInfo) {
+                    this.noteContext = note.source.getContext();
+                    this.currentNote = note;
+                    var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
                     if (!spacing) {
                         //note.spacingInfo = new NoteSpacingInfo(note);
-                        this.globalContext.addSpacingInfo(note, new NoteSpacingInfo(note));
+                        this.globalContext.addSpacingInfo(note, new NoteSpacingInfo(note.source));
                     }
                      // todo: visit in VisitAll - after all notes have been visited?
-                    for (var i = 0; i < note.Beams.length; i++) {
+                     // todo: beam events
+                    /*for (var i = 0; i < note.Beams.length; i++) {
                         if (note.Beams[i])
-                            note.Beams[i].inviteVisitor(this);
-                    }
+                            note.Beams[i].inviteEventVisitor(this, this.globalContext);
+                    }*/
+
                 }
-                doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
+                visitNoteDecorationInfo(deco: INoteDecorationEventInfo) { 
+                    var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco);
                     if (!spacing) {
                         //deco.spacingInfo = new NoteDecorationSpacingInfo(deco);
-                        this.globalContext.addSpacingInfo(deco, new NoteDecorationSpacingInfo(deco));
+                        this.globalContext.addSpacingInfo(deco, new NoteDecorationSpacingInfo(deco.source));
                     }
                 }
-                doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) {
-                    var notedecoSpacing = this.globalContext.getSpacingInfo(deco);
-                    if (!notedecoSpacing) {
+                visitLongDecorationInfo(deco: ILongDecorationEventInfo) { 
+                    var spacing = this.globalContext.getSpacingInfo<ILongDecorationSpacingInfo>(deco);
+                    if (!spacing) {
                         //deco.spacingInfo = new LongDecorationSpacingInfo(deco);
-                        this.globalContext.addSpacingInfo(deco, new LongDecorationSpacingInfo(deco));
-                    }
-                }
+                        this.globalContext.addSpacingInfo(deco, new LongDecorationSpacingInfo(deco.source));
+                    }                }
+                visitTextSyllableInfo(textSyllable: ITextSyllableEventInfo) { 
+                    var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(textSyllable);
+                    if (!spacing) {
+                        //syllable.spacingInfo = new TextSpacingInfo(syllable);
+                        this.globalContext.addSpacingInfo(textSyllable, new TextSpacingInfo(textSyllable.source));
+                    }                }
+
+    
                 visitVoice(voice: IVoice) {
                     const spacing = this.globalContext.getSpacingInfo(voice);
                     if (!spacing) {
@@ -890,12 +910,6 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         this.globalContext.addSpacingInfo(score, new ScoreSpacingInfo(score));
                     }
                 }
-                doTextSyllable(syllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) {
-                    if (!spacing) {
-                        //syllable.spacingInfo = new TextSpacingInfo(syllable);
-                        this.globalContext.addSpacingInfo(syllable, new TextSpacingInfo(syllable));
-                    }
-                }
                 visitBar(bar: IBar) {
                     const spacing = this.globalContext.getSpacingInfo(bar);
                     if (!spacing) {
@@ -903,10 +917,11 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         this.globalContext.addSpacingInfo(bar, new BarSpacingInfo(bar));
                     }
                 }
-                doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
+                visitBeamInfo(beam: IBeamEventInfo) { 
+                    var spacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
                     if (!spacing) {
                         //beam.spacingInfo = new BeamSpacingInfo(beam); // todo: visit in VisitAll - after all notes have been visited?
-                        this.globalContext.addSpacingInfo(beam, new BeamSpacingInfo(beam));
+                        this.globalContext.addSpacingInfo(beam, new BeamSpacingInfo(beam.source));
                     }                
                 }
                 visitStaffExpression(staffExpression: IStaffExpression): void {
@@ -928,7 +943,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 }
     
                 private checkSpacingInfo(score: IScore) {
-                    score.visitAll(new SpacingFactory(this.globalContext));
+                    score.visitAllEvents(new SpacingFactory(this.globalContext), this.globalContext);
                 }
     
                 private checkUpdateAll(score: IScore) {
