@@ -24,6 +24,14 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     import { MusicElement, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo } from './jm-model-base'
 
     class NoteEventInfo extends EventInfo implements INoteInfo {
+        get NoteId(): string { return this.source.NoteId; }
+        get Beams(): IBeam[] { return this.source.Beams; }
+        get graceType(): string { return this.source.graceType; }
+        get timeVal(): TimeSpan { return this.source.timeVal; }
+        getBeamspan() {
+            return this.source.getBeamspan();
+        }
+        rest: any;
         source: INote;
         heads: INoteHeadInfo[];
         decorations: INoteDecorationEventInfo[];
@@ -90,6 +98,9 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
 
     class NoteHeadInfo extends EventInfo implements INoteHeadInfo {
+        getPitch(): Pitch {
+            return this.pitch;
+        }
         source: INotehead;
         pitch: Pitch;
         

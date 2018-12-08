@@ -284,6 +284,7 @@ export interface IEventInfo extends IEventVisitorTarget {
     clone(addId: string): IEventInfo;
 }
 export interface INoteHeadInfo extends IEventInfo {
+    getPitch(): Pitch;
     source: INotehead;
     pitch: Pitch;
     //visit(visitor: IEventVisitor): void;
@@ -307,6 +308,12 @@ export interface ITextSyllableEventInfo extends IEventInfo { source: ITextSyllab
  *      Linker til foregående og næste node og Voice.
  *      Hver Sequence og variabel kopierer INoteInfo (og transformerer evt.). */
 export interface INoteInfo extends IEventInfo {
+    NoteId: any;
+    Beams: any;
+    graceType: any;
+    timeVal: any;
+    getBeamspan(): any;
+    rest: any;
     source: INote;
     heads: INoteHeadInfo[];
     decorations: INoteDecorationEventInfo[];

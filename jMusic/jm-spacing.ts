@@ -496,12 +496,12 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return bBox.width;*/ //todo: width
                 }
     
-                public static doGetWidth(note: INote) {
+                public static doGetWidth(note: INoteInfo) {
                     //var displayData = <SVGNoteDisplayData>note.getDisplayData(context);
-                    var width = Metrics.newPosStep * Metrics.newPosXStep + note.dotNo * this.doGetDotWidth(note);
-                    for (var i = 0; i < note.syllableElements.length; i++) {
-                        var syllable = note.syllableElements[i];
-                        var syllWidth = this.getSyllableWidth(syllable);
+                    var width = Metrics.newPosStep * Metrics.newPosXStep + note.source.dotNo * this.doGetDotWidth(note);
+                    for (var i = 0; i < note.syllables.length; i++) {
+                        var syllable = note.syllables[i];
+                        var syllWidth = this.getSyllableWidth(syllable.source);
                         if (syllWidth > width * 2) {
                             width = syllWidth / 2;
                         }
@@ -509,22 +509,22 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return width;
                 }
     
-                public static doGetPreWidth(globalContext: IGlobalContext, note: INote) {
+                public static doGetPreWidth(globalContext: IGlobalContext, note: INoteInfo) {
                     //var displayData = <SVGNoteDisplayData>note.getDisplayData(context);
                     var width = 0;
-                    for (var i = 0; i < note.syllableElements.length; i++) {
-                        var syllable = note.syllableElements[i];
-                        var syllWidth = this.getSyllableWidth(syllable);
+                    for (var i = 0; i < note.syllables.length; i++) {
+                        var syllable = note.syllables[i];
+                        var syllWidth = this.getSyllableWidth(syllable.source);
                         if (syllWidth > width * 2) {
                             width = syllWidth / 2;
                         }
                     }
-                    note.withDecorations(globalContext, (deco: INoteDecorationElement) => {
+                    note.source.withDecorations(globalContext, (deco: INoteDecorationElement) => {
                         var w1 = MinimalSpacer.getNoteDecoWidth(deco);
                         if (w1 > width) width = w1;
                     });
     
-                    var heads = note.noteheadElements;
+                    var heads = note.source.noteheadElements;
                     heads.sort(function (a, b) { return b.getPitch().diff(a.getPitch()).length; });
                     var accidentalStep = width / 10; // todo: constant
                     for (var i = 0; i < heads.length; i++) {
@@ -541,8 +541,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return width;
                 }
     
-                public static doGetDotWidth(note: INote): number {
-                    if (note.timeVal.denominator === 1) return 10; // todo: konstanter
+                public static doGetDotWidth(note: INoteInfo): number {
+                    if (note.source.timeVal.denominator === 1) return 10; // todo: konstanter
                     return 6;
                 }
     
@@ -663,17 +663,21 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                doNote(note: INoteSource, context: INoteContext, spacing: INoteSpacingInfo) {
-                    //(<NoteSpacingInfo>spacing).calcMetrics(note);
+                public visitNoteInfo(note: INoteInfo) {
+                    this.noteContext = note.source.getContext();
+                    this.currentNote = note;
+                    var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
+                
                     spacing.preWidth = MinimalSpacer.doGetPreWidth(this.globalContext, note);
                     spacing.width = MinimalSpacer.doGetWidth(note);
     
-                    NoteSpacer.recalcPitches(this.globalContext, note, context);
-                    NoteSpacer.recalcHeads(note, context, this.globalContext);
+                    NoteSpacer.recalcPitches(this.globalContext, note, this.noteContext);
+                    NoteSpacer.recalcHeads(note, this.noteContext, this.globalContext);
                     NoteSpacer.recalcStem(this.globalContext, note, spacing);
-                    NoteSpacer.recalcLedgerLinesUnder(note, context, this.globalContext);
-                    NoteSpacer.recalcLedgerLinesOver(note, context, this.globalContext);
-                }
+                    NoteSpacer.recalcLedgerLinesUnder(note, this.noteContext, this.globalContext);
+                    NoteSpacer.recalcLedgerLinesOver(note, this.noteContext, this.globalContext);
+                }                
+
                 doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) {
                     /*if (spacing.CalcSpacing) {
                         spacing.CalcSpacing(deco);
@@ -1040,7 +1044,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                                 var j = i;
                                 while (j < events.length && Music.compareEvents(events[i], events[j]) == 0) {
                                     //var eventDisplayData = <SVGBaseDisplayData>(<any>events[j]).getDisplayData(this.context);
-                                    var eventSpacing = this.globalContext.getSpacingInfo(events[j].source);
+                                    var eventSpacing = this.globalContext.getSpacingInfo(events[j]);
                                     if (eventSpacing) {
                                         var preWidth = eventSpacing.preWidth;
                                         if (eventWidth < preWidth) {
@@ -1054,7 +1058,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                             }
                         }
                         oldpos = pos;
-                        var eventSpacing = this.globalContext.getSpacingInfo(events[i].source);
+                        var eventSpacing = this.globalContext.getSpacingInfo(events[i]);
                         if (eventSpacing) {
                             eventSpacing.offset.x = pos + beginPos; // todo: move svg
                             //SVGOutput.move(<MusicElement><any>events[i], eventDisplayData);
@@ -1151,18 +1155,18 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
             export class NoteSpacer {
     
-                static hasFlag(note: INote): boolean {
+                static hasFlag(note: INoteInfo): boolean {
                     if (note.rest) return false;
                     var bs = note.getBeamspan();
                     var b = bs.length >= 1 && bs[0] === 0;
                     var c = bs.length >= 1 && bs[0] === 1;
                     return (!bs || bs.length === 0 || b || c);
                 }
-                static hasStem(note: INote): boolean {
+                static hasStem(note: INoteInfo): boolean {
                     return !note.rest && note.timeVal.denominator >= 2;
                 }
     
-                static getFlagCount(note: INote): number {
+                static getFlagCount(note: INoteInfo): number {
                     var denom = note.timeVal.denominator;
                     var no = 0;
                     while (denom > 4) {
@@ -1178,21 +1182,21 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return this.getStaffContext(elm.parent, time);
                 }*/
     
-                public static pitchToStaffLine(pitch: Pitch, note: INoteSource, noteCtx: INoteContext) {
+                public static pitchToStaffLine(pitch: Pitch, note: INoteInfo, noteCtx: INoteContext) {
                     var clef = noteCtx.getStaffContext().clef;
                     return clef.pitchToStaffLine(pitch);
                 }
-                public static staffLineToPitch(line: number, note: INoteSource, noteCtx: INoteContext) {
+                public static staffLineToPitch(line: number, note: INoteInfo, noteCtx: INoteContext) {
                     var clef = noteCtx.getStaffContext().clef;
                     return clef.staffLineToPitch(line);
                 }
     
-                public static recalcPitches(globalContext: IGlobalContext, note: INoteSource, noteCtx: INoteContext) {
-                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx);
+                public static recalcPitches(globalContext: IGlobalContext, note: INoteInfo, noteCtx: INoteContext) {
+                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(note);
     
                     var lowPitch = 99;
                     var highPitch = -99;
-                    note.withHeads(globalContext, (head: INotehead) => {
+                    note.source.withHeads(globalContext, (head: INotehead) => {
                         var thePitch = NoteSpacer.pitchToStaffLine(head.getPitch(), note, noteCtx);
                         if (thePitch < lowPitch) {
                             lowPitch = thePitch;
@@ -1214,19 +1218,19 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     //noteSpacing.highPitch = MusicSpacing.NoteSpacer.staffLineToPitch(highPitch, note);
                     noteSpacing.highPitchY = lowPitch;
                     noteSpacing.lowPitchY = highPitch;
-                    if (note.getStemDirection() == StemDirectionType.StemFree) {
+                    if (note.source.getStemDirection() == StemDirectionType.StemFree) {
                         if (noteCtx.getStemDirection() == StemDirectionType.StemFree) {
                             noteSpacing.rev = highPitch + lowPitch < 10;
                         }
                         else noteSpacing.rev = (noteCtx.getStemDirection() == StemDirectionType.StemDown);
                     }
-                    else noteSpacing.rev = (note.getStemDirection() == StemDirectionType.StemDown);
+                    else noteSpacing.rev = (note.source.getStemDirection() == StemDirectionType.StemDown);
                 }
     
     
-                public static recalcLedgerLinesUnder(note: INote, context: INoteContext, globalContext: IGlobalContext) {
+                public static recalcLedgerLinesUnder(note: INoteInfo, context: INoteContext, globalContext: IGlobalContext) {
                     if (note.rest) return;
-                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(context);
+                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(note);
                     
                     var antalLedelinjer = Math.floor(noteSpacing.lowPitchY / 2 - 4);
                     if (antalLedelinjer < 1) antalLedelinjer = 0;
@@ -1240,9 +1244,9 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         noteSpacing.ledgerLinesUnder.push(ledg);
                     }
                 }
-                public static recalcLedgerLinesOver(note: INote, context: INoteContext, globalContext: IGlobalContext) {
+                public static recalcLedgerLinesOver(note: INoteInfo, context: INoteContext, globalContext: IGlobalContext) {
                     if (note.rest) return;
-                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(context);
+                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(note);
     
     
                     var antalLedelinjer = Math.floor(-noteSpacing.highPitchY / 2);
@@ -1258,7 +1262,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                public static recalcStem(globalContext: IGlobalContext, note: INote, noteSpacing: INoteSpacingInfo) {
+                public static recalcStem(globalContext: IGlobalContext, note: INoteInfo, noteSpacing: INoteSpacingInfo) {
                     var noteDef = NoteHeadSpacingInfo.noteValues[note.NoteId]; // todo: fjern
                     //var hasFlag = NoteSpacer.hasFlag(note);
                     //var hasStem = !note.rest && note.timeVal.denominator >= 2;//NoteSpacer.hasStem(note);
@@ -1306,9 +1310,9 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                public static recalcHeads(note: INote, noteCtx: INoteContext, globalContext: IGlobalContext) {
-                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx);
-                    var heads = note.noteheadElements;
+                public static recalcHeads(note: INoteInfo, noteCtx: INoteContext, globalContext: IGlobalContext) {
+                    var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(note);
+                    var heads = note.heads;
                     if (heads.length == 0) return;
                     var displace = true;
                     var lastPitch: Pitch;
@@ -1347,14 +1351,14 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     }
                 }
     
-                public static setDisplace(displace: boolean, headElm: INotehead, noteCtx: INoteContext, globalContext: IGlobalContext) {
+                public static setDisplace(displace: boolean, headElm: INoteHeadInfo, noteCtx: INoteContext, globalContext: IGlobalContext) {
                     var spacingInfo = globalContext.getSpacingInfo<NoteHeadSpacingInfo>(headElm);
                     if (spacingInfo.displacement != displace) {
                         spacingInfo.displacement = displace;
                         this.recalc(headElm, noteCtx, globalContext);
                     }
                 }
-                public static setRev(headElm: INotehead, rev: boolean, noteCtx: INoteContext, globalContext: IGlobalContext) {
+                public static setRev(headElm: INoteHeadInfo, rev: boolean, noteCtx: INoteContext, globalContext: IGlobalContext) {
                     //var displayData = <SVGNoteheadDisplayData>headElm.getDisplayData(context);
                     var spacingInfo = globalContext.getSpacingInfo<NoteHeadSpacingInfo>(headElm);
                     if (spacingInfo.reversed != rev) {
@@ -1362,18 +1366,18 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         this.recalc(headElm, noteCtx, globalContext);
                     }
                 }
-                public static recalc(headElm: INotehead, noteCtx: INoteContext, globalContext: IGlobalContext) {
+                public static recalc(headElm: INoteHeadInfo, noteCtx: INoteContext, globalContext: IGlobalContext) {
                     //var displayData = <SVGNoteheadDisplayData>headElm.getDisplayData(context);
                     //var parentDisplayData = <SVGNoteDisplayData>headElm.parent.getDisplayData(context);
                     var spacingInfo = globalContext.getSpacingInfo<NoteHeadSpacingInfo>(headElm);
-                    var noteSpacingInfo = globalContext.getSpacingInfo<NoteSpacingInfo>(headElm.parent);
+                    var noteSpacingInfo = globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx);
                     if (spacingInfo.reversed) {
                         spacingInfo.offset.x = spacingInfo.displacement ? Metrics.pitchXRevDisplacement : Metrics.pitchXNoDisplacement;
                     }
                     else {
                         spacingInfo.offset.x = spacingInfo.displacement ? Metrics.pitchXDisplacement : Metrics.pitchXNoDisplacement;
                     }
-                    spacingInfo.offset.y = headElm.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, <any>headElm.parent, noteCtx) * Metrics.pitchYFactor;
+                    spacingInfo.offset.y = headElm.source.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, <any>headElm.source.parent, noteCtx) * Metrics.pitchYFactor;
                     //if (displayData.ref) displayData.ref.setAttribute("transform", "translate(" + spacingInfo.center.x + "," + spacingInfo.center.y + ")");                
                 }
             }
