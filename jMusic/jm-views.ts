@@ -763,7 +763,7 @@ export class RedrawVisitor extends FakeContextVisitor {
         if (!noteSpacing.flagNo)
             for (var i = 0; i < note.Beams.length; i++) {
                 var beam = note.Beams[i];
-                if (!beam || beam.parent !== note) continue;
+                if (!beam || beam.parent !== note.source) continue;
                 var beamSpacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
                 var step = beam.index * beamSpacing.beamDist;
 

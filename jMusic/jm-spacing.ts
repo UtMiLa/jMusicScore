@@ -1285,7 +1285,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         }
     
                         var beam = note.Beams[0];
-                        if (beam && beam.parent !== note && beam.toNote !== note) {
+                        if (beam && beam.parent !== note.source && beam.toNote !== note.source) {
                             var beamSpacing = globalContext.getSpacingInfo<BeamSpacingInfo>(beam);
                             if (beamSpacing) { // todo: spacer!
                                 //noteSpacing.stemTipY = SVGBeamDesigner.yValue(noteSpacing.stemX + noteSpacing.offset.x, beam);
