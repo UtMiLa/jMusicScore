@@ -15,71 +15,100 @@ export class MusicProviderService {
   }
 
   constRes = {
-	'voices': {
-		'voices': ['sopran', 'alt', 'tenor', 'bas'],
-		'sections': ['Glory', 'Foerste', 'Amen']
-	},
-	'scales': {
-		'diatonicScale': '{ c d e f g a bes }'
-	},
-	'sections': {
-		'Glory': {
-			'voices': {
-				'sopranGlory': '{\\modalTranspose c c\' \\diatonicScale { \\Glory r4 \\fullRest\n\\Glory \n\\GloryB\n}\n%    \\addlyrics {\n%      Glo -- ry to the Lord,\n%      glo -- ry to the Lord,\n%      glo -- ry to the Lord in the high %  -- _ est!\n%      Glo -- ry to the Lord,\n%      glo -- ry to the Lord,\n%      glo -- ry to the Lord in the high - %  est!\n%  And peace _ on _ earth,\n%  and peace _ _ on \n%    }\n}',
-				'altGlory': '{\nr2..\n{\\repeat unfold 5 \\fullRest}\nr4. \n\\transpose c g {c\'8 c\' a g f g a\ng4 f4 } r4 r4 r4.\n\n\\repeat unfold 10 \\fullRest\n}',
-				'tenorGlory': '{\\repeat unfold 19 \\fullRest\n}',
-				'basGlory': '{<c f a>4 r4 r4.\n\n\\basOstinatTo\n\\basOstinatTre\n\n{\\repeat unfold 14 \\fullRest}\n}'
-			}
-		},
-		'Foerste': {
-			'voices': {
-				'altFoerste': '{<bes e\' g\' c\'\'>2 r4.\n\\relative c\'{ \n\\repeat unfold 4 \\fullRest \n\\repeat unfold 4 \\fullRest \n \\FugaTema \\FugaSpin\n \\modalTranspose d c \\diatonicScale { \\FugaSpin }\n\\transpose c c\' {\n\\softKontra\n%  e8 d e r e f g \n%  a g a g f g a \nbes8 a bes a g c\' b\na g a g fis bes a\n}}}',
-				'tenorFoerste': '{\\modalTranspose c g \\diatonicScale {\n \\repeat unfold 4 \\fullRest  \n\n\\FugaTema \n\\FugaSpin \n\\modalTranspose d c \\diatonicScale { \\FugaSpin } \n\\modalTranspose e c \\diatonicScale { \\FugaSpin } \n}\n \\modalTranspose c f \\diatonicScale { \\softKontra }\n%  a8 g a r a bes c\'\n%  d\' c\' d\' c\' bes c\' d\' \ng8 r bes b c\'4 cis\'8\nd\'4 a b g8\n%  \\modalTranspose e c\' \\diatonicScale { \\FugaSpin } \n%  \\modalTranspose e bes \\diatonicScale { \\FugaSpin } \nc\'4 r r r8 r4 r r4.\nf4 fis g gis8 a4 r a8 g a\n}',
-				'basFoerste': '{     \n{ c2.. c4 f e f8 d2~ d8 e[ f] }\n \\FugaSpin\n \\modalTranspose d c \\diatonicScale { \\FugaSpin }\n\n\\softKontra\n\nbes8 r f4 g f8\ne r c4 f4 e8\nd4 dis e c8\n\nf2 r4 r8 \n%   \\modalTranspose c g \\diatonicScale { \\SynkopeSpin }\n \\fullRest \\fullRest \\fullRest \\fullRest\n \\fullRest\n \\fullRest\n%  f4 fis g gis8 a4 \nr4 c8 cis d4 dis8\n\n}',
-				'sopranFoerste': '{ \n\\repeat unfold 5 \\fullRest \n\\repeat unfold 8 \\fullRest \n\\modalTranspose c g\' \\diatonicScale { \\FugaTema }\n\\transpose c g\' { \\FugaSpin }\n\\modalTranspose d g\' \\diatonicScale { \\FugaSpin }\n}'
-			}
-		},
-		'Amen': {
-			'voices': {
-				'sopranAmen': '{\n\\transpose c des\' {\nc\'2..~ \nc\'4 < a>4 <g>4 <f>8\n<des f bes>2~\n <des f bes>8\n < d a>4\n<bes, d g>4.~\n<bes, c g>2\n<bes, f>2~\n <bes, f>8~\n <a, c f>4  }\n\n\n\\transpose c des {\n\n<bes c\' f\' bes\'>2\n <a c\' f\' a\'>4.\n<a c\' f\' c\'\'>2..\n<bes c\' g\' bes\'>8\n<a c\' f\' f\'\'>8\n<bes c\' g\' bes\'>8\n<a c\' a\'>2\n}\n }',
-				'altAmen': '\\transpose c des{  \n<f\' a\'>2..\n  \\fullRest  \\fullRest  \\fullRest  \n  \\fullRest  \\fullRest  \\fullRest  \n\n\\fullRest  }',
-				'tenorAmen': '\\transpose c des{ \nc\'8 c\' a g f g a\ng4 f4 r4.\n \\fullRest   \\fullRest \\fullRest\n  \\fullRest  \\fullRest  \\fullRest  \n}',
-				'basAmen': '{ \n\\transpose c des\' {\nc,2..~ \nc,4 <c,>4 <cis, >4 <d, >8\n<es, g, >2~\n <es, g,>8\n <b,, f,>4\n<c, f, bes, >4.~\n<c, e, bes, >2\n<f,, d, bes, >2~\n <f,, d, bes, >8~\n <f,, c, a, >4  }\n\n\n\\transpose c des {\n\n<f, d f bes >2\n <f, c f a >4.\n<f, e a >2..\n<f, d f bes >8\n<f, e a >8\n<f, d f bes >8\n<f, c g a >2\n}\n}'
-			}
-		},
-	},
-	'variables': {
-		'tinyTheme': '{ c4 d4 e f }',
-		'rests': ' { r\\brevis r1 r2 r4 r8 r16 r32 r64 r128 r128  }',
-		'values': '{ c\\brevis c1 c2 c4 c8 c16 c32 c64 c128 c128 }',
-		'chords': '{ r4 <d f g>8 r8 <c f a>4 <d f g>8  }',
-		'subSequence': '{ c4 { d4 e } f }',
-		'pitches': '{ c4 d e f g a b c\' }',
-		'octaves': '{ c\'\'\'4 c\'\' c\' c c, c,, c,,, }',
-		'accidentals': '{ ceses4 ces c cis cisis }',
-		'dots': '{ c4 c4. c4.. c4... <c e>4. r4.  }',
-		'ties': '{ c4~ c16 }',
-		'fullRest': '{ s1*7/8 }',
-		'timeChange': '{c4 \\time 4/8 c4}',
-		'beams': '{ c8[ d e] f g[ a] }',
-		'transposition': '{ c4 \\transpose c e { d4 e } f }',
-		'variables': '{ c4 \\tinyTheme c4 }'
-	},
-	'score': [{
-			'context': 'sopran',
-			'content': '\\tempo "Allegretto" 4 = 140 \\key f \\major \\time 7/8 \\sopran'
-		}, {
-			'context': 'alt',
-			'content': '\\key f \\major \\time 7/8 \\alt'
-		}, {
-			'context': 'tenor',
-			'content': '\\key f \\major \\time 7/8 \\clef "treble_8" \\tenor'
-		}, {
-			'context': 'bas',
-			'content': '\\key f \\major \\time 7/8 \\clef "bass" \\bas'
-		}
-	]
-};
+    'voices': {
+        'voices': ['sopran', 'alt', 'tenor', 'bas'],
+        'sections': ['Glory', 'Foerste', 'Amen']
+    },
+    'scales': {
+        'diatonicScale': '{ c d e f g a bes }'
+    },
+    'sections': {
+        'Glory': {
+            'voices': {
+                'sopranGlory': '{\\modalTranspose c c\' \\diatonicScale { \\Glory r4 \\fullRest\n\\Glory \n\\GloryB\n}\n' +
+                '%   \\addlyrics {\n%      Glo -- ry to the Lord,\n%      glo -- ry to the Lord,\n' +
+                '%      glo -- ry to the Lord in the high %  -- _ est!\n%      Glo -- ry to the Lord,\n' +
+                '%      glo -- ry to the Lord,\n%      glo -- ry to the Lord in the high - %  est!\n%  And peace _ on _ earth,\n' +
+                '%  and peace _ _ on \n%    }\n}',
+                'altGlory': '{\nr2..\n{\\repeat unfold 5 \\fullRest}\nr4. \n\\transpose c g {c\'8 c\' a g f g a\ng4 f4 } r4 r4 r4.\n\n' +
+                '\\repeat unfold 10 \\fullRest\n}',
+                'tenorGlory': '{\\repeat unfold 19 \\fullRest\n}',
+                'basGlory': '{<c f a>4 r4 r4.\n\n\\basOstinatTo\n\\basOstinatTre\n\n{\\repeat unfold 14 \\fullRest}\n}'
+            }
+        },
+        'Foerste': {
+            'voices': {
+                'altFoerste': '{<bes e\' g\' c\'\'>2 r4.\n\\relative c\'{ \n\\repeat unfold 4 \\fullRest \n' +
+                '\\repeat unfold 4 \\fullRest \n \\FugaTema \\FugaSpin\n \\modalTranspose d c \\diatonicScale { \\FugaSpin }\n' +
+                '\\transpose c c\' {\n\\softKontra\n%  e8 d e r e f g \n%  a g a g f g a \nbes8 a bes a g c\' b\na g a g fis bes a\n}}}',
+                'tenorFoerste': '{\\modalTranspose c g \\diatonicScale {\n \\repeat unfold 4 \\fullRest  \n\n\\FugaTema \n' +
+                '\\FugaSpin \n\\modalTranspose d c \\diatonicScale { \\FugaSpin } \n' +
+                '\\modalTranspose e c \\diatonicScale { \\FugaSpin } \n}\n \\modalTranspose c f \\diatonicScale { \\softKontra }\n' +
+                '%  a8 g a r a bes c\'\n%  d\' c\' d\' c\' bes c\' d\' \ng8 r bes b c\'4 cis\'8\nd\'4 a b g8\n' +
+                '%  \\modalTranspose e c\' \\diatonicScale { \\FugaSpin } \n%  \\modalTranspose e bes \\diatonicScale { \\FugaSpin } \n' +
+                'c\'4 r r r8 r4 r r4.\nf4 fis g gis8 a4 r a8 g a\n}',
+                'basFoerste': '{     \n{ c2.. c4 f e f8 d2~ d8 e[ f] }\n \\FugaSpin\n' +
+                ' \\modalTranspose d c \\diatonicScale { \\FugaSpin }\n\n\\softKontra\n\nbes8 r f4 g f8\ne r c4 f4 e8\nd4 dis e c8\n' +
+                '\nf2 r4 r8 \n%   \\modalTranspose c g \\diatonicScale { \\SynkopeSpin }\n \\fullRest \\fullRest \\fullRest \\fullRest\n' +
+                ' \\fullRest\n \\fullRest\n%  f4 fis g gis8 a4 \nr4 c8 cis d4 dis8\n\n}',
+                'sopranFoerste': '{ \n\\repeat unfold 5 \\fullRest \n\\repeat unfold 8 \\fullRest \n' +
+                '\\modalTranspose c g\' \\diatonicScale { \\FugaTema }\n\\transpose c g\' { \\FugaSpin }\n' +
+                '\\modalTranspose d g\' \\diatonicScale { \\FugaSpin }\n}'
+            }
+        },
+        'Amen': {
+            'voices': {
+                'sopranAmen': '{\n\\transpose c des\' {\nc\'2..~ \nc\'4 < a>4 <g>4 <f>8\n<des f bes>2~\n <des f bes>8\n < d a>4\n<bes, d ' +
+                'g>4.~\n<bes, c g>2\n<bes, f>2~\n <bes, f>8~\n <a, c f>4  }\n\n\n\\transpose c des {\n\n<bes c\' f\' bes\'>2\n' +
+                ' <a c\' f\' a\'>4.\n<a c\' f\' c\'\'>2..\n<bes c\' g\' bes\'>8\n<a c\' f\' f\'\'>8\n<bes c\' g\' bes\'>8\n' +
+                '<a c\' a\'>2\n}\n }',
+                'altAmen': '\\transpose c des{  \n<f\' a\'>2..\n  \\fullRest  \\fullRest  \\fullRest  \n' +
+                '  \\fullRest  \\fullRest  \\fullRest ' +
+                ' \n\n\\fullRest  }',
+                'tenorAmen': '\\transpose c des{ \nc\'8 c\' a g f g a\ng4 f4 r4.\n' +
+                ' \\fullRest   \\fullRest \\fullRest\n  \\fullRest  \\fullRest ' +
+                ' \\fullRest  \n}',
+                'basAmen': '{ \n\\transpose c des\' {\nc,2..~ \nc,4 <c,>4 <cis, >4 <d, >8\n<es, g, >2~\n' +
+                ' <es, g,>8\n <b,, f,>4\n<c, f, bes, >4.~\n<c, e, bes, >2\n<f,, d, bes, >2~\n <f,, d, bes, >8~\n' +
+                ' <f,, c, a, >4  }\n\n\n\\transpose c des {\n\n<f, d f bes >2\n <f, c f a >4.\n<f, e a >2..\n' +
+                '<f, d f bes >8\n<f, e a >8\n<f, d f bes >8\n<f, c g a >2\n}\n}'
+            }
+        },
+    },
+    'variables': {
+        'tinyTheme': '{ c4 d4 e f }',
+        'rests': ' { r\\brevis r1 r2 r4 r8 r16 r32 r64 r128 r128  }',
+        'values': '{ c\\brevis c1 c2 c4 c8 c16 c32 c64 c128 c128 }',
+        'chords': '{ r4 <d f g>8 r8 <c f a>4 <d f g>8  }',
+        'subSequence': '{ c4 { d4 e } f }',
+        'pitches': '{ c4 d e f g a b c\' }',
+        'octaves': '{ c\'\'\'4 c\'\' c\' c c, c,, c,,, }',
+        'accidentals': '{ ceses4 ces c cis cisis }',
+        'dots': '{ c4 c4. c4.. c4... <c e>4. r4.  }',
+        'ties': '{ c4~ c16 }',
+        'fullRest': '{ s1*7/8 }',
+        'timeChange': '{c4 \\time 4/8 c4}',
+        'beams': '{ c8[ d e] f g[ a] }',
+        'transposition': '{ c4 \\transpose c e { d4 e } f }',
+        'variables': '{ c4 \\tinyTheme c4 }',
+        'twiceVariable': '{ c4 \\tinyTheme c4 \\tinyTheme }',
+        'transposedVariable': '{ c2 \\tinyTheme c2  \\transpose c e { \\tinyTheme } c2 }'
+    },
+    'score': [{
+            'context': 'sopran',
+            'content': '\\tempo "Allegretto" 4 = 140 \\key f \\major \\time 7/8 \\sopran'
+        }, {
+            'context': 'alt',
+            'content': '\\key f \\major \\time 7/8 \\alt'
+        }, {
+            'context': 'tenor',
+            'content': '\\key f \\major \\time 7/8 \\clef "treble_8" \\tenor'
+        }, {
+            'context': 'bas',
+            'content': '\\key f \\major \\time 7/8 \\clef "bass" \\bas'
+        }
+    ]
+  };
 
   json: IModel;
   loadUrl = 'http://localhost:8081/getFile/users1.json';

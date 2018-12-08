@@ -6,9 +6,7 @@ Todo:
 
 parse [ ] efter node
 s1*7/8
-variable
-\modalTranspose og \transpose
-\time
+\modalTranspose
 
 */
 {

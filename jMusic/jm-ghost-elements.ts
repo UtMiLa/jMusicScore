@@ -128,6 +128,7 @@ export class VariableRef extends MusicElement implements ITimedObjectEvent, IEve
 
     private updateEvents(events: IEventInfo[]){
         for(var i = 0; i < events.length; i++){
+            events[i] = events[i].clone(this.id);
             events[i].relTime = events[i].relTime.add(this.absTime.fromStart());
         }
     }

@@ -75,7 +75,7 @@ describe("NullEventVisitor", function () {
             //console.log((<INoteInfo>events[i]).absTime.toString());
         }
         expect(visitor.visitNoteInfo).toHaveBeenCalledTimes(testItem.res.length);
-        // todo: test abstime, pitch, notelen
+        // todo: test notelen
         for (let i = 0; i < testItem.res.length; i++){
             const call = (<any>visitor.visitNoteInfo).calls.argsFor(i);
             expect(call).toBeDefined();

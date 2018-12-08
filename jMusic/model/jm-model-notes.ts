@@ -64,7 +64,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             visitor.visitNoteInfo(this);
         }
         
-        constructor(note: NoteElement){
+        constructor(note: INote){
             super();
             this.source = note;
             this.heads = note.noteheadElements.map(h => h.getInfo());
@@ -74,6 +74,18 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             this.relTime = note.absTime.fromStart();
             this.id = note.id;
         }
+
+        clone(addId: string): INoteInfo {
+            let res = new NoteEventInfo(this.source);
+            res.id = addId + '_' + res.id;
+            res.source = this.source;
+            res.heads = this.heads; // todo: cloned
+            res.decorations = this.decorations;
+            res.longDecorations = this.longDecorations;
+            res.syllables = this.syllables;
+            res.relTime = this.relTime;
+            return res;
+        }
     }
 
 
@@ -81,7 +93,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         source: INotehead;
         pitch: Pitch;
         
-        constructor(notehead: NoteheadElement){
+        constructor(notehead: INotehead){
             super();
             this.source = notehead;
             this.pitch = notehead.pitch;
@@ -91,6 +103,12 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             visitor.visitNoteHeadInfo(this);
         }
         visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {}
+        clone(addId: string): INoteHeadInfo {
+            let res = new NoteHeadInfo(this.source);
+            res.id = addId + '_' + res.id;
+            res.pitch = this.pitch;
+            return res;
+        }
     }
 /*
 
@@ -114,6 +132,11 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         inviteEventVisitor(visitor: IEventVisitor): void {
             visitor.visitNoteDecorationInfo(this);
         }
+        clone(addId: string): INoteDecorationEventInfo {
+            let res = new NoteDecorationEventInfo(this.source);
+            res.id = addId + '_' + res.id;
+            return res;
+        }
         
     }
 
@@ -128,6 +151,11 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         inviteEventVisitor(visitor: IEventVisitor): void {
             visitor.visitLongDecorationInfo(this);
         }
+        clone(addId: string): ILongDecorationEventInfo {
+            let res = new LongDecorationEventInfo(this.source);
+            res.id = addId + '_' + res.id;
+            return res;
+        }
         
     }
 
@@ -141,6 +169,11 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         }
         inviteEventVisitor(visitor: IEventVisitor): void {
             visitor.visitTextSyllableInfo(this);
+        }
+        clone(addId: string): ITextSyllableEventInfo {
+            let res = new TextSyllableEventInfo(this.source);
+            res.id = addId + '_' + res.id;
+            return res;
         }
         
     }

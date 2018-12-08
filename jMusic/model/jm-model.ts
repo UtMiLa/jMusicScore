@@ -25,9 +25,6 @@ import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor
 import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, NoteElement, NoteheadElement } from './jm-model-notes';
 
 
-        // todo: Spacers out of this file
-        // todo: NoteId away
-
         /*
         Linked list i stedet for Array:
 
@@ -48,6 +45,15 @@ class BarEventInfo extends EventInfo implements IBarEventInfo{
         this.id = source.id;
         //{ source: this, id: this.id, visitAllEvents: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => { return TimeSpan.noTime;} }
     }
+
+    clone(addId: string): IBarEventInfo {
+        let res = new BarEventInfo(this.source);
+        res.id = addId + '_' + res.id;
+        return res;
+    }
+    inviteEventVisitor(visitor: IEventVisitor): void {
+        visitor.visitBarInfo(this);
+    }
 }
 class ClefEventInfo extends EventInfo implements IClefEventInfo{
     source: ClefElement;
@@ -60,6 +66,14 @@ class ClefEventInfo extends EventInfo implements IClefEventInfo{
     //{ source: this, id: this.id, visitAllEvents: undefined, relTime: this.absTime.fromStart(), }
     getTimeVal(): TimeSpan {
         return TimeSpan.noTime;
+    }
+    clone(addId: string): IClefEventInfo {
+        let res = new ClefEventInfo(this.source);
+        res.id = addId + '_' + res.id;
+        return res;
+    }
+    inviteEventVisitor(visitor: IEventVisitor): void {
+        visitor.visitClefInfo(this);
     }
 }
 class MeterEventInfo extends EventInfo implements IMeterEventInfo{
@@ -75,6 +89,14 @@ class MeterEventInfo extends EventInfo implements IMeterEventInfo{
     getTimeVal(): TimeSpan {
         return TimeSpan.noTime;
     }
+    clone(addId: string): IMeterEventInfo {
+        let res = new MeterEventInfo(this.source);
+        res.id = addId + '_' + res.id;
+        return res;
+    }
+    inviteEventVisitor(visitor: IEventVisitor): void {
+        visitor.visitMeterInfo(this);
+    }
 }
 class StaffExpressionEventInfo extends EventInfo implements IStaffExpressionEventInfo{
     source: StaffExpression;
@@ -89,8 +111,19 @@ class StaffExpressionEventInfo extends EventInfo implements IStaffExpressionEven
     getTimeVal(): TimeSpan {
         return TimeSpan.noTime;
     }
+    clone(addId: string): IStaffExpressionEventInfo {
+        let res = new StaffExpressionEventInfo(this.source);
+        res.id = addId + '_' + res.id;
+        return res;
+    }
+    inviteEventVisitor(visitor: IEventVisitor): void {
+        visitor.visitStaffExpressionInfo(this);
+    }
 }
 class KeyEventInfo extends EventInfo implements IKeyEventInfo{
+    inviteEventVisitor(visitor: IEventVisitor): void {
+        throw new Error("Method not implemented.");
+    }
     source: KeyElement;
         
     constructor(source: KeyElement){
@@ -103,6 +136,11 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
 
     getTimeVal(): TimeSpan {
         return TimeSpan.noTime;
+    }
+    clone(addId: string): IKeyEventInfo {
+        let res = new KeyEventInfo(this.source);
+        res.id = addId + '_' + res.id;
+        return res;
     }
 }
 /**************************************************** MusicElement stuff ****************************************************/
@@ -1022,7 +1060,6 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                         }
                     }
                 }
-                // todo: transpose all pitches
                 return events;
             }
             public getElementName() { return "Transpose"; }
@@ -1175,7 +1212,6 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             static createFromMemento(parent: IMeterOwner, memento: IMemento): IMeter {
                 if (!memento.def) return null;
                 var def = MeterDefinitionFactory.createMeterDefinition(memento.def.def);
-                    //new RegularMeterDefinition(memento.def.num, memento.def.den); // todo: factory
                 var absTime = AbsoluteTime.createFromMemento(memento.def.abs);
                 var meter: IMeter = new MeterElement(parent, def, absTime);// todo: add to parent
                 if (parent) parent.addChild(meter);
@@ -1396,7 +1432,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 var res: INote;
                 var noteElements = sequence.noteElements;
 
-                for (var i = 0; i < noteElements.length; i++) { // todo: problem
+                for (var i = 0; i < noteElements.length; i++) {
                     var note = noteElements[i];
                     if (note.absTime.add(note.getTimeVal()).gt(absTime)) {
                         return note;
@@ -1413,7 +1449,6 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             /** Check if absTime is in an area with unfinished tuplets and return the current tuplet fraction at this absTime */
             static inTupletArea(globalContext: IGlobalContext, sequence: ISequence, absTime: AbsoluteTime): Rational {
                 // Find first note in the bar
-                // todo: maybe add support for tuplets crossing bar lines
                 //var staffContext = sequence.parent.getStaffContext(absTime);
                 var barBegin: AbsoluteTime = absTime/*.sub(staffContext.timeInBar)*/;
                 var firstNoteInBar: INote = Music.findNote(globalContext, sequence, barBegin);

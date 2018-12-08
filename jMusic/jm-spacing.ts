@@ -446,6 +446,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                 public doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo) {
                     const headSpacingInfo = this.globalContext.getSpacingInfo<NoteHeadSpacingInfo>(head);
                     const noteSpacingInfo = this.globalContext.getSpacingInfo<NoteSpacingInfo>(noteCtx);
+                    if (headSpacingInfo !== spacing) alert('wrong');
 
                     spacing.accidentalX = -headSpacingInfo.offset.x * 2 + Metrics.accidentalX + headSpacingInfo.accidentalStep * Metrics.accidentalXstep;
                     spacing.graceScale = noteSpacingInfo.graceScale;

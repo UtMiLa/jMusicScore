@@ -641,7 +641,7 @@ export class TextSyllableVisitor extends ContextVisitor {
     }
 }   
 
-export class EventInfo implements IEventInfo {
+export abstract class EventInfo implements IEventInfo {
     id: string;        
     relTime: TimeSpan;
     source: IMusicElement;
@@ -651,9 +651,8 @@ export class EventInfo implements IEventInfo {
     getTimeVal(): TimeSpan {
         throw new Error("Method not implemented.");
     }
-    inviteEventVisitor(visitor: IEventVisitor): void {
-        throw new Error("Method not implemented.");
-    }
+    abstract inviteEventVisitor(visitor: IEventVisitor): void;
     visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {}
+    abstract clone(addId: string): IEventInfo;    
 }
 

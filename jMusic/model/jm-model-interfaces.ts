@@ -281,6 +281,7 @@ export interface IEventInfo extends IEventVisitorTarget {
     getTimeVal(): TimeSpan;
     visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void;
     inviteEventVisitor(visitor: IEventVisitor): void;
+    clone(addId: string): IEventInfo;
 }
 export interface INoteHeadInfo extends IEventInfo {
     source: INotehead;
@@ -416,7 +417,7 @@ export interface IEventVisitor extends IVisitorIterator<IEventVisitorTarget> {
     visitScore(score: IScore): void;
 }
 
-export interface IEventVisitorTarget { //todo: både IEvent og IMusicContainer skal understøtte denne - og Sequence skal sende videre til events
+export interface IEventVisitorTarget { // både IEvent og IMusicContainer skal understøtte denne - og Sequence skal sende videre til events
     visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void;
     inviteEventVisitor(visitor: IEventVisitor, globalContext: IGlobalContext): void;
     getElementName(): string;
