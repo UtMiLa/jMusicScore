@@ -92,7 +92,8 @@ export class MusicProviderService {
         'transposition': '{ c4 \\transpose c e { d4 e } f }',
         'variables': '{ c4 \\tinyTheme c4 }',
         'twiceVariable': '{ c4 \\tinyTheme c4 \\tinyTheme }',
-        'transposedVariable': '{ c2 \\tinyTheme c2  \\transpose c e { \\tinyTheme } c2 }'
+        'transposedVariable': '{ c2 \\tinyTheme c2  \\transpose c e { \\tinyTheme } c2 }',
+        'empty': ''
     },
     'score': [{
             'context': 'sopran',
