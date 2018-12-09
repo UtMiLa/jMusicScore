@@ -2,6 +2,7 @@ import {AbsoluteTime, TimeSpan} from './jm-music-basics';
 import { IBar, IScore, IVoice, IStaff, IMeter, IKey, INote, INoteSource, INoteContext, ITimedEvent, IBeam, INotehead, IGlobalContext,  IVoiceNote } from './model/jm-model-interfaces';
 import {  Music,      BeamElement   } from "./model/jm-model";    
 import { IScoreRefiner } from './jm-interfaces';
+import { ContextEventVisitor } from './model/jm-model-base';
 
 //module JMusicScore {
  /*   import {Model} from "./jMusicScore";
@@ -315,6 +316,12 @@ import { IScoreRefiner } from './jm-interfaces';
             }
         }
 */
+class BeamingVisitor extends ContextEventVisitor{
+
+}
+
+
+
         export class BeamValidator implements IScoreValidator {
             constructor(private globalContext: IGlobalContext) {}
 
@@ -356,6 +363,11 @@ import { IScoreRefiner } from './jm-interfaces';
                 var quarterNote = TimeSpan.quarterNote;
                 var eighthNote = TimeSpan.eighthNote;
                 var noOfGraceNotes = 0;
+
+
+                voice.visitAllEvents(new BeamingVisitor(this.globalContext), this.globalContext);
+
+
                 voice.withNotes(this.globalContext, (note: INote, context: INoteContext) => {
                     /*for (var iNote = 0; iNote < voice.getChildren().length; iNote++) {
                         var note: INote = voice.getChild(iNote);*/
