@@ -285,6 +285,7 @@ export interface IEventInfo extends IEventVisitorTarget {
     clone(addId: string): IEventInfo;
 }
 export interface INoteHeadInfo extends IEventInfo {
+    tie: any;
     getAccidental(): string;
     getPitch(): Pitch;
     source: INotehead;
@@ -293,16 +294,26 @@ export interface INoteHeadInfo extends IEventInfo {
     id: string;
     inviteEventVisitor(visitor: IEventVisitor): void;
     visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void;
+    clone(addId: string): INoteHeadInfo;
 }
 export interface IKeyEventInfo extends IEventInfo { source: IKey; }
 export interface IClefEventInfo extends IEventInfo {source: IClef; }
 export interface IMeterEventInfo extends IEventInfo { source: IMeter;}
 export interface IBarEventInfo extends IEventInfo { source: IBar;}
 export interface IBeamEventInfo extends IEventInfo { source: IBeam; }
-export interface INoteDecorationEventInfo extends IEventInfo {source: INoteDecorationElement; }
-export interface ILongDecorationEventInfo extends IEventInfo { source: ILongDecorationElement; }
+export interface INoteDecorationEventInfo extends IEventInfo {
+    source: INoteDecorationElement; 
+    clone(addId: string): INoteDecorationEventInfo;
+}
+export interface ILongDecorationEventInfo extends IEventInfo { 
+    source: ILongDecorationElement; 
+    clone(addId: string): ILongDecorationEventInfo;
+}
 export interface IStaffExpressionEventInfo extends IEventInfo { source: IStaffExpression; }
-export interface ITextSyllableEventInfo extends IEventInfo { source: ITextSyllableElement; }
+export interface ITextSyllableEventInfo extends IEventInfo { 
+    source: ITextSyllableElement; 
+    clone(addId: string): ITextSyllableEventInfo;
+}
 
 /**INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
  *      Id er konkateneret af variables og NoteElement's Id. NoteSpacingInfo og AbsTime er knyttet til denne. 

@@ -89,10 +89,10 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             let res = new NoteEventInfo(this.source);
             res.id = addId + '_' + res.id;
             res.source = this.source;
-            res.heads = this.heads; // todo: cloned
-            res.decorations = this.decorations;
-            res.longDecorations = this.longDecorations;
-            res.syllables = this.syllables;
+            res.heads = this.heads.map(h => h.clone(addId));
+            res.decorations = this.decorations.map(h => h.clone(addId));
+            res.longDecorations = this.longDecorations.map(h => h.clone(addId));
+            res.syllables = this.syllables.map(h => h.clone(addId));
             res.relTime = this.relTime;
             return res;
         }
@@ -100,6 +100,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
 
     class NoteHeadInfo extends EventInfo implements INoteHeadInfo {
+        get tie(): boolean { return this.source.tie; }
         getAccidental() {
             return this.source.getAccidental();
         }

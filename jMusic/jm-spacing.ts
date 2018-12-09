@@ -443,12 +443,14 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return <T>element.spacingInfo;
                 }*/
 
-                /*visitNoteHeadInfo(head: INoteHeadInfo) {
+                visitNoteHeadInfo(head: INoteHeadInfo) {
                     var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
-                    this.doNoteHead(head.source, this.noteContext, spacing); 
-                }*/
+                    let noteCtx: INoteContext = this.noteContext
+                    let noteInfo = this.currentNote;
+/*                    this.doNoteHead(head.source, this.noteContext, spacing); 
+                }
     
-                public doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo, noteInfo: INoteInfo) {
+                public doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo, noteInfo: INoteInfo) {*/
                     const headSpacingInfo = spacing;//this.globalContext.getSpacingInfo<NoteHeadSpacingInfo>(head);
                     const noteSpacingInfo = this.globalContext.getSpacingInfo<NoteSpacingInfo>(noteInfo);
                     //if (headSpacingInfo !== spacing) alert('wrong');
@@ -456,15 +458,16 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     spacing.accidentalX = -headSpacingInfo.offset.x * 2 + Metrics.accidentalX + headSpacingInfo.accidentalStep * Metrics.accidentalXstep;
                     spacing.graceScale = noteSpacingInfo.graceScale;
     
-                    spacing.offset.y = head.parent.rest ? 
-                    Metrics.restY : NoteSpacer.pitchToStaffLine(head.pitch, <any>head.parent, noteCtx) * Metrics.pitchYFactor;
+                    spacing.offset.y = noteInfo.rest ? 
+                        Metrics.restY : 
+                        NoteSpacer.pitchToStaffLine(head.pitch, noteCtx) * Metrics.pitchYFactor;
     
     
                     if (head.tie) {
-                        var tiedTo = <INotehead>head.getProperty("tiedTo");
+                        var tiedTo = <INotehead>head.source.getProperty("tiedTo");
                         if (true) { // todo: if length is changed
                             // todo: update slurs after spacing is decided
-                            spacing.tieDir = (head.getProperty("tieDirection") === "UP") ? -1 : 1;
+                            spacing.tieDir = (head.source.getProperty("tieDirection") === "UP") ? -1 : 1;
                             var x0 = Metrics.tieX0; // todo: x0 and x1 based on real notehead sizes
                             var y0 = spacing.tieDir * Metrics.tieY0;
                             spacing.tieStart = new Point(x0, y0);
@@ -473,7 +476,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                             if (tiedTo) {
                                 var tiedToSpacing = this.globalContext.getSpacingInfo(tiedTo);
                                 var tiedToNoteSpacing = this.globalContext.getSpacingInfo(tiedTo.parent);
-                                var noteSpacing = this.globalContext.getSpacingInfo(head.parent);
+                                var noteSpacing = noteSpacingInfo;//this.globalContext.getSpacingInfo(head.parent);
     
                                 x1 = tiedToNoteSpacing.offset.x + tiedToSpacing.offset.x - spacing.offset.x - noteSpacing.offset.x - 2 * x0;
                             }
@@ -524,7 +527,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         if (w1 > width) width = w1;
                     });
     
-                    var heads = note.source.noteheadElements;
+                    var heads = note.heads;
                     heads.sort(function (a, b) { return b.getPitch().diff(a.getPitch()).length; });
                     var accidentalStep = width / 10; // todo: constant
                     for (var i = 0; i < heads.length; i++) {
@@ -534,6 +537,15 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         }
                     }
                     
+                    /*var heads = note.source.noteheadElements;
+                    heads.sort(function (a, b) { return b.getPitch().diff(a.getPitch()).length; });
+                    var accidentalStep = width / 10; // todo: constant
+                    for (var i = 0; i < heads.length; i++) {
+                        var head = heads[i];
+                        if (head.getAccidental()) {
+                            globalContext.getSpacingInfo<NoteHeadSpacingInfo>(head).accidentalStep = accidentalStep++;
+                        }
+                    }*/
                     if (accidentalStep) {
                         var w1 = Metrics.preWidthAccidental - accidentalStep * Metrics.accidentalXstep;
                         if (w1 > width) return w1;
@@ -1182,11 +1194,11 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     return this.getStaffContext(elm.parent, time);
                 }*/
     
-                public static pitchToStaffLine(pitch: Pitch, note: INoteInfo, noteCtx: INoteContext) {
+                public static pitchToStaffLine(pitch: Pitch, noteCtx: INoteContext) {
                     var clef = noteCtx.getStaffContext().clef;
                     return clef.pitchToStaffLine(pitch);
                 }
-                public static staffLineToPitch(line: number, note: INoteInfo, noteCtx: INoteContext) {
+                public static staffLineToPitch(line: number, noteCtx: INoteContext) {
                     var clef = noteCtx.getStaffContext().clef;
                     return clef.staffLineToPitch(line);
                 }
@@ -1196,7 +1208,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
     
                     var lowPitch = 99;
                     var highPitch = -99;
-                    note.source.withHeads(globalContext, (head: INotehead) => {
+                    /*note.source.withHeads(globalContext, (head: INotehead) => {
                         var thePitch = NoteSpacer.pitchToStaffLine(head.getPitch(), note, noteCtx);
                         if (thePitch < lowPitch) {
                             lowPitch = thePitch;
@@ -1204,16 +1216,16 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                         if (thePitch > highPitch) {
                             highPitch = thePitch;
                         }
-                    });
-                    /*for (var i = 0; i < note.getChildren().length; i++) {
-                        var thePitch = MusicSpacing.NoteSpacer.pitchToStaffLine(note.getChild(i).getPitch(), note);
+                    });*/
+                    for (var i = 0; i < note.heads.length; i++) {
+                        var thePitch = NoteSpacer.pitchToStaffLine(note.heads[i].pitch, noteCtx);
                         if (thePitch < lowPitch) {
                             lowPitch = thePitch;
                         }
                         if (thePitch > highPitch) {
                             highPitch = thePitch;
                         }
-                    }*/
+                    }
                     //noteSpacing.lowPitch = MusicSpacing.NoteSpacer.staffLineToPitch(lowPitch, note);
                     //noteSpacing.highPitch = MusicSpacing.NoteSpacer.staffLineToPitch(highPitch, note);
                     noteSpacing.highPitchY = lowPitch;
@@ -1377,7 +1389,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
                     else {
                         spacingInfo.offset.x = spacingInfo.displacement ? Metrics.pitchXDisplacement : Metrics.pitchXNoDisplacement;
                     }
-                    spacingInfo.offset.y = headElm.source.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, <any>headElm.source.parent, noteCtx) * Metrics.pitchYFactor;
+                    spacingInfo.offset.y = headElm.source.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, noteCtx) * Metrics.pitchYFactor;
                     //if (displayData.ref) displayData.ref.setAttribute("transform", "translate(" + spacingInfo.center.x + "," + spacingInfo.center.y + ")");                
                 }
             }
