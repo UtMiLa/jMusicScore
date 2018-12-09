@@ -127,16 +127,6 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
             return res;
         }
     }
-/*
-
-            getInfo(): ITextSyllableEventInfo {
-                return {
-                    id: this.id,
-                    source: this
-                };
-            }
-
-*/
 
     class NoteDecorationEventInfo extends EventInfo implements INoteDecorationEventInfo {
         source: NoteDecorationElement;
@@ -410,7 +400,7 @@ public inviteEventVisitor(spacer: IEventVisitor, globalContext: IGlobalContext):
                 return this.getSpecialElements("LongDecoration");
             }
             get syllableElements(): ITextSyllableElement[] {
-                return this.getSpecialElements("Syllable");
+                return this.getSpecialElements("TextSyllable");
             }
 
             dotNo: number = 0;
