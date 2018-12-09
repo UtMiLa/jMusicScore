@@ -760,7 +760,7 @@ export class RedrawVisitor extends FakeContextVisitor {
         }
 
         // beams
-        if (!noteSpacing.flagNo)
+ /*todo:       if (!noteSpacing.flagNo)
             for (var i = 0; i < note.Beams.length; i++) {
                 var beam = note.Beams[i];
                 if (!beam || beam.parent !== note.source) continue;
@@ -772,7 +772,7 @@ export class RedrawVisitor extends FakeContextVisitor {
                     " " + beamSpacing.end.x + "," + (beamSpacing.end.y + 2 + step) +
                     " " + beamSpacing.start.x + "," + (beamSpacing.start.y + 2 + step) +
                     " z", 0, 0, 1, undefined, 'black', 'beam_'+beam.parent.id + '_' + beam.index);
-            }
+            }*/
     }
     doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: MyModel.ILongDecorationSpacingInfo) {
         if (spacing.render) spacing.render(deco, this.graphEngine, this.globalContext);
