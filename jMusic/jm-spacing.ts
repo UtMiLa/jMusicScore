@@ -1,7 +1,4 @@
-import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
-    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
-    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-music-basics'
+import { IVisitorIterator, ClefDefinition, ClefType, NoteDecorationKind, Pitch, StemDirectionType } from './jm-music-basics'
 import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInfo, IScore, IVoice, IStaff, ISequence, IScoreSpacingInfo,
         IMeter, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, 
         INote, INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, 
@@ -14,7 +11,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: Beam
 //todo: Bar
 //todo: Clef, Meter, Key
-//todo: TextSyllable, NoteDeco
+//todo: NoteDeco
 
 /// Music spacing classes - independent of graphics methods
 export module MusicSpacing {
