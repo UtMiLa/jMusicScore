@@ -741,7 +741,7 @@ export module MusicSpacing {
         }
         doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
             var beamSpacing = this.globalContext.getSpacingInfo<BeamSpacingInfo>(beam);
-            var noteSpacing = this.globalContext.getSpacingInfo<NoteSpacingInfo>(context);
+            var noteSpacing = this.globalContext.getSpacingInfo<NoteSpacingInfo>(beam.parent);
             // find noder
             var noteBeam = beam.parent.Beams[beam.index];
             beamSpacing.start.x = noteSpacing.offset.x + noteSpacing.stemX - noteSpacing.offset.x;
