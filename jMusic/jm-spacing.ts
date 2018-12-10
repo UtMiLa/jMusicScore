@@ -6,7 +6,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo,  ILongDecorationSpacingInfo, 
         ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo,  IGlobalContext, IEventVisitor, IEventVisitorTarget, INoteDecorationEventInfo, ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo } from './model/jm-model-interfaces';
 import { Music } from "./model/jm-model";
-import { ContextVisitor, Point, ContextEventVisitor, NoteHeadVisitor, NoteVisitor } from "./model/jm-model-base";
+import { ContextVisitor, Point, ContextEventVisitor, NoteHeadVisitor } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: Beam
 //todo: Bar
@@ -748,7 +748,7 @@ export module MusicSpacing {
             beamSpacing.start.y = noteSpacing.offset.y + noteSpacing.stemTipY;
             beamSpacing.end.x = 0;
             beamSpacing.end.y = 0;
-            if (noteBeam.toNote === noteBeam.parent) {
+            if (noteBeam.toNote.source === noteBeam.parent) { //todo: parent
                 // short beam ending in this note
                 beamSpacing.end.x = beamSpacing.start.x - 5;
                 beamSpacing.end.y = beamSpacing.start.y;
@@ -779,7 +779,7 @@ export module MusicSpacing {
 
             if (beam.toNote && beam.index === 0) {
                 var note = beam.parent;
-                while (note && note !== beam.toNote) {
+                while (note && note !== beam.toNote.source) { //todo: source
                     const noteSpacingInfo = this.globalContext.getSpacingInfo<NoteSpacingInfo>(note);
                     noteSpacingInfo.stemTipY = this.yValue(noteSpacingInfo.stemX + noteSpacingInfo.offset.x, beam);
                     noteSpacingInfo.stemLength = Math.abs(noteSpacingInfo.stemRootY - noteSpacingInfo.stemTipY);
@@ -1296,7 +1296,7 @@ export module MusicSpacing {
                 }
 
                 var beam = note.Beams[0];
-                if (beam && beam.parent !== note.source && beam.toNote !== note.source) {
+                if (beam && beam.parent !== note.source && beam.toNote !== note) {
                     var beamSpacing = globalContext.getSpacingInfo<BeamSpacingInfo>(beam);
                     if (beamSpacing) { // todo: spacer!
                         //noteSpacing.stemTipY = SVGBeamDesigner.yValue(noteSpacing.stemX + noteSpacing.offset.x, beam);

@@ -210,7 +210,7 @@ export interface IMeter extends ITimedChangeEvent {
 }
 export interface IBeam extends IMusicElement {
     parent: INote;
-    toNote: INote;
+    toNote: INoteInfo;
     index: number;
     //spacingInfo: IBeamSpacingInfo;
     //setSpacingInfo(spacingInfo: IBeamSpacingInfo): void;
@@ -321,6 +321,7 @@ export interface ITextSyllableEventInfo extends IEventInfo {
  *      Linker til foregående og næste node og Voice.
  *      Hver Sequence og variabel kopierer INoteInfo (og transformerer evt.). */
 export interface INoteInfo extends IEventInfo {
+    setBeamspan(beamspan: number[]): any;
     dotNo: number;
     NoteId: string;
     Beams: IBeam[];

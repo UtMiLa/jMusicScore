@@ -21,7 +21,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     INoteFinder,
     IEventVisitorTarget} from './jm-model-interfaces';
 
-    import { MusicElement, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo } from './jm-model-base'
+    import { MusicElement, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo } from './jm-model-base'
 
     class NoteEventInfo extends EventInfo implements INoteInfo {
         get dotNo(): number { return this.source.dotNo; }
@@ -31,6 +31,9 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         get timeVal(): TimeSpan { return this.source.timeVal; }
         getBeamspan() {
             return this.source.getBeamspan();
+        }
+        setBeamspan(beamspan: number[]) {
+            this.source.setBeamspan(beamspan);
         }
         rest: boolean;
         source: INote;

@@ -21,7 +21,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IStaffExpressionEventInfo,
     INoteFinder} from './jm-model-interfaces';
 
-import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, StructuralStaffVisitor, StructuralVoiceVisitor } from './jm-model-base';
+import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, StructuralNoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, StructuralStaffVisitor, StructuralVoiceVisitor } from './jm-model-base';
 import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, NoteElement, NoteheadElement } from './jm-model-notes';
 
 
@@ -712,7 +712,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             public withNotes(globalContext: IGlobalContext, f: (note: INoteSource, context: INoteContext, index: number) => void) {
                 /*const enumerator = new EventEnumerator(globalContext);
                 enumerator.doVoice(this, new NoteVisitor(globalContext, f));*/
-                this.visitAll(new NoteVisitor(globalContext, f));
+                this.visitAll(new StructuralNoteVisitor(globalContext, f));
             }
 
             public addChild(theChild: IMusicElement, before: IMusicElement = null, removeOrig: boolean = false): void {
@@ -852,7 +852,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 /*const enumerator = new EventEnumerator(globalContext);
                 enumerator.doSequence(this, new NoteVisitor(globalContext, f));*/
 
-                this.visitAll(new NoteVisitor(globalContext, f));
+                this.visitAll(new StructuralNoteVisitor(globalContext, f));
             }
             public getStemDirection(): StemDirectionType {
                 return this.stemDirection;
@@ -1256,19 +1256,19 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         }
 
         export class BeamElement extends MusicElement implements IBeam {
-            constructor(public parent: INote, public toNote: INote, public index: number) {
+            constructor(public parent: INote, public toNote: INoteInfo, public index: number) {
                 super(parent);
             }
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitBeam(this);
             }
             public remove(): void {
-                var note: INote = this.parent;
+                /*var note: INote = this.parent;
                 while (note) {
                     note.Beams[this.index] = undefined;
                     if (note === this.toNote) return;
                     note = Music.nextNote(new GlobalContext(), note); // todo: problem
-                }
+                }*/
             }
         }
 

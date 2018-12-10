@@ -394,7 +394,7 @@ export class ContextEventVisitor extends NullEventVisitor {
         this.noteContext = note.source.getContext();
         this.currentNote = note;
         var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
-        this.doNote(note.source, this.noteContext, spacing); 
+        this.doNote(note, this.noteContext, spacing); 
     }
     visitNoteDecorationInfo(deco: INoteDecorationEventInfo) { 
         var spacing = this.globalContext.getSpacingInfo<INoteDecorationSpacingInfo>(deco);
@@ -413,7 +413,7 @@ export class ContextEventVisitor extends NullEventVisitor {
         this.doBeam(beam.source, this.noteContext, spacing); 
     }
 
-    doNote(note: INote, context: INoteContext, spacing: INoteSpacingInfo) { }
+    doNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) { }
     doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo, noteInfo: INoteInfo) { }
     doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) { }
     doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) { }
@@ -493,12 +493,23 @@ export class FakeContextVisitor extends ContextEventVisitor implements IVisitor{
 }
 
 
-export class NoteVisitor extends ContextVisitor {
+export class StructuralNoteVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
         super(globalContext);
     }
     no: number = 0;
     doNote(note:INoteSource, context: INoteContext, spacing: INoteSpacingInfo): void {
+        this.callback(note, context, this.no++, spacing);
+    }
+}   
+
+
+export class NoteEventVisitor extends ContextEventVisitor {
+    constructor(globalContext: IGlobalContext, private callback: (note:INoteInfo, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
+        super(globalContext);
+    }
+    no: number = 0;
+    doNote(note:INoteInfo, context: INoteContext, spacing: INoteSpacingInfo): void {
         this.callback(note, context, this.no++, spacing);
     }
 }   
