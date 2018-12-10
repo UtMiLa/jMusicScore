@@ -8,7 +8,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 import { Music } from "./model/jm-model";
 import { ContextVisitor, Point, ContextEventVisitor, NoteHeadVisitor } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
-//todo: Beam
+//todo: AutoBeam
 //todo: Bar
 //todo: Clef, Meter, Key
 //todo: NoteDeco
