@@ -210,6 +210,7 @@ export interface IMeter extends ITimedChangeEvent {
 }
 export interface IBeam extends IMusicElement, IBeamEventInfo {
     parent: INote;
+    fromNote: INoteInfo;
     toNote: INoteInfo;
     index: number;
     //spacingInfo: IBeamSpacingInfo;
@@ -300,7 +301,9 @@ export interface IKeyEventInfo extends IEventInfo { source: IKey; }
 export interface IClefEventInfo extends IEventInfo {source: IClef; }
 export interface IMeterEventInfo extends IEventInfo { source: IMeter;}
 export interface IBarEventInfo extends IEventInfo { source: IBar;}
-export interface IBeamEventInfo extends IEventInfo { source: IBeam; }
+export interface IBeamEventInfo extends IEventInfo {
+    toNote: INoteInfo;
+    index: number; source: IBeam; }
 export interface INoteDecorationEventInfo extends IEventInfo {
     source: INoteDecorationElement; 
     clone(addId: string): INoteDecorationEventInfo;

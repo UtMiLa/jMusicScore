@@ -1274,7 +1274,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             clone(addId: string): IEventInfo {
                 throw new Error("Method not implemented.");
             }
-            constructor(public parent: INote, public toNote: INoteInfo, public index: number) {
+            constructor(public parent: INote, public fromNote: INoteInfo, public toNote: INoteInfo, public index: number) {
                 super(parent);
             }
             public inviteVisitor(visitor: IVisitor) {

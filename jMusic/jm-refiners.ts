@@ -373,7 +373,10 @@ class BeamingVisitor extends ContextEventVisitor{
             if (note.getBeamspan()[0]) {
                 note.setBeamspan([0]);
                 for (var i = 0; i < note.Beams.length; i++) {
-                    if (note.Beams[i]) note.Beams[i].parent = undefined;
+                    if (note.Beams[i]) {
+                        note.Beams[i].parent = undefined;
+                        note.Beams[i].fromNote = undefined;
+                    }
                     note.Beams[i] = undefined;
                 }
             }
@@ -617,7 +620,7 @@ export class BeamValidator implements IScoreValidator {
                     // check if Beam exists
                     var beam = note.Beams[i];
                     if (beam) {
-                        if (beam.parent === note.source) { //todo: parent
+                        if (beam.fromNote === note) { //todo: parent
                             var toNote: INoteInfo;
                             if (beamspan[i] === -1) {
                                 toNote = note;
@@ -654,7 +657,7 @@ export class BeamValidator implements IScoreValidator {
                         else {
                             toNote = noteEvents[iNote + beamspan[i] - 1];
                         }
-                        note.Beams[i] = new BeamElement(note.source, toNote, i); // todo: toNote
+                        note.Beams[i] = new BeamElement(note.source, note, toNote, i); // todo: toNote
                         beams[i] = note.Beams[i];
                     }
                 }

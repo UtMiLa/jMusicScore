@@ -29,6 +29,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
         get Beams(): IBeam[] { return this.source.Beams; }
         get graceType(): string { return this.source.graceType; }
         get timeVal(): TimeSpan { return this.source.timeVal; }
+        beams: IBeam[] = [];
         getBeamspan() {
             return this.source.getBeamspan();
         }
@@ -517,8 +518,8 @@ public inviteEventVisitor(spacer: IEventVisitor, globalContext: IGlobalContext):
                 }
             }
             public getStemDirection(): StemDirectionType {
-                if (this.Beams && this.Beams[0] && this.Beams[0].parent && this.Beams[0].parent !== this)
-                    return this.Beams[0].parent.getStemDirection();
+                if (this.Beams && this.Beams[0] && this.Beams[0].fromNote && this.Beams[0].fromNote.source !== this)
+                    return this.Beams[0].fromNote.source.getStemDirection();
                 return this.stemDirection;
             }
             public setStemDirection(dir: StemDirectionType) {

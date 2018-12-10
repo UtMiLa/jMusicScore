@@ -739,16 +739,20 @@ export module MusicSpacing {
                 spacing.offset.y += 12 * textSyllable.parent.syllableElements.indexOf(textSyllable); // todo: konstanter
             }
         }
-        doBeam(beam: IBeam, context: INoteContext, spacing: IBeamSpacingInfo) {
-            var beamSpacing = this.globalContext.getSpacingInfo<BeamSpacingInfo>(beam);
-            var noteSpacing = this.globalContext.getSpacingInfo<NoteSpacingInfo>(beam.parent);
+        visitBeamInfo(beam: IBeamEventInfo) { 
+            var beamSpacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
+            this.doBeam(beam.source, this.noteContext, beamSpacing); 
+
+            var beamParentNote = beam.source.fromNote;
+
+            var noteSpacing = this.globalContext.getSpacingInfo<NoteSpacingInfo>(beamParentNote);
             // find noder
-            var noteBeam = beam.parent.Beams[beam.index];
+            var noteBeam = beamParentNote.Beams[beam.index];
             beamSpacing.start.x = noteSpacing.offset.x + noteSpacing.stemX - noteSpacing.offset.x;
             beamSpacing.start.y = noteSpacing.offset.y + noteSpacing.stemTipY;
             beamSpacing.end.x = 0;
             beamSpacing.end.y = 0;
-            if (noteBeam.toNote && noteBeam.toNote.source === noteBeam.parent) { //todo: parent
+            if (noteBeam.toNote && noteBeam.toNote === noteBeam.fromNote) { //todo: parent
                 // short beam ending in this note
                 beamSpacing.end.x = beamSpacing.start.x - 5;
                 beamSpacing.end.y = beamSpacing.start.y;
@@ -769,7 +773,7 @@ export module MusicSpacing {
             }
             if (beam.index > 0) {
                 // recalc slope
-                var refBeam = beam.parent.Beams[0];
+                var refBeam = beamParentNote.Beams[0];
                 if (refBeam) {
                     beamSpacing.start.y = this.yValue(beamSpacing.start.x + noteSpacing.offset.x, refBeam);
                     beamSpacing.end.y = this.yValue(beamSpacing.end.x + noteSpacing.offset.x, refBeam);
@@ -778,8 +782,8 @@ export module MusicSpacing {
             beamSpacing.beamDist = (noteSpacing.rev ? -5 : 5);
 
             if (beam.toNote && beam.index === 0) {
-                var note = beam.parent;
-                while (note && (!beam.toNote || note !== beam.toNote.source)) { //todo: source
+                var note = beamParentNote.source;
+                while (note && (!beam.toNote || note.id !== beam.toNote.id)) { //todo: source
                     const noteSpacingInfo = this.globalContext.getSpacingInfo<NoteSpacingInfo>(note);
                     noteSpacingInfo.stemTipY = this.yValue(noteSpacingInfo.stemX + noteSpacingInfo.offset.x, beam);
                     noteSpacingInfo.stemLength = Math.abs(noteSpacingInfo.stemRootY - noteSpacingInfo.stemTipY);
@@ -810,9 +814,9 @@ export module MusicSpacing {
             }
         }
 
-        public yValue(xValue: number, refBeam: IBeam): number {
-            var fromNote = refBeam.parent;
-            var toNote = refBeam.toNote;
+        public yValue(xValue: number, refBeam: IBeamEventInfo): number {
+            var fromNote = refBeam.source.fromNote;
+            //var toNote = refBeam.toNote;
             var fromNoteSpacing = this.globalContext.getSpacingInfo<NoteSpacingInfo>(fromNote);
             var beamSpacing = this.globalContext.getSpacingInfo<BeamSpacingInfo>(refBeam);
             if (!fromNoteSpacing) return;
@@ -1236,7 +1240,7 @@ export module MusicSpacing {
                 }
 
                 var beam = note.Beams[0];
-                if (beam && beam.parent !== note.source && beam.toNote !== note) {
+                if (beam && beam.fromNote.id !== note.id && beam.toNote.id !== note.id) {
                     var beamSpacing = globalContext.getSpacingInfo<BeamSpacingInfo>(beam);
                     if (beamSpacing) { // todo: spacer!
                         //noteSpacing.stemTipY = SVGBeamDesigner.yValue(noteSpacing.stemX + noteSpacing.offset.x, beam);

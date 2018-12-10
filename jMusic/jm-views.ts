@@ -763,7 +763,7 @@ export class RedrawVisitor extends FakeContextVisitor {
        if (!noteSpacing.flagNo)
             for (var i = 0; i < note.Beams.length; i++) {
                 var beam = note.Beams[i];
-                if (!beam || beam.parent !== note.source) continue;
+                if (!beam || beam.fromNote.id !== note.id) continue;
                 var beamSpacing = this.globalContext.getSpacingInfo<IBeamSpacingInfo>(beam);
                 var step = beam.index * beamSpacing.beamDist;
 
@@ -771,7 +771,7 @@ export class RedrawVisitor extends FakeContextVisitor {
                     " L " + beamSpacing.end.x + "," + (beamSpacing.end.y + step) +
                     " " + beamSpacing.end.x + "," + (beamSpacing.end.y + 2 + step) +
                     " " + beamSpacing.start.x + "," + (beamSpacing.start.y + 2 + step) +
-                    " z", 0, 0, 1, undefined, 'black', 'beam_'+beam.parent.id + '_' + beam.index);
+                    " z", 0, 0, 1, undefined, 'black', 'beam_' + beam.fromNote.id + '_' + beam.index);
             }
     }
     doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: MyModel.ILongDecorationSpacingInfo) {
