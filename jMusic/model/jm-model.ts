@@ -19,7 +19,8 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IMeterEventInfo,
     IKeyEventInfo, IGlobalContext, 
     IStaffExpressionEventInfo,
-    INoteFinder} from './jm-model-interfaces';
+    INoteFinder,
+    IEventVisitorTarget} from './jm-model-interfaces';
 
 import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, StructuralNoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, StructuralStaffVisitor, StructuralVoiceVisitor } from './jm-model-base';
 import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, NoteElement, NoteheadElement } from './jm-model-notes';
@@ -1256,6 +1257,23 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         }
 
         export class BeamElement extends MusicElement implements IBeam {
+            get source(): IBeam { return this; }
+            getHorizPosition(): HorizPosition {
+                throw new Error("Method not implemented.");
+            }
+            relTime: TimeSpan;
+            inviteEventVisitor(visitor: IEventVisitor){
+                visitor.visitBeamInfo(this);
+            }
+            getTimeVal(): TimeSpan {
+                throw new Error("Method not implemented.");
+            }
+            visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {
+                //throw new Error("Method not implemented.");
+            }
+            clone(addId: string): IEventInfo {
+                throw new Error("Method not implemented.");
+            }
             constructor(public parent: INote, public toNote: INoteInfo, public index: number) {
                 super(parent);
             }

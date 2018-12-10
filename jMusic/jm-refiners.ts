@@ -477,203 +477,208 @@ class ApplyBeamingVisitor extends ContextEventVisitor{
     }
 }
 */
-        export class BeamValidator implements IScoreValidator {
-            constructor(private globalContext: IGlobalContext) {}
+export class BeamValidator implements IScoreValidator {
+    constructor(private globalContext: IGlobalContext) {}
 
-            public refine(score: IScore) {
-                score.withStaves((staff: IStaff) => {
-                    staff.withVoices((voice: IVoice) => {
-                        this.validateVoice(voice);
-                    },this.globalContext);
-                }, this.globalContext);
-            }
+    public refine(score: IScore) {
+        score.withStaves((staff: IStaff) => {
+            staff.withVoices((voice: IVoice) => {
+                this.validateVoice(voice);
+            },this.globalContext);
+        }, this.globalContext);
+    }
 
-            private validateVoice(voice: IVoice) {
-                /*var firstNotes: INote[] = [];
-                var noNotes: number[] = [0];
+    private validateVoice(voice: IVoice) {
+        /*var firstNotes: INote[] = [];
+        var noNotes: number[] = [0];
 
-                function endGroup(fromIndex = 0) {
-                    for (var i = fromIndex; i < firstNotes.length; i++) {
-                        var firstnote = firstNotes[i];
-                        if (firstnote) {
-                            var bs = firstnote.getBeamspan();
-                            if (noNotes[i] === 1) {
-                                bs[i] = 1;
-                            }
-                            else {
-                                bs[i] = noNotes[i];
-                            }
-                            firstnote.setBeamspan(bs);
-                            firstNotes[i] = null;
-                        }
-                    }
-                    firstNotes = firstNotes.slice(0, fromIndex);
-                }
-
-                var quarterNote = TimeSpan.quarterNote;
-                var eighthNote = TimeSpan.eighthNote;
-                var noOfGraceNotes = 0;*/
-
-
-                const visitor = new BeamingVisitor(this.globalContext);
-                voice.visitAllEvents(visitor, this.globalContext);
-
-                /*voice.withNotes(this.globalContext, (note: INote, context: INoteContext) => {
-
-                    if (note.graceType) {
-                        noOfGraceNotes++;
-                        context.getHorizPosition().graceNo = noOfGraceNotes;
-                        return;
-                    }
-                    var staffContext = voice.parent.getStaffContext(context.absTime);
-                    // Check if current group is to end
-                    //var splitTime = 4 % staffContext.timeInBar.denominator === 0);
-                    if (!staffContext.meter) return;
-                    var nextB = staffContext.meter.nextBoundary(context.absTime, staffContext.meterTime);
-                    var splitTime = nextB.eq(context.absTime);
-                    if (firstNotes.length && (!quarterNote.gt(note.timeVal) || splitTime || note.rest)) {
-                        // End group
-                        endGroup();
-                    }
-                    // Check if new group must begin
-                    if (quarterNote.gt(note.timeVal) && !note.rest) {
-                        var index = 0;
-                        var beamspan: number[] = [];
-                        for (var v = eighthNote; v.ge(note.timeVal); v = v.divideScalar(2)) {
-                            if (firstNotes[index]) {
-                                //noNotes[index]++;
-                                noNotes[index] += 1 + noOfGraceNotes;
-                                beamspan[index] = -noNotes[index];
-                            }
-                            else {
-                                // Begin group
-                                firstNotes[index] = note;
-                                noNotes[index] = 1;
-                            }
-                            index++;
-                        }
-                        noOfGraceNotes = 0;
-                        // End group
-                        endGroup(index);
-
-                        note.setBeamspan(beamspan);
+        function endGroup(fromIndex = 0) {
+            for (var i = fromIndex; i < firstNotes.length; i++) {
+                var firstnote = firstNotes[i];
+                if (firstnote) {
+                    var bs = firstnote.getBeamspan();
+                    if (noNotes[i] === 1) {
+                        bs[i] = 1;
                     }
                     else {
-                        if (note.getBeamspan()[0]) {
-                            note.setBeamspan([0]);
-                            for (var i = 0; i < note.Beams.length; i++) {
-                                if (note.Beams[i]) note.Beams[i].parent = undefined;
-                                note.Beams[i] = undefined;
-                            }
-                        }
+                        bs[i] = noNotes[i];
                     }
-                });*/
-                visitor.endGroup();
-
-                this.checkSyncopeBeaming(voice);
-                this.updateBeams(voice);
+                    firstnote.setBeamspan(bs);
+                    firstNotes[i] = null;
+                }
             }
+            firstNotes = firstNotes.slice(0, fromIndex);
+        }
 
-            private checkSyncopeBeaming(voice: IVoice) {   
-                var noteElements = voice.getNoteElements(this.globalContext);
-          
-                //for (var iNote = 0; iNote < noteElements.length; iNote++) { // todo: problem
-                voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, iNote: number) => {
-                    var beamspan = note.getBeamspan();
-                    for (var i = 1; i < beamspan.length; i++) {
-                        if (beamspan[i] === 1 && beamspan[0] < 0) {
-                            // check syncopation
-                            // tjek om det er en synkope // 8 16* 8 *16 8  men 8 *16 4 16* 8 - måske skal designeren tjekke det!
-                            var absTime = context.absTime;
-                            var res = absTime.fromStart().modulo(note.timeVal.multiplyScalar(2));
-                            // todo: check if last in beam group
-                            var firstNote = noteElements[iNote + beamspan[0] + 1];
-                            var lastInBeamGroup = beamspan[0] + firstNote.getBeamspan()[0] === 0;
-                            var syncopation = (res.numerator !== 0);
-                            if (syncopation || lastInBeamGroup) {
-                                beamspan[i] = -1;
-                                note.setBeamspan(beamspan);
-                            }
-                        }
+        var quarterNote = TimeSpan.quarterNote;
+        var eighthNote = TimeSpan.eighthNote;
+        var noOfGraceNotes = 0;*/
+
+
+        const visitor = new BeamingVisitor(this.globalContext);
+        voice.visitAllEvents(visitor, this.globalContext);
+
+        /*voice.withNotes(this.globalContext, (note: INote, context: INoteContext) => {
+
+            if (note.graceType) {
+                noOfGraceNotes++;
+                context.getHorizPosition().graceNo = noOfGraceNotes;
+                return;
+            }
+            var staffContext = voice.parent.getStaffContext(context.absTime);
+            // Check if current group is to end
+            //var splitTime = 4 % staffContext.timeInBar.denominator === 0);
+            if (!staffContext.meter) return;
+            var nextB = staffContext.meter.nextBoundary(context.absTime, staffContext.meterTime);
+            var splitTime = nextB.eq(context.absTime);
+            if (firstNotes.length && (!quarterNote.gt(note.timeVal) || splitTime || note.rest)) {
+                // End group
+                endGroup();
+            }
+            // Check if new group must begin
+            if (quarterNote.gt(note.timeVal) && !note.rest) {
+                var index = 0;
+                var beamspan: number[] = [];
+                for (var v = eighthNote; v.ge(note.timeVal); v = v.divideScalar(2)) {
+                    if (firstNotes[index]) {
+                        //noNotes[index]++;
+                        noNotes[index] += 1 + noOfGraceNotes;
+                        beamspan[index] = -noNotes[index];
                     }
-                });
+                    else {
+                        // Begin group
+                        firstNotes[index] = note;
+                        noNotes[index] = 1;
+                    }
+                    index++;
+                }
+                noOfGraceNotes = 0;
+                // End group
+                endGroup(index);
+
+                note.setBeamspan(beamspan);
             }
-
-            private updateBeams(voice: IVoice) {
-                var beams: IBeam[] = [];
-                var noteEvents: INoteInfo[] = [];
-                const visitor = new NoteEventVisitor(this.globalContext, (note, context, index) => {noteEvents.push(note);});
-                voice.visitAllEvents(visitor, this.globalContext);
-
-                for (var iNote = 0; iNote < noteEvents.length; iNote++) {
-                    var note: INoteInfo = noteEvents[iNote];
-                    var beamspan = note.getBeamspan();
-                    for (var i = 0; i < beamspan.length; i++) {
-                        if (beamspan[i] > 0 || beamspan[i] === -1) {
-                            // check if Beam exists
-                            var beam = note.Beams[i];
-                            if (beam) {
-                                if (beam.parent === note.source) { //todo: parent
-                                    var toNote: INoteInfo;
-                                    if (beamspan[i] === -1) {
-                                        toNote = note;
-                                    }
-                                    else if (beamspan[i] === 1) {
-                                        toNote = undefined;
-                                    }
-                                    else {
-                                        toNote = noteEvents[iNote + beamspan[i] - 1];
-                                    }
-                                    // update beam
-                                    if (note.Beams[i].toNote !== toNote) {
-                                        note.Beams[i].toNote = toNote;
-                                    }
-                                    beams[i] = beam;
-                                }
-                                else {
-                                    // delete beam and create new
-                                    //beam.remove();
-                                    //SvgView.SVGBeamDesigner.remove(beam, 'SVGcontext1');// todo: generaliser
-                                    beam = undefined;
-                                    note.Beams[i] = undefined;
-                                }
-                            }
-                            if (!beam) {
-                                // create new Beam
-                                var toNote: INoteInfo;
-                                if (beamspan[i] === -1) {
-                                    toNote = note;
-                                }
-                                else if (beamspan[i] === 1) {
-                                    toNote = undefined;
-                                }
-                                else {
-                                    toNote = noteEvents[iNote + beamspan[i] - 1];
-                                }
-                                note.Beams[i] = new BeamElement(note.source, toNote, i); // todo: toNote
-                                beams[i] = note.Beams[i];
-                            }
-                        }
-                        else if (beamspan[i] < -1) {
-                            // connect to beam
-                            var beam = note.Beams[i];
-                            if (beam && beam !== beams[i]) {
-                                //beam.remove();
-                                //SvgView.SVGBeamDesigner.remove(beam, 'SVGcontext1');// todo: generaliser
-                            }
-                            note.Beams[i] = beams[i];
-                        }
-                        else {
-                            // 0: clear beam
-                            var beam = note.Beams[i];
-                            if (beam && beam !== beams[i]) {
-                                //beam.remove();
-                                //SvgView.SVGBeamDesigner.remove(beam, 'SVGcontext1');// todo: generaliser
-                            }
-                            beams[i] = undefined;
-                        }
+            else {
+                if (note.getBeamspan()[0]) {
+                    note.setBeamspan([0]);
+                    for (var i = 0; i < note.Beams.length; i++) {
+                        if (note.Beams[i]) note.Beams[i].parent = undefined;
+                        note.Beams[i] = undefined;
                     }
                 }
+            }
+        });*/
+        visitor.endGroup();
+
+        var noteEvents: INoteInfo[] = [];
+        const eventVisitor = new NoteEventVisitor(this.globalContext, (note, context, index) => {noteEvents.push(note);});
+        voice.visitAllEvents(eventVisitor, this.globalContext);
+
+        this.checkSyncopeBeaming(noteEvents);
+        this.updateBeams(noteEvents);
+    }
+
+    private checkSyncopeBeaming(noteEvents: INoteInfo[]) {   
+        //var noteElements = voice.getNoteElements(this.globalContext);
+    
+        //for (var iNote = 0; iNote < noteElements.length; iNote++) { // todo: problem
+        //voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, iNote: number) => {
+        for (let j = 0; j < noteEvents.length; j++) {
+            let note = noteEvents[j];
+            var beamspan = note.getBeamspan();
+            for (var i = 1; i < beamspan.length; i++) {
+                if (beamspan[i] === 1 && beamspan[0] < 0) {
+                    // check syncopation
+                    // tjek om det er en synkope // 8 16* 8 *16 8  men 8 *16 4 16* 8 - måske skal designeren tjekke det!
+                    var relTime = note.relTime;
+                    var res = relTime.modulo(note.timeVal.multiplyScalar(2));
+                    // todo: check if last in beam group
+                    var firstNote = noteEvents[j + beamspan[0] + 1];
+                    var lastInBeamGroup = beamspan[0] + firstNote.getBeamspan()[0] === 0;
+                    var syncopation = (res.numerator !== 0);
+                    if (syncopation || lastInBeamGroup) {
+                        beamspan[i] = -1;
+                        note.setBeamspan(beamspan);
+                    }
+                }
+            }
+        }
+        //});
+    }
+
+    private updateBeams(noteEvents: INoteInfo[]) {
+        var beams: IBeam[] = [];
+
+        for (var iNote = 0; iNote < noteEvents.length; iNote++) {
+            var note: INoteInfo = noteEvents[iNote];
+            var beamspan = note.getBeamspan();
+            for (var i = 0; i < beamspan.length; i++) {
+                if (beamspan[i] > 0 || beamspan[i] === -1) {
+                    // check if Beam exists
+                    var beam = note.Beams[i];
+                    if (beam) {
+                        if (beam.parent === note.source) { //todo: parent
+                            var toNote: INoteInfo;
+                            if (beamspan[i] === -1) {
+                                toNote = note;
+                            }
+                            else if (beamspan[i] === 1) {
+                                toNote = undefined;
+                            }
+                            else {
+                                toNote = noteEvents[iNote + beamspan[i] - 1];
+                            }
+                            // update beam
+                            if (note.Beams[i].toNote !== toNote) {
+                                note.Beams[i].toNote = toNote;
+                            }
+                            beams[i] = beam;
+                        }
+                        else {
+                            // delete beam and create new
+                            //beam.remove();
+                            //SvgView.SVGBeamDesigner.remove(beam, 'SVGcontext1');// todo: generaliser
+                            beam = undefined;
+                            note.Beams[i] = undefined;
+                        }
+                    }
+                    if (!beam) {
+                        // create new Beam
+                        var toNote: INoteInfo;
+                        if (beamspan[i] === -1) {
+                            toNote = note;
+                        }
+                        else if (beamspan[i] === 1) {
+                            toNote = undefined;
+                        }
+                        else {
+                            toNote = noteEvents[iNote + beamspan[i] - 1];
+                        }
+                        note.Beams[i] = new BeamElement(note.source, toNote, i); // todo: toNote
+                        beams[i] = note.Beams[i];
+                    }
+                }
+                else if (beamspan[i] < -1) {
+                    // connect to beam
+                    var beam = note.Beams[i];
+                    if (beam && beam !== beams[i]) {
+                        //beam.remove();
+                        //SvgView.SVGBeamDesigner.remove(beam, 'SVGcontext1');// todo: generaliser
+                    }
+                    note.Beams[i] = beams[i];
+                }
+                else {
+                    // 0: clear beam
+                    var beam = note.Beams[i];
+                    if (beam && beam !== beams[i]) {
+                        //beam.remove();
+                        //SvgView.SVGBeamDesigner.remove(beam, 'SVGcontext1');// todo: generaliser
+                    }
+                    beams[i] = undefined;
+                }
+            }
+            console.log(note);
+        }
 
 /*
 
@@ -750,8 +755,8 @@ class ApplyBeamingVisitor extends ContextEventVisitor{
                         }
                     }
                 }*/
-            }
-        }
+    }
+}
 
 
         export class TieValidator implements IScoreValidator {

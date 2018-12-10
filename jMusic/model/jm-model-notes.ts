@@ -68,6 +68,11 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
                 const post = visitor.visitPre(this.syllables[i]);
                 if (post) post(this.syllables[i]);
             }
+            for (var i = 0; i < this.Beams.length; i++) {
+                //visitor.visitTextSyllableInfo(this.syllables[i]);
+                const post = visitor.visitPre(this.Beams[i]);
+                if (post) post(this.syllables[i]);
+            }
             if (postFun) {
                 postFun(this);
             }

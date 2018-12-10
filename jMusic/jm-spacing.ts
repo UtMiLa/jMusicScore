@@ -748,7 +748,7 @@ export module MusicSpacing {
             beamSpacing.start.y = noteSpacing.offset.y + noteSpacing.stemTipY;
             beamSpacing.end.x = 0;
             beamSpacing.end.y = 0;
-            if (noteBeam.toNote.source === noteBeam.parent) { //todo: parent
+            if (noteBeam.toNote && noteBeam.toNote.source === noteBeam.parent) { //todo: parent
                 // short beam ending in this note
                 beamSpacing.end.x = beamSpacing.start.x - 5;
                 beamSpacing.end.y = beamSpacing.start.y;
@@ -779,7 +779,7 @@ export module MusicSpacing {
 
             if (beam.toNote && beam.index === 0) {
                 var note = beam.parent;
-                while (note && note !== beam.toNote.source) { //todo: source
+                while (note && (!beam.toNote || note !== beam.toNote.source)) { //todo: source
                     const noteSpacingInfo = this.globalContext.getSpacingInfo<NoteSpacingInfo>(note);
                     noteSpacingInfo.stemTipY = this.yValue(noteSpacingInfo.stemX + noteSpacingInfo.offset.x, beam);
                     noteSpacingInfo.stemLength = Math.abs(noteSpacingInfo.stemRootY - noteSpacingInfo.stemTipY);
@@ -1054,66 +1054,6 @@ export module MusicSpacing {
                         // Find getPreWidth()
                         var j = i;
                         while (j < events.length && Music.compareEvents(events[i], events[j]) == 0) {
-                            //var eventDisplayData = <SVGBaseDisplayData>(<any>events[j]).getDisplayData(this.context);
-                            var eventSpacing = this.globalContext.getSpacingInfo(events[j]);
-                            if (eventSpacing) {
-                                var preWidth = eventSpacing.preWidth;
-                                if (eventWidth < preWidth) {
-                                    eventWidth = preWidth;
-                                }
-                            }
-                            j++;
-                        }
-                        pos += eventWidth;
-                        eventWidth = 0;
-                    }
-                }
-                oldpos = pos;
-                var eventSpacing = this.globalContext.getSpacingInfo(events[i]);
-                if (eventSpacing) {
-                    eventSpacing.offset.x = pos + beginPos; // todo: move svg
-                    //SVGOutput.move(<MusicElement><any>events[i], eventDisplayData);
-                    eventWidth = eventSpacing.width;
-                }
-                else {
-                    //alert(events[i].getElementName());
-                }
-            }
-            score.withVoices((voice: IVoice, index: number): void => {
-                this.globalContext.getSpacingInfo(voice).offset.x = 0;
-                voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number): void => {
-                    /*todo: if (note.beam) {
-                        note.beam.updateAll();
-                    }*/
-                });
-            }, this.globalContext);
-        }
-
-        private makeTimelineOld(score: IScore) {
-            var beginPos = 0;
-            score.withStaves((staff: IStaff, index: number): void => {
-                var staffBeginPos = 0; //todo: staffSpacingInfo
-                if (beginPos < staffBeginPos) beginPos = staffBeginPos;
-                this.globalContext.getSpacingInfo(staff).offset.y = Metrics.staffYOffset + index * Metrics.staffYStep; // todo: index
-            }, this.globalContext);
-
-            var events: ITimedEvent[] = score.getEventsOld(this.globalContext);
-            events.sort(Music.compareEventsOld);
-
-            var pos = Metrics.firstPos;
-            var oldpos = pos;
-            var eventWidth = 0;
-            for (var i = 0; i < events.length; i++) {
-                if (i > 0) {
-                    if (Music.compareEventsOld(events[i], events[i - 1]) == 0) {
-                        pos = oldpos;
-                    }
-                    else {
-                        pos += eventWidth;
-                        eventWidth = 0;
-                        // Find getPreWidth()
-                        var j = i;
-                        while (j < events.length && Music.compareEventsOld(events[i], events[j]) == 0) {
                             //var eventDisplayData = <SVGBaseDisplayData>(<any>events[j]).getDisplayData(this.context);
                             var eventSpacing = this.globalContext.getSpacingInfo(events[j]);
                             if (eventSpacing) {

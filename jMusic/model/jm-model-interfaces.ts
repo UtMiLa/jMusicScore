@@ -208,7 +208,7 @@ export interface IMeter extends ITimedChangeEvent {
     nextBoundary(abstime: AbsoluteTime): AbsoluteTime;
     nextBar(abstime: AbsoluteTime): AbsoluteTime;
 }
-export interface IBeam extends IMusicElement {
+export interface IBeam extends IMusicElement, IBeamEventInfo {
     parent: INote;
     toNote: INoteInfo;
     index: number;
