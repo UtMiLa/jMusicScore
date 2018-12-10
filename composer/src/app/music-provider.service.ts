@@ -142,6 +142,7 @@ export class MusicProviderService {
 
 
   getGlobalContext(): GlobalContext {
+    this.globalContext = new GlobalContext();
     for (const key in this.constRes.variables) {
         if (this.constRes.variables.hasOwnProperty(key)) {
             const val = this.constRes.variables[key];
