@@ -2,7 +2,6 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-music-basics';
-import { GlobalContext } from './jm-model-base';
 
 export interface IMusicElement {
     //changed(): void;
@@ -330,7 +329,8 @@ export interface INoteInfo extends IEventInfo {
     Beams: IBeam[];
     graceType: string;
     timeVal: TimeSpan;
-    getBeamspan(): any;
+    getBeamspan(): number[];
+    getStemDirection(): StemDirectionType
     rest: boolean;
     source: INote;
     heads: INoteHeadInfo[];

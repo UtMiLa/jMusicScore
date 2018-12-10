@@ -1,34 +1,29 @@
-import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
-    AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
-    MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
-    Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-music-basics';
-import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInfo, IScore, IVoice, IStaff, ISequence, IScoreSpacingInfo, 
-    IMeter, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, INote, 
-    INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, IMeterSpacingInfo, 
-    IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, ITextSyllableElement, 
-    INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo, ILongDecorationSpacingInfo, ITextSyllableSpacingInfo, 
-    IMusicElementCreator, 
+import {IMemento, IVisitorIterator,
+    AbsoluteTime, HorizPosition, LongDecorationType, 
+    NoteDecorationKind, NoteType, Pitch, Rational, StaffContext, StemDirectionType, TimeSpan, TupletDef} from '../jm-music-basics';
+import { IVisitor, IEventInfo, IVoice, ISequence, INote, 
+    INoteContext, ITimedEvent, ISequenceNote, INoteInfo, IBeam, INotehead, INoteDecorationElement, ILongDecorationElement, ITextSyllableElement, 
+    INoteHeadInfo,
     IEventVisitor,
     INoteDecorationEventInfo,
     ILongDecorationEventInfo,
-    ITextSyllableEventInfo,
-    IBeamEventInfo,
-    IBarEventInfo,
-    IClefEventInfo,
-    IMeterEventInfo,
-    IKeyEventInfo, IGlobalContext, 
-    IStaffExpressionEventInfo,
+    ITextSyllableEventInfo, IGlobalContext, 
     INoteFinder,
     IEventVisitorTarget} from './jm-model-interfaces';
 
-    import { MusicElement, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo } from './jm-model-base'
+    import { MusicElement, MusicContainer, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo } from './jm-model-base'
 
     class NoteEventInfo extends EventInfo implements INoteInfo {
         get dotNo(): number { return this.source.dotNo; }
         get NoteId(): string { return this.source.NoteId; }
-        get Beams(): IBeam[] { return this.source.Beams; }
+        get Beams(): IBeam[] { return this.source.Beams; } // todo: INoteInfo er ny for hver visitor - kan den persisteres?
         get graceType(): string { return this.source.graceType; }
         get timeVal(): TimeSpan { return this.source.timeVal; }
+        public getStemDirection(): StemDirectionType {
+            if (this.Beams && this.Beams[0] && this.Beams[0].fromNote && this.Beams[0].fromNote.id !== this.id)
+                return this.Beams[0].fromNote.source.getStemDirection();
+            return this.source.getStemDirection();
+        }
         beams: IBeam[] = [];
         getBeamspan() {
             return this.source.getBeamspan();
@@ -518,8 +513,6 @@ public inviteEventVisitor(spacer: IEventVisitor, globalContext: IGlobalContext):
                 }
             }
             public getStemDirection(): StemDirectionType {
-                if (this.Beams && this.Beams[0] && this.Beams[0].fromNote && this.Beams[0].fromNote.source !== this)
-                    return this.Beams[0].fromNote.source.getStemDirection();
                 return this.stemDirection;
             }
             public setStemDirection(dir: StemDirectionType) {

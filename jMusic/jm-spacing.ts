@@ -992,7 +992,7 @@ export module MusicSpacing {
                         if (events[i].getElementName() === "Note") { //todo: uelegant
                             let note = <INoteInfo>(events[i]);
                             
-                            for (var j = 0; j < note.source.Beams.length; j++) { //todo: beamInfo
+                            for (var j = 0; j < note.Beams.length; j++) { //todo: beamInfo
                                 /*var beam = note.Beams[j];
                                 if (beam) {
                                     beam.inviteVisitor(spacer);
@@ -1173,13 +1173,13 @@ export module MusicSpacing {
             //noteSpacing.highPitch = MusicSpacing.NoteSpacer.staffLineToPitch(highPitch, note);
             noteSpacing.highPitchY = lowPitch;
             noteSpacing.lowPitchY = highPitch;
-            if (note.source.getStemDirection() == StemDirectionType.StemFree) {
+            if (note.getStemDirection() == StemDirectionType.StemFree) {
                 if (noteCtx.getStemDirection() == StemDirectionType.StemFree) {
                     noteSpacing.rev = highPitch + lowPitch < 10;
                 }
                 else noteSpacing.rev = (noteCtx.getStemDirection() == StemDirectionType.StemDown);
             }
-            else noteSpacing.rev = (note.source.getStemDirection() == StemDirectionType.StemDown);
+            else noteSpacing.rev = (note.getStemDirection() == StemDirectionType.StemDown);
         }
 
 
