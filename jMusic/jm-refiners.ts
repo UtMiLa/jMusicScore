@@ -1,5 +1,5 @@
 import {AbsoluteTime, TimeSpan} from './jm-music-basics';
-import { IBar, IScore, IVoice, IStaff, IMeter, IKey, INote, INoteSource, INoteContext, ITimedEvent, IBeam, INotehead, IGlobalContext,  IVoiceNote, INoteInfo, INoteSpacingInfo } from './model/jm-model-interfaces';
+import { IBar, IScore, IVoice, IStaff, IMeter, IKey, INote, INoteSource, INoteContext, ITimedEvent, IBeam, INotehead, IGlobalContext,  IVoiceNote, INoteInfo, INoteSpacingInfo, IMeterEventInfo } from './model/jm-model-interfaces';
 import {  Music,      BeamElement   } from "./model/jm-model";    
 import { IScoreRefiner } from './jm-interfaces';
 import { ContextEventVisitor, NoteEventVisitor } from './model/jm-model-base';
@@ -39,7 +39,7 @@ import { ContextEventVisitor, NoteEventVisitor } from './model/jm-model-base';
                 var barTime = AbsoluteTime.startTime;
 
                 // Find meter
-                score.withMeters((meter: IMeter, iMeter: number): void => {
+                score.withMeters((meter: IMeterEventInfo, iMeter: number): void => {
                     // Tjek at der er bars fra this.meterElements[iMeter].absTime til this.meterElements[iMeter + 1].absTime
                     var toTime = (iMeter === score.meterElements.length - 1) ? maxTime : score.meterElements[iMeter + 1].absTime;
                     // Tjek at der er bars fra this.meterElements[this.meterElements.length-1].absTime til maxTime 

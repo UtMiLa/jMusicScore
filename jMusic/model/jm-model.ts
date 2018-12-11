@@ -122,9 +122,6 @@ class StaffExpressionEventInfo extends EventInfo implements IStaffExpressionEven
     }
 }
 class KeyEventInfo extends EventInfo implements IKeyEventInfo{
-    inviteEventVisitor(visitor: IEventVisitor): void {
-        throw new Error("Method not implemented.");
-    }
     source: KeyElement;
         
     constructor(source: KeyElement){
@@ -142,6 +139,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         let res = new KeyEventInfo(this.source);
         res.id = addId + '_' + res.id;
         return res;
+    }
+    inviteEventVisitor(visitor: IEventVisitor): void {
+        visitor.visitKeyInfo(this);
     }
 }
 /**************************************************** MusicElement stuff ****************************************************/
@@ -295,7 +295,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 });*/
             }
 
-            public withMeters(f: (meter: IMeter, index: number) => void) {
+            public withMeters(f: (meter: IMeterEventInfo, index: number) => void) {
                 this.visitAll(new MeterVisitor(f));
                 /*for (var i = 0; i < this.meterElements.length; i++) {
                     f(this.meterElements[i], i);
@@ -377,8 +377,8 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
             get meterElements(): IMeter[] {
                 var res: IMeter[] = [];
-                this.withMeters((meter: IMeter, index: number) => {
-                    res.push(meter);
+                this.withMeters((meter: IMeterEventInfo, index: number) => {
+                    res.push(meter.source);
                 });
                 return res;
             }
@@ -424,21 +424,21 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 }*/
             }
 
-            public withKeys(f: (key: IKey, index: number) => void) {
+            public withKeys(f: (key: IKeyEventInfo, index: number) => void) {
                 this.visitAll(new KeyVisitor(f));
                 /*for (var i = 0; i < this.keyElements.length; i++) {
                     f(this.keyElements[i], i);
                 }*/
             }
 
-            public withMeters(f: (meter: IMeter, index: number) => void) {
+            public withMeters(f: (meter: IMeterEventInfo, index: number) => void) {
                 this.visitAll(new MeterVisitor(f));
                 /*for (var i = 0; i < this.meterElements.length; i++) {
                     f(this.meterElements[i], i);
                 }*/
             }
 
-            public withClefs(f: (clef: IClef, index: number) => void) {
+            public withClefs(f: (clef: IClefEventInfo, index: number) => void) {
                 this.visitAll(new ClefVisitor(f));
                 /*for (var i = 0; i < this.clefElements.length; i++) {
                     f(this.clefElements[i], i);
@@ -607,6 +607,12 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 this.withVoices((child: IVoice) => {
                     child.visitAllEvents(visitor, globalContext);
                 }, globalContext);
+                this.withKeys((child: IKeyEventInfo) => {
+                    child.inviteEventVisitor(visitor);                    
+                });
+                this.withMeters((child: IMeterEventInfo) => {
+                    child.inviteEventVisitor(visitor);                    
+                });
             }
 
         }

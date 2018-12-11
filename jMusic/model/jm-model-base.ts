@@ -509,31 +509,31 @@ export class NoteHeadVisitor extends ContextVisitor {
 }   
 
 export class MeterVisitor extends NullVisitor {
-    constructor(private callback: (node:IMeter, index: number) => void) {
+    constructor(private callback: (node:IMeterEventInfo, index: number) => void) {
         super();
     }
     no: number = 0;
-    visitMeter(meter: IMeter): void {
+    visitMeterInfo(meter: IMeterEventInfo): void {
         this.callback(meter, this.no++);
     }
 }   
 
 export class KeyVisitor extends NullVisitor {
-    constructor(private callback: (node:IKey, index: number) => void) {
+    constructor(private callback: (node:IKeyEventInfo, index: number) => void) {
         super()
     }
     no: number = 0;
-    visitKey(key: IKey): void {
+    visitKeyInfo(key: IKeyEventInfo): void {
         this.callback(key, this.no++);
     }
 }   
 
 export class ClefVisitor extends NullVisitor {
-    constructor(private callback: (node:IClef, index: number) => void) {
+    constructor(private callback: (node:IClefEventInfo, index: number) => void) {
         super()
     }
     no: number = 0;
-    visitClef(clef: IClef): void {
+    visitClefInfo(clef: IClefEventInfo): void {
         this.callback(clef, this.no++);
     }
 }   

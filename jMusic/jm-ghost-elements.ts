@@ -73,33 +73,33 @@ import { IScoreRefiner } from "./jm-interfaces";
 
                     // First time:
                     if (!staff.meterElements.length) {
-                        document.withMeters((meter: IMeter, index: number) => {
-                            this.addGhostMeter(staff, meter);
+                        document.withMeters((meter: IMeterEventInfo, index: number) => {
+                            this.addGhostMeter(staff, meter.source);
                         });
                     }
 
                     // todo: Register changes:
-                    document.withMeters((scoreMeter: IMeter, index: number) => {
+                    document.withMeters((scoreMeter: IMeterEventInfo, index: number) => {
                         // tjek om der er ghostMeter til denne kombination af meter og staff
                         var found = false;
-                        staff.withMeters((staffMeter: IMeter, index: number) => {
+                        staff.withMeters((staffMeter: IMeterEventInfo, index: number) => {
                             //if ((<any>staffMeter).originElement && (<any>staffMeter).originElement === scoreMeter) {
-                            if (staffMeter.absTime.eq(scoreMeter.absTime)) {
+                            if (staffMeter.source.absTime.eq(scoreMeter.source.absTime)) {
                                 found = true;
                             }
                         });
                         if (!found) {
-                            this.addGhostMeter(staff, scoreMeter);
+                            this.addGhostMeter(staff, scoreMeter.source);
                         }
                     });
 
-                    staff.withMeters((staffMeter: IMeter, index: number) => {
+                    staff.withMeters((staffMeter: IMeterEventInfo, index: number) => {
                         // tjek om meterElm er ghostMeter og mangler tilhørende score.meter
                         if ((<any>staffMeter).originElement) {
                             var origin = (<any>staffMeter).originElement;
                             if (document.meterElements.indexOf(origin) === -1) {
                                 // remove ghost
-                                staff.removeChild(staffMeter, staff.meterElements);
+                                staff.removeChild(staffMeter.source, staff.meterElements);
                             }
                         }
                     });
