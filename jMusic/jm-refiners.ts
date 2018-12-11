@@ -336,7 +336,7 @@ class BeamingVisitor extends ContextEventVisitor{
             this.noteContext.getHorizPosition().graceNo = this.noOfGraceNotes;
             return;
         }
-        var staffContext = this.noteContext.voice.parent.getStaffContext(this.noteContext.absTime);
+        var staffContext = this.noteContext.getStaffContext();
         // Check if current group is to end
         //var splitTime = 4 % staffContext.timeInBar.denominator === 0);
         if (!staffContext.meter) return;
