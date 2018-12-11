@@ -331,26 +331,6 @@ export module MusicSpacing {
         render: (deco: ILongDecorationElement, ge: IGraphicsEngine) => void;
     }
 
-
-    /*class NullSpacer implements IVisitor {
-        visitNoteHead(head: INotehead,spacing: INoteHeadSpacingInfo) { }
-        visitNote(note: INoteInfo, spacing: INoteSpacingInfo) { }
-        visitNoteDecoration(deco: INoteDecorationElement, spacing: INoteDecorationSpacingInfo) { }
-        visitLongDecoration(deco: ILongDecorationElement, spacing: ILongDecorationSpacingInfo) { }
-        visitVoice(voice: IVoice, spacing: IVoiceSpacingInfo) { }
-        visitClef(clef: IClef, spacing: IClefSpacingInfo) { }
-        visitMeter(meter: IMeter, spacing: IMeterSpacingInfo) { }
-        visitKey(key: IKey, spacing: IKeySpacingInfo) { }
-        visitStaff(staff: IStaff, spacing: IStaffSpacingInfo) { }
-        visitScore(score: IScore, spacing: IScoreSpacingInfo) { }
-        visitTextSyllable(textSyllable: ITextSyllableElement, spacing: ITextSyllableSpacingInfo) { }
-        visitBar(bar: IBar, spacing: IBarSpacingInfo) { }
-        visitBeam(beam: IBeam, spacing: IBeamSpacingInfo) { }
-        visitStaffExpression(staffExpression: IStaffExpression, spacing: IStaffExpressionSpacingInfo): void { }
-
-        visitDefault(element: IMusicElement, spacing: ISpacingInfo): void { }
-    }*/
-
     export class Metrics {
         // NoteOutput
         static newPosXStep = 9;
@@ -447,10 +427,6 @@ export module MusicSpacing {
             var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
             let noteCtx: INoteContext = this.noteContext
             let noteInfo = this.currentNote;
-/*                    this.doNoteHead(head.source, this.noteContext, spacing); 
-        }
-
-        public doNoteHead(head: INotehead, noteCtx: INoteContext, spacing: INoteHeadSpacingInfo, noteInfo: INoteInfo) {*/
             const headSpacingInfo = spacing;//this.globalContext.getSpacingInfo<NoteHeadSpacingInfo>(head);
             const noteSpacingInfo = this.globalContext.getSpacingInfo<NoteSpacingInfo>(noteInfo);
             //if (headSpacingInfo !== spacing) alert('wrong');
