@@ -1,7 +1,7 @@
 import { IKeyDefinition, ClefDefinition, IMeterDefinition, LongDecorationType, IVisitorIterator, NoteDecorationKind } from './jm-music-basics'
 import { ISpacingInfo, ILongDecorationElement, IGlobalContext, ILongDecorationSpacingInfo, IMusicElement, IVisitor, INotehead, INoteSource, INoteDecorationElement, IVoice, IClef, IMeter, IKey, IStaff, IScore, ITextSyllableElement, IBar, IBeam, IStaffExpression, INoteContext, INoteHeadSpacingInfo, INoteSpacingInfo, INoteDecorationSpacingInfo, ITextSyllableSpacingInfo, IBarSpacingInfo, IBeamSpacingInfo, IClefSpacingInfo, IMeterSpacingInfo, IKeySpacingInfo, IStaffSpacingInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IBarEventInfo, IStaffExpressionEventInfo, IEventVisitor, IEventVisitorTarget, INoteHeadInfo, INoteInfo } from './model/jm-model-interfaces';
 import { Music     } from "./model/jm-model";    
-import { Point, ContextVisitor, FakeContextVisitor } from "./model/jm-model-base";
+import { Point, ContextVisitor, ContextEventVisitor } from "./model/jm-model-base";
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
 import { NoteDecorations } from './jm-glyph-details';
@@ -657,7 +657,7 @@ export class DomCheckSensorsVisitor extends ContextVisitor { // todo: remove eve
 
 
 
-export class RedrawVisitor extends FakeContextVisitor {
+export class RedrawVisitor extends ContextEventVisitor {
     constructor(globalContext: IGlobalContext, private graphEngine: IGraphicsEngine) { super(globalContext); }
 
     static getTie(spacing: INoteHeadSpacingInfo): string {
@@ -817,23 +817,23 @@ export class RedrawVisitor extends FakeContextVisitor {
         }
     }
 //            visitVoice(voice: IVoice) { }
-    visitClef(clef: IClef) {
+    visitClefInfo(clef: IClefEventInfo) {
         const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(clef);
         this.graphEngine.createMusicObject(null, spacing.clefId, 0, 0, 1);
     }
-    visitMeter(meter: IMeter) {
+    visitMeterInfo(meter: IMeterEventInfo) {
         let spacing = this.globalContext.getSpacingInfo<IMeterSpacingInfo>(meter);
         if (!spacing) { 
-            this.globalContext.addSpacingInfo(meter, (spacing = new MusicSpacing.MeterSpacingInfo(meter))); 
+            this.globalContext.addSpacingInfo(meter, (spacing = new MusicSpacing.MeterSpacingInfo(meter.source))); 
             //meter.spacingInfo = 
         }
-        MeterDrawer.addMeterXy(null, this.graphEngine, meter.definition, 0, 0);
+        MeterDrawer.addMeterXy(null, this.graphEngine, meter.source.definition, 0, 0);
     }
-    visitKey(key: IKey) {
+    visitKeyInfo(key: IKeyEventInfo) {
         const spacing = this.globalContext.getSpacingInfo<IKeySpacingInfo>(key);
         if (this.staff) {
-            var staffContext = /*key.parent*/this.staff.getStaffContext(key.absTime);
-            KeyDrawer.addKeyXy(null, this.graphEngine, key.definition, staffContext.clef, 0, 0);
+            var staffContext = /*key.parent*/this.staff.getStaffContext(key.source.absTime);
+            KeyDrawer.addKeyXy(null, this.graphEngine, key.source.definition, staffContext.clef, 0, 0);
         }
     }
     visitStaff(staff: IStaff) {

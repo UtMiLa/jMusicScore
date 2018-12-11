@@ -388,7 +388,7 @@ export class ContextEventVisitor extends NullEventVisitor {
     }
     visitNoteHeadInfo(head: INoteHeadInfo) {
         var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
-         this.doNoteHead(head.source, this.noteContext, spacing, this.currentNote); 
+         //this.doNoteHead(head.source, this.noteContext, spacing, this.currentNote); 
         }
     visitNoteInfo(note: INoteInfo) {
         this.noteContext = note.source.getContext();
@@ -414,7 +414,7 @@ export class ContextEventVisitor extends NullEventVisitor {
     }
 
     doNote(note: INoteInfo, context: INoteContext, spacing: INoteSpacingInfo) { }
-    doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo, noteInfo: INoteInfo) { }
+    //doNoteHead(head: INotehead, context: INoteContext, spacing: INoteHeadSpacingInfo, noteInfo: INoteInfo) { }
     doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) { }
     doLongDecoration(deco: ILongDecorationElement, context: INoteContext, spacing: ILongDecorationSpacingInfo) { }
     doTextSyllable(textSyllable: ITextSyllableElement, context: INoteContext, spacing: ITextSyllableSpacingInfo) { }
@@ -425,73 +425,6 @@ export class ContextEventVisitor extends NullEventVisitor {
     }
 
 }
-
-export class FakeContextVisitor extends ContextEventVisitor implements IVisitor{
-    visitNoteHead(head: INotehead): void {        
-    }
-    visitNote(note: INoteSource): void {        
-    }
-    visitNoteDecoration(deco: INoteDecorationElement): void {        
-    }
-    visitLongDecoration(deco: ILongDecorationElement): void {        
-    }
-    visitTextSyllable(text: ITextSyllableElement): void {        
-    }
-    visitBeam(beam: IBeam): void {        
-    }
-    visitClef(clef: IClef): void {        
-    }
-    visitMeter(meter: IMeter): void {        
-    }
-    visitKey(key: IKey): void {        
-    }
-    visitBar(bar: IBar): void {        
-    }
-    visitStaffExpression(staffExpression: IStaffExpression): void {        
-    }
-    visitDefault(element: IMusicElement): void {        
-    }
-
-
-    visitNoteHeadInfo(head: INoteHeadInfo) {
-        super.visitNoteHeadInfo(head);
-        this.visitNoteHead(head.source);
-    }
-    visitNoteInfo(note: INoteInfo) {
-        super.visitNoteInfo(note);
-        this.visitNote(note.source);
-    }
-    visitNoteDecorationInfo(deco: INoteDecorationEventInfo) { 
-        super.visitNoteDecorationInfo(deco);
-        this.visitNoteDecoration(deco.source);
-    }
-    visitLongDecorationInfo(deco: ILongDecorationEventInfo) { 
-        super.visitLongDecorationInfo(deco);
-        this.visitLongDecoration(deco.source);
-    }
-    visitTextSyllableInfo(textSyllable: ITextSyllableEventInfo) { 
-        super.visitTextSyllableInfo(textSyllable);
-        this.visitTextSyllable(textSyllable.source);
-    }
-    visitBeamInfo(beam: IBeamEventInfo) { 
-        super.visitBeamInfo(beam);
-        this.visitBeam(beam.source);
-    }
-    visitBarInfo(bar: IBarEventInfo): void {
-        this.visitBar(bar.source);
-    }
-    visitClefInfo(clef: IClefEventInfo): void {
-        this.visitClef(clef.source);
-    }
-    visitMeterInfo(meter: IMeterEventInfo): void {
-        this.visitMeter(meter.source);
-    }
-    visitKeyInfo(key: IKeyEventInfo): void {
-        this.visitKey(key.source);
-    }
-
-}
-
 
 export class StructuralNoteVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
