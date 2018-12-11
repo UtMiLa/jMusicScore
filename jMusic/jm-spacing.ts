@@ -1,12 +1,13 @@
 import { IVisitorIterator, ClefDefinition, ClefType, NoteDecorationKind, Pitch, StemDirectionType } from './jm-music-basics'
-import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInfo, IScore, IVoice, IStaff, ISequence, IScoreSpacingInfo,
+import { ISpacingInfo, IMusicElement, IBarSpacingInfo, IBar, IEventInfo, IScore, IVoice, IStaff, IScoreSpacingInfo,
         IMeter, IClef, IStaffSpacingInfo, IKey, IStaffExpression, IStaffExpressionSpacingInfo, IVoiceSpacingInfo, 
-        INote, INoteSource, INoteContext, IEventEnumerator, ITimedEvent, ISequenceNote, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, 
-        IMeterSpacingInfo, IMeterOwner, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
+        INote, INoteSource, INoteContext, INoteInfo, IClefSpacingInfo, IKeySpacingInfo, 
+        IMeterSpacingInfo, IBeamSpacingInfo, IBeam, INoteSpacingInfo, INotehead, INoteDecorationElement, ILongDecorationElement, 
         ITextSyllableElement, INoteHeadSpacingInfo, INoteHeadInfo, INoteDecorationSpacingInfo,  ILongDecorationSpacingInfo, 
-        ITextSyllableSpacingInfo, IMusicElementCreator, IVoiceNote, LedgerLineSpacingInfo,  IGlobalContext, IEventVisitor, IEventVisitorTarget, INoteDecorationEventInfo, ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo } from './model/jm-model-interfaces';
+        ITextSyllableSpacingInfo, LedgerLineSpacingInfo,  IGlobalContext, IEventVisitor, IEventVisitorTarget, INoteDecorationEventInfo, 
+        ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo } from './model/jm-model-interfaces';
 import { Music } from "./model/jm-model";
-import { ContextVisitor, Point, ContextEventVisitor, NoteHeadVisitor } from "./model/jm-model-base";
+import { Point, ContextEventVisitor } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: AutoBeam
 //todo: Bar

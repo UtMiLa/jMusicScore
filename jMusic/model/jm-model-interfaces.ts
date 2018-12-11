@@ -362,7 +362,6 @@ export interface ISequenceNote extends INote {
 export interface INotehead extends IMusicElement {
     parent: INote;
     pitch: Pitch;
-    //dotNo: number;
     tie: boolean;
     tieForced: boolean;
     forceAccidental: boolean;
@@ -371,7 +370,6 @@ export interface INotehead extends IMusicElement {
     getAccidental(): string;
     matchesPitch(pitch: Pitch, ignoreAlteration?: boolean): boolean;
     getInfo(): INoteHeadInfo;
-    //spacingInfo: INoteHeadSpacingInfo;
 }
 
 export interface INoteDecorationElement extends IMusicElement {
