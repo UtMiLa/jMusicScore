@@ -75,11 +75,6 @@ export interface ITimedObjectEvent extends ITimedEvent {
 
 }
 
-/*export interface ITimedVoiceEvent extends ITimedEvent {
-    getVoice(): IVoice;
-    getStaff(): IStaff;
-}*/
-
 export interface IEventContainer {
     getEventsOld(globalContext: IGlobalContext): ITimedEvent[];
     //getEvents(globalContext: GlobalContext): IEventInfo[];
@@ -131,9 +126,9 @@ export interface IStaff extends IEventContainer, IMeterOwner {
     title: string;
 
     withVoices(f: (voice: IVoice, index: number) => void, globalContext: IGlobalContext): void;
-    withKeys(f: (key: IKeyEventInfo, index: number) => void): void;
+    //withKeys(f: (key: IKeyEventInfo, index: number) => void): void;
     //withMeters(f: (meter: IMeter, index: number) => void): void;
-    withClefs(f: (clef: IClefEventInfo, index: number) => void): void;
+    //withClefs(f: (clef: IClefEventInfo, index: number) => void): void;
     withTimedEvents(f: (ev: ITimedEvent, index: number) => void): void;
     getStaffContext(absTime: AbsoluteTime): StaffContext;
     //getMeterElements(): IMeter[];

@@ -1,7 +1,7 @@
 import {MusicSpacing} from "./jm-spacing";
 import {emmentalerNotes} from "./fonts/emmentaler";
 import {fontCodePoints} from "./fonts/font-codepoints";
-import { MeterDrawer, KeyDrawer, PrefixVisitor, RedrawVisitor, IGraphicsEngine, ISensorGraphicsEngine } from "./jm-views";
+import { MeterDrawer, KeyDrawer, PrefixVisitor, RedrawVisitor, IGraphicsEngine, ISensorGraphicsEngine, PrefixEventVisitor } from "./jm-views";
 import { Validators } from './jm-refiners';
 import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefinition, IVisitorIterator,
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
@@ -9,7 +9,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-music-basics';
 import { IVoice, IScore, IStaff, IKey, IClef, IVoiceNote, INote, INotehead, IMusicElement, IGlobalContext } from './model/jm-model-interfaces';    
 import {  } from "./model/jm-model";    
-import { Point } from "./model/jm-model-base";
+import { Point, GlobalContext } from "./model/jm-model-base";
 import { IFeedbackClient } from './jap-application';
 import { IWriterPlugIn, IReaderPlugIn } from './jap-application';
 import {  IScoreApplication, ScoreStatusManager, IScorePlugin, IScoreDesigner } from './jm-application';
@@ -856,7 +856,7 @@ class HintAreaDesigner implements IScoreDesigner, IFeedbackClient {
 }
 */
 class TimelineDesigner implements IScoreDesigner {
-    constructor(private svgHelper: SvgHelper) {                
+    constructor(private svgHelper: SvgHelper, private globalContext: GlobalContext) {                
     }
     private checkSensors: DomCheckSensorsVisitor;
 
@@ -867,11 +867,11 @@ class TimelineDesigner implements IScoreDesigner {
         var score = app.document;
         var svgHelper = this.svgHelper;//<SVGHelper>app.GetState("svgHelper:" + this.context); // todo: Svghelper yt
 
-        var visitor = new PrefixVisitor(score.globalContext, new RedrawVisitor(score.globalContext, svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
+        var visitor = new PrefixEventVisitor(score.globalContext, new RedrawVisitor(score.globalContext, svgHelper.MusicGraphicsHelper), svgHelper.MusicGraphicsHelper);
         var scoreSpacingInfo = score.globalContext.getSpacingInfo(score);
         svgHelper.MusicGraphicsHelper.setSize(scoreSpacingInfo.width * scoreSpacingInfo.scale, scoreSpacingInfo.height);
         svgHelper.MusicGraphicsHelper.beginDraw();
-        score.visitAll(visitor);
+        score.visitAllEvents(visitor, this.globalContext);
         svgHelper.MusicGraphicsHelper.endDraw();
 
         if (!this.checkSensors) {
@@ -879,9 +879,9 @@ class TimelineDesigner implements IScoreDesigner {
             //app.FeedbackManager.registerClient(this.checkSensors);
         }
 
-        var visitor = new PrefixVisitor(score.globalContext, this.checkSensors, svgHelper.EditGraphicsHelper, 'ed_');
+        var visitor = new PrefixEventVisitor(score.globalContext, this.checkSensors, svgHelper.EditGraphicsHelper, 'ed_');
         svgHelper.EditGraphicsHelper.beginDraw();
-        score.visitAll(visitor);
+        score.visitAllEvents(visitor);
         svgHelper.EditGraphicsHelper.endDraw();
 
     }
