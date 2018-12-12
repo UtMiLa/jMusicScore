@@ -114,37 +114,37 @@ describe("Score", function () {
         });
 
         it("should return a getStaffContext(100) with a correct clef", function () {
-            expect(staff.getStaffContext(absTime).clef.clefCode).toEqual(ClefType.ClefG);
+            expect(staff.getStaffContext(absTime, globalContext).clef.clefCode).toEqual(ClefType.ClefG);
             staff.setClef(ClefDefinition.clefF, absTime1_5);
-            expect(staff.getStaffContext(absTime).clef.clefCode).toEqual(ClefType.ClefG);
+            expect(staff.getStaffContext(absTime, globalContext).clef.clefCode).toEqual(ClefType.ClefG);
             staff.setClef(ClefDefinition.clefF, absTimeHalf);
-            expect(staff.getStaffContext(absTime).clef.clefCode).toEqual(ClefType.ClefF);
+            expect(staff.getStaffContext(absTime, globalContext).clef.clefCode).toEqual(ClefType.ClefF);
         });
 
         it("should return a getStaffContext(100) with a correct key", function () {
             staff.setKey(new RegularKeyDefinition('', 0), AbsoluteTime.startTime);
-            expect((staff.getStaffContext(absTime).key).debug()).toEqual('0 ');
+            expect((staff.getStaffContext(absTime, globalContext).key).debug()).toEqual('0 ');
             staff.setKey(new RegularKeyDefinition('x', 2), absTime1_5);
-            expect((staff.getStaffContext(absTime).key).debug()).toEqual('0 ');
+            expect((staff.getStaffContext(absTime, globalContext).key).debug()).toEqual('0 ');
             staff.setKey(new RegularKeyDefinition('x', 2), absTimeHalf);
-            expect((staff.getStaffContext(absTime).key).debug()).toEqual('2 x');
+            expect((staff.getStaffContext(absTime, globalContext).key).debug()).toEqual('2 x');
         });
 
         it("should return a getStaffContext(100) with a correct meter", function () {
-            document.setMeter(meterDef4_4, AbsoluteTime.startTime);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('4/4');
-            staff.setMeter(meterDef5_2, AbsoluteTime.startTime);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('5/2');
-            staff.setMeter(meterDef3_8, absTimeHalf);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('3/8');
-            document.setMeter(meterDef7_16, absTimeHalf);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('3/8');
-            document.setMeter(meterDef7_16, absTimeHalfPlus);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('3/8');
+            document.setMeter(meterDef4_4, AbsoluteTime.startTime, globalContext);
+            expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('4/4');
+            staff.setMeter(meterDef5_2, AbsoluteTime.startTime, globalContext);
+            expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('5/2');
+            staff.setMeter(meterDef3_8, absTimeHalf, globalContext);
+            expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('3/8');
+            document.setMeter(meterDef7_16, absTimeHalf, globalContext);
+            expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('3/8');
+            document.setMeter(meterDef7_16, absTimeHalfPlus, globalContext);
+            expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('3/8');
             //(<any>staff).meterElements = <any>[];
             var meters = (<any>staff).meterElements;
             for (var i = 0; i < meters.length; i++) staff.removeChild(meters[i]);
-            expect(staff.getStaffContext(absTime).meter.debug()).toEqual('7/16');
+            expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('7/16');
         });
 
     });

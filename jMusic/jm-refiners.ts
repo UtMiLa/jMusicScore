@@ -40,11 +40,12 @@ import { ContextEventVisitor, NoteEventVisitor } from './model/jm-model-base';
 
                 // Find meter
                 score.withMeters((meter: IMeterEventInfo, iMeter: number): void => {
+                    let meterElements = score.getMeterElements(this.globalContext);
                     // Tjek at der er bars fra this.meterElements[iMeter].absTime til this.meterElements[iMeter + 1].absTime
-                    var toTime = (iMeter === score.meterElements.length - 1) ? maxTime : score.meterElements[iMeter + 1].absTime;
+                    var toTime = (iMeter === meterElements.length - 1) ? maxTime : meterElements[iMeter + 1].absTime;
                     // Tjek at der er bars fra this.meterElements[this.meterElements.length-1].absTime til maxTime 
                     while (toTime.gt(barTime)) {
-                        barTime = score.meterElements[iMeter].nextBar(barTime);
+                        barTime = meterElements[iMeter].nextBar(barTime);
 
                         var bar = score.findBar(barTime);
 
@@ -57,7 +58,7 @@ import { ContextEventVisitor, NoteEventVisitor } from './model/jm-model-base';
                             //score.addChild(score.bars, new BarElement(score, barTime));
                         }
                     }
-                });
+                }, this.globalContext);
 
                 score.removeBars((bar: IBar) => {
                     return bar.getProperty("updating");

@@ -818,21 +818,24 @@ export class RedrawVisitor extends ContextEventVisitor {
     }
 //            visitVoice(voice: IVoice) { }
     visitClefInfo(clef: IClefEventInfo) {
+        console.log("redraw clef", clef);
         const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(clef);
         this.graphEngine.createMusicObject(null, spacing.clefId, 0, 0, 1);
     }
     visitMeterInfo(meter: IMeterEventInfo) {
+        console.log("redraw meter", meter);
         let spacing = this.globalContext.getSpacingInfo<IMeterSpacingInfo>(meter);
         if (!spacing) { 
-            this.globalContext.addSpacingInfo(meter, (spacing = new MusicSpacing.MeterSpacingInfo(meter.source))); 
+            this.globalContext.addSpacingInfo(meter, (spacing = new MusicSpacing.MeterSpacingInfo(meter))); 
             //meter.spacingInfo = 
         }
         MeterDrawer.addMeterXy(null, this.graphEngine, meter.source.definition, 0, 0);
     }
     visitKeyInfo(key: IKeyEventInfo) {
+        console.log("redraw key", key);
         const spacing = this.globalContext.getSpacingInfo<IKeySpacingInfo>(key);
         if (this.staff) {
-            var staffContext = /*key.parent*/this.staff.getStaffContext(key.source.absTime);
+            var staffContext = /*key.parent*/this.staff.getStaffContext(key.source.absTime, this.globalContext);
             KeyDrawer.addKeyXy(null, this.graphEngine, key.source.definition, staffContext.clef, 0, 0);
         }
     }

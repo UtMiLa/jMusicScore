@@ -287,8 +287,8 @@ export class ContextVisitor extends NullVisitor {
     visitStaff(staff: IStaff) { this.staff = staff; }
     visitScore(score: IScore) { this.score = score; }
     visitVoice(voice: IVoice) { this.voice = voice; }
-    getStaffContext(absTime: AbsoluteTime): StaffContext{
-        return this.staff.getStaffContext(absTime);
+    getStaffContext(absTime: AbsoluteTime, globalContext: IGlobalContext): StaffContext{
+        return this.staff.getStaffContext(absTime, globalContext);
     }
     visitNoteHead(head: INotehead) {
         var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
@@ -383,8 +383,8 @@ export class ContextEventVisitor extends NullEventVisitor {
     visitVoice(voice: IVoice) { this.voice = voice; this.currentNote = null; }
     visitSequence(sequence: ISequence) { }
 
-    getStaffContext(absTime: AbsoluteTime): StaffContext{
-        return this.staff.getStaffContext(absTime);
+    getStaffContext(absTime: AbsoluteTime, globalContext: IGlobalContext): StaffContext{
+        return this.staff.getStaffContext(absTime, globalContext);
     }
     visitNoteHeadInfo(head: INoteHeadInfo) {
         var spacing = this.globalContext.getSpacingInfo<INoteHeadSpacingInfo>(head);
@@ -508,9 +508,9 @@ export class NoteHeadVisitor extends ContextVisitor {
     }
 }   
 
-export class MeterVisitor extends NullVisitor {
-    constructor(private callback: (node:IMeterEventInfo, index: number) => void) {
-        super();
+export class MeterVisitor extends NullEventVisitor {
+    constructor(private callback: (node:IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
+        super(globalContext);
     }
     no: number = 0;
     visitMeterInfo(meter: IMeterEventInfo): void {
@@ -518,19 +518,21 @@ export class MeterVisitor extends NullVisitor {
     }
 }   
 
-export class KeyVisitor extends NullVisitor {
-    constructor(private callback: (node:IKeyEventInfo, index: number) => void) {
-        super()
+export class KeyVisitor extends NullEventVisitor {
+    constructor(private callback: (node:IKeyEventInfo, index: number) => void, globalContext: IGlobalContext) {
+        super(globalContext)
     }
     no: number = 0;
     visitKeyInfo(key: IKeyEventInfo): void {
+        console.log("keyVisitor visit", key);
+
         this.callback(key, this.no++);
     }
 }   
 
-export class ClefVisitor extends NullVisitor {
-    constructor(private callback: (node:IClefEventInfo, index: number) => void) {
-        super()
+export class ClefVisitor extends NullEventVisitor {
+    constructor(private callback: (node:IClefEventInfo, index: number) => void, globalContext: IGlobalContext) {
+        super(globalContext)
     }
     no: number = 0;
     visitClefInfo(clef: IClefEventInfo): void {

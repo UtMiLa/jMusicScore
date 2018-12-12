@@ -60,6 +60,9 @@ import { IScoreRefiner } from "./jm-interfaces";
         }
 
         export class GhostsValidator implements IScoreRefiner {
+            constructor(private globalContext: IGlobalContext) {
+
+            }
             private addGhostMeter(staff: IStaff, meter: IMeter) {
                 // tjek om der er ghostMeter til denne kombination af meter og staff
                 var ghostMeter = new GhostMeterElement(staff, meter);
@@ -72,10 +75,10 @@ import { IScoreRefiner } from "./jm-interfaces";
                 document.withStaves((staff: IStaff, index: number): void => {
 
                     // First time:
-                    if (!staff.meterElements.length) {
+                    if (!staff.getMeterElements(this.globalContext).length) {
                         document.withMeters((meter: IMeterEventInfo, index: number) => {
                             this.addGhostMeter(staff, meter.source);
-                        });
+                        }, this.globalContext);
                     }
 
                     // todo: Register changes:
@@ -87,22 +90,22 @@ import { IScoreRefiner } from "./jm-interfaces";
                             if (staffMeter.source.absTime.eq(scoreMeter.source.absTime)) {
                                 found = true;
                             }
-                        });
+                        }, this.globalContext);
                         if (!found) {
                             this.addGhostMeter(staff, scoreMeter.source);
                         }
-                    });
+                    }, this.globalContext);
 
                     staff.withMeters((staffMeter: IMeterEventInfo, index: number) => {
                         // tjek om meterElm er ghostMeter og mangler tilhørende score.meter
                         if ((<any>staffMeter).originElement) {
                             var origin = (<any>staffMeter).originElement;
-                            if (document.meterElements.indexOf(origin) === -1) {
+                            if (document.getMeterElements(this.globalContext).indexOf(origin) === -1) {
                                 // remove ghost
-                                staff.removeChild(staffMeter.source, staff.meterElements);
+                                staff.removeChild(staffMeter.source/*, staff.getMeterElements(this.globalContext)*/);
                             }
                         }
-                    });
+                    }, this.globalContext);
                 }, document.globalContext);
             }
         }

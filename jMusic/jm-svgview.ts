@@ -855,7 +855,7 @@ class HintAreaDesigner implements IScoreDesigner, IFeedbackClient {
     }
 }
 */
-class TimelineDesigner implements IScoreDesigner {
+/*class TimelineDesigner implements IScoreDesigner {
     constructor(private svgHelper: SvgHelper, private globalContext: GlobalContext) {                
     }
     private checkSensors: DomCheckSensorsVisitor;
@@ -885,7 +885,7 @@ class TimelineDesigner implements IScoreDesigner {
         svgHelper.EditGraphicsHelper.endDraw();
 
     }
-}
+}*/
 /*
 class BeamDesigner implements ScoreApplication.ScoreDesigner {
     constructor(private context: string, private svgHelper: SVGHelper) {

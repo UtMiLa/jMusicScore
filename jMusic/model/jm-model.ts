@@ -78,6 +78,14 @@ class ClefEventInfo extends EventInfo implements IClefEventInfo{
     }
 }
 class MeterEventInfo extends EventInfo implements IMeterEventInfo{
+    nextBar(barTime: AbsoluteTime): AbsoluteTime {
+        return this.source.nextBar(barTime);
+    }
+    getMeasureTime(): TimeSpan {
+        return this.source.getMeasureTime();
+    }
+    get definition(): IMeterDefinition { return this.source.definition; }
+    get absTime(): AbsoluteTime { return this.source.absTime; }
     source: IMeter;
         
     constructor(source: IMeter){
@@ -185,6 +193,13 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
 
         //  *  OK  *
         export class ScoreElement extends MusicContainer implements IScore {
+            getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[] {
+                let meters: IMeterEventInfo[] = [];
+                this.withMeters((f) => {
+                    meters.push(f);
+                }, globalContext);
+                return meters;
+            }
             constructor(public parent: IMusicElement, public globalContext: IGlobalContext) {
                 super(parent);
             }
@@ -295,8 +310,8 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 });*/
             }
 
-            public withMeters(f: (meter: IMeterEventInfo, index: number) => void) {
-                this.visitAll(new MeterVisitor(f));
+            public withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
+                this.visitAllEvents(new MeterVisitor(f, globalContext), globalContext);
                 /*for (var i = 0; i < this.meterElements.length; i++) {
                     f(this.meterElements[i], i);
                 }*/
@@ -375,13 +390,13 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             get clefElements(): IClef[] {
                 return this.getSpecialElements("Clef");
             }
-            get meterElements(): IMeter[] {
+            /*get meterElements(): IMeter[] {
                 var res: IMeter[] = [];
                 this.withMeters((meter: IMeterEventInfo, index: number) => {
                     res.push(meter.source);
-                });
+                }, globalContext);
                 return res;
-            }
+            }*/
             get keyElements(): IKey[] {
                 return this.getSpecialElements("Key");
             }
@@ -424,22 +439,22 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 }*/
             }
 
-            public withKeys(f: (key: IKeyEventInfo, index: number) => void) {
-                this.visitAll(new KeyVisitor(f));
+            public withKeys(f: (key: IKeyEventInfo, index: number) => void, globalContext: IGlobalContext) {
+                this.visitAllEvents(new KeyVisitor(f, globalContext), globalContext);
                 /*for (var i = 0; i < this.keyElements.length; i++) {
                     f(this.keyElements[i], i);
                 }*/
             }
 
-            public withMeters(f: (meter: IMeterEventInfo, index: number) => void) {
-                this.visitAll(new MeterVisitor(f));
+            public withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
+                this.visitAllEvents(new MeterVisitor(f, globalContext), globalContext);
                 /*for (var i = 0; i < this.meterElements.length; i++) {
                     f(this.meterElements[i], i);
                 }*/
             }
 
-            public withClefs(f: (clef: IClefEventInfo, index: number) => void) {
-                this.visitAll(new ClefVisitor(f));
+            public withClefs(f: (clef: IClefEventInfo, index: number) => void, globalContext: IGlobalContext) {
+                this.visitAllEvents(new ClefVisitor(f, globalContext), globalContext);
                 /*for (var i = 0; i < this.clefElements.length; i++) {
                     f(this.clefElements[i], i);
                 }*/
@@ -461,7 +476,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 }*/
             }
 
-            public getStaffContext(absTime: AbsoluteTime): StaffContext {
+            public getStaffContext(absTime: AbsoluteTime, globalContext: IGlobalContext): StaffContext {
                 var clef: IClef;
                 let clefElements= this.clefElements;
                 clefElements.sort(Music.compareEventsOld);
@@ -478,8 +493,11 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                     key = keyElements[i];
                 }
                 var meter: IMeter;
-                var meters = this.meterElements.length ? this.meterElements : this.parent.meterElements;
-                meters.sort(Music.compareEventsOld);
+                var meters = this.getMeterElements(globalContext);
+                if (!meters.length) { 
+                    meters = this.parent.getMeterElements(globalContext); 
+                }
+                meters.sort(Music.compareEvents);
                 var barNo = 0;
                 var timeInBar = new TimeSpan(0);
                 var oldTime = AbsoluteTime.startTime;
@@ -493,7 +511,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                     barNo += deltaBars;
                     oldTime = meters[i].absTime;
                     oldMeasureTime = meters[i].getMeasureTime();
-                    meter = meters[i];
+                    meter = meters[i].source;
                 }
                 var deltaBars = Math.floor((absTime.diff(oldTime)).divide(oldMeasureTime));
                 barNo += deltaBars;
@@ -506,8 +524,12 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                     barNo,
                     timeInBar);
             }
-            public getMeterElements(): IMeter[] {
-                return this.meterElements;
+            public getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[] {
+                let meters:IMeterEventInfo[] = [];
+                this.withMeters((f) => {
+                    meters.push(f);
+                }, globalContext);
+                return meters;
             }
             public getKeyElements(): IKey[] {
                 return this.keyElements;
@@ -518,7 +540,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                     events = events.concat(voice.getEvents(globalContext));
                 }, globalContext);
             
-                this.meterElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
+                this.getMeterElements(globalContext).forEach((value) => { events = events.concat(value); });                
                 this.keyElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
                 this.clefElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
                 this.expressions.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
@@ -548,13 +570,13 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 return voice;
             }
 
-            public setMeter(meter: IMeterDefinition, absTime: AbsoluteTime) {
+            public setMeter(meter: IMeterDefinition, absTime: AbsoluteTime, globalContext: IGlobalContext) {
                 if (!absTime) absTime = AbsoluteTime.startTime;
-                let meterElements = this.meterElements;
+                let meterElements = this.getMeterElements(globalContext);
                 for (var i = 0; i < meterElements.length; i++) {
-                    if (meterElements[i].absTime.eq(absTime)) {
+                    if (meterElements[i].source.absTime.eq(absTime)) {
                         //this.sendEvent({ type: MusicEventType.eventType.removeChild, sender: this, child: this.meterElements[i] });
-                        this.removeChild(meterElements[i]);
+                        this.removeChild(meterElements[i].source);
                         /*meterElements[i].remove();
                         meterElements.splice(i, 1);*/
                     }
@@ -604,15 +626,28 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
 
             protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
-                this.withVoices((child: IVoice) => {
-                    child.visitAllEvents(visitor, globalContext);
-                }, globalContext);
-                this.withKeys((child: IKeyEventInfo) => {
-                    child.inviteEventVisitor(visitor);                    
-                });
-                this.withMeters((child: IMeterEventInfo) => {
-                    child.inviteEventVisitor(visitor);                    
-                });
+                //console.log("staff.visitChildEvents", this);
+
+                const voices = <IVoice[]>this.getSpecialElements("Voice");
+                for (var i = 0; i < voices.length; i++){
+                    voices[i].visitAllEvents(visitor, globalContext);
+                }
+                const keys = <IKey[]>this.getSpecialElements("Key");
+                for (var i = 0; i < keys.length; i++){
+                    const keyEvents = keys[i].getEvents(globalContext);
+                    for (var j = 0; j < keyEvents.length; j++){
+                        const event = keyEvents[j];
+                        //event.inviteEventVisitor(visitor);
+                    }
+                }
+                const meters = <IMeter[]>this.getSpecialElements("Meter");
+                for (var i = 0; i < meters.length; i++){
+                    const meterEvents = meters[i].getEvents(globalContext);
+                    for (var j = 0; j < meterEvents.length; j++){
+                        const event = meterEvents[j];
+                        event.inviteEventVisitor(visitor);
+                    }
+                }
             }
 
         }

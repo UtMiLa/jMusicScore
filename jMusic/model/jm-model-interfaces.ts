@@ -89,12 +89,14 @@ export interface IBar extends ITimedObjectEvent {
 
 
 export interface IMeterOwner extends IMusicContainer {
-    setMeter(meter: IMeterDefinition, absTime: AbsoluteTime): void;
-    withMeters(f: (meter: IMeterEventInfo, index: number) => void): void;
-    meterElements: IMeter[];
+    setMeter(meter: IMeterDefinition, absTime: AbsoluteTime, globalContext: IGlobalContext): void;
+    withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void;
+    getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[];
+    //meterElements: IMeter[];
 }
 
 export interface IScore extends IEventContainer, IMeterOwner {
+    getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[];
     bars: IBar[];
     staffElements: IStaff[];
     title: string;
@@ -118,6 +120,7 @@ export interface IScore extends IEventContainer, IMeterOwner {
 
 
 export interface IStaff extends IEventContainer, IMeterOwner {
+    getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[];
     parent: IScore;
     removeChild(theChild: IMusicElement, list?: IMusicElement[]): void;
     //spacingInfo: IStaffSpacingInfo;
@@ -130,7 +133,7 @@ export interface IStaff extends IEventContainer, IMeterOwner {
     //withMeters(f: (meter: IMeter, index: number) => void): void;
     //withClefs(f: (clef: IClefEventInfo, index: number) => void): void;
     withTimedEvents(f: (ev: ITimedEvent, index: number) => void): void;
-    getStaffContext(absTime: AbsoluteTime): StaffContext;
+    getStaffContext(absTime: AbsoluteTime, globalContext: IGlobalContext): StaffContext;
     //getMeterElements(): IMeter[];
     getKeyElements(): IKey[];
     getEventsOld(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): ITimedEvent[];
@@ -293,7 +296,11 @@ export interface INoteHeadInfo extends IEventInfo {
 }
 export interface IKeyEventInfo extends IEventInfo { source: IKey; }
 export interface IClefEventInfo extends IEventInfo {source: IClef; }
-export interface IMeterEventInfo extends IEventInfo { source: IMeter;}
+export interface IMeterEventInfo extends IEventInfo {
+    nextBar(barTime: AbsoluteTime): AbsoluteTime;
+    getMeasureTime(): TimeSpan;
+    definition: IMeterDefinition;
+    absTime: AbsoluteTime; source: IMeter;}
 export interface IBarEventInfo extends IEventInfo { source: IBar;}
 export interface IBeamEventInfo extends IEventInfo {
     toNote: INoteInfo;
