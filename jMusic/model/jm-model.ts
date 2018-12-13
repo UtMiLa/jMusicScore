@@ -311,10 +311,15 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
 
             public withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
-                this.visitAllEvents(new MeterVisitor(f, globalContext), globalContext);
-                /*for (var i = 0; i < this.meterElements.length; i++) {
-                    f(this.meterElements[i], i);
-                }*/
+                //this.visitAllEvents(new MeterVisitor(f, globalContext), globalContext);
+                var meters = <IMeter[]>this.getSpecialElements("Meter");
+                //this.visitAllEvents(new MeterVisitor(f, globalContext), globalContext);
+                for (var i = 0; i < meters.length; i++) {
+                    const meterEvents = meters[i].getEvents(globalContext);
+                    for (var j = 0; j < meterEvents.length; j++) {
+                        f(meterEvents[j], i);
+                    }
+                }
             }
 
             public withBars(f: (bar: IBar, index: number) => void) {
@@ -447,10 +452,14 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
 
             public withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
-                this.visitAllEvents(new MeterVisitor(f, globalContext), globalContext);
-                /*for (var i = 0; i < this.meterElements.length; i++) {
-                    f(this.meterElements[i], i);
-                }*/
+                var meters = <IMeter[]>this.getSpecialElements("Meter");
+                //this.visitAllEvents(new MeterVisitor(f, globalContext), globalContext);
+                for (var i = 0; i < meters.length; i++) {
+                    const meterEvents = meters[i].getEvents(globalContext);
+                    for (var j = 0; j < meterEvents.length; j++) {
+                        f(meterEvents[j], i);
+                    }
+                }
             }
 
             public withClefs(f: (clef: IClefEventInfo, index: number) => void, globalContext: IGlobalContext) {

@@ -57,6 +57,7 @@ export interface ITimedEvent extends IMusicElement, IEventEnumerator {
     */
     //spacingInfo: ISpacingInfo;
     getHorizPosition(): HorizPosition;
+    getEvents(globalContext: IGlobalContext): IEventInfo[];
 }
 
 /**
