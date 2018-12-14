@@ -436,7 +436,7 @@ export class MusicXmlConverter implements IFileConverter {
                         var measureNo = MusicXmlHelper.getAttributeValue(measure, 'number');
                         var lastBarTime = context.absTime.diff(absTimeLastBar);
 
-                        var staffContext = staff.getStaffContext(absTimeLastBar);
+                        var staffContext = staff.getStaffContext(absTimeLastBar, this.globalContext);
                         if (staffContext.meter && j > 0) {
                             // Check whether last bar time is equal to meter time
                             var nextBar = staffContext.meter.nextBar(absTimeLastBar, staffContext.meterTime);
@@ -444,8 +444,8 @@ export class MusicXmlConverter implements IFileConverter {
                                 if (j === 1) {
                                     // Create offset meter in last bar
                                     var defi = <RegularMeterDefinition>staffContext.meter;
-                                    this.document.setMeter(new OffsetMeterDefinition(defi.numerator, defi.denominator, context.absTime.diff(absTimeLastBar)), absTimeLastBar);
-                                    staffContext = staff.getStaffContext(absTimeLastBar);
+                                    this.document.setMeter(new OffsetMeterDefinition(defi.numerator, defi.denominator, context.absTime.diff(absTimeLastBar)), absTimeLastBar, this.globalContext);
+                                    staffContext = staff.getStaffContext(absTimeLastBar, this.globalContext);
                                     nextBar = staffContext.meter.nextBar(absTimeLastBar, staffContext.meterTime);
                                 }
                                 else {
@@ -493,7 +493,7 @@ export class MusicXmlConverter implements IFileConverter {
                                             context.partStaves.push(this.document.addStaff(clefDef));
                                         }
                                         else {
-                                            var oldClef = context.partStaves[iClef].getStaffContext(context.absTime).clef;
+                                            var oldClef = context.partStaves[iClef].getStaffContext(context.absTime, this.globalContext).clef;
                                             if (!oldClef.eq(clefDef)) {
                                                 context.partStaves[iClef].setClef(clefDef, context.absTime);
                                             }
@@ -528,7 +528,7 @@ export class MusicXmlConverter implements IFileConverter {
                                             beats: parseInt(MusicXmlHelper.getChildValue(<Element>timeElms[0], "beats", "4")),
                                             beatType: parseInt(MusicXmlHelper.getChildValue(<Element>timeElms[0], "beat-type", "4"))
                                         };
-                                        this.document.setMeter(new RegularMeterDefinition(context.meter.beats, context.meter.beatType), context.absTime);
+                                        this.document.setMeter(new RegularMeterDefinition(context.meter.beats, context.meter.beatType), context.absTime, this.globalContext);
                                     }
                                     break;
                                 case "sound": break;
@@ -664,7 +664,7 @@ export class MusicXmlConverter implements IFileConverter {
                             }
                             else {
                                 // mid-measure clef change
-                                this.addAttributes(measure, staffElement.getStaffContext(event.absTime), false, false, true, false);
+                                this.addAttributes(measure, staffElement.getStaffContext(event.absTime, this.globalContext), false, false, true, false);
                             }
                         }
                         else if (event.getElementName() === "Key") {
@@ -694,7 +694,7 @@ export class MusicXmlConverter implements IFileConverter {
                         }
                         
                     }
-                    this.addAttributes(measure, staffElement.getStaffContext(startTime), updateMeter, updateKey, updateClef);
+                    this.addAttributes(measure, staffElement.getStaffContext(startTime, this.globalContext), updateMeter, updateKey, updateClef);
                     //if (str) measure.setAttribute('content', str);
 
                 }

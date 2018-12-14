@@ -119,7 +119,7 @@ export class DomFeedbackClient implements IFeedbackClient {
                 var note = status.currentNote;
                 var staffLine = 0;
                 if (status.currentPitch) {
-                    var staffContext = note.parent.parent.getStaffContext(note.absTime);
+                    var staffContext = note.parent.parent.getStaffContext(note.absTime, this.globalContext);
                     staffLine = staffContext.clef.pitchToStaffLine(status.currentPitch);
                 }
                 this.sensorEngine.showInsertionPoint(note.id, note.getHorizPosition().beforeAfter * 9, staffLine * SvgMetrics.pitchYFactor);
@@ -172,7 +172,7 @@ export class DomFeedbackClient implements IFeedbackClient {
         for (var i = 0; i < events.length; i++) {
             var ev = events[i];
             if (ev.getHorizPosition().eq(horizPos)) {
-                var staffContext = voice.parent.getStaffContext(horizPos.absTime);
+                var staffContext = voice.parent.getStaffContext(horizPos.absTime, this.globalContext);
                 var staffLine = staffContext.clef.pitchToStaffLine(pitch);
                 this.sensorEngine.moveCursor(ev.id, horizPos.beforeAfter * 9, staffLine * SvgMetrics.pitchYFactor); // todo: spacing
             }
