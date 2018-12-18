@@ -20,7 +20,8 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IStaffExpressionEventInfo,
     IPoint,
     IGlobalContext,
-    IEventVisitorTarget} from './jm-model-interfaces';
+    IEventVisitorTarget,
+    IEventContainer} from './jm-model-interfaces';
 
 
 
@@ -89,7 +90,49 @@ export class MusicElement implements IMusicElement {
     }
 }
 
-export class MusicContainer extends MusicElement implements IEventVisitorTarget {
+export class MusicContainer extends MusicElement implements IEventVisitorTarget, IEventContainer {
+    getEventsOld(globalContext: IGlobalContext): ITimedEvent[] {
+        throw new Error("Method not implemented.");
+    }
+    withEvents(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+        throw new Error("Method not implemented.");
+    }
+
+    withOwnMeters(f: (meter: IMeter, index: number) => void): void {
+        const visitor = new MeterVisitor(f)
+        for (var i = 0; i < this.removeThisChildren.length; i++) {
+            this.removeThisChildren[i].inviteVisitor(visitor);
+        }
+    }
+
+    withOwnClefs(f: (clef: IClef, index: number) => void): void {
+        const visitor = new ClefVisitor(f)
+        for (var i = 0; i < this.removeThisChildren.length; i++) {
+            this.removeThisChildren[i].inviteVisitor(visitor);
+        }
+    }
+
+    withOwnKeys(f: (key: IKey, index: number) => void): void {
+        const visitor = new KeyVisitor(f)
+        for (var i = 0; i < this.removeThisChildren.length; i++) {
+            this.removeThisChildren[i].inviteVisitor(visitor);
+        }
+    }
+
+    withAllMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+        const visitor = new MeterEventVisitor(f, globalContext);
+        this.visitAllEvents(visitor, globalContext);
+    }
+    withAllClefs(f: (clef: IClefEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+        const visitor = new ClefEventVisitor(f, globalContext);
+        this.visitAllEvents(visitor, globalContext);
+    }
+    withAllKeys(f: (key: IKeyEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+        const visitor = new KeyEventVisitor(f, globalContext);
+        this.visitAllEvents(visitor, globalContext);
+    }
+
+
     //protected children: IMusicElement[] = [];
     protected removeThisChildren: IMusicElement[] = [];
 
@@ -508,7 +551,18 @@ export class NoteHeadVisitor extends ContextVisitor {
     }
 }   
 
-export class MeterVisitor extends NullEventVisitor {
+
+export class MeterVisitor extends NullVisitor {
+    constructor(private callback: (node:IMeter, index: number) => void) {
+        super();
+    }
+    no: number = 0;
+    visitMeter(meter: IMeter): void {
+        this.callback(meter, this.no++);
+    }
+}   
+
+export class MeterEventVisitor extends NullEventVisitor {
     constructor(private callback: (node:IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
         super(globalContext);
     }
@@ -518,9 +572,20 @@ export class MeterVisitor extends NullEventVisitor {
     }
 }   
 
-export class KeyVisitor extends NullEventVisitor {
+
+export class KeyVisitor extends NullVisitor {
+    constructor(private callback: (node:IKey, index: number) => void) {
+        super();
+    }
+    no: number = 0;
+    visitKey(key: IKey): void {
+        this.callback(key, this.no++);
+    }
+}   
+
+export class KeyEventVisitor extends NullEventVisitor {
     constructor(private callback: (node:IKeyEventInfo, index: number) => void, globalContext: IGlobalContext) {
-        super(globalContext)
+        super(globalContext);
     }
     no: number = 0;
     visitKeyInfo(key: IKeyEventInfo): void {
@@ -530,9 +595,19 @@ export class KeyVisitor extends NullEventVisitor {
     }
 }   
 
-export class ClefVisitor extends NullEventVisitor {
+export class ClefVisitor extends NullVisitor {
+    constructor(private callback: (node:IClef, index: number) => void) {
+        super();
+    }
+    no: number = 0;
+    visitClef(clef: IClef): void {
+        this.callback(clef, this.no++);
+    }
+}   
+
+export class ClefEventVisitor extends NullEventVisitor {
     constructor(private callback: (node:IClefEventInfo, index: number) => void, globalContext: IGlobalContext) {
-        super(globalContext)
+        super(globalContext);
     }
     no: number = 0;
     visitClefInfo(clef: IClefEventInfo): void {

@@ -79,6 +79,13 @@ export interface ITimedObjectEvent extends ITimedEvent {
 export interface IEventContainer {
     getEventsOld(globalContext: IGlobalContext): ITimedEvent[];
     //getEvents(globalContext: GlobalContext): IEventInfo[];
+    withEvents(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void;
+    withOwnMeters(f: (meter: IMeter, index: number) => void): void;
+    withOwnClefs(f: (clef: IClef, index: number) => void): void;
+    withOwnKeys(f: (key: IKey, index: number) => void): void;
+    withAllMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void;
+    withAllClefs(f: (clef: IClefEventInfo, index: number) => void, globalContext: IGlobalContext): void;
+    withAllKeys(f: (key: IKeyEventInfo, index: number) => void, globalContext: IGlobalContext): void;
 }
 
 export interface IBar extends ITimedObjectEvent {
@@ -91,8 +98,8 @@ export interface IBar extends ITimedObjectEvent {
 
 export interface IMeterOwner extends IMusicContainer {
     setMeter(meter: IMeterDefinition, absTime: AbsoluteTime, globalContext: IGlobalContext): void;
-    withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void;
-    getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[];
+    //withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void;
+    //getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[];
     //meterElements: IMeter[];
 }
 

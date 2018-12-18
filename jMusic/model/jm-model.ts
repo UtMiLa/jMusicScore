@@ -22,7 +22,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     INoteFinder,
     IEventVisitorTarget} from './jm-model-interfaces';
 
-import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, StructuralNoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, StructuralStaffVisitor, StructuralVoiceVisitor } from './jm-model-base';
+import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, StructuralNoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, StructuralStaffVisitor, StructuralVoiceVisitor, KeyEventVisitor, ClefEventVisitor } from './jm-model-base';
 import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, NoteElement, NoteheadElement } from './jm-model-notes';
 
 
@@ -195,7 +195,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         export class ScoreElement extends MusicContainer implements IScore {
             getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[] {
                 let meters: IMeterEventInfo[] = [];
-                this.withMeters((f) => {
+                this.withAllMeters((f) => {
                     meters.push(f);
                 }, globalContext);
                 return meters;
@@ -310,7 +310,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 });*/
             }
 
-            public withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
+            /*public withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
                 //this.visitAllEvents(new MeterVisitor(f, globalContext), globalContext);
                 var meters = <IMeter[]>this.getSpecialElements("Meter");
                 //this.visitAllEvents(new MeterVisitor(f, globalContext), globalContext);
@@ -320,7 +320,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                         f(meterEvents[j], i);
                     }
                 }
-            }
+            }*/
 
             public withBars(f: (bar: IBar, index: number) => void) {
                 this.visitAll(new BarVisitor(f));
@@ -444,11 +444,8 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 }*/
             }
 
-            public withKeys(f: (key: IKeyEventInfo, index: number) => void, globalContext: IGlobalContext) {
-                this.visitAllEvents(new KeyVisitor(f, globalContext), globalContext);
-                /*for (var i = 0; i < this.keyElements.length; i++) {
-                    f(this.keyElements[i], i);
-                }*/
+            /*public withKeys(f: (key: IKeyEventInfo, index: number) => void, globalContext: IGlobalContext) {
+                this.visitAllEvents(new KeyEventVisitor(f, globalContext), globalContext);
             }
 
             public withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
@@ -463,11 +460,8 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
 
             public withClefs(f: (clef: IClefEventInfo, index: number) => void, globalContext: IGlobalContext) {
-                this.visitAllEvents(new ClefVisitor(f, globalContext), globalContext);
-                /*for (var i = 0; i < this.clefElements.length; i++) {
-                    f(this.clefElements[i], i);
-                }*/
-            }
+                this.visitAllEvents(new ClefEventVisitor(f, globalContext), globalContext);
+            }*/
 
             public withTimedEvents(f: (ev: ITimedEvent, index: number) => void): void {
                 this.visitAll(new TimedEventVisitor(f));
@@ -535,7 +529,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
             public getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[] {
                 let meters:IMeterEventInfo[] = [];
-                this.withMeters((f) => {
+                this.withAllMeters((f) => {
                     meters.push(f);
                 }, globalContext);
                 return meters;

@@ -2,7 +2,7 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     AbsoluteTime, ClefDefinition, ClefType, HorizPosition, KeyDefinitionFactory, LongDecorationType, 
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef} from './jm-music-basics';
-import { IVoice, IScore, IStaff, IGlobalContext, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence, IEventVisitor, ITimedObjectEvent, IMeterEventInfo } from './model/jm-model-interfaces';    
+import { IVoice, IScore, IStaff, IGlobalContext, IKey, IClef, IVoiceNote, INote, INotehead, IMeterSpacingInfo, IMeter, IMusicElement, IEventInfo, IVisitor, ITimedEvent, IEventContainer, ISequence, IEventVisitor, ITimedObjectEvent, IMeterEventInfo, IClefEventInfo, IKeyEventInfo } from './model/jm-model-interfaces';    
 import {
     Music, MusicElementFactory, ClefElement,
     KeyElement, 
@@ -76,36 +76,36 @@ import { IScoreRefiner } from "./jm-interfaces";
 
                     // First time:
                     if (!staff.getMeterElements(this.globalContext).length) {
-                        document.withMeters((meter: IMeterEventInfo, index: number) => {
-                            this.addGhostMeter(staff, meter.source);
-                        }, this.globalContext);
+                        document.withOwnMeters((meter: IMeter, index: number) => {
+                            this.addGhostMeter(staff, meter);
+                        });
                     }
 
                     // todo: Register changes:
-                    document.withMeters((scoreMeter: IMeterEventInfo, index: number) => {
+                    document.withOwnMeters((scoreMeter: IMeter, index: number) => {
                         // tjek om der er ghostMeter til denne kombination af meter og staff
                         var found = false;
-                        staff.withMeters((staffMeter: IMeterEventInfo, index: number) => {
+                        staff.withOwnMeters((staffMeter: IMeter, index: number) => {
                             //if ((<any>staffMeter).originElement && (<any>staffMeter).originElement === scoreMeter) {
-                            if (staffMeter.source.absTime.eq(scoreMeter.source.absTime)) {
+                            if (staffMeter.absTime.eq(scoreMeter.absTime)) {
                                 found = true;
                             }
-                        }, this.globalContext);
+                        });
                         if (!found) {
-                            this.addGhostMeter(staff, scoreMeter.source);
+                            this.addGhostMeter(staff, scoreMeter);
                         }
-                    }, this.globalContext);
+                    });
 
-                    staff.withMeters((staffMeter: IMeterEventInfo, index: number) => {
+                    staff.withOwnMeters((staffMeter: IMeter, index: number) => {
                         // tjek om meterElm er ghostMeter og mangler tilhørende score.meter
                         if ((<any>staffMeter).originElement) {
                             var origin = (<any>staffMeter).originElement;
                             if (document.getMeterElements(this.globalContext).indexOf(origin) === -1) {
                                 // remove ghost
-                                staff.removeChild(staffMeter.source/*, staff.getMeterElements(this.globalContext)*/);
+                                staff.removeChild(staffMeter/*, staff.getMeterElements(this.globalContext)*/);
                             }
                         }
-                    }, this.globalContext);
+                    });
                 }, document.globalContext);
             }
         }
@@ -125,6 +125,27 @@ export class VariableSpacing {
     preWidth: number;
 }
 export class VariableRef extends MusicElement implements ITimedObjectEvent, IEventContainer {
+    withEvents(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+        this.ref.withEvents(f, globalContext);
+    }
+    withOwnMeters(f: (meter: IMeter, index: number) => void): void {
+        this.ref.withOwnMeters(f);
+    }
+    withOwnClefs(f: (clef: IClef, index: number) => void): void {
+        this.ref.withOwnClefs(f);
+    }
+    withOwnKeys(f: (key: IKey, index: number) => void): void {
+        this.ref.withOwnKeys(f);
+    }
+    withAllMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+        this.ref.withAllMeters(f, globalContext);
+    }
+    withAllClefs(f: (clef: IClefEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+        this.ref.withAllClefs(f, globalContext);
+    }
+    withAllKeys(f: (key: IKeyEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+        this.ref.withAllKeys(f, globalContext);
+    }
     absTime: AbsoluteTime = new AbsoluteTime(1, 4); // todo: calculate absTime og timeSpan for container
     private name: string;
     private ref: ISequence;

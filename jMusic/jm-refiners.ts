@@ -39,7 +39,7 @@ import { ContextEventVisitor, NoteEventVisitor } from './model/jm-model-base';
                 var barTime = AbsoluteTime.startTime;
 
                 // Find meter
-                score.withMeters((meter: IMeterEventInfo, iMeter: number): void => {
+                score.withAllMeters((meter: IMeterEventInfo, iMeter: number): void => {
                     let meterElements = score.getMeterElements(this.globalContext);
                     // Tjek at der er bars fra this.meterElements[iMeter].absTime til this.meterElements[iMeter + 1].absTime
                     var toTime = (iMeter === meterElements.length - 1) ? maxTime : meterElements[iMeter + 1].absTime;
