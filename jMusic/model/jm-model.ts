@@ -382,6 +382,12 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 this.withStaves((child: IStaff) => {
                     child.visitAllEvents(visitor, globalContext);
                 }, globalContext);
+                this.withOwnMeters((child: IMeter) => {
+                    let events = child.getEvents(globalContext);
+                    for (let i = 0; i < events.length; i++) {
+                        events[i].inviteEventVisitor(visitor);
+                    }
+                });
             }
         
         }
@@ -1254,6 +1260,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             public inviteVisitor(visitor: IVisitor) {
                 visitor.visitMeter(this);
             }
+
             static createFromMemento(parent: IMeterOwner, memento: IMemento): IMeter {
                 if (!memento.def) return null;
                 var def = MeterDefinitionFactory.createMeterDefinition(memento.def.def);
