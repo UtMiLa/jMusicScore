@@ -678,13 +678,13 @@ export module MusicSpacing {
             MinimalSpacer.noteDecoCalculations(deco, context, this.globalContext);
         }
         visitVoice(voice: IVoice) { }
-        visitClef(clef: IClefEventInfo) {
+        visitClefInfo(clef: IClefEventInfo) {
             console.log("spacing clef", clef);
             const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(clef);
             spacing.offset.y = Metrics.pitchYFactor * (clef.source.definition.clefLine - 1) * 2;
             spacing.clefId = this.clefRefId(clef.source.definition, !!clef.source.absTime.numerator);
         }
-        visitMeterEvent(meter: IMeterEventInfo) {
+        visitMeterInfo(meter: IMeterEventInfo) {
             console.log("spacing meter", meter);
             const spacing = this.globalContext.getSpacingInfo(meter);
             spacing.width = Metrics.meterWidth0;
@@ -698,7 +698,7 @@ export module MusicSpacing {
 
             meter.source.definition.display(fracFunc, fullFunc);
         }
-        visitKeyEvent(key: IKeyEventInfo) {
+        visitKeyInfo(key: IKeyEventInfo) {
             console.log("spacing key", key);
             const spacing = this.globalContext.getSpacingInfo(key);
             spacing.width = -Metrics.meterXOffset + key.source.definition.enumerateKeys().length * Metrics.keyXPerAcc;
@@ -948,6 +948,7 @@ export module MusicSpacing {
         private checkUpdateAll(score: IScore) {
             var spacer = this.spacer;
 
+/*
             score.visitAllEvents({
                 visitPre: (element: IEventVisitorTarget): (element: IEventVisitorTarget) => void => {
                     var spacing = this.globalContext.getSpacingInfo(element);
@@ -957,6 +958,25 @@ export module MusicSpacing {
                     }
                 }
             }, this.globalContext);
+*/
+            const theFun = (evt: IEventInfo): void => {
+                var spacing = this.globalContext.getSpacingInfo(evt);
+                if (spacing) {
+                    evt.inviteEventVisitor(spacer);
+                    return null;
+                }
+            }
+
+            score.withAllMeters(theFun, this.globalContext);
+            
+            score.withStaves((staff) => {
+                var spacing = this.globalContext.getSpacingInfo(staff);
+                if (spacing) {
+                    staff.inviteEventVisitor(spacer, this.globalContext);
+                    return null;
+                }
+            }, this.globalContext);
+            score.withEvents(theFun, this.globalContext);
             score.withStaves((staff: IStaff): void => {
                 staff.withVoices((voice: IVoice): void => {
                     /*voice.withNotes(this.globalContext, (note: INote): void => {
@@ -1021,7 +1041,7 @@ export module MusicSpacing {
                 this.globalContext.getSpacingInfo(staff).offset.y = Metrics.staffYOffset + index * Metrics.staffYStep; // todo: index
             }, this.globalContext);
 
-            var events: IEventInfo[] = score.getEvents(this.globalContext, false);
+            var events: IEventInfo[] = score.getEvents(this.globalContext/*, false*/);
             events.sort(Music.compareEvents);
 
             var pos = Metrics.firstPos;

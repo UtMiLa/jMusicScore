@@ -94,8 +94,16 @@ export class MusicContainer extends MusicElement implements IEventVisitorTarget,
     getEventsOld(globalContext: IGlobalContext): ITimedEvent[] {
         throw new Error("Method not implemented.");
     }
-    withEvents(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void {
-        throw new Error("Method not implemented.");
+
+    public getEvents(globalContext: IGlobalContext, fromTime?: AbsoluteTime, toTime?: AbsoluteTime): IEventInfo[]{
+        return [];
+    }
+
+    withEvents(f: (meter: IEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+        const events = this.getEvents(globalContext);
+        for (var i = 0; i < events.length; i++) {
+            f(events[i], i);
+        }
     }
 
     withOwnMeters(f: (meter: IMeter, index: number) => void): void {

@@ -147,6 +147,54 @@ describe("Score", function () {
             expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('7/16');
         });
 
+        it("should visit a correct meter with withOwnMeters", function () {
+            let count = 0;
+            document.withOwnMeters((meter) => {count++;});
+            expect(count).toEqual(0);
+
+            document.setMeter(meterDef4_4, AbsoluteTime.startTime, globalContext);
+            count = 0;
+            document.withOwnMeters((meter) => {count++;});
+            expect(count).toEqual(1);
+        });
+        it("should visit a correct clef with withOwnClefs", function () {
+            let staff = document.staffElements[0];
+
+            let count = 0;
+            document.withOwnClefs((clef) => {count++;});
+            expect(count).toEqual(0);
+
+            count = 0;
+            staff.withOwnClefs((clef) => {count++;});
+            expect(count).toEqual(1);
+
+            /*staff.setClef(ClefDefinition.clefF, AbsoluteTime.startTime);
+            count = 0;
+            staff.withOwnClefs((clef) => {count++;});
+            expect(count).toEqual(1);*/
+
+            staff.setClef(ClefDefinition.clefF, absTime1_5);
+            count = 0;
+            staff.withOwnClefs((clef) => {count++;});
+            expect(count).toEqual(2);
+        });
+        it("should visit a correct key with withOwnKeys", function () {
+            let staff = document.staffElements[0];
+            staff.setKey(new RegularKeyDefinition('x', 2), AbsoluteTime.startTime);
+
+            let count = 0;
+            document.withOwnKeys((key) => {count++;});
+            expect(count).toEqual(0);
+
+            count = 0;
+            staff.withOwnKeys((key) => {count++;});
+            expect(count).toEqual(1);
+
+            staff.setKey(new RegularKeyDefinition('x', 4), absTime1_5);
+            count = 0;
+            staff.withOwnKeys((key) => {count++;});
+            expect(count).toEqual(2);
+        });
     });
 
     describe("when a variable is used", function () {
@@ -170,9 +218,6 @@ describe("Score", function () {
         });
 
 
-    });
-
-    xdescribe("when a ", function () {
     });
 
 });

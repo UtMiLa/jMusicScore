@@ -25,6 +25,7 @@ export interface IMusicElement {
 export interface IMusicContainer extends IMusicElement, IEventVisitorTarget  {
     addChild(theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void;
     removeChild(theChild: IMusicElement): void;
+    getEvents(globalContext: IGlobalContext): IEventInfo[];
 }
 
 export interface IGlobalContext{ 
@@ -79,7 +80,7 @@ export interface ITimedObjectEvent extends ITimedEvent {
 export interface IEventContainer {
     getEventsOld(globalContext: IGlobalContext): ITimedEvent[];
     //getEvents(globalContext: GlobalContext): IEventInfo[];
-    withEvents(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void;
+    withEvents(f: (event: IEventInfo, index: number) => void, globalContext: IGlobalContext): void;
     withOwnMeters(f: (meter: IMeter, index: number) => void): void;
     withOwnClefs(f: (clef: IClef, index: number) => void): void;
     withOwnKeys(f: (key: IKey, index: number) => void): void;
@@ -117,7 +118,7 @@ export interface IScore extends IEventContainer, IMeterOwner {
     clear(): void;
     findBar(absTime: AbsoluteTime): IBar;
     getEventsOld(globalContext: IGlobalContext, ignoreStaves?: boolean): ITimedEvent[];
-    getEvents(globalContext: IGlobalContext, ignoreStaves: boolean): IEventInfo[];
+    //getEvents(globalContext: IGlobalContext, ignoreStaves: boolean): IEventInfo[];
     withStaves(f: (staff: IStaff, index: number) => void, globalContext: IGlobalContext): void;
     withVoices(f: (voice: IVoice, index: number) => void, globalContext: IGlobalContext): void;
     withBars(f: (bar: IBar, index: number) => void): void;

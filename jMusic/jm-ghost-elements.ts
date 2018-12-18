@@ -125,7 +125,7 @@ export class VariableSpacing {
     preWidth: number;
 }
 export class VariableRef extends MusicElement implements ITimedObjectEvent, IEventContainer {
-    withEvents(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void {
+    withEvents(f: (meter: IEventInfo, index: number) => void, globalContext: IGlobalContext): void {
         this.ref.withEvents(f, globalContext);
     }
     withOwnMeters(f: (meter: IMeter, index: number) => void): void {

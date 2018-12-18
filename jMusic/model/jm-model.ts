@@ -104,6 +104,11 @@ class MeterEventInfo extends EventInfo implements IMeterEventInfo{
         return res;
     }
     inviteEventVisitor(visitor: IEventVisitor): void {
+        if (!visitor.visitMeterInfo){
+            alert("mangler visitor.visitMeterInfo");
+            debugger;
+            return;
+        }
         visitor.visitMeterInfo(this);
     }
 }
@@ -272,13 +277,13 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 }
             }
 
-            public getEvents(globalContext: IGlobalContext, ignoreStaves = false): IEventInfo[] {
+            public getEvents(globalContext: IGlobalContext/*, ignoreStaves = false*/): IEventInfo[] {
                 var events: IEventInfo[] = [];
-                if (!ignoreStaves) {
+                //if (!ignoreStaves) {
                     this.withStaves((staff: IStaff) => {
                         events = events.concat(staff.getEvents(globalContext));
                     }, globalContext);
-                }
+                //}
                 this.bars.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });
                 this.meterElements.forEach((value) => { events = events.concat(value.getEvents(globalContext)); });                
                 return events;
@@ -649,14 +654,21 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                         //event.inviteEventVisitor(visitor);
                     }
                 }
-                const meters = <IMeter[]>this.getSpecialElements("Meter");
+                /*const meters = <IMeter[]>this.getSpecialElements("Meter");
                 for (var i = 0; i < meters.length; i++){
                     const meterEvents = meters[i].getEvents(globalContext);
                     for (var j = 0; j < meterEvents.length; j++){
                         const event = meterEvents[j];
                         event.inviteEventVisitor(visitor);
                     }
-                }
+                }*/
+                this.withOwnMeters((child: IMeter) => {
+                    let events = child.getEvents(globalContext);
+                    for (let i = 0; i < events.length; i++) {
+                        events[i].inviteEventVisitor(visitor);
+                    }
+                });
+
             }
 
         }
