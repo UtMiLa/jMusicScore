@@ -651,18 +651,17 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                     const keyEvents = keys[i].getEvents(globalContext);
                     for (var j = 0; j < keyEvents.length; j++){
                         const event = keyEvents[j];
-                        //event.inviteEventVisitor(visitor);
-                    }
-                }
-                /*const meters = <IMeter[]>this.getSpecialElements("Meter");
-                for (var i = 0; i < meters.length; i++){
-                    const meterEvents = meters[i].getEvents(globalContext);
-                    for (var j = 0; j < meterEvents.length; j++){
-                        const event = meterEvents[j];
                         event.inviteEventVisitor(visitor);
                     }
-                }*/
+                }
                 this.withOwnMeters((child: IMeter) => {
+                    let events = child.getEvents(globalContext);
+                    for (let i = 0; i < events.length; i++) {
+                        events[i].inviteEventVisitor(visitor);
+                    }
+                });
+
+                this.withOwnClefs((child: IClef) => {
                     let events = child.getEvents(globalContext);
                     for (let i = 0; i < events.length; i++) {
                         events[i].inviteEventVisitor(visitor);

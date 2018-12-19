@@ -1,9 +1,11 @@
 import { IScore } from '../model/jm-model-interfaces';    
 import { ScoreElement } from "../model/jm-model";  
-import { GlobalContext, NullEventVisitor } from "../model/jm-model-base";
-import { VariableRef } from '../jm-ghost-elements';
+import { GlobalContext, NullEventVisitor, MusicContainer } from "../model/jm-model-base";
+import { VariableRef, GhostsValidator } from '../jm-ghost-elements';
 
 import { LilyPondConverter } from '../jm-lilypond';
+import { MusicSpacing } from '../jm-spacing';
+import { AbsoluteTime, RegularKeyDefinition, RegularMeterDefinition } from '../jm-music-basics';
 
 
 
@@ -127,6 +129,54 @@ describe("NullEventVisitor", function () {
 
     it("should visit transformed events", function () {
         testEvents(testSet[2]);
+    });
+
+
+
+    describe("Spacing", function () {
+        var score: ScoreElement;
+        beforeEach(function(){
+            score = <ScoreElement>loadFromLily("{d4 e4}", 1, 1);
+        });
+        /*xit("should space notes", function () {
+            expect(score.staffElements[0].clefElements.length).toEqual(1);
+            expect(score.getSpecialElements("Meter").length).toEqual(1);
+            let clefElm = score.staffElements[0].clefElements[0];
+        });*/
+        it("should space meters", function () {
+            score.setMeter(new RegularMeterDefinition(4, 4), AbsoluteTime.startTime);
+
+            let ghostVal = new GhostsValidator(globalContext);
+            ghostVal.refine(score);
+
+            expect(score.getSpecialElements("Meter").length).toEqual(1);
+            let meterElm = (<MusicContainer><any>score.staffElements[0]).getSpecialElements("Meter")[0];
+            expect(meterElm).toBeDefined("staff.meter ikke defined");
+            let spacer = new MusicSpacing.SpacingDesigner(globalContext);
+            spacer.design(score);
+            let meterSpacer = globalContext.getSpacingInfo(meterElm);
+            expect(meterSpacer).toBeDefined("meterspacer ikke defined");
+            expect(meterSpacer.width).toEqual(24);
+        });
+        it("should space clefs", function () {
+            expect(score.staffElements[0].clefElements.length).toEqual(1);
+            let clefElm = score.staffElements[0].clefElements[0];
+            let spacer = new MusicSpacing.SpacingDesigner(globalContext);
+            spacer.design(score);
+            let clefSpacer = globalContext.getSpacingInfo(clefElm);
+            expect(clefSpacer).toBeDefined();
+            expect(clefSpacer.width).toEqual(18);
+        });
+        it("should space keys", function () {
+            score.setKey(new RegularKeyDefinition('x', 2), AbsoluteTime.startTime, globalContext);
+            expect((<any>score.staffElements[0]).getSpecialElements("Key").length).toEqual(1);
+            let keyElm = (<any>score.staffElements[0]).getSpecialElements("Key")[0];
+            let spacer = new MusicSpacing.SpacingDesigner(globalContext);
+            spacer.design(score);
+            let keySpacer = globalContext.getSpacingInfo(keyElm);
+            expect(keySpacer).toBeDefined();
+            expect(keySpacer.width).toEqual(12);
+        });
     });
 });
 

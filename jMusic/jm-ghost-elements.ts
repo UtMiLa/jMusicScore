@@ -20,6 +20,10 @@ import { IScoreRefiner } from "./jm-interfaces";
             getEvents(globalContext: IGlobalContext): IMeterEventInfo[] {
                 let info: IMeterEventInfo[] = this.originElement.getEvents(globalContext);// { source: this, id: this.id, visitAllEvents: undefined, relTime: this.absTime.fromStart(), getTimeVal: () => {return TimeSpan.noTime;} };
                 //info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitMeterInfo(info)};
+                for (let i = 0; i < info.length; i++) {
+                    info[i].source = this;
+                    info[i].id = this.id;
+                }
                 return info;
             }
 
@@ -100,7 +104,7 @@ import { IScoreRefiner } from "./jm-interfaces";
                         // tjek om meterElm er ghostMeter og mangler tilhørende score.meter
                         if ((<any>staffMeter).originElement) {
                             var origin = (<any>staffMeter).originElement;
-                            if (document.getMeterElements(this.globalContext).indexOf(origin) === -1) {
+                            if (document.meterElements.indexOf(origin) === -1) {
                                 // remove ghost
                                 staff.removeChild(staffMeter/*, staff.getMeterElements(this.globalContext)*/);
                             }

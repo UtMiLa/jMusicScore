@@ -101,7 +101,6 @@ export interface IMeterOwner extends IMusicContainer {
     setMeter(meter: IMeterDefinition, absTime: AbsoluteTime, globalContext: IGlobalContext): void;
     //withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void;
     //getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[];
-    //meterElements: IMeter[];
 }
 
 export interface IScore extends IEventContainer, IMeterOwner {
@@ -114,6 +113,7 @@ export interface IScore extends IEventContainer, IMeterOwner {
     subTitle: string;
     metadata: {};
     globalContext: IGlobalContext;
+    meterElements: IMeter[];
 
     clear(): void;
     findBar(absTime: AbsoluteTime): IBar;

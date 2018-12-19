@@ -679,13 +679,13 @@ export module MusicSpacing {
         }
         visitVoice(voice: IVoice) { }
         visitClefInfo(clef: IClefEventInfo) {
-            console.log("spacing clef", clef);
+            //console.log("spacing clef", clef);
             const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(clef);
             spacing.offset.y = Metrics.pitchYFactor * (clef.source.definition.clefLine - 1) * 2;
             spacing.clefId = this.clefRefId(clef.source.definition, !!clef.source.absTime.numerator);
         }
         visitMeterInfo(meter: IMeterEventInfo) {
-            console.log("spacing meter", meter);
+            //console.log("spacing meter", meter);
             const spacing = this.globalContext.getSpacingInfo(meter);
             spacing.width = Metrics.meterWidth0;
             var fracFunc = (num: string, den: string): any => {
@@ -699,7 +699,7 @@ export module MusicSpacing {
             meter.source.definition.display(fracFunc, fullFunc);
         }
         visitKeyInfo(key: IKeyEventInfo) {
-            console.log("spacing key", key);
+            //console.log("spacing key", key);
             const spacing = this.globalContext.getSpacingInfo(key);
             spacing.width = -Metrics.meterXOffset + key.source.definition.enumerateKeys().length * Metrics.keyXPerAcc;
         }
@@ -873,14 +873,14 @@ export module MusicSpacing {
                 this.globalContext.addSpacingInfo(voice, new VoiceSpacingInfo(voice));
             }
         }
-        visitClefEvent(clef: IClefEventInfo) {
+        visitClefInfo(clef: IClefEventInfo) {
             const spacing = this.globalContext.getSpacingInfo(clef);
             if (!spacing) {
                 //clef.spacingInfo = new ClefSpacingInfo(clef);
                 this.globalContext.addSpacingInfo(clef, new ClefSpacingInfo(clef));
             }
         }
-        visitMeter(meter: IMeterEventInfo) {                    
+        visitMeterInfo(meter: IMeterEventInfo) {                    
             if (meter.source.parent.getElementName() === "Score") return;
             const spacing = this.globalContext.getSpacingInfo(meter);
             if (!spacing) {
@@ -888,7 +888,7 @@ export module MusicSpacing {
                 this.globalContext.addSpacingInfo(meter, new MeterSpacingInfo(meter));
             }
         }
-        visitKey(key: IKeyEventInfo) {
+        visitKeyInfo(key: IKeyEventInfo) {
             const spacing = this.globalContext.getSpacingInfo(key);
             if (!spacing) {
                 //key.spacingInfo = new KeySpacingInfo(key);
