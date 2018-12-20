@@ -22,7 +22,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     INoteFinder,
     IEventVisitorTarget} from './jm-model-interfaces';
 
-import { MusicElement, GlobalContext, MusicContainer, StaffVisitor, VoiceVisitor, MeterVisitor, BarVisitor, KeyVisitor, ClefVisitor, TimedEventVisitor, StructuralNoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, StructuralStaffVisitor, StructuralVoiceVisitor, KeyEventVisitor, ClefEventVisitor } from './jm-model-base';
+import { MusicElement, GlobalContext, MusicContainer, BarVisitor, TimedEventVisitor, StructuralNoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, StructuralStaffVisitor, StructuralVoiceVisitor, KeyEventVisitor, ClefEventVisitor } from './jm-model-base';
 import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, NoteElement, NoteheadElement } from './jm-model-notes';
 
 

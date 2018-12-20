@@ -13,6 +13,8 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: Bar
 //todo: Clef, Meter, Key
 //todo: NoteDeco
+//todo: spacing af clef.x, text.y, accidental
+//todo: tie, 1/128
 
 /// Music spacing classes - independent of graphics methods
 export module MusicSpacing {

@@ -509,7 +509,7 @@ export class StructuralStaffVisitor extends NullVisitor {
     }
 }   
 
-export class StaffVisitor extends NullEventVisitor {
+/*export class StaffVisitor extends NullEventVisitor {
     constructor(private callback: (node:IStaff, index: number) => void, globalContext: IGlobalContext) {
         super(globalContext);
     }
@@ -517,7 +517,7 @@ export class StaffVisitor extends NullEventVisitor {
     visitStaff(note: IStaff): void {
         this.callback(note, this.no++);
     }
-}   
+} */  
 
 export class BarVisitor extends NullVisitor {
     constructor(private callback: (bar:IBar, index: number) => void) {
@@ -538,7 +538,7 @@ export class StructuralVoiceVisitor extends NullVisitor {
         this.callback(voice, this.no++);
     }
 }   
-
+/*
 export class VoiceVisitor extends NullEventVisitor {
     constructor(private callback: (voice:IVoice, index: number) => void, globalContext: IGlobalContext) {
         super(globalContext)
@@ -547,7 +547,7 @@ export class VoiceVisitor extends NullEventVisitor {
     visitVoice(voice: IVoice): void {
         this.callback(voice, this.no++);
     }
-}   
+}   */
 
 export class NoteHeadVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (node:INotehead, index: number, spacing: INoteHeadSpacingInfo) => void) {
@@ -589,7 +589,7 @@ export class KeyVisitor extends NullVisitor {
     visitKey(key: IKey): void {
         this.callback(key, this.no++);
     }
-}   
+}  
 
 export class KeyEventVisitor extends NullEventVisitor {
     constructor(private callback: (node:IKeyEventInfo, index: number) => void, globalContext: IGlobalContext) {
