@@ -162,7 +162,10 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         class BarElement extends MusicElement implements IBar {
             getEvents(): IEventInfo[] {
                 let info: IBarEventInfo = new BarEventInfo(this);
-                info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitBarInfo(info)};
+                info.visitAllEvents = (visitor: IVisitorIterator<IEventVisitorTarget>) => {
+                    let post = visitor.visitPre(info); //.visitBarInfo(info)
+                    if (post) post(info);
+                };
                 return [info];
             }
 
@@ -383,14 +386,16 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 }, globalContext);
             }
 
-            protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+            protected visitChildEvents(visitor: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext){
                 this.withStaves((child: IStaff) => {
                     child.visitAllEvents(visitor, globalContext);
                 }, globalContext);
                 this.withOwnMeters((child: IMeter) => {
                     let events = child.getEvents(globalContext);
                     for (let i = 0; i < events.length; i++) {
-                        events[i].inviteEventVisitor(visitor);
+                        //events[i].inviteEventVisitor(visitor);
+                        let post = visitor.visitPre(events[i]); 
+                        if (post) post(events[i]);    
                     }
                 });
             }
@@ -639,7 +644,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 this.addChild(keyRef);
             }
 
-            protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+            protected visitChildEvents(visitor: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext){
                 //console.log("staff.visitChildEvents", this);
 
                 const voices = <IVoice[]>this.getSpecialElements("Voice");
@@ -651,20 +656,31 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                     const keyEvents = keys[i].getEvents(globalContext);
                     for (var j = 0; j < keyEvents.length; j++){
                         const event = keyEvents[j];
-                        event.inviteEventVisitor(visitor);
+                        //event.inviteEventVisitor(visitor);
+                        let post = visitor.visitPre(event); 
+                        if (post) post(event);    
+
                     }
                 }
                 this.withOwnMeters((child: IMeter) => {
                     let events = child.getEvents(globalContext);
                     for (let i = 0; i < events.length; i++) {
-                        events[i].inviteEventVisitor(visitor);
+                        //events[i].inviteEventVisitor(visitor);
+                                                //events[i].inviteEventVisitor(visitor);
+                                                let post = visitor.visitPre(events[i]); 
+                                                if (post) post(events[i]);    
+                        
                     }
                 });
 
                 this.withOwnClefs((child: IClef) => {
                     let events = child.getEvents(globalContext);
                     for (let i = 0; i < events.length; i++) {
-                        events[i].inviteEventVisitor(visitor);
+                        //events[i].inviteEventVisitor(visitor);
+                                                //events[i].inviteEventVisitor(visitor);
+                                                let post = visitor.visitPre(events[i]); 
+                                                if (post) post(events[i]);    
+                        
                     }
                 });
 
@@ -844,7 +860,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 let seqNote = segment.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);
                 return seqNote; // new NoteProxy(seqNote, this);
             }
-            protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+            protected visitChildEvents(visitor: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext){
                 this.sequence.visitAllEvents(visitor, globalContext);
             }
 
@@ -1026,7 +1042,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
 
 
-            protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+            protected visitChildEvents(visitor: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext){
                 let events = this.getEvents(globalContext);
                 for (let i = 0; i < events.length; i++) {
                     events[i].visitAllEvents(visitor);
@@ -1330,7 +1346,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             getTimeVal(): TimeSpan {
                 throw new Error("Method not implemented.");
             }
-            visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {
+            visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void {
                 //throw new Error("Method not implemented.");
             }
             clone(addId: string): IEventInfo {
@@ -1675,7 +1691,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
         }
 
-export class EventEnumerator {
+/*export class EventEnumerator {
     constructor(private globalContext: IGlobalContext){}
     public doScore(score: IScore, visitor: IEventVisitor){
         visitor.visitScore(score);
@@ -1688,8 +1704,8 @@ export class EventEnumerator {
         staff.withVoices((voice) => { this.doVoice(voice, visitor); }, this.globalContext);
     }
     public doVoice(voice: IVoice, visitor: IEventVisitor){
-        /*visitor.visitScore(voice.parent.parent);
-        visitor.visitStaff(voice.parent);*/
+        / *visitor.visitScore(voice.parent.parent);
+        visitor.visitStaff(voice.parent);* /
         visitor.visitVoice(voice);
         let events = voice.getEvents(this.globalContext);
         for (let i = 0; i < events.length; i++){
@@ -1697,12 +1713,12 @@ export class EventEnumerator {
         }
     }
     public doSequence(sequence: ISequence, visitor: IEventVisitor){
-        /*visitor.visitScore(voice.parent.parent);
-        visitor.visitStaff(voice.parent);*/
+        / *visitor.visitScore(voice.parent.parent);
+        visitor.visitStaff(voice.parent);* /
         visitor.visitSequence(sequence, this.globalContext);
         let events = sequence.getEvents(this.globalContext);
         for (let i = 0; i < events.length; i++){
             events[i].visitAllEvents(visitor);
         }
     }
-}
+}*/

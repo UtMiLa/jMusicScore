@@ -42,31 +42,31 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         getTimeVal(): TimeSpan {
             return this.source.getTimeVal();
         }
-        visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {
-            var postFun: (element: IEventVisitorTarget) => void = visitor.visitPre(this);
+        visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void {
+            var postFun: (element: IEventVisitorTarget) => void = visitorIterator.visitPre(this);
             for (var i = 0; i < this.heads.length; i++) {
                 //visitor.visitNoteHeadInfo(this.heads[i]);
-                const post = visitor.visitPre(this.heads[i]);
+                const post = visitorIterator.visitPre(this.heads[i]);
                 if (post) post(this.heads[i]);
             }
             for (var i = 0; i < this.decorations.length; i++) {
                 //visitor.visitNoteDecorationInfo(this.decorations[i]);
-                const post = visitor.visitPre(this.decorations[i]);
+                const post = visitorIterator.visitPre(this.decorations[i]);
                 if (post) post(this.decorations[i]);
             }
             for (var i = 0; i < this.longDecorations.length; i++) {
                 //visitor.visitLongDecorationInfo(this.longDecorations[i]);
-                const post = visitor.visitPre(this.longDecorations[i]);
+                const post = visitorIterator.visitPre(this.longDecorations[i]);
                 if (post) post(this.longDecorations[i]);
             }
             for (var i = 0; i < this.syllables.length; i++) {
                 //visitor.visitTextSyllableInfo(this.syllables[i]);
-                const post = visitor.visitPre(this.syllables[i]);
+                const post = visitorIterator.visitPre(this.syllables[i]);
                 if (post) post(this.syllables[i]);
             }
             for (var i = 0; i < this.Beams.length; i++) {
                 //visitor.visitTextSyllableInfo(this.syllables[i]);
-                const post = visitor.visitPre(this.Beams[i]);
+                const post = visitorIterator.visitPre(this.Beams[i]);
                 if (post) post(this.syllables[i]);
             }
             if (postFun) {
@@ -123,7 +123,7 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         inviteEventVisitor(visitor: IEventVisitor): void {
             visitor.visitNoteHeadInfo(this);
         }
-        visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {}
+        visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void {}
         clone(addId: string): INoteHeadInfo {
             let res = new NoteHeadInfo(this.source);
             res.id = addId + '_' + res.id;
@@ -229,7 +229,7 @@ public get voice(): IVoice {
 public getContext(): INoteContext {
     return this;
 }
-public visitAllEvents(visitor: IEventVisitor, globalContext: IGlobalContext): void {
+public visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void {
     alert("Should not come here");
     throw "Visitor error";
 }

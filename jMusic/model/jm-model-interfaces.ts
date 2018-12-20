@@ -17,7 +17,7 @@ export interface IMusicElement {
     remove(): void;
     setProperty(name: string, value: any): void;
     getProperty(name: string): any;
-    visitAll(visitor: IVisitorIterator<IMusicElement>): void;
+    visitAll(visitorIterator: IVisitorIterator<IMusicElement>): void;
     getMemento(withChildren?: boolean): IMemento;
     //getAncestor<T extends IMusicElement>(elementName: string): T;
 }
@@ -287,7 +287,7 @@ export interface IEventInfo extends IEventVisitorTarget {
     source: IMusicElement;
     getElementName(): string;
     getTimeVal(): TimeSpan;
-    visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void;
+    visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void;
     inviteEventVisitor(visitor: IEventVisitor): void;
     clone(addId: string): IEventInfo;
 }
@@ -300,7 +300,7 @@ export interface INoteHeadInfo extends IEventInfo {
     //visit(visitor: IEventVisitor): void;
     id: string;
     inviteEventVisitor(visitor: IEventVisitor): void;
-    visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void;
+    visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void;
     clone(addId: string): INoteHeadInfo;
 }
 export interface IKeyEventInfo extends IEventInfo { source: IKey; }
@@ -431,7 +431,7 @@ export interface IVisitor {
     visitVariable(name: string): void;
 }
 
-export interface IEventVisitor extends IVisitorIterator<IEventVisitorTarget> {
+export interface IEventVisitor {
     visitNoteHeadInfo(head: INoteHeadInfo): void;
     visitNoteInfo(note: INoteInfo): void;
     visitNoteDecorationInfo(deco: INoteDecorationEventInfo): void;
@@ -452,7 +452,7 @@ export interface IEventVisitor extends IVisitorIterator<IEventVisitorTarget> {
 }
 
 export interface IEventVisitorTarget { // både IEvent og IMusicContainer skal understøtte denne - og Sequence skal sende videre til events
-    visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void;
+    visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void;
     inviteEventVisitor(visitor: IEventVisitor, globalContext: IGlobalContext): void;
     getElementName(): string;
     id: string;

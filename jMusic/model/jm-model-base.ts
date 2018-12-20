@@ -77,12 +77,12 @@ export class MusicElement implements IMusicElement {
         };
         return memento;
     }
-    public visitAll(visitor: IVisitorIterator<IMusicElement>) {
+    public visitAll(visitorIterator: IVisitorIterator<IMusicElement>) {
         /*if ((<any>visitor).visitNoteInfo) {
             alert("event");
         }
         else {*/
-            var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
+            var postFun: (element: IMusicElement) => void = visitorIterator.visitPre(this);
             if (postFun) {
                 postFun(this);
             }
@@ -246,21 +246,21 @@ export class MusicContainer extends MusicElement implements IEventVisitorTarget,
         return memento;
     }
 
-    protected visitChildEvents(visitor: IEventVisitor, globalContext: IGlobalContext){
+    protected visitChildEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext){
     }
 
-    visitAllEvents(visitor: IEventVisitor, globalContext: IGlobalContext): void {
-        var postFun: (element: IEventVisitorTarget) => void = visitor.visitPre(this);
-        this.visitChildEvents(visitor, globalContext);
+    visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void {
+        var postFun: (element: IEventVisitorTarget) => void = visitorIterator.visitPre(this);
+        this.visitChildEvents(visitorIterator, globalContext);
         if (postFun) {
             postFun(this);
         }
     }
 
-    public visitAll(visitor: IVisitorIterator<IMusicElement>) {
-        var postFun: (element: IMusicElement) => void = visitor.visitPre(this);
+    public visitAll(visitorIterator: IVisitorIterator<IMusicElement>) {
+        var postFun: (element: IMusicElement) => void = visitorIterator.visitPre(this);
         this.withChildren((child) => {
-            child.visitAll(visitor);
+            child.visitAll(visitorIterator);
         });
         if (postFun) {
             postFun(this);
@@ -688,7 +688,7 @@ export abstract class EventInfo implements IEventInfo {
         throw new Error("Method not implemented.");
     }
     abstract inviteEventVisitor(visitor: IEventVisitor): void;
-    visitAllEvents(visitor: IVisitorIterator<IEventVisitorTarget>): void {}
+    visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void {}
     abstract clone(addId: string): IEventInfo;    
 }
 

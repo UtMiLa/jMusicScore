@@ -659,10 +659,10 @@ import { Validators } from './jm-refiners';
 
                         var spacer = new MusicSpacing.SpacingDesigner(score.globalContext);
                         spacer.design(score);
-                        var visitor = new PrefixEventVisitor(this.globalContext, new RedrawVisitor(this.globalContext, canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
+                        var visitorIterator = new PrefixEventVisitor(this.globalContext, new RedrawVisitor(this.globalContext, canvasHelper.MusicGraphicsHelper), canvasHelper.MusicGraphicsHelper);
                         //canvasHelper.MusicGraphicsHelper.setSize(score.spacingInfo.width * score.spacingInfo.scale, score.spacingInfo.height);
                         canvasHelper.MusicGraphicsHelper.beginDraw();
-                        score.visitAllEvents(visitor, this.globalContext);
+                        score.visitAllEvents(visitorIterator, this.globalContext);
                         canvasHelper.MusicGraphicsHelper.endDraw();
         
                         /*if (!this.checkSensors) {
