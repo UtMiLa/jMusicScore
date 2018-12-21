@@ -23,6 +23,10 @@ export class JmusicScoreDebugComponent implements OnInit {
   _memento: IMemento;
 
 
+  theFunction = function(k,v) { if (k === 'source') { return null; } return v; }
+  
+
+
   ngOnInit() {
   }
 
