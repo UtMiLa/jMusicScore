@@ -4,9 +4,7 @@
       <ul>
         <li *ngFor="let event of voice.getEvents()">{{event.source.debug()}}
 
-            {{
-              JSON.stringify(globalContext.getSpacingInfo(event), theFunction) 
-          }}
+            {{theFunction(event)}}
 
         </li>
       </ul>
