@@ -18,6 +18,7 @@ import { ScoreViewComponent } from './score-view/score-view.component';
 import { MusicEditorComponent } from './music-editor/music-editor.component';
 import {MusicProviderService} from './music-provider.service';
 import { StructuredMusicEditorComponent } from './structured-music-editor/structured-music-editor.component';
+import { JmusicScoreDebugComponent } from './jmusic-score-debug/jmusic-score-debug.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { StructuredMusicEditorComponent } from './structured-music-editor/struct
     ScoreViewComponent,
     MusicEditorComponent,
     MapToIterable,
-    StructuredMusicEditorComponent
+    StructuredMusicEditorComponent,
+    JmusicScoreDebugComponent
   ],
   imports: [
     BrowserModule,
