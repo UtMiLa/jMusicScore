@@ -16,6 +16,20 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: spacing af clef.x, text.y, accidental
 //todo: tie, 1/128
 
+/** 
+ * Score har en property for hver ChangeEventType, der fortæller om de har scope til score eller staff
+ * ChangeEvent kan ejes af Score, Staff eller Sequence
+ * ChangeEvent har scope til Score eller Staff
+ * GlobalContext har referencer til alle ChangeEvents med oplysninger om scope (herunder hvilke Staff-objekter der er i scope)
+ *      referencer opdateres efter hver ændring, i første omgang alle ændringer, senere kun ved ændringer i ChangeEvents
+ * GlobalContext.GetStaffContext(Staff, AbsTime) beregner hvilke ChangeEvents, der er gældende på det pågældende tidspunkt/Staff
+ * Score.GetEvents returnerer egne ChangeEvents med scope til alle Staff i pågældende Score, og alle Staff.GetEvents
+ * Staff.GetEvents returnerer egne ChangeEvents med scope til dette Staff, samt alle Voice.GetEvents
+ *      hvis den kaldes med parameter includingScoreEvents, også alle ChangeEvents fra Score, herunder fra andre Staff og deres børn, hvis de er scopet til Score
+ * Voice.GetEvents returnerer alle events fra Sequence. ChangeEvents scopes ud fra setting i Score
+ * Udfordring: Staff skal kende forældres og søskendes globalt scopede ChangeEvents
+ */
+
 /// Music spacing classes - independent of graphics methods
 export module MusicSpacing {
 
