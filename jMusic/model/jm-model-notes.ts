@@ -9,7 +9,8 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
     ILongDecorationEventInfo,
     ITextSyllableEventInfo, IGlobalContext, 
     INoteFinder,
-    IEventVisitorTarget} from './jm-model-interfaces';
+    IEventVisitorTarget,
+    IMusicElement} from './jm-model-interfaces';
 
     import { MusicElement, MusicContainer, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo } from './jm-model-base'
 
@@ -189,6 +190,55 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         
     }
 
+    class NoteContext implements INoteContext {
+        constructor(private noteInfo: INoteInfo, private note: NoteElement, public voice: IVoice) {
+
+        }
+
+        getStaffContext(): StaffContext {
+            return this.note.getStaffContext();
+        }        
+        get decorationElements() { return this.note.decorationElements; }
+        getStemDirection(): StemDirectionType {
+            return this.note.getStemDirection();
+        }
+        get absTime(): AbsoluteTime { return this.note.absTime; }
+        getElementName(): string {
+            return this.note.getElementName();
+        }
+        debug(): string {
+            return this.note.debug();
+        }
+        getSortOrder(): number {return this.note.getSortOrder();}
+        getHorizPosition(): HorizPosition {
+            return this.note.getHorizPosition();
+        }
+        getEvents(globalContext: IGlobalContext): IEventInfo[] {
+            return [this.noteInfo];
+        }
+        get id(): string { return this.noteInfo.id; }
+        inviteVisitor(spacer: IVisitor): void {
+            return this.note.inviteVisitor(spacer);
+        }
+        remove(): void {
+            this.note.remove();
+        }
+        setProperty(name: string, value: any): void {
+            this.note.setProperty(name, value);
+        }
+        getProperty(name: string) {
+            return this.note.getProperty(name);
+        }
+        visitAll(visitorIterator: IVisitorIterator<IMusicElement>): void {
+            this.note.visitAll(visitorIterator);
+        }
+        getMemento(withChildren?: boolean): IMemento {
+            return this.note.getMemento(withChildren);
+        }
+
+
+    }
+
         /*
          * NoteElement: det faktiske element, uden transformationer. Bruges af værktøjer, der arbejder direkte på musikken. Kan bo på en Voice, Sequence eller Variable.
          * INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
@@ -227,34 +277,22 @@ public get voice(): IVoice {
     return undefined;
 }
 public getContext(): INoteContext {
-    return this;
+    return this;//new NoteContext(this.getInfo(), this, this.voice);
 }
 public visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void {
     alert("Should not come here");
     throw "Visitor error";
 }
-
+/*
 public inviteEventVisitor(spacer: IEventVisitor, globalContext: IGlobalContext): void {
     spacer.visitNoteInfo(this.getInfo());
-}
+}*/
 
             getEvents(): IEventInfo[] {
                 return [this.getInfo()];
             }
 
             getInfo(): INoteInfo {
-                /*let info: INoteInfo = { 
-                    source: this,
-                    heads: this.noteheadElements.map(h => h.getInfo()),
-                    decorations: this.decorationElements.map(h => h.getInfo()),
-                    longDecorations: this.longDecorationElements.map(h => h.getInfo()),
-                    syllables: this.syllableElements.map(h => h.getInfo()),
-                    relTime: this.absTime.fromStart(), 
-                    getTimeVal: () => { return this.getTimeVal(); },
-                    id: this.id,
-                    visitAllEvents: undefined 
-                };
-                info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitNoteInfo(info)};*/
                 return new NoteEventInfo(this);                
             }
 

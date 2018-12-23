@@ -354,10 +354,15 @@ export interface IEventEnumerator {
     getEvents(globalContext: IGlobalContext): IEventInfo[];
     //visitEvents(globalContext: IGlobalContext, f: (visitor: IEventVisitor) => void): void;
 }
-export interface INoteContext extends INote,  ITimedObjectEvent {
+export interface INoteContext extends /*INote,*/  ITimedObjectEvent {
     //spacingInfo: INoteSpacingInfo;
     getStaffContext(): StaffContext;
     voice: IVoice;
+
+    /*id: string;
+    absTime: AbsoluteTime;*/
+    decorationElements: INoteDecorationElement[];
+    getStemDirection(): StemDirectionType;
 }
 
 
