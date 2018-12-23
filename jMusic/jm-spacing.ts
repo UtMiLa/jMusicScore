@@ -7,7 +7,7 @@ import { ISpacingInfo, IMusicElement, IBarSpacingInfo, IBar, IEventInfo, IScore,
         ITextSyllableSpacingInfo, LedgerLineSpacingInfo,  IGlobalContext, IEventVisitor, IEventVisitorTarget, INoteDecorationEventInfo, 
         ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo, IKeyEventInfo, IClefEventInfo, IMeterEventInfo } from './model/jm-model-interfaces';
 import { Music } from "./model/jm-model";
-import { Point, ContextEventVisitor } from "./model/jm-model-base";
+import { Point, ContextEventVisitor, GlobalContext } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: AutoBeam
 //todo: Bar
@@ -452,7 +452,7 @@ export module MusicSpacing {
 
             spacing.offset.y = noteInfo.rest ? 
                 Metrics.restY : 
-                NoteSpacer.pitchToStaffLine(head.pitch, noteCtx) * Metrics.pitchYFactor;
+                NoteSpacer.pitchToStaffLine(head.pitch, noteCtx, this.globalContext) * Metrics.pitchYFactor;
 
 
             if (head.tie) {
@@ -1153,12 +1153,12 @@ export module MusicSpacing {
             return this.getStaffContext(elm.parent, time);
         }*/
 
-        public static pitchToStaffLine(pitch: Pitch, noteCtx: INoteContext) {
-            var clef = noteCtx.getStaffContext().clef;
+        public static pitchToStaffLine(pitch: Pitch, noteCtx: INoteContext, globalContext: IGlobalContext) {
+            var clef = noteCtx.getStaffContext(globalContext).clef;
             return clef.pitchToStaffLine(pitch);
         }
-        public static staffLineToPitch(line: number, noteCtx: INoteContext) {
-            var clef = noteCtx.getStaffContext().clef;
+        public static staffLineToPitch(line: number, noteCtx: INoteContext, globalContext: IGlobalContext) {
+            var clef = noteCtx.getStaffContext(globalContext).clef;
             return clef.staffLineToPitch(line);
         }
 
@@ -1177,7 +1177,7 @@ export module MusicSpacing {
                 }
             });*/
             for (var i = 0; i < note.heads.length; i++) {
-                var thePitch = NoteSpacer.pitchToStaffLine(note.heads[i].pitch, noteCtx);
+                var thePitch = NoteSpacer.pitchToStaffLine(note.heads[i].pitch, noteCtx, globalContext);
                 if (thePitch < lowPitch) {
                     lowPitch = thePitch;
                 }
@@ -1348,7 +1348,7 @@ export module MusicSpacing {
             else {
                 spacingInfo.offset.x = spacingInfo.displacement ? Metrics.pitchXDisplacement : Metrics.pitchXNoDisplacement;
             }
-            spacingInfo.offset.y = headElm.source.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, noteCtx) * Metrics.pitchYFactor;
+            spacingInfo.offset.y = headElm.source.parent.rest ? Metrics.restY : NoteSpacer.pitchToStaffLine(headElm.pitch, noteCtx, globalContext) * Metrics.pitchYFactor;
             //if (displayData.ref) displayData.ref.setAttribute("transform", "translate(" + spacingInfo.center.x + "," + spacingInfo.center.y + ")");                
         }
     }

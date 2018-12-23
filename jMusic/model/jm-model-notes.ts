@@ -195,14 +195,15 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
 
         }
 
-        getStaffContext(): StaffContext {
-            return this.note.getStaffContext();
+        getStaffContext(globalContext: IGlobalContext): StaffContext {
+            return this.voice.parent.getStaffContext(this.absTime, globalContext);
         }        
         get decorationElements() { return this.note.decorationElements; }
         getStemDirection(): StemDirectionType {
             return this.note.getStemDirection();
         }
         get absTime(): AbsoluteTime { return this.note.absTime; }
+        set absTime(value: AbsoluteTime) { this.note.absTime = value; } // todo: skal opdatere NoteInfo
         getElementName(): string {
             return this.note.getElementName();
         }
@@ -214,7 +215,8 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
             return this.note.getHorizPosition();
         }
         getEvents(globalContext: IGlobalContext): IEventInfo[] {
-            return [this.noteInfo];
+            //return [this.noteInfo];
+            return this.note.getEvents();
         }
         get id(): string { return this.noteInfo.id; }
         inviteVisitor(spacer: IVisitor): void {
@@ -277,7 +279,7 @@ public get voice(): IVoice {
     return undefined;
 }
 public getContext(): INoteContext {
-    return this;//new NoteContext(this.getInfo(), this, this.voice);
+    return new NoteContext(this.getInfo(), this, this.voice);
 }
 public visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void {
     alert("Should not come here");

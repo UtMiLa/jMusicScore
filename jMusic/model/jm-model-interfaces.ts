@@ -356,7 +356,7 @@ export interface IEventEnumerator {
 }
 export interface INoteContext extends /*INote,*/  ITimedObjectEvent {
     //spacingInfo: INoteSpacingInfo;
-    getStaffContext(): StaffContext;
+    getStaffContext(globalContext: IGlobalContext): StaffContext;
     voice: IVoice;
 
     /*id: string;

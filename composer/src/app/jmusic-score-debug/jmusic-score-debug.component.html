@@ -2,7 +2,7 @@
   <li *ngFor="let staff of theScore.staffElements">
     <ul><li *ngFor="let voice of staff.voiceElements">
       <ul>
-        <li *ngFor="let event of voice.getEvents()">{{event.source.debug()}}
+        <li *ngFor="let event of voice.getEvents(globalContext)">{{event.source.debug()}}
 
             {{theFunction(event)}}
 

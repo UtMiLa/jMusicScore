@@ -370,7 +370,7 @@ export class DomCheckSensorsVisitor extends ContextVisitor { // todo: remove eve
         var evRec = this.eventReceiver;
         var me = this.sensorEngine;
         //var staffContext = (<any>note.parent.parent).getStaffContext(context.absTime); // todo: context!
-        var staffContext = context.getStaffContext(); // todo: context!
+        var staffContext = context.getStaffContext(this.globalContext); // todo: context!
         var clefDefinition = staffContext.clef;
         var rectLeft = -7;
         var rectTop = -20;
