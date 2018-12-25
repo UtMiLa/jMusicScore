@@ -227,9 +227,9 @@ public get voice(): IVoice {
     }
     return undefined;
 }
-public getContext(): INoteContext {
+/*public getContext(): INoteContext {
     return new NoteContext(this.getInfo(), this, this.voice);
-}
+}*/
 public visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void {
     alert("Should not come here");
     throw "Visitor error";

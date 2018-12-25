@@ -241,7 +241,7 @@ export interface INote extends IMusicContainer, ITimedObjectEvent { // todo: fje
 
     //spacingInfo: INoteSpacingInfo;
     //setSpacingInfo(info: INoteSpacingInfo): INoteSpacingInfo;
-    getContext(): INoteContext;
+    //getContext(): INoteContext;
 
     withHeads(globalContext: IGlobalContext, f: (head: INotehead, index: number) => void): void;
     withDecorations(globalContext: IGlobalContext, f: (deco: INoteDecorationElement, index: number) => void): void;
