@@ -1546,7 +1546,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             static inTupletArea(globalContext: IGlobalContext, sequence: ISequence, absTime: AbsoluteTime): Rational {
                 // Find first note in the bar
                 //var staffContext = sequence.parent.getStaffContext(absTime);
-                var barBegin: AbsoluteTime = absTime/*.sub(staffContext.timeInBar)*/;
+/*todo:                var barBegin: AbsoluteTime = absTime/*.sub(staffContext.timeInBar)* /;
                 var firstNoteInBar: INote = Music.findNote(globalContext, sequence, barBegin);
                 if (firstNoteInBar) {
                     //var tupletFraction: Rational = null;
@@ -1566,7 +1566,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                         }
                         note = this.nextNote(globalContext, note);
                     }
-                }
+                }*/
                 return null;
             }
 

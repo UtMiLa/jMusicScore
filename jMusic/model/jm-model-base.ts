@@ -298,6 +298,61 @@ export class Point implements IPoint {
 }
 
 
+export class NoteContext implements INoteContext {
+    constructor(public noteInfo: INoteInfo, public note: INote, public voice: IVoice) {
+        if (!voice) {
+            //debugger;
+            //alert("fejl");
+            this.voice = (<any>note).voice; // todo: find voice rigtigt
+        }
+    }
+
+    getStaffContext(globalContext: IGlobalContext): StaffContext {
+        return this.voice.parent.getStaffContext(this.absTime, globalContext);
+    }        
+    get decorationElements() { return this.note.decorationElements; }
+    getStemDirection(): StemDirectionType {
+        return this.note.getStemDirection();
+    }
+    get absTime(): AbsoluteTime { return this.note.absTime; }
+    set absTime(value: AbsoluteTime) { this.note.absTime = value; } // todo: skal opdatere NoteInfo
+    getElementName(): string {
+        return this.note.getElementName();
+    }
+    debug(): string {
+        return this.note.debug();
+    }
+    getSortOrder(): number {return this.note.getSortOrder();}
+    getHorizPosition(): HorizPosition {
+        return this.note.getHorizPosition();
+    }
+    getEvents(globalContext: IGlobalContext): IEventInfo[] {
+        //return [this.noteInfo];
+        return [this.note.getInfo()];//this.note.getEvents();
+    }
+    get id(): string { return this.noteInfo.id; }
+    inviteVisitor(spacer: IVisitor): void {
+        return this.note.inviteVisitor(spacer);
+    }
+    remove(): void {
+        this.note.remove();
+    }
+    setProperty(name: string, value: any): void {
+        this.note.setProperty(name, value);
+    }
+    getProperty(name: string) {
+        return this.note.getProperty(name);
+    }
+    visitAll(visitorIterator: IVisitorIterator<IMusicElement>): void {
+        this.note.visitAll(visitorIterator);
+    }
+    getMemento(withChildren?: boolean): IMemento {
+        return this.note.getMemento(withChildren);
+    }
+
+
+}
+
 /***************** Visitors ***************** */
 
 
@@ -346,7 +401,7 @@ export class ContextVisitor extends NullVisitor {
          this.doNoteHead(head, this.noteContext, spacing); 
         }
     visitNote(note: INote) {
-        this.noteContext = note.getContext();
+        this.noteContext = new NoteContext(note.getInfo(), note, this.voice);// */note.getContext();
         var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
         this.doNote(note, this.noteContext, spacing); 
     }
@@ -442,7 +497,7 @@ export class ContextEventVisitor extends NullEventVisitor {
          //this.doNoteHead(head.source, this.noteContext, spacing, this.currentNote); 
         }
     visitNoteInfo(note: INoteInfo) {
-        this.noteContext = note.source.getContext();
+        this.noteContext = new NoteContext(note, note.source, this.voice);// */note.source.getContext();
         this.currentNote = note;
         var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
         this.doNote(note, this.noteContext, spacing); 

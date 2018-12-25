@@ -1,7 +1,7 @@
 import { IKeyDefinition, ClefDefinition, IMeterDefinition, LongDecorationType, IVisitorIterator, NoteDecorationKind } from './jm-music-basics'
 import { ISpacingInfo, ILongDecorationElement, IGlobalContext, ILongDecorationSpacingInfo, IMusicElement, IVisitor, INotehead, INoteSource, INoteDecorationElement, IVoice, IClef, IMeter, IKey, IStaff, IScore, ITextSyllableElement, IBar, IBeam, IStaffExpression, INoteContext, INoteHeadSpacingInfo, INoteSpacingInfo, INoteDecorationSpacingInfo, ITextSyllableSpacingInfo, IBarSpacingInfo, IBeamSpacingInfo, IClefSpacingInfo, IMeterSpacingInfo, IKeySpacingInfo, IStaffSpacingInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IBarEventInfo, IStaffExpressionEventInfo, IEventVisitor, IEventVisitorTarget, INoteHeadInfo, INoteInfo } from './model/jm-model-interfaces';
 import { Music     } from "./model/jm-model";    
-import { Point, ContextVisitor, ContextEventVisitor } from "./model/jm-model-base";
+import { Point, ContextVisitor, ContextEventVisitor, NoteContext } from "./model/jm-model-base";
 import {MusicSpacing} from "./jm-spacing";
 import {  IScoreDesigner } from './jm-interfaces';
 import { NoteDecorations } from './jm-glyph-details';
@@ -714,7 +714,7 @@ export class RedrawVisitor extends ContextEventVisitor {
     }
     
     visitNoteInfo(note: INoteInfo) {
-        this.noteContext = note.source.getContext();
+        this.noteContext = new NoteContext(note, note.source, this.voice);// */note.source.getContext();
         this.currentNote = note;
         var noteSpacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
         //this.doNote(note.source, this.noteContext, spacing); 

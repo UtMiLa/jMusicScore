@@ -7,7 +7,7 @@ import { ISpacingInfo, IMusicElement, IBarSpacingInfo, IBar, IEventInfo, IScore,
         ITextSyllableSpacingInfo, LedgerLineSpacingInfo,  IGlobalContext, IEventVisitor, IEventVisitorTarget, INoteDecorationEventInfo, 
         ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo, IKeyEventInfo, IClefEventInfo, IMeterEventInfo } from './model/jm-model-interfaces';
 import { Music } from "./model/jm-model";
-import { Point, ContextEventVisitor, GlobalContext } from "./model/jm-model-base";
+import { Point, ContextEventVisitor, GlobalContext, NoteContext } from "./model/jm-model-base";
 import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: AutoBeam
 //todo: Bar
@@ -668,7 +668,13 @@ export module MusicSpacing {
         }
 
         public visitNoteInfo(note: INoteInfo) {
-            this.noteContext = note.source.getContext();
+//todo: this.voice - score.getEvents returberer alle events
+            //this.noteContext = new NoteContext(note, note.source, this.voice);//  */note.source.getContext();
+            this.noteContext = new NoteContext(note.source.getInfo(), note.source, (<any>note.source).voice);//  */note.source.getContext();
+            if (this.noteContext.voice != this.voice) {
+                debugger;
+            }
+
             this.currentNote = note;
             var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
         
@@ -693,7 +699,9 @@ export module MusicSpacing {
         doNoteDecoration(deco: INoteDecorationElement, context: INoteContext, spacing: INoteDecorationSpacingInfo) {
             MinimalSpacer.noteDecoCalculations(deco, context, this.globalContext);
         }
-        visitVoice(voice: IVoice) { }
+        visitVoice(voice: IVoice) { 
+            super.visitVoice(voice); 
+        }
         visitClefInfo(clef: IClefEventInfo) {
             //console.log("spacing clef", clef);
             const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(clef);
@@ -720,6 +728,7 @@ export module MusicSpacing {
             spacing.width = -Metrics.meterXOffset + key.source.definition.enumerateKeys().length * Metrics.keyXPerAcc;
         }
         visitStaff(staff: IStaff) {
+            super.visitStaff(staff);
             const spacing = this.globalContext.getSpacingInfo<IStaffSpacingInfo>(staff);
             spacing.staffSpace = Metrics.pitchYFactor;
         }
@@ -846,7 +855,7 @@ export module MusicSpacing {
             }
         }
         visitNoteInfo(note: INoteInfo) {
-            this.noteContext = note.source.getContext();
+            this.noteContext = new NoteContext(note, note.source, this.voice);// */note.source.getContext();
             this.currentNote = note;
             var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
             if (!spacing) {
@@ -1033,11 +1042,12 @@ export module MusicSpacing {
                 /*staff.withTimedEvents((elm: ITimedEvent, index: number) => {
                     elm.inviteEventVisitor(this.spacer);
                 });*/ //todo: staff getOwnEvents()
-
+                staff.inviteEventVisitor(this.spacer, this.globalContext);
                 staff.withVoices((voice: IVoice, index: number): void => {
                     /*voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number): void => {
                         note.inviteEventVisitor(this.spacer);
                     });*/
+                    voice.inviteEventVisitor(this.spacer, this.globalContext);
                     const events = voice.getEvents(this.globalContext);
                     for (let i = 0; i < events.length; i++){
                         if (events[i].getElementName() === "Note") { //todo: uelegant

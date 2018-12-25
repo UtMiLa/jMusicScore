@@ -2,7 +2,7 @@ import {AbsoluteTime, TimeSpan} from './jm-music-basics';
 import { IBar, IScore, IVoice, IStaff, IMeter, IKey, INote, INoteSource, INoteContext, ITimedEvent, IBeam, INotehead, IGlobalContext,  IVoiceNote, INoteInfo, INoteSpacingInfo, IMeterEventInfo } from './model/jm-model-interfaces';
 import {  Music,      BeamElement   } from "./model/jm-model";    
 import { IScoreRefiner } from './jm-interfaces';
-import { ContextEventVisitor, NoteEventVisitor } from './model/jm-model-base';
+import { ContextEventVisitor, NoteEventVisitor, NoteContext } from './model/jm-model-base';
 
 //module JMusicScore {
  /*   import {Model} from "./jMusicScore";
@@ -326,7 +326,7 @@ class BeamingVisitor extends ContextEventVisitor{
     eighthNote = TimeSpan.eighthNote;
     
     visitNoteInfo(note: INoteInfo) {
-        this.noteContext = note.source.getContext();
+        this.noteContext = new NoteContext(note, note.source, this.voice);// */note.source.getContext();
         this.currentNote = note;
         var spacing = this.globalContext.getSpacingInfo<INoteSpacingInfo>(note);
         this.doNote(note, this.noteContext, spacing); 

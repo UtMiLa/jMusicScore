@@ -12,7 +12,7 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
     IEventVisitorTarget,
     IMusicElement} from './jm-model-interfaces';
 
-    import { MusicElement, MusicContainer, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo } from './jm-model-base'
+    import { MusicElement, MusicContainer, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, NoteContext } from './jm-model-base'
 
     class NoteEventInfo extends EventInfo implements INoteInfo {
         get dotNo(): number { return this.source.dotNo; }
@@ -188,57 +188,6 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
             return res;
         }
         
-    }
-
-    class NoteContext implements INoteContext {
-        constructor(private noteInfo: INoteInfo, private note: NoteElement, public voice: IVoice) {
-
-        }
-
-        getStaffContext(globalContext: IGlobalContext): StaffContext {
-            return this.voice.parent.getStaffContext(this.absTime, globalContext);
-        }        
-        get decorationElements() { return this.note.decorationElements; }
-        getStemDirection(): StemDirectionType {
-            return this.note.getStemDirection();
-        }
-        get absTime(): AbsoluteTime { return this.note.absTime; }
-        set absTime(value: AbsoluteTime) { this.note.absTime = value; } // todo: skal opdatere NoteInfo
-        getElementName(): string {
-            return this.note.getElementName();
-        }
-        debug(): string {
-            return this.note.debug();
-        }
-        getSortOrder(): number {return this.note.getSortOrder();}
-        getHorizPosition(): HorizPosition {
-            return this.note.getHorizPosition();
-        }
-        getEvents(globalContext: IGlobalContext): IEventInfo[] {
-            //return [this.noteInfo];
-            return this.note.getEvents();
-        }
-        get id(): string { return this.noteInfo.id; }
-        inviteVisitor(spacer: IVisitor): void {
-            return this.note.inviteVisitor(spacer);
-        }
-        remove(): void {
-            this.note.remove();
-        }
-        setProperty(name: string, value: any): void {
-            this.note.setProperty(name, value);
-        }
-        getProperty(name: string) {
-            return this.note.getProperty(name);
-        }
-        visitAll(visitorIterator: IVisitorIterator<IMusicElement>): void {
-            this.note.visitAll(visitorIterator);
-        }
-        getMemento(withChildren?: boolean): IMemento {
-            return this.note.getMemento(withChildren);
-        }
-
-
     }
 
         /*
