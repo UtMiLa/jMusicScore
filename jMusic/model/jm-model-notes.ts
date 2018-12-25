@@ -208,36 +208,6 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
     /** NoteHeadElement: det faktiske element, uden transformationer. Bruges af værktøjer, der arbejder direkte på musikken. Kan bo på NoteElement.  */
         export class NoteElement extends MusicContainer implements ISequenceNote { // todo: ikke MusicContainer
 
-/** TODO: flyt til NoteContext */
-//(<any>note.parent.parent).getStaffContext(context.absTime); // todo: context!
-
-public getStaffContext(): StaffContext{
-    let p: any = this.parent; // todo: ændres
-    while (p){
-        if ((<any>p).getStaffContext) return (<any>p).getStaffContext(this.absTime);
-        p = p.parent;
-    }
-    return undefined;
-}
-public get voice(): IVoice {
-    let p: any = this.parent; // todo: ændres
-    while (p) {
-        if (p.getElementName() === "Voice") return <IVoice>p;
-        p = p.parent;
-    }
-    return undefined;
-}
-/*public getContext(): INoteContext {
-    return new NoteContext(this.getInfo(), this, this.voice);
-}*/
-public visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void {
-    alert("Should not come here");
-    throw "Visitor error";
-}
-/*
-public inviteEventVisitor(spacer: IEventVisitor, globalContext: IGlobalContext): void {
-    spacer.visitNoteInfo(this.getInfo());
-}*/
 
             getEvents(): IEventInfo[] {
                 return [this.getInfo()];

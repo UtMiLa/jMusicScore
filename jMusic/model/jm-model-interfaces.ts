@@ -290,6 +290,7 @@ export interface IEventInfo extends IEventVisitorTarget {
     visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void;
     inviteEventVisitor(visitor: IEventVisitor): void;
     clone(addId: string): IEventInfo;
+    voice: IVoice;
 }
 export interface INoteHeadInfo extends IEventInfo {
     tie: any;

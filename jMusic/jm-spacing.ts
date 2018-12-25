@@ -668,9 +668,7 @@ export module MusicSpacing {
         }
 
         public visitNoteInfo(note: INoteInfo) {
-//todo: this.voice - score.getEvents returberer alle events
-            //this.noteContext = new NoteContext(note, note.source, this.voice);//  */note.source.getContext();
-            this.noteContext = new NoteContext(note.source.getInfo(), note.source, (<any>note.source).voice);//  */note.source.getContext();
+            this.noteContext = new NoteContext(note.source.getInfo(), note.source, note.voice);//  */note.source.getContext();
             if (this.noteContext.voice != this.voice) {
                 debugger;
             }

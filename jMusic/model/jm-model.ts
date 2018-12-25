@@ -824,6 +824,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                         events.concat(note.getEvents(globalContext));
                     }
                 });*/
+                for (let i = 0; i < events.length; i++) {
+                    events[i].voice = this;
+                }
                 return events;
             }
 
@@ -1336,6 +1339,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
 
         export class BeamElement extends MusicElement implements IBeam {
             get source(): IBeam { return this; }
+            get voice(): IVoice { return null; }
             getHorizPosition(): HorizPosition {
                 throw new Error("Method not implemented.");
             }

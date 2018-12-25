@@ -744,6 +744,7 @@ export abstract class EventInfo implements IEventInfo {
     }
     abstract inviteEventVisitor(visitor: IEventVisitor): void;
     visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void {}
-    abstract clone(addId: string): IEventInfo;    
+    abstract clone(addId: string): IEventInfo;
+    voice: IVoice;
 }
 
