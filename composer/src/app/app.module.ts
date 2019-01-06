@@ -1,10 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { FormsModule } from '@angular/forms'; 
-import {PanelModule} from 'primeng/panel';
-import {GalleriaModule} from 'primeng/galleria';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
+import { PanelModule } from 'primeng/panel';
+import { GalleriaModule } from 'primeng/galleria';
 
 import { MapToIterable } from './map-to-iterable';
 
@@ -16,9 +16,18 @@ import { VoiceListComponent } from './voice-list/voice-list.component';
 import { VarListComponent } from './var-list/var-list.component';
 import { ScoreViewComponent } from './score-view/score-view.component';
 import { MusicEditorComponent } from './music-editor/music-editor.component';
-import {MusicProviderService} from './music-provider.service';
+import { MusicProviderService } from './music-provider.service';
 import { StructuredMusicEditorComponent } from './structured-music-editor/structured-music-editor.component';
 import { JmusicScoreDebugComponent } from './jmusic-score-debug/jmusic-score-debug.component';
+import { ComposerNavigationComponent } from './composer-navigation/composer-navigation.component';
+import { LayoutModule } from '@angular/cdk/layout';
+import { MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule } from '@angular/material';
+import { AppRoutingModule } from './app-routing.module';
+import { PageVariablesComponent } from './page-variables/page-variables.component';
+import { PageFilesComponent } from './page-files/page-files.component';
+import { PageProjectComponent } from './page-project/page-project.component';
+import { PageScoreComponent } from './page-score/page-score.component';
+import { PageSectionsComponent } from './page-sections/page-sections.component';
 
 @NgModule({
   declarations: [
@@ -32,15 +41,28 @@ import { JmusicScoreDebugComponent } from './jmusic-score-debug/jmusic-score-deb
     MusicEditorComponent,
     MapToIterable,
     StructuredMusicEditorComponent,
-    JmusicScoreDebugComponent
+    JmusicScoreDebugComponent,
+    ComposerNavigationComponent,
+    PageVariablesComponent,
+    PageFilesComponent,
+    PageProjectComponent,
+    PageScoreComponent,
+    PageSectionsComponent
   ],
   imports: [
     BrowserModule,
+    AppRoutingModule,
     BrowserAnimationsModule,
     PanelModule,
     GalleriaModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    LayoutModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatIconModule,
+    MatListModule
   ],
   providers: [MusicProviderService],
   bootstrap: [AppComponent]

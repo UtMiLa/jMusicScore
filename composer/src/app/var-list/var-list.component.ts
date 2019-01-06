@@ -30,15 +30,11 @@ export class VarListComponent implements OnInit {
   }
 
 
-  setVarList() {
-    const a = [];
-    for (const key in this.varObject) {
-      if (this.varObject.hasOwnProperty(key)) {
-        a.push({key: key, value: this.varObject[key], selected: false});
-      }
-    }
-    this.varlist = a;
-  }
+
+  @Input()
+  title = 'Variable';
+
+  @Output() selectedRef = new EventEmitter<any>();
 
   addVar(newVar: HTMLInputElement) {
     const varName = newVar.value;
@@ -61,8 +57,6 @@ export class VarListComponent implements OnInit {
     // this.varObject=this.musicProvider.getVariables(this.varType);
     // this.setVarList();
   }
-  @Input()
-  title = 'Variable';
 
   select(variable) {
     // console.log(variable);
@@ -74,6 +68,13 @@ export class VarListComponent implements OnInit {
     this.selectedRef.emit({parent: this._varObject, name: variable.key });
   }
 
-  @Output() selectedRef = new EventEmitter<any>();
-
+  setVarList() {
+    const a = [];
+    for (const key in this.varObject) {
+      if (this.varObject.hasOwnProperty(key)) {
+        a.push({key: key, value: this.varObject[key], selected: false});
+      }
+    }
+    this.varlist = a;
+  }
 }
