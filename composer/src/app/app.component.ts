@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MusicProviderService } from './music-provider.service';
 import { IModel } from './datamodel/model';
-// todo: remove:
-import { LilyPondConverter } from '../../../jMusic/jm-lilypond';
-import { IScore } from '../../../jMusic/model/jm-model-interfaces';
-import { MusicElementFactory } from '../../../jMusic/model/jm-model';
-import { GlobalContext } from '../../../jMusic/model/jm-model-base';
+
 
 @Component({
   selector: 'app-root',
@@ -17,14 +13,14 @@ export class AppComponent {
   constructor(private musicProvider: MusicProviderService) {
 
   }
-  selectedVar: any = {};
-  model: IModel;
-  imageFiles: string[];
-  // todo: remove:
-  private _input: string;
-  private _output: string;
 
-  selectedRef(variableDef) {
+  model: IModel;
+
+  // todo: remove:
+  /*private _input: string;
+  private _output: string;*/
+
+  /*selectedRef(variableDef) {
     // console.log(variable);
     variableDef.ctx = this.musicProvider.getGlobalContext();
     this.selectedVar = variableDef;
@@ -35,15 +31,6 @@ export class AppComponent {
       // console.log(data);
       this.imageFiles = data;
     });
-  }
-
-  // tslint:disable-next-line:use-life-cycle-interface
-  ngOnInit() {
-    this.model = this.musicProvider.constRes;
-    /*this.musicProvider.getModel().subscribe((data: IModel) => {
-      console.log(data);
-      this.model = data;
-    });*/
   }
 
   // todo: remove:
@@ -105,8 +92,6 @@ export class AppComponent {
 
       this.output = parser.write(elm);
     } catch (e) {
-      /*this.parsedObject = [];
-      this.parsedJson = e.message;*/
       console.log(e);
       this.output = '';
     }
@@ -122,6 +107,11 @@ export class AppComponent {
 
   get output(): string {
     return this._output;
+  }
+*/
+  // tslint:disable-next-line:use-life-cycle-interface
+  ngOnInit() {
+    this.model = this.musicProvider.constRes;
   }
 
 

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MusicProviderService } from '../music-provider.service';
+import { IModel } from '../datamodel/model';
 
 @Component({
   selector: 'app-page-score',
@@ -7,9 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PageScoreComponent implements OnInit {
 
-  constructor() { }
+  constructor(private musicProvider: MusicProviderService) { }
+
+  model: IModel;
 
   ngOnInit() {
+    this.model = this.musicProvider.constRes;
   }
 
 }
