@@ -5,7 +5,6 @@ import { IModel } from '../datamodel/model';
 @Component({
   selector: 'app-page-variables',
   templateUrl: './page-variables.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./page-variables.component.css']
 })
 export class PageVariablesComponent implements OnInit {
