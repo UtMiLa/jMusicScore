@@ -28,6 +28,7 @@ import { PageFilesComponent } from './page-files/page-files.component';
 import { PageProjectComponent } from './page-project/page-project.component';
 import { PageScoreComponent } from './page-score/page-score.component';
 import { PageSectionsComponent } from './page-sections/page-sections.component';
+import { AngularSplitModule } from 'angular-split';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { PageSectionsComponent } from './page-sections/page-sections.component';
     MatButtonModule,
     MatSidenavModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    AngularSplitModule.forRoot()
   ],
   providers: [MusicProviderService],
   bootstrap: [AppComponent]
