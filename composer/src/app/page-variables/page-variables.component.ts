@@ -11,7 +11,14 @@ export class PageVariablesComponent implements OnInit {
 
   constructor(private musicProvider: MusicProviderService) { }
 
+  selectedVar: any = {};
   model: IModel;
+
+  selectedRef(variableDef) {
+    // console.log(variable);
+    variableDef.ctx = this.musicProvider.getGlobalContext();
+    this.selectedVar = variableDef;
+  }
 
   ngOnInit() {
     this.model = this.musicProvider.constRes;

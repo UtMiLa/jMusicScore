@@ -1,3 +1,33 @@
-<app-var-list [varObject]="model?.scales" [title]="'Skalaer'" (selectedRef)="selectedRef($event)"></app-var-list>
+<!--<app-var-list [varObject]="model?.scales" [title]="'Skalaer'" (selectedRef)="selectedRef($event)"></app-var-list>
       
-<app-var-list [varObject]="model?.variables" (selectedRef)="selectedRef($event)"></app-var-list>
+<app-var-list [varObject]="model?.variables" (selectedRef)="selectedRef($event)"></app-var-list>-->
+
+
+<div>
+    <div style="float:left;">
+      <!--  <app-midi-player></app-midi-player>  -->
+        <app-var-list [varObject]="model?.scales" [title]="'Skalaer'" (selectedRef)="selectedRef($event)"></app-var-list>
+        
+        <app-var-list [varObject]="model?.variables" (selectedRef)="selectedRef($event)"></app-var-list>
+        
+      <!--  <app-section-voice-list [model]="model"  (selectedRef)="selectedRef($event)"></app-section-voice-list>
+        <p-panel header="Stemmer" [toggleable]="true">
+            <app-voice-list  [voices]="model?.voices"></app-voice-list>
+        </p-panel>
+          
+        <p-panel header="Sektioner" [toggleable]="true">
+            <app-section-list [sections]="model?.voices.sections"></app-section-list>
+        </p-panel>-->
+    </div>
+  
+    <div style="max-height: 800px;overflow: scroll;float:left;">
+        <!--<button (click)="saveModel()">Gem til server</button>-->
+        <app-music-editor [selectedObject]="selectedVar" ></app-music-editor>
+        <app-structured-music-editor [selectedObject]="selectedVar" ></app-structured-music-editor>
+        <app-score-view [files]="imageFiles"></app-score-view>
+    </div>  
+  </div>
+  <!--
+  <textarea [(ngModel)]="input"></textarea>
+  <textarea [(ngModel)]="output"></textarea>
+  -->
