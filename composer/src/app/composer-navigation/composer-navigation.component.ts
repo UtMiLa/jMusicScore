@@ -3,6 +3,11 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+
+/*
+ng generate @angular/material:nav composer-navigation
+*/
+
 @Component({
   selector: 'app-composer-navigation',
   templateUrl: './composer-navigation.component.html',

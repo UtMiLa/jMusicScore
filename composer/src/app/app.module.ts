@@ -29,6 +29,7 @@ import { PageProjectComponent } from './page-project/page-project.component';
 import { PageScoreComponent } from './page-score/page-score.component';
 import { PageSectionsComponent } from './page-sections/page-sections.component';
 import { AngularSplitModule } from 'angular-split';
+import { PianoCtlComponent } from './piano-ctl/piano-ctl.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { AngularSplitModule } from 'angular-split';
     PageFilesComponent,
     PageProjectComponent,
     PageScoreComponent,
-    PageSectionsComponent
+    PageSectionsComponent,
+    PianoCtlComponent
   ],
   imports: [
     BrowserModule,
