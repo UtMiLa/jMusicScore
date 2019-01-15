@@ -1,17 +1,12 @@
-<div>
-    <div style="float:left;">
-      <!--  <app-midi-player></app-midi-player>  -->
+  <as-split [direction]="'horizontal'" [gutterSize]='11'>
+    <as-split-area size="10">
         <app-var-list [varObject]="model?.scales" [title]="'Skalaer'" (selectedRef)="selectedRef($event)"></app-var-list>
         
         <app-var-list [varObject]="model?.variables" (selectedRef)="selectedRef($event)"></app-var-list>
-        
-    </div>
-  
-    <div style="max-height: 800px;overflow: scroll;float:left;">
-        <!--<button (click)="saveModel()">Gem til server</button>-->
+    </as-split-area>
+    <as-split-area size="90">
         <app-music-editor [selectedObject]="selectedVar" ></app-music-editor>
         <app-structured-music-editor [selectedObject]="selectedVar" ></app-structured-music-editor>
         <app-score-view [files]="imageFiles"></app-score-view>
-    </div>  
-  </div>
-
+    </as-split-area>
+</as-split>
