@@ -125,5 +125,10 @@
       }
     }
   },
-  "defaultProject": "composer"
+  "defaultProject": "composer",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "scss"
+    }
+  }
 }

@@ -1,0 +1,43 @@
+.up {
+    position: absolute;
+    top: 0px;
+    border: solid black 1px;
+}
+
+.bw1, .bw3, .bw5, .bw0, .bw2, .bw4, .bw6, .bw-white { 
+    height: 76px;
+    background-color: ivory;
+    width: 40px;
+    z-index: 20;
+
+}
+.bw-white:hover, .bw-white.hover {
+    background-color: #ddd;
+}
+/*.bw-white.down {
+    border-right: solid #888 4px;
+    width: 36px;
+    background-color: #bbb;
+}*/
+.bw8, .bw10, .bw7, .bw9, .bw11, .bw-black { 
+    height: 50px;
+    background-color: black;
+    width: 25px;
+    z-index: 30;
+}  
+.bw-black.hover, .bw-black:hover{
+    background-color: rgb(63, 58, 58);
+}
+/*.bw-black.down {
+    background-color: #444;
+    width: 22px;
+    border-right: solid black 3px;
+}*/
+/*#tast53 { background-image: url(../images/symbol1/e_clefs.F_change.png); background-position: -7px 32px; background-repeat:no-repeat; }
+#tast60 { background-image: url(../images/symbol1/e_clefs.C_change.png); background-position: -7px 32px; background-repeat:no-repeat; }
+#tast67 { background-image: url(../images/symbol1/e_clefs.G_change.png); background-position: -7px 32px; background-repeat:no-repeat; }*/
+.piano {
+    position: relative; 
+    left: 0px;
+    top: 0px;
+}
