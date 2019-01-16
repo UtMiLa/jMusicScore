@@ -1,9 +1,8 @@
 <div class='piano'>
-  <span *ngFor="let item of items; let i = index" id="tast{{item.i}}" class="up {{item.bw}}" [style.left]="item.left"></span>
+  <span *ngFor="let item of items; let i = index" id="tast{{item.i}}" class="up {{item.bw}}" [style.left]="item.left" (click)="eventEmitClick($event)""></span>
 </div>
 
 <ul>
-  <li>tegn kbd</li>
   <li>vis feedback</li>
   <li>generer midi-events</li>
   <li>modtag midi-events</li>

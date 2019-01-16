@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { ScoreStatusManager } from '../../../../jMusic/jm-application';
 
 @Component({
   selector: 'app-piano-ctl',
@@ -22,6 +23,14 @@ export class PianoCtlComponent implements OnInit {
 
       this.items.push({det, className, left: left + 'px', bw, i});
     }
+  }
+
+
+  @Input() status: ScoreStatusManager;
+  @Output() eventEmitterClick = new EventEmitter();
+
+  eventEmitClick(event) {
+    this.eventEmitterClick.emit(event);
   }
 /*
 
