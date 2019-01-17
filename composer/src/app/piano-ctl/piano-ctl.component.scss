@@ -4,11 +4,12 @@
     border: solid black 1px;
 }
 
-$pianoBarHeight: 76px;
+$pianoBarHeight: 83px;
 $toolboxHeight: 10px;
-$whiteKeyWidth: 40px;
+$whiteKeyWidth: 30px;
 $whiteKeyShadow: 4px;
-$blackKeyWidth: 25px;
+$blackKeyWidth: 20px;
+$blackKeyLength: 50px;
 $blackKeyShadow: 3px;
 .bw1, .bw3, .bw5, .bw0, .bw2, .bw4, .bw6, .bw-white { 
     height: $pianoBarHeight - 1;
@@ -25,7 +26,7 @@ $blackKeyShadow: 3px;
     }
 }
 .bw8, .bw10, .bw7, .bw9, .bw11, .bw-black { 
-    height: 50px;
+    height: $blackKeyLength;
     background-color: black;
     width: $blackKeyWidth;
     z-index: 30;

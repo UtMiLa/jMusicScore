@@ -12,7 +12,7 @@ export class PianoCtlComponent implements OnInit {
   constructor() { }
 
   items = [];
-  tgWidth = 40;
+  tgWidth = 30;
 
   ngOnInit() {
     const tgSpacing = this.tgWidth * 7 / 12;
