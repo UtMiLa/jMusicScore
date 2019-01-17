@@ -5,7 +5,7 @@ import { Pitch } from '../../../../jMusic/jm-music-basics';
 @Component({
   selector: 'app-piano-ctl',
   templateUrl: './piano-ctl.component.html',
-  styleUrls: ['./piano-ctl.component.css']
+  styleUrls: ['./piano-ctl.component.scss']
 })
 export class PianoCtlComponent implements OnInit {
 
