@@ -1,10 +1,4 @@
-.down {
-    position: absolute;
-    top: 0px;
-    border: solid black 1px;
-}
-
-.up {
+.up, .down {
     position: absolute;
     top: 0px;
     border: solid black 1px;
