@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ScoreStatusManager } from '../../../../jMusic/jm-application';
+import { Pitch } from '../../../../jMusic/jm-music-basics';
 
 @Component({
   selector: 'app-piano-ctl',
@@ -29,24 +30,12 @@ export class PianoCtlComponent implements OnInit {
   @Input() status: ScoreStatusManager;
   @Output() eventEmitterClick = new EventEmitter();
 
-  eventEmitClick(event) {
+  eventEmitClick(event, i:number) {
+    this.status.pressNoteKey(new Pitch(i, ""));
     this.eventEmitterClick.emit(event);
   }
-/*
 
-
-public changed(status: Application.IStatusManager, key: string, val: any) {
-    if (key === "pressKey") {
-        $('#tast' + (<Model.Pitch>val).toMidi()).addClass('down');
-        //$('.staffTitleArea:first').text('#tast' + (<Model.Pitch>val).toMidi());
-    }
-    else if (key === "releaseKey") {
-        $('#tast' + (<Model.Pitch>val).toMidi()).removeClass('down');
-        //$('.staffTitleArea:last').text('#tast' + (<Model.Pitch>val).toMidi());
-    }
-}
-
-
+  notePressed(i: number) {/*
   .on('mousedown touchstart', function (event: JQueryEventObject) {
     var $obj = $(this);
     $obj.data('timer', 1);
@@ -69,8 +58,11 @@ public changed(status: Application.IStatusManager, key: string, val: any) {
     }, 50, p);
     origEvent.preventDefault();
   })
-
-
+     */
+    this.status.pressNoteKey(new Pitch(i, ""));   
+  }
+  noteReleased(i: number) {
+    /*
   .on('mouseup touchend', function (ev: JQueryEventObject) {
     var p = $(this).attr('id').replace('tast', '');
     //ev.type = "midinoteoff";
@@ -78,5 +70,19 @@ public changed(status: Application.IStatusManager, key: string, val: any) {
     app.processEvent("midinoteoff", { noteInt: parseInt(p) });
     event.preventDefault();
   })
+    */
+    this.status.releaseNoteKey(new Pitch(i, ""));   
+  }
+/*
+public changed(status: Application.IStatusManager, key: string, val: any) {
+    if (key === "pressKey") {
+        $('#tast' + (<Model.Pitch>val).toMidi()).addClass('down');
+        //$('.staffTitleArea:first').text('#tast' + (<Model.Pitch>val).toMidi());
+    }
+    else if (key === "releaseKey") {
+        $('#tast' + (<Model.Pitch>val).toMidi()).removeClass('down');
+        //$('.staffTitleArea:last').text('#tast' + (<Model.Pitch>val).toMidi());
+    }
+}
 */
 }

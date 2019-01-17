@@ -1,5 +1,5 @@
 <div class='piano'>
-  <span *ngFor="let item of items; let i = index" id="tast{{item.i}}" class="up {{item.bw}}" [style.left]="item.left" (click)="eventEmitClick($event)""></span>
+  <span *ngFor="let item of items; let i = index" id="tast{{item.i}}" class="up {{item.bw}}" [style.left]="item.left" (mouseup)="noteReleased(i)" (mouseout)="noteReleased(i)" (mousedown)="notePressed(i)"></span>
 </div>
 
 <ul>
