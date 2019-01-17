@@ -30,6 +30,10 @@ export class PianoCtlComponent implements OnInit {
   @Input() status: ScoreStatusManager;
   @Output() eventEmitterClick = new EventEmitter();
 
+  upDown(item){
+    const up = !this.status.notesPressed.some((value) => {return item.i == value.toMidi();} );
+    return up ? "up" : "down";
+  }
   eventEmitClick(event, i:number) {
     this.status.pressNoteKey(new Pitch(i, ""));
     this.eventEmitterClick.emit(event);
@@ -59,7 +63,7 @@ export class PianoCtlComponent implements OnInit {
     origEvent.preventDefault();
   })
      */
-    this.status.pressNoteKey(new Pitch(i, ""));   
+    this.status.pressNoteKey(Pitch.createFromMidi(i));
   }
   noteReleased(i: number) {
     /*
@@ -71,7 +75,7 @@ export class PianoCtlComponent implements OnInit {
     event.preventDefault();
   })
     */
-    this.status.releaseNoteKey(new Pitch(i, ""));   
+    this.status.releaseNoteKey(Pitch.createFromMidi(i));
   }
 /*
 public changed(status: Application.IStatusManager, key: string, val: any) {
