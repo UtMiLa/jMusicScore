@@ -3,6 +3,8 @@
 </p>
 <app-piano-ctl [status]="status"></app-piano-ctl>
 
+<app-midi-ctl [status]="status"></app-midi-ctl>
+
 <ul>
   <li *ngFor="let note of status.notesPressed">{{note.debug()}}</li>
 </ul>

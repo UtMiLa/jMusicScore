@@ -30,6 +30,7 @@ import { PageScoreComponent } from './page-score/page-score.component';
 import { PageSectionsComponent } from './page-sections/page-sections.component';
 import { AngularSplitModule } from 'angular-split';
 import { PianoCtlComponent } from './piano-ctl/piano-ctl.component';
+import { MidiCtlComponent } from './midi-ctl/midi-ctl.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { PianoCtlComponent } from './piano-ctl/piano-ctl.component';
     PageProjectComponent,
     PageScoreComponent,
     PageSectionsComponent,
-    PianoCtlComponent
+    PianoCtlComponent,
+    MidiCtlComponent
   ],
   imports: [
     BrowserModule,

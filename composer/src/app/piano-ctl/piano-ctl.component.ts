@@ -14,6 +14,11 @@ export class PianoCtlComponent implements OnInit {
   items = [];
   tgWidth = 30;
 
+
+  @Input() status: ScoreStatusManager;
+  @Output() eventEmitterClick = new EventEmitter();
+
+
   ngOnInit() {
     const tgSpacing = this.tgWidth * 7 / 12;
       for (let i = 21; i < 109; i++) {
@@ -25,17 +30,12 @@ export class PianoCtlComponent implements OnInit {
       this.items.push({det, className, left: left + 'px', bw, i});
     }
   }
-
-
-  @Input() status: ScoreStatusManager;
-  @Output() eventEmitterClick = new EventEmitter();
-
-  upDown(item){
-    const up = !this.status.notesPressed.some((value) => {return item.i == value.toMidi();} );
-    return up ? "up" : "down";
+  upDown(item) {
+    const up = !this.status.notesPressed.some((value) => item.i === value.toMidi() );
+    return up ? 'up' : 'down';
   }
-  eventEmitClick(event, i:number) {
-    this.status.pressNoteKey(new Pitch(i, ""));
+  eventEmitClick(event, i: number) {
+    this.status.pressNoteKey(new Pitch(i, ''));
     this.eventEmitterClick.emit(event);
   }
 
