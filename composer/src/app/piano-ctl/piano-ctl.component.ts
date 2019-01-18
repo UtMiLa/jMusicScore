@@ -16,7 +16,7 @@ export class PianoCtlComponent implements OnInit {
 
 
   @Input() status: ScoreStatusManager;
-  @Output() eventEmitterClick = new EventEmitter();
+  //@Output() eventEmitterClick = new EventEmitter();
 
 
   ngOnInit() {
@@ -34,10 +34,10 @@ export class PianoCtlComponent implements OnInit {
     const up = !this.status.notesPressed.some((value) => item.i === value.toMidi() );
     return up ? 'up' : 'down';
   }
-  eventEmitClick(event, i: number) {
+  /*eventEmitClick(event, i: number) {
     this.status.pressNoteKey(new Pitch(i, ''));
-    this.eventEmitterClick.emit(event);
-  }
+    //this.eventEmitterClick.emit(event);
+  }*/
 
   notePressed(i: number) {/*
   .on('mousedown touchstart', function (event: JQueryEventObject) {
