@@ -13,7 +13,7 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
 //todo: Bar
 //todo: Clef, Meter, Key
 //todo: NoteDeco
-//todo: spacing af clef.x, text.y, accidental
+//todo: spacing af clef.x, text.y
 //todo: tie, 1/128
 
 /** 
@@ -1041,6 +1041,9 @@ export module MusicSpacing {
                     elm.inviteEventVisitor(this.spacer);
                 });*/ //todo: staff getOwnEvents()
                 staff.inviteEventVisitor(this.spacer, this.globalContext);
+                /*staff.withAllClefs((clef, index) =>{
+                    clef.inviteEventVisitor(this.spacer);
+                }, this.globalContext);*/
                 staff.withVoices((voice: IVoice, index: number): void => {
                     /*voice.withNotes(this.globalContext, (note: INoteSource, context: INoteContext, index: number): void => {
                         note.inviteEventVisitor(this.spacer);
@@ -1051,7 +1054,14 @@ export module MusicSpacing {
                         if (events[i].getElementName() === "Note") { //todo: uelegant
                             let note = <INoteInfo>(events[i]);
                             note.inviteEventVisitor(this.spacer);
+                            for(let j = 0; j < note.heads.length; j++){
+                                const head = note.heads[j];
+                                head.inviteEventVisitor(this.spacer);
+                            }
                         }
+                        /*else{
+                            events[i].inviteEventVisitor(this.spacer);
+                        }*/
                     }
                 }, this.globalContext);
             }, this.globalContext);
