@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IO } from '../../../../jApps/Browser/jApps.BrowserFileSystem';
-import { Application, IFileManager } from '../../../../jApps/application';
+import { Application } from '../../../../jApps/application';
 import { MusicProviderService } from '../music-provider.service';
 import { IModel } from '../datamodel/model';
 
