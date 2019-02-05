@@ -16,33 +16,33 @@
             getId(): string { return this.id; }
 
             public getFileList(handler: (data: string[]) => void) {
-                $.ajax(this.ajaxUrl, {
+                /*$.ajax(this.ajaxUrl, {
                     success: function (data: string) {
                         var files = data.split('\n');
                         handler(files);
                     },
                     cache: false
-                });
+                });*/
             }
 
             public loadFile(name: string, handler: (data: string, name: string) => void) {
-                $.ajax(this.ajaxUrl, {
+                /*$.ajax(this.ajaxUrl, {
                     success: function (data: string) {
                         handler(data, name);
                     },
                     data: { 'Name': name },
                     cache: false
-                });
+                });*/
             }
 
             public saveFile(name: string, data: string, handler: (res: string) => void) {
-                $.ajax(this.ajaxUrl, {
+                /*$.ajax(this.ajaxUrl, {
                     success: function (res: string) {
                         handler(res);
                     },
                     type: 'POST',
                     data: { 'Name': name, 'Data': data }
-                });
+                });*/
             }
         }
 

@@ -1,7 +1,12 @@
-<p>
-  page-files works!
-</p>
-Todo:
+<ul>
+  <li *ngFor="let file of filelist" (click)="select(file)" [class.selected]="file.selected">{{file.name}}</li>
+</ul>
+
+<textarea name="editedTest" [(ngModel)]="editedText"></textarea>
+<input type="text" [(ngModel)]="fileName" />
+<button (click)="saveFile()">Save</button>
+
+<div>Todo:
 <ul>
 <li>Opret stemme</li>
 <li>Opret manglende stemmer</li>
@@ -18,3 +23,4 @@ Todo:
 <li>Find forekomster af variable</li>
 <li>Vis kun aktuelle variable</li>
 </ul>
+</div>
