@@ -1,3 +1,13 @@
+
+/** Interface for file managers that can load and save files in various file systems (remote or local) */
+export interface IFileManager {
+    getFileList(handler: (data: string[]) => void): void;
+    loadFile(name: string, handler: (data: string, name: string) => void): void;
+    saveFile(name: string, data: string, handler: (res: string) => void): void;
+    getId(): string;
+}
+
+
     export module Application {
 
         /** Every external plugin to application must implement this interface */
@@ -67,14 +77,9 @@
         }
 
         /** Interface for file managers that can load and save files in various file systems (remote or local) */
-        export interface IFileManager<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
+        export interface IFileManagerPlugin<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> extends IFileManager {
             init(app: AbstractApplication<TDocumentType, TStatusManager>): void;
             exit(app: AbstractApplication<TDocumentType, TStatusManager>): void;
-
-            getFileList(handler: (data: string[]) => void): void;
-            loadFile(name: string, handler: (data: string, name: string) => void): void;
-            saveFile(name: string, data: string, handler: (res: string) => void): void;
-            getId(): string;
         }
 
         /*export interface IFileManagerClass<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
@@ -161,7 +166,7 @@
             private plugins: IPlugIn<TDocumentType, TStatusManager>[] = [];
             private readers: IReaderPlugIn<TDocumentType, TStatusManager>[] = [];
             private writers: IWriterPlugIn<TDocumentType, TStatusManager>[] = [];
-            private fileManagers: IFileManager<TDocumentType, TStatusManager>[] = [];
+            private fileManagers: IFileManagerPlugin<TDocumentType, TStatusManager>[] = [];
             private validators: IValidator<TDocumentType, TStatusManager>[] = [];
             private designers: IDesigner<TDocumentType, TStatusManager>[] = [];
             private editors: IDesigner<TDocumentType, TStatusManager>[] = [];
@@ -188,7 +193,7 @@
                 writer.init(this);
             }
 
-            public addFileManager(fileManager: IFileManager<TDocumentType, TStatusManager>) {
+            public addFileManager(fileManager: IFileManagerPlugin<TDocumentType, TStatusManager>) {
                 this.fileManagers.push(fileManager);
                 fileManager.init(this);
             }
@@ -259,7 +264,7 @@
                 throw "File manager not found: " + fileManager;
             }
 
-            public save(name: string, fileManager: IFileManager<TDocumentType, TStatusManager>, type: string) {
+            public save(name: string, fileManager: IFileManager, type: string) {
                 fileManager.saveFile(name, this.saveToString(type), function (res: string) { });
             }
 
@@ -284,7 +289,7 @@
                 throw "File manager not found: " + fileManager;
             }
 
-            public load(name: string, fileManager: IFileManager<TDocumentType, TStatusManager>, type: string) {
+            public load(name: string, fileManager: IFileManager, type: string) {
                 var app = this;
                 this.processEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
                 var me = this;

@@ -6,6 +6,10 @@
 <input type="text" [(ngModel)]="fileName" />
 <button (click)="saveFile()">Save</button>
 
+
+<textarea *ngIf="model" name="modelText" [(ngModel)]="modelText"></textarea>
+
+
 <div>Todo:
 <ul>
 <li>Opret stemme</li>

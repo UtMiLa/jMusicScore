@@ -60,22 +60,22 @@ export module Configuration {
     }
 
     export interface IFileManagerClass<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> {
-        new (): Application.IFileManager<TDocumentType, TStatusManager>;
+        new (): Application.IFileManagerPlugin<TDocumentType, TStatusManager>;
     }
     export class FileManagerConfiguration<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements IConfiguration<TDocumentType, TStatusManager> {
         public type = ConfigurationType.ctFileManager;
         public active: boolean = true;
 
-        private fileManager: Application.IBuilder<Application.IFileManager<TDocumentType, TStatusManager>>;
+        private fileManager: Application.IBuilder<Application.IFileManagerPlugin<TDocumentType, TStatusManager>>;
 
-        constructor(label: string, x: Application.IBuilder<Application.IFileManager<TDocumentType, TStatusManager>>);
+        constructor(label: string, x: Application.IBuilder<Application.IFileManagerPlugin<TDocumentType, TStatusManager>>);
         constructor(label: string, x: IFileManagerClass<TDocumentType, TStatusManager>);
         constructor(public label: string, x: any) {
             if (typeof (x) === "object") {
                 this.fileManager = x;
             }
             else {
-                this.fileManager = MakeBuilder.make<Application.IFileManager<TDocumentType, TStatusManager>>(x);
+                this.fileManager = MakeBuilder.make<Application.IFileManagerPlugin<TDocumentType, TStatusManager>>(x);
             }
         }
 

@@ -4,7 +4,7 @@
     export module IO {
 
         /** REST remote file manager */
-        export class ServerFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IFileManager<TDocumentType, TStatusManager> {
+        export class ServerFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IFileManagerPlugin<TDocumentType, TStatusManager> {
             constructor(private ajaxUrl: string, private id: string) {
                 // new ServerFileManager ("Handler.ashx")
             }
@@ -47,7 +47,7 @@
         }
 
         /** Local storage file manager using the browser's local storage*/
-        export class LocalStorageFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IFileManager<TDocumentType, TStatusManager> {
+        export class LocalStorageFileManager<TDocumentType extends Application.IAppDoc, TStatusManager extends Application.IStatusManager> implements Application.IFileManagerPlugin<TDocumentType, TStatusManager> {
             constructor(private id: string) {
             }
 
