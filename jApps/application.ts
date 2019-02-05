@@ -1,13 +1,4 @@
 
-/** Interface for file managers that can load and save files in various file systems (remote or local) */
-export interface IFileManager {
-    getFileList(handler: (data: string[]) => void): void;
-    loadFile(name: string, handler: (data: string, name: string) => void): void;
-    saveFile(name: string, data: string, handler: (res: string) => void): void;
-    getId(): string;
-}
-
-
     export module Application {
 
         /** Every external plugin to application must implement this interface */
@@ -77,6 +68,14 @@ export interface IFileManager {
         }
 
         /** Interface for file managers that can load and save files in various file systems (remote or local) */
+        export interface IFileManager {
+            getFileList(handler: (data: string[]) => void): void;
+            loadFile(name: string, handler: (data: string, name: string) => void): void;
+            saveFile(name: string, data: string, handler: (res: string) => void): void;
+            getId(): string;
+        }
+
+        /** App-enabled interface for file managers that can load and save files in various file systems (remote or local) */
         export interface IFileManagerPlugin<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> extends IFileManager {
             init(app: AbstractApplication<TDocumentType, TStatusManager>): void;
             exit(app: AbstractApplication<TDocumentType, TStatusManager>): void;

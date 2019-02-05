@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IO } from '../../../../jApps/Browser/jApps.BrowserFileSystem';
-import {  IFileManager } from '../../../../jApps/application';
+import { Application, IFileManager } from '../../../../jApps/application';
 import { MusicProviderService } from '../music-provider.service';
 import { IModel } from '../datamodel/model';
 
@@ -16,7 +16,7 @@ export class PageFilesComponent implements OnInit {
   selectedFile = null;
   editedText = 'Demo';
   fileName = 'fileName';
-  fileSystem: IFileManager;
+  fileSystem: Application.IFileManager;
   model: IModel;
 
   modelText: string;
