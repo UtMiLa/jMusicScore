@@ -1,4 +1,4 @@
-import { createServer } from 'http';
+import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { writeFile, unlinkSync, exists, readFile, rename } from 'fs';
 //import {  } from 'url';
 import { parse }  from 'querystring';
@@ -146,7 +146,95 @@ function makeScore(scoreObj: IScore[]) {
 	return bodyText;
 }
 
-createServer(function (req, res) {
+
+function getFile(res: ServerResponse, name: string){
+  readFile("./files"+name, function(err, data) {
+    if (err) {
+      console.log(err);
+      res.writeHead(404, {});
+        res.end();
+      
+    }
+    else {
+      switch(name){
+        case "soundfont-player.js": res.writeHead(200, {'Content-Type': 'application/javascript'}); break;
+        case "temp.png": res.writeHead(200, {'Content-Type': 'image/png'}); break;
+      }
+      
+        res.write(data);
+        res.end();
+      }
+    });
+  
+}
+
+function saveFile(req: IncomingMessage, res: ServerResponse, name: string){
+  var body = '';
+
+  req.on('data', function (data) {
+      body += data;
+
+      // Too much POST data, kill the connection!
+      // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
+      if (body.length > 1e6)
+          req.connection.destroy();
+  });
+
+  req.on('end', function () {
+    //console.log(body);
+      var post = parse(body);
+      // use post['blah'], etc.
+      //console.log(post['text']);
+      // save file
+      // execute lilypond
+      var bodyText = post['text'];
+
+      const jsonFile = name;
+      const lyFile = name.replace('.json', '.ly');
+      const pngFile = name.replace('.json', '.png');
+      const page1File = name.replace('.json', '-page1.png');
+
+      writeFile("./files/" + jsonFile,  bodyText, (err) => {
+
+        jsonToLy("./files/" + jsonFile, "./files/" + lyFile, () => {
+
+          try{
+            unlinkSync('./files/' + pngFile);
+          }catch(e) {
+            console.log(e);
+          }
+          
+          const ls = spawn(lilyExe, ['--png', '-dresolution=80', lyFile.replace('/', '')], {cwd: '.\\files'});
+    
+          ls.stdout.on('data', (data) => {
+            //console.log(`stdout: ${data}`);
+          });
+          
+          ls.stderr.on('data', (data) => {
+            console.log(`stderr: ${data}`);
+          });
+          
+          ls.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+            // wait
+            // redirect page
+            exists('./temp.png', function(exists) {
+              if (!exists) rename('./files/' + page1File, './files/' + pngFile, (err: NodeJS.ErrnoException) => {} );
+            });            
+  
+            res.writeHead(302, {
+              'Location': '/gloria_fuga.html'
+              //add other headers here...
+            });
+            res.end();
+
+          });
+        });
+      });
+    });
+}
+
+createServer(function (req: IncomingMessage, res: ServerResponse) {
     if (req.method == 'GET') {
 
       if (req.url === "/gloria_fuga.html") {
@@ -163,84 +251,10 @@ createServer(function (req, res) {
 
       });}
       else {
-        readFile("./files"+req.url, function(err, data) {
-          if (err) {
-            console.log(err);
-            res.writeHead(404, {});
-              res.end();
-            
-          }
-          else {
-            switch(req.url){
-              case "soundfont-player.js": res.writeHead(200, {'Content-Type': 'application/javascript'}); break;
-              case "temp.png": res.writeHead(200, {'Content-Type': 'image/png'}); break;
-            }
-            
-              res.write(data);
-              res.end();
-            }
-          });
-        
+        if (req.url) getFile(res, req.url);
       }
     }
-    else {
-      var body = '';
-
-      req.on('data', function (data) {
-          body += data;
-
-          // Too much POST data, kill the connection!
-          // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
-          if (body.length > 1e6)
-              req.connection.destroy();
-      });
-
-      req.on('end', function () {
-        //console.log(body);
-          var post = parse(body);
-          // use post['blah'], etc.
-          //console.log(post['text']);
-          // save file
-          // execute lilypond
-          var bodyText = post['text'];
-
-          writeFile("./files/temp.json",  bodyText, (err) => {
-
-            jsonToLy("./files/temp.json", "./files/temp.ly", () => {
-
-              try{
-                unlinkSync('./files/temp.png');
-              }catch(e) {
-                console.log(e);
-              }
-              
-              const ls = spawn(lilyExe, ['--png', '-dresolution=80', 'temp.ly'], {cwd: '.\\files'});
-        
-              ls.stdout.on('data', (data) => {
-                //console.log(`stdout: ${data}`);
-              });
-              
-              ls.stderr.on('data', (data) => {
-                console.log(`stderr: ${data}`);
-              });
-              
-              ls.on('close', (code) => {
-                console.log(`child process exited with code ${code}`);
-                // wait
-                // redirect page
-                exists('./temp.png', function(exists) {
-                  if (!exists) rename('./files/temp-page1.png', './files/temp.png', (err: NodeJS.ErrnoException) => {} );
-                });
-      
-                res.writeHead(302, {
-                  'Location': '/gloria_fuga.html'
-                  //add other headers here...
-                });
-                res.end();
-
-              });
-            });
-          });
-      });
+    else if (req.method == 'POST') {
+      saveFile(req, res, 'temp.json');     
     }
 }).listen(8080); 
