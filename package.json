@@ -9,8 +9,10 @@
   "license": "",
   "devDependencies": {
     "@types/jasmine": "^2.8.12",
+    "@types/node": "^10.12.24",
     "@types/pegjs": "^0.10.1",
     "browser-sync": "~2.18.13",
+    "buffer-replace": "^1.0.0",
     "chai": "~4.1.1",
     "gulp": "^3.9.1",
     "gulp-browserify": "~0.5.1",

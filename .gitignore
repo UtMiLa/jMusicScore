@@ -13,5 +13,5 @@ jApps/obj/Debug/jApps.pdb
 jApps/bin/jApps.dll
 noteEditor/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 /dist/**
-
+/FileWS/files/**
 !gulpfile.js
