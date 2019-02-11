@@ -6,12 +6,21 @@ import { Observable } from 'rxjs';
 import { IScore, ISequence } from '../../../jMusic/model/jm-model-interfaces';
 import { GlobalContext } from '../../../jMusic/model/jm-model-base';
 import { LilyPondConverter } from '../../../jMusic/jm-lilypond';
+import { Application } from '../../../jApps/application';
+import { IO } from '../../../jApps/Browser/jApps.BrowserFileSystem';
 
 @Injectable()
 export class MusicProviderService {
 
+
+  fileCenter: Application.FileCenter;
+
   constructor(private http: HttpClient) {
     // this.load();
+    this.fileCenter = new Application.FileCenter();
+
+    this.fileCenter.addFileManager(new IO.LocalStorageFileManager('local storage'));
+
   }
 
   constRes = {

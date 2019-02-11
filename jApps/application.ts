@@ -153,6 +153,48 @@
             clear(): void;
         }
 
+        export class FileCenter {
+            private fileManagers: IFileManager[] = [];
+            
+            public addFileManager(fileManager: IFileManager) {
+                this.fileManagers.push(fileManager);
+            }
+
+            public getFileManagerIds(): string[] {
+                var res: string[] = [];
+                for (var i = 0; i < this.fileManagers.length; i++) {
+                    res.push(this.fileManagers[i].getId());
+                }
+                return res;
+            }
+
+            private getFileManager(id: string): IFileManager{
+                for (var i = 0; i < this.fileManagers.length; i++) {
+                    if (id === this.fileManagers[i].getId()) return this.fileManagers[i];
+                }
+            }
+
+            public getFileList(fileManager:string, handler: (data: string[]) => void) {
+                for (var i = 0; i < this.fileManagers.length; i++) {
+                    if (this.fileManagers[i].getId() === fileManager) {
+                        this.fileManagers[i].getFileList(handler);
+                    }
+                }
+            }
+
+            public saveString(name: string, fileManagerId: string, content: string) {
+                const fileManager = this.getFileManager(fileManagerId);
+                if (!fileManager) throw "File manager not found: " + fileManager;
+                fileManager.saveFile(name, content, function (res: string) { });
+            }
+
+            public loadString(name: string, fileManagerId: string, done: (data: string, name: string) => void): void {
+                const fileManager = this.getFileManager(fileManagerId);
+                if (!fileManager) throw "File manager not found: " + fileManager;
+                var data = fileManager.loadFile(name,  done);
+            }
+        }
+
         /** Application object manages all data and I/O in the application. Multiple applications per page should be possible, although not probable. */
         export class AbstractApplication<TDocumentType extends IAppDoc, TStatusManager extends IStatusManager> {
             constructor(score: TDocumentType, status: TStatusManager) {
@@ -165,7 +207,7 @@
             private plugins: IPlugIn<TDocumentType, TStatusManager>[] = [];
             private readers: IReaderPlugIn<TDocumentType, TStatusManager>[] = [];
             private writers: IWriterPlugIn<TDocumentType, TStatusManager>[] = [];
-            private fileManagers: IFileManagerPlugin<TDocumentType, TStatusManager>[] = [];
+            private fileCenter = new FileCenter();
             private validators: IValidator<TDocumentType, TStatusManager>[] = [];
             private designers: IDesigner<TDocumentType, TStatusManager>[] = [];
             private editors: IDesigner<TDocumentType, TStatusManager>[] = [];
@@ -193,7 +235,7 @@
             }
 
             public addFileManager(fileManager: IFileManagerPlugin<TDocumentType, TStatusManager>) {
-                this.fileManagers.push(fileManager);
+                this.fileCenter.addFileManager(fileManager);
                 fileManager.init(this);
             }
 
@@ -224,19 +266,20 @@
             }
 
             public getFileManagerIds(): string[] {
-                var res: string[] = [];
+                /*var res: string[] = [];
                 for (var i = 0; i < this.fileManagers.length; i++) {
                     res.push(this.fileManagers[i].getId());
-                }
-                return res;
+                }*/
+                return this.fileCenter.getFileManagerIds();
             }
 
             public getFileList(fileManager:string, handler: (data: string[]) => void) {
-                for (var i = 0; i < this.fileManagers.length; i++) {
+                /*for (var i = 0; i < this.fileManagers.length; i++) {
                     if (this.fileManagers[i].getId() === fileManager) {
                         this.fileManagers[i].getFileList(handler);
                     }
-                }
+                }*/
+                this.fileCenter.getFileList(fileManager, handler);
             }
 
             public setExtension(name: string, type: string) {
@@ -254,13 +297,14 @@
             }
 
             public saveUsing(name: string, fileManager: string, type: string) {
-                for (var i = 0; i < this.fileManagers.length; i++) {
+                this.fileCenter.saveString(name, fileManager, this.saveToString(type));
+                /*for (var i = 0; i < this.fileManagers.length; i++) {
                     if (this.fileManagers[i].getId() === fileManager) {
                         this.save(name, this.fileManagers[i], type);
                         return;
                     }
                 }
-                throw "File manager not found: " + fileManager;
+                throw "File manager not found: " + fileManager;*/
             }
 
             public save(name: string, fileManager: IFileManager, type: string) {
@@ -277,15 +321,37 @@
                 throw "Output format not supported: " + type;
             }
 
-            public loadUsing(name: string, fileManager: string, type: string) {
-                for (
+            public loadUsing(name: string, fileManager: string, type: string) {                
+                /*for (
                     var i = 0; i < this.fileManagers.length; i++) {
                     if (this.fileManagers[i].getId() === fileManager) {
                         this.load(name, this.fileManagers[i], type);
                         return;
                     }
                 }
-                throw "File manager not found: " + fileManager;
+                throw "File manager not found: " + fileManager;*/
+                var app = this;
+                this.processEvent("clickvoice", <any>{ 'data': <any>{ voice: null } });
+                var me = this;
+                for (var i = 0; i < this.readers.length; i++) {
+                    if (this.readers[i].supports(type) || (type === '*' && name.match(this.readers[i].getExtension(type) + "$"))) {
+                        var reader = this.readers[i];
+                        var data = this.fileCenter.loadString(name, fileManager, (data: string, name: string) => {
+                            var score = app.document;
+                            score.clear();
+
+                            var a = reader.load(data);
+                            me.undoStack = [];
+                            me.redoStack = [];
+                            app.fixModel();
+                            app.fixDesign();
+                            app.fixEditors();
+                            return a;
+                        });
+                        return;
+                    }
+                }
+                throw "Input format not supported: " + type;            
             }
 
             public load(name: string, fileManager: IFileManager, type: string) {

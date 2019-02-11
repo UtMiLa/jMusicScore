@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { IO } from '../../../../jApps/Browser/jApps.BrowserFileSystem';
-import { Application } from '../../../../jApps/application';
 import { MusicProviderService } from '../music-provider.service';
 import { IModel } from '../datamodel/model';
 
@@ -16,7 +14,6 @@ export class PageFilesComponent implements OnInit {
   selectedFile = null;
   editedText = 'Demo';
   fileName = 'fileName';
-  fileSystem: Application.IFileManager;
   model: IModel;
 
   modelText: string;
@@ -27,21 +24,20 @@ export class PageFilesComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.fileSystem = new IO.LocalStorageFileManager('local storage');
     this.updateFileNames();
     this.model = this.musicProvider.constRes;
     this.editedText = JSON.stringify(this.model);
   }
 
   updateFileNames() {
-    this.fileSystem.getFileList((data: string[]) => {
+    this.musicProvider.fileCenter.getFileList('local storage', (data: string[]) => {
       this.filelist = data.map((s: string) => ({name: s, selected: false}) );
     });
   }
 
-  select(file) {
+  select(file: {name: string}) {
     this.selectedFile = file;
-    this.fileSystem.loadFile(file.name, (data: string, name: string) => {
+    this.musicProvider.fileCenter.loadString(file.name, 'local storage', (data: string, name: string) => {
       this.fileName = name;
       this.editedText = data;
     });
@@ -49,7 +45,7 @@ export class PageFilesComponent implements OnInit {
 
   saveFile() {
     // alert(this.editedText);
-    this.fileSystem.saveFile(this.fileName, this.editedText, (res: string) => { });
+    this.musicProvider.fileCenter.saveString(this.fileName, 'local storage', this.editedText);
     this.updateFileNames();
   }
 

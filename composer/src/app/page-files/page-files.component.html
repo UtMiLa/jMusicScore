@@ -1,3 +1,7 @@
+<select>
+    <option *ngFor="let id of musicProvider.fileCenter.getFileManagerIds()" >{{id}}</option>
+</select>
+  
 <ul>
   <li *ngFor="let file of filelist" (click)="select(file)" [class.selected]="file.selected">{{file.name}}</li>
 </ul>
@@ -8,6 +12,8 @@
 
 
 <textarea *ngIf="model" name="modelText" [(ngModel)]="modelText"></textarea>
+
+
 
 
 <div>Todo:
