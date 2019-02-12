@@ -27,6 +27,7 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
+    "express": "^4.16.4",
     "gulp-pegjs": "^0.1.0",
     "pegjs-require": "^2.0.0"
   }

@@ -1,3 +1,6 @@
+var express = require('express');
+
+import { express } from 'express';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { writeFile, unlinkSync, exists, readFile, rename } from 'fs';
 //import {  } from 'url';
@@ -167,10 +170,10 @@ function getFile(res: ServerResponse, name: string){
   
 }
 
-function saveFile(req: IncomingMessage, res: ServerResponse, withLy: boolean){
+function saveFile(req: IncomingMessage, res: ServerResponse, filename: string, withLy: boolean){
   var body = '';
-  if (!req.url) req.url = "/temp";
-  const filename = req.url.replace('/', '');
+  /*if (!req.url) req.url = "/temp";
+  const filename = req.url.replace('/', '');*/
   const name = filename;
 
   req.on('data', function (data) {
@@ -246,27 +249,36 @@ function saveFile(req: IncomingMessage, res: ServerResponse, withLy: boolean){
     });
 }
 
-createServer(function (req: IncomingMessage, res: ServerResponse) {
-    if (req.method == 'GET') {
+var app = express();
 
-      if (req.url === "/gloria_fuga.html") {
+app.listen(3000);
 
-      readFile("./files"+req.url, "utf8", function(err, data) {
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        console.log(err);
-        readFile("./files/temp.json", "utf8", function(err1, data1) {
-            console.log(err1);
-          data = replace(data, '"**PLACEHOLDER**"', JSON.stringify(data1));
-          res.write(data);
-          res.end();
-          });
+app.get('/load/:file', function(req: any, res: any) {
+  console.log('/load/:file');
+  const fileName = '/' + req.params['file'];
+  console.log(req.params);
+  if (fileName) getFile(res, fileName);
+  });
+  
+  
+app.get('/gloria_fuga.html', function(req: IncomingMessage, res: any) {
+//  res.render('about');
+console.log('/gloria_fuga.html');
+  //if (req.url) getFile(res, "/temp.json");
+  readFile("./files"+req.url, "utf8", function(err, data) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    console.log(err);
+    readFile("./files/temp.json", "utf8", function(err1, data1) {
+        console.log(err1);
+      data = replace(data, '"**PLACEHOLDER**"', JSON.stringify(data1));
+      res.write(data);
+      res.end();
+      });
 
-      });}
-      else {
-        if (req.url) getFile(res, req.url);
-      }
-    }
-    else if (req.method == 'POST') {
-      saveFile(req, res, false);     
-    }
-}).listen(8080); 
+  });
+});
+
+
+app.post('/save/:file', function (req: any, res: any) {
+  saveFile(req, res, req.params['file'], true);
+});
