@@ -1,4 +1,5 @@
-var express = require('express');
+import express = require('express');
+import cors = require('cors');
 
 //import { Express } from 'express';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
@@ -250,6 +251,7 @@ function saveFile(req: IncomingMessage, res: ServerResponse, filename: string, w
 }
 
 var app = express();
+app.use(cors());
 
 app.listen(3000);
 

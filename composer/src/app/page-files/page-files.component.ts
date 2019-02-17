@@ -15,6 +15,7 @@ export class PageFilesComponent implements OnInit {
   editedText = 'Demo';
   fileName = 'fileName';
   model: IModel;
+  fileManager = 'Server';
 
   modelText: string;
 
@@ -30,22 +31,22 @@ export class PageFilesComponent implements OnInit {
   }
 
   updateFileNames() {
-    this.musicProvider.fileCenter.getFileList('local storage', (data: string[]) => {
+    this.musicProvider.fileCenter.getFileList(this.fileManager, (data: string[]) => {
       this.filelist = data.map((s: string) => ({name: s, selected: false}) );
     });
   }
 
   select(file: {name: string}) {
     this.selectedFile = file;
-    this.musicProvider.fileCenter.loadString(file.name, 'local storage', (data: string, name: string) => {
+    this.musicProvider.fileCenter.loadString(file.name, this.fileManager, (data: string, name: string) => {
       this.fileName = name;
-      this.editedText = data;
+      this.editedText = JSON.stringify(data);
     });
   }
 
   saveFile() {
     // alert(this.editedText);
-    this.musicProvider.fileCenter.saveString(this.fileName, 'local storage', this.editedText);
+    this.musicProvider.fileCenter.saveString(this.fileName, this.fileManager, this.editedText);
     this.updateFileNames();
   }
 

@@ -19,8 +19,21 @@ export class MusicProviderService {
     // this.load();
     this.fileCenter = new Application.FileCenter();
 
-    this.fileCenter.addFileManager(new IO.LocalStorageFileManager('local storage'));
+    this.fileCenter.addFileManager(new IO.LocalStorageFileManager('Local storage'));
 
+    const ajaxCaller: IO.IAjaxCaller = {
+        ajax: (url: string, params: IO.IAjaxCallerParams) => {
+            http.get(url).subscribe(value => params.success(value));
+        }
+    };
+
+    this.fileCenter.addFileManager(
+        new IO.ServerFileManager(
+            ajaxCaller,
+            'http://localhost:3000/load/',
+            'http://localhost:3000/save/',
+            'http://localhost:3000/list/json',
+            'Server'));
   }
 
   constRes = {
