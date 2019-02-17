@@ -189,25 +189,23 @@ function saveFile(req: IncomingMessage, res: ServerResponse, filename: string, w
   req.on('end', function () {
     //console.log(body);
       var post = parse(body);
-      // use post['blah'], etc.
-      //console.log(post['text']);
-      // save file
-      // execute lilypond
-      var bodyText = post['text'];
+      var bodyText = withLy ? post['text'] : body;
 
-      const jsonFile = name + '.json';
+      const jsonFile = name + (withLy ? '.json' : '');
       const lyFile = name + '.ly';
       const pngFile = name + '.png';
       const page1File = name + '-page1.png';
       console.log("Skriver til " + "./files/" + jsonFile);
+      //console.log(bodyText);
+      //console.log(body);
 
       writeFile("./files/" + jsonFile,  bodyText, (err) => {
 
         if (!withLy) {
-          res.writeHead(302, {
+          /*res.writeHead(302, {
             'Location': '/gloria_fuga.html'
             //add other headers here...
-          });
+          });*/
           res.end();
 
           return;
@@ -295,5 +293,6 @@ app.post('/compile/:file', function (req: any, res: any) {
 });
 
 app.post('/save/:file', function (req: any, res: any) {
+  console.log(req.params);
   saveFile(req, res, req.params['file'], false);
 });

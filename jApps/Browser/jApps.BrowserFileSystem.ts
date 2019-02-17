@@ -32,6 +32,7 @@
                         //var files = data.split('\n');
                         handler(data);
                     },
+                    type: 'GET',
                     cache: false
                 });
             }
@@ -41,13 +42,14 @@
                     success: function (data: string) {
                         handler(data, name);
                     },
+                    type: 'GET',
                     //data: { 'Name': name },
                     cache: false
                 });
             }
 
             public saveFile(name: string, data: string, handler: (res: string) => void) {
-                this.ajaxCaller.ajax(this.ajaxSaveUrl, {
+                this.ajaxCaller.ajax(this.ajaxSaveUrl + name, {
                     success: function (res: string) {
                         handler(res);
                     },

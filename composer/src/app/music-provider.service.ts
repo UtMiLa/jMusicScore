@@ -23,7 +23,12 @@ export class MusicProviderService {
 
     const ajaxCaller: IO.IAjaxCaller = {
         ajax: (url: string, params: IO.IAjaxCallerParams) => {
-            http.get(url).subscribe(value => params.success(value));
+            if (params.type.toLowerCase() === 'get') { 
+                http.get(url).subscribe(value => params.success(value));
+            } else if (params.type.toLowerCase() === 'post') {
+                console.log(params.data.Data);
+                http.post(url, params.data.Data).subscribe(value => params.success(value));
+            }
         }
     };
 

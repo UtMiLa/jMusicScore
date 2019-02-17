@@ -45,13 +45,11 @@ export class PageFilesComponent implements OnInit {
   }
 
   saveFile() {
-    // alert(this.editedText);
     this.musicProvider.fileCenter.saveString(this.fileName, this.fileManager, this.editedText);
     this.updateFileNames();
   }
 
   changeFileManager() {
-    console.log('seklet chg')
     this.updateFileNames();
   }
 
