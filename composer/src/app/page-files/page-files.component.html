@@ -1,4 +1,4 @@
-<select>
+<select (change)="changeFileManager()" [(ngModel)]="fileManager">
     <option *ngFor="let id of musicProvider.fileCenter.getFileManagerIds()" >{{id}}</option>
 </select>
   

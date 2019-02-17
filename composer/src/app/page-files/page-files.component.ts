@@ -50,4 +50,9 @@ export class PageFilesComponent implements OnInit {
     this.updateFileNames();
   }
 
+  changeFileManager() {
+    console.log('seklet chg')
+    this.updateFileNames();
+  }
+
 }
