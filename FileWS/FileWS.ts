@@ -325,16 +325,22 @@ function compileFile(req: IncomingMessage, res: ServerResponse, filename: string
             console.log(`child process exited with code ${code}`);
             // wait
             // redirect page
-            exists('./temp.png', function(exists) {
+            /*exists('./temp.png', function(exists) {
               if (!exists) rename('./files/' + page1File, './files/' + pngFile, (err: NodeJS.ErrnoException) => {} );
             });            
   
             res.writeHead(302, {
               'Location': '/gloria_fuga.html'
               //add other headers here...
+            });*/
+            
+            const pattern = new RegExp(filename + '.*\.png$');
+            readdir('./files/', function(err, items) {
+              items = items.filter((value) => value.match(pattern));
+              res.write(JSON.stringify(items));
+              res.end();
             });
-            res.end();
-
+          
           });
         });
       });
