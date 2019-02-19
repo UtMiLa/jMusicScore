@@ -8,20 +8,21 @@ import { Component, Input, OnInit } from '@angular/core';
 export class ScoreViewComponent implements OnInit {
 
   constructor() { }
-  
+
   images: any[];
 
-  @Input() set files(value: string[]) { 
+  @Input() set files(value: string[]) {
     this.images = [];
-    if (value)
-    for (var i = 0; i < value.length; i++) {
-      this.images.push({source:'http://localhost:8081/getFile/' + value[i], alt:'Side ' + i, title:'Side ' +i});
-  }
+    if (value) {
+      for (let i = 0; i < value.length; i++) {
+        this.images.push({source: 'http://localhost:3000/load/' + value[i], alt: 'Side ' + i, title: 'Side ' + i});
+      }
+    }
   }
 
-  get files(): string[] { 
-    var res = [];
-    //this.images
+  get files(): string[] {
+    const res = [];
+    // this.images
     return res;
   }
 
