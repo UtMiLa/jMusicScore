@@ -281,7 +281,7 @@ function compileFile(req: IncomingMessage, res: ServerResponse, filename: string
   req.on('end', () => {
     //console.log(body);
       var post = parse(body);
-      var bodyText = withLy ? post['text'] : body;
+      var bodyText = /*withLy ? post['text'] :*/ body;
 
       const jsonFile = name + (withLy ? '.json' : '');
       const lyFile = name + '.ly';

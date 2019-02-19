@@ -7,8 +7,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 @import '../node_modules/primeng/resources/primeng.min.css';
 
 app-score-view .ui-galleria .ui-galleria-filmstrip-wrapper {
-    position: absolute;
-    top: 0px;
+    position: fixed;
+    top: 64px;
     background-color: gray;
     opacity: 0.5;
 }

@@ -41,6 +41,11 @@ export class MusicProviderService {
             'Server'));
   }
 
+
+  compileFile(filename: string, fileContent: any, callback: (files: string[]) => void) {
+    this.http.post('http://localhost:3000/compile/' + filename, fileContent).subscribe(callback);
+  }
+
   constRes = {
     'voices': {
         'voices': ['sopran', 'alt', 'tenor', 'bas'],
