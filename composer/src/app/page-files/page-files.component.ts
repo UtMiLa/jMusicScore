@@ -38,9 +38,10 @@ export class PageFilesComponent implements OnInit {
 
   select(file: {name: string}) {
     this.selectedFile = file;
-    this.musicProvider.fileCenter.loadString(file.name, this.fileManager, (data: string, name: string) => {
+    this.musicProvider.fileCenter.loadString(file.name, this.fileManager, (data: any, name: string) => {
       this.fileName = name;
       this.editedText = JSON.stringify(data);
+      this.musicProvider.constRes = data;
     });
   }
 
