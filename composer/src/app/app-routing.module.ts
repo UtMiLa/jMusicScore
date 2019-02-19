@@ -5,6 +5,7 @@ import { PageProjectComponent } from './page-project/page-project.component';
 import { PageVariablesComponent } from './page-variables/page-variables.component';
 import { PageSectionsComponent } from './page-sections/page-sections.component';
 import { PageScoreComponent } from './page-score/page-score.component';
+import { PageCompileComponent } from './page-compile/page-compile.component';
 
 const routes: Routes = [
     {path: 'files' , component: PageFilesComponent},
@@ -12,6 +13,7 @@ const routes: Routes = [
     {path: 'variables' , component: PageVariablesComponent},
     {path: 'sections' , component: PageSectionsComponent},
     {path: 'music' , component: PageProjectComponent},
+    {path: 'compile' , component: PageCompileComponent},
     {path: 'score' , component: PageScoreComponent}
 ];
 

@@ -31,6 +31,7 @@ import { PageSectionsComponent } from './page-sections/page-sections.component';
 import { AngularSplitModule } from 'angular-split';
 import { PianoCtlComponent } from './piano-ctl/piano-ctl.component';
 import { MidiCtlComponent } from './midi-ctl/midi-ctl.component';
+import { PageCompileComponent } from './page-compile/page-compile.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { MidiCtlComponent } from './midi-ctl/midi-ctl.component';
     PageScoreComponent,
     PageSectionsComponent,
     PianoCtlComponent,
-    MidiCtlComponent
+    MidiCtlComponent,
+    PageCompileComponent
   ],
   imports: [
     BrowserModule,

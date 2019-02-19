@@ -3,7 +3,7 @@ import cors = require('cors');
 
 //import { Express } from 'express';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
-import { writeFile, unlinkSync, exists, readFile, readdir, rename } from 'fs';
+import { writeFile, unlinkSync, exists, readFile, readdir, rename, unlink } from 'fs';
 //import {  } from 'url';
 import { parse }  from 'querystring';
 import { spawn } from 'child_process';
@@ -171,6 +171,19 @@ function getFile(res: ServerResponse, name: string){
   
 }
 
+function cleanUp(fileName: string){
+  readdir('./files/', function(err, items) {
+    items.forEach((value) => {
+      if (value.substring(0, fileName.length) === fileName){
+        if (value.indexOf('.json') === -1) {
+          console.log('Delete ' + value);
+          unlinkSync('./files/' + value);
+        }
+      }
+    });
+  });
+}
+
 function saveFile(req: IncomingMessage, res: ServerResponse, filename: string, withLy: boolean){
   var body = '';
   /*if (!req.url) req.url = "/temp";
@@ -186,7 +199,86 @@ function saveFile(req: IncomingMessage, res: ServerResponse, filename: string, w
           req.connection.destroy();
   });
 
-  req.on('end', function () {
+  req.on('end', () => {
+    //console.log(body);
+      var post = parse(body);
+      var bodyText = withLy ? post['text'] : body;
+
+      const jsonFile = name + (withLy ? '.json' : '');
+      /*const lyFile = name + '.ly';
+      const pngFile = name + '.png';
+      const page1File = name + '-page1.png';*/
+      console.log("Skriver til " + "./files/" + jsonFile);
+      //console.log(bodyText);
+      //console.log(body);
+      cleanUp(name);
+
+      writeFile("./files/" + jsonFile,  bodyText, (err) => {
+
+        if (!withLy) {
+          /*res.writeHead(302, {
+            'Location': '/gloria_fuga.html'
+            //add other headers here...
+          });*/
+          res.end();
+
+          return;
+        }
+        /*jsonToLy("./files/" + jsonFile, "./files/" + lyFile, () => {
+
+          try{
+            unlinkSync('./files/' + pngFile);
+          }catch(e) {
+            console.log(e);
+          }
+          
+          const ls = spawn(lilyExe, ['--png', '-dresolution=80', filename + '.ly'], {cwd: '.\\files'});
+    
+          ls.stdout.on('data', (data) => {
+            //console.log(`stdout: ${data}`);
+          });
+          
+          ls.stderr.on('data', (data) => {
+            console.log(`stderr: ${data}`);
+          });
+          
+          ls.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+            // wait
+            // redirect page
+            exists('./temp.png', function(exists) {
+              if (!exists) rename('./files/' + page1File, './files/' + pngFile, (err: NodeJS.ErrnoException) => {} );
+            });            
+  
+            res.writeHead(302, {
+              'Location': '/gloria_fuga.html'
+              //add other headers here...
+            });
+            res.end();
+
+          });
+        });*/
+      });
+    });
+}
+
+
+function compileFile(req: IncomingMessage, res: ServerResponse, filename: string, withLy: boolean){
+  var body = '';
+  /*if (!req.url) req.url = "/temp";
+  const filename = req.url.replace('/', '');*/
+  const name = filename;
+
+  req.on('data', function (data) {
+      body += data;
+
+      // Too much POST data, kill the connection!
+      // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
+      if (body.length > 1e6)
+          req.connection.destroy();
+  });
+
+  req.on('end', () => {
     //console.log(body);
       var post = parse(body);
       var bodyText = withLy ? post['text'] : body;
@@ -198,6 +290,7 @@ function saveFile(req: IncomingMessage, res: ServerResponse, filename: string, w
       console.log("Skriver til " + "./files/" + jsonFile);
       //console.log(bodyText);
       //console.log(body);
+      cleanUp(name);
 
       writeFile("./files/" + jsonFile,  bodyText, (err) => {
 
@@ -289,10 +382,12 @@ console.log('/gloria_fuga.html');
 });
 
 app.post('/compile/:file', function (req: any, res: any) {
-  saveFile(req, res, req.params['file'], true);
+  compileFile(req, res, req.params['file'], true);
 });
 
 app.post('/save/:file', function (req: any, res: any) {
   console.log(req.params);
   saveFile(req, res, req.params['file'], false);
 });
+
+
