@@ -5,7 +5,7 @@ import cors = require('cors');
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { writeFile, unlinkSync, exists, readFile, readdir, rename, unlink } from 'fs';
 //import {  } from 'url';
-import { parse }  from 'querystring';
+import { parse, stringify }  from 'querystring';
 import { spawn } from 'child_process';
 var replace = require('buffer-replace');
 
@@ -336,6 +336,7 @@ function compileFile(req: IncomingMessage, res: ServerResponse, filename: string
             
             const pattern = new RegExp(filename + '.*\.png$');
             readdir('./files/', function(err, items) {
+              items.sort((a,b) => { return a.length != b.length ? a.length - b.length : a.localeCompare(b) });
               items = items.filter((value) => value.match(pattern));
               res.write(JSON.stringify(items));
               res.end();
