@@ -1,8 +1,28 @@
-import { IStaff, IMusicElement } from "./model/jm-model-interfaces";
+import { IStaff, IMusicElement, ITimedChangeEvent } from "./model/jm-model-interfaces";
 import { AbsoluteTime, StaffContext, ClefDefinition, IMeterDefinition, TimeSpan, IKeyDefinition } from "./jm-music-basics";
 
 
+export interface IControlElement extends ITimedChangeEvent {
+}
 
+export class ControlElementRef {
+    element: IControlElement;
+    staves: IStaff[] = [];
+    next: ControlElementRef;
+    prev: ControlElementRef;
+}
+
+export class ControlElementRepository {
+    elements: ControlElementRef[];
+
+    invalidateRepository() {
+        this.elements = undefined;
+    }
+
+    getElements(staff: IStaff, fromPosition: AbsoluteTime, toPosition: AbsoluteTime): IControlElement[] {
+        return [];
+    }
+}
 
 /*
 
@@ -24,8 +44,19 @@ Case 3: Vi skal rendere takt T på staff S. Giv os en sorteret liste over alle e
 */
 
 export class ControlElementManager{
-    constructor(){
+    constructor(){ 
+ 
+    }
 
+    private scopeMeterGlobally: boolean = true;
+    private scopeKeyGlobally: boolean = true;
+
+    private repository = new ControlElementRepository();
+
+    private generateContext() {
+        // if cached and not invalidated return cache
+
+        // get alle control events from score recursively and map them to scope
     }
 
     /**
@@ -34,7 +65,7 @@ export class ControlElementManager{
     getStaffContext(staff: IStaff, position: AbsoluteTime): StaffContext {
         var clef: ClefDefinition, key: IKeyDefinition, meter: IMeterDefinition, meterTime: AbsoluteTime, barNo: number, timeInBar: TimeSpan;
 
-
+        this.generateContext();
 
         return new StaffContext(clef, key, meter, meterTime, barNo, timeInBar);
     }
@@ -46,8 +77,12 @@ export class ControlElementManager{
      * @param toPosition 
      */
     getControlElements(staff: IStaff, fromPosition: AbsoluteTime, toPosition: AbsoluteTime): IMusicElement[] {
+        const res = this.repository.getElements(staff, fromPosition, toPosition);
+        return res;
+    }
 
-        return [];
+    invalidateRepository(){
+        this.repository.invalidateRepository();
     }
 
 }
