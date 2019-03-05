@@ -17,7 +17,7 @@ class ControlElementRepository extends ContextEventVisitor {
     elements: ControlElementRef[];
 
     invalidateRepository() {
-        this.elements = undefined;
+        this.elements = [];
     }
 
     getElements(staff: IStaff, fromPosition: AbsoluteTime, toPosition: AbsoluteTime): IControlElement[] {
