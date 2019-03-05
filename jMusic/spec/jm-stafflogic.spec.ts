@@ -55,7 +55,7 @@ describe("Staff logic", function () {
             expect((staff.getStaffContext(absTime, globalContext).key).debug()).toEqual('2 x');
         });
 
-        it("should return a getStaffContext(100) with a correct meter", function () {
+       /* it("should return a getStaffContext(100) with a correct meter", function () {
             document.setMeter(meterDef4_4, AbsoluteTime.startTime, globalContext);
             expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('4/4');
             staff.setMeter(meterDef5_2, AbsoluteTime.startTime, globalContext);
@@ -70,10 +70,47 @@ describe("Staff logic", function () {
             var meters = staff.getMeterElements(globalContext);
             for (var i = 0; i < meters.length; i++) staff.removeChild(meters[i].source);
             expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('7/16');
-        });
+        });*/
 
         it("should return the correct meter when score-owned meter changes are present", function () {
             document.setMeter(meterDef4_4, AbsoluteTime.startTime, globalContext);
+            controlManager.invalidateRepository();
+            expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('4/4');
+            
+            document.setMeter(meterDef5_2, AbsoluteTime.startTime, globalContext);
+            controlManager.invalidateRepository();
+            expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('5/2');
+            
+            document.setMeter(meterDef3_8, absTimeHalf, globalContext);
+            controlManager.invalidateRepository();
+            expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('3/8');
+            
+            document.setMeter(meterDef7_16, absTimeHalf, globalContext);
+            controlManager.invalidateRepository();
+            expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('7/16');
+            
+            document.setMeter(meterDef3_8, absTimeHalfPlus, globalContext);
+            controlManager.invalidateRepository();
+            expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('3/8');
+            
+            /*var meters = staff.getMeterElements(globalContext);
+            for (var i = 0; i < meters.length; i++) staff.removeChild(meters[i].source);
+            expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('7/16');*/
+
+        });
+        it("should return the correct meter when staff-owned meter changes are present", function () {            
+            staff.setMeter(meterDef5_2, AbsoluteTime.startTime, globalContext);
+            controlManager.invalidateRepository();
+            expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('5/2');
+            
+            staff.setMeter(meterDef3_8, absTimeHalf, globalContext);
+            controlManager.invalidateRepository();
+            expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('3/8');
+        });
+        it("should return the correct meter on other staves when sequence-owned meter changes are present", function () {});
+        it("should return the correct meter when sequence-owned meter changes are present", function () {});
+        it("should return the correct meter when score-owned and sequence-owned meter changes are present", function () {
+            /*document.setMeter(meterDef4_4, AbsoluteTime.startTime, globalContext);
             controlManager.invalidateRepository();
             expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('4/4');
             
@@ -85,6 +122,7 @@ describe("Staff logic", function () {
             controlManager.invalidateRepository();
             expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('3/8');
             
+            // todo: staff/score override?
             document.setMeter(meterDef7_16, absTimeHalf, globalContext);
             controlManager.invalidateRepository();
             expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('3/8');
@@ -92,16 +130,8 @@ describe("Staff logic", function () {
             document.setMeter(meterDef7_16, absTimeHalfPlus, globalContext);
             controlManager.invalidateRepository();
             expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('3/8');
-            
-            /*var meters = staff.getMeterElements(globalContext);
-            for (var i = 0; i < meters.length; i++) staff.removeChild(meters[i].source);
-            expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('7/16');*/
-
+            */
         });
-        it("should return the correct meter when staff-owned meter changes are present", function () {});
-        it("should return the correct meter on other staves when sequence-owned meter changes are present", function () {});
-        it("should return the correct meter when sequence-owned meter changes are present", function () {});
-        it("should return the correct meter when score-owned and sequence-owned meter changes are present", function () {});
         it("should return the correct meter when sequence-owned meters are present on multiple staves", function () {});
         it("should return the correct meter when sequence-owned meters are present in multiple instances", function () {});
         it("should return the correct meter when no meter is present", function () {});

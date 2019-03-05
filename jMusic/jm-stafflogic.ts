@@ -1,4 +1,4 @@
-import { IStaff, IMusicElement, ITimedChangeEvent, IEventVisitor, INoteHeadInfo, INoteInfo, INoteDecorationEventInfo, ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo, IBarEventInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IStaffExpressionEventInfo, ISequence, IGlobalContext, IVoice, IScore } from "./model/jm-model-interfaces";
+import { IStaff, IMusicElement, ITimedChangeEvent, IEventVisitor, INoteHeadInfo, INoteInfo, INoteDecorationEventInfo, ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo, IBarEventInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IStaffExpressionEventInfo, ISequence, IGlobalContext, IVoice, IScore, IClef, IMeter, IKey } from "./model/jm-model-interfaces";
 import { AbsoluteTime, StaffContext, ClefDefinition, IMeterDefinition, TimeSpan, IKeyDefinition } from "./jm-music-basics";
 import { ContextEventVisitor } from "./model/jm-model-base";
 
@@ -7,7 +7,7 @@ export interface IControlElement extends ITimedChangeEvent {
 }
 
 export class ControlElementRef {
-    constructor(public element: IControlElement, public relTime: TimeSpan, staff: IStaff) {
+    constructor(public element: IControlElement, public relTime: AbsoluteTime, staff: IStaff) {
     }
     next: ControlElementRef;
     prev: ControlElementRef;
@@ -21,34 +21,18 @@ class ControlElementRepository extends ContextEventVisitor {
     }
 
     getElements(staff: IStaff, fromPosition: AbsoluteTime, toPosition: AbsoluteTime): IControlElement[] {
-        return [];
+        const res = this.elements.filter((v) => {
+            return (v.element.absTime.ge(fromPosition) && toPosition.ge(v.element.absTime));
+        });
+        return res.map((v) => v.element);
     }
-
-    /*visitNoteHeadInfo(head: INoteHeadInfo): void {
-        // Rien
-    }
-    visitNoteInfo(note: INoteInfo): void {
-        // Rien
-    }
-    visitNoteDecorationInfo(deco: INoteDecorationEventInfo): void {
-        // Rien
-    }*/
     visitLongDecorationInfo(deco: ILongDecorationEventInfo): void {
         
     }
-    /*visitTextSyllableInfo(text: ITextSyllableEventInfo): void {
-        // Rien
-    }
-    visitBeamInfo(beam: IBeamEventInfo): void {
-        // Rien
-    }
-    visitBarInfo(bar: IBarEventInfo): void {
-        // Rien de rien
-    }*/
     
     private currentClef: ControlElementRef;
     visitClefInfo(clef: IClefEventInfo): void {
-        const ref = new ControlElementRef(clef.source, clef.relTime, null);
+        const ref = new ControlElementRef(clef.source, clef.source.absTime, this.staff);
         ref.prev = this.currentClef;
         if (this.currentClef) this.currentClef.next = ref;
         this.elements.push(ref);
@@ -56,14 +40,14 @@ class ControlElementRepository extends ContextEventVisitor {
 
     private currentMeter: ControlElementRef;
     visitMeterInfo(meter: IMeterEventInfo): void {
-        const ref = new ControlElementRef(meter.source, meter.relTime, null);
+        const ref = new ControlElementRef(meter.source, meter.source.absTime, this.staff);
         ref.prev = this.currentMeter;
         if (this.currentMeter) this.currentMeter.next = ref;
         this.elements.push(ref);
     }
     private currentKey: ControlElementRef;
     visitKeyInfo(key: IKeyEventInfo): void {
-        const ref = new ControlElementRef(key.source, key.relTime, null);
+        const ref = new ControlElementRef(key.source, key.source.absTime, this.staff);
         ref.prev = this.currentKey;
         if (this.currentKey) this.currentKey.next = ref;
         this.elements.push(ref);
@@ -71,20 +55,6 @@ class ControlElementRepository extends ContextEventVisitor {
     visitStaffExpressionInfo(staffExpression: IStaffExpressionEventInfo): void {
         
     }
-    /*visitSequence(sequence: ISequence, globalContext: IGlobalContext): void {
-        
-    }
-    visitVoice(voice: IVoice): void {
-        
-    }
-    visitStaff(staff: IStaff): void {
-        
-    }
-    visitScore(score: IScore): void {
-        
-    }*/
-
-
 }
 /*
 
@@ -127,8 +97,32 @@ export class ControlElementManager{
      */
     getStaffContext(staff: IStaff, position: AbsoluteTime): StaffContext {
         var clef: ClefDefinition, key: IKeyDefinition, meter: IMeterDefinition, meterTime: AbsoluteTime, barNo: number, timeInBar: TimeSpan;
+        var clefRef: IClef, keyRef: IKey, meterRef: IMeter;
 
         this.generateContext();
+        const elms = this.repository.getElements(staff, AbsoluteTime.startTime, position);
+
+        elms.forEach((elm) => {
+            if (elm.getElementName() === "Clef") {
+                if (!clefRef || elm.absTime.gt(clefRef.absTime)) {
+                    clefRef = <IClef>elm;
+                }
+            }
+            if (elm.getElementName() === "Meter") {
+                if (!meterRef || elm.absTime.gt(meterRef.absTime)) {
+                    meterRef = <IMeter>elm;
+                }
+            }
+            if (elm.getElementName() === "Key") {
+                if (!keyRef || elm.absTime.gt(keyRef.absTime)) {
+                    keyRef = <IKey>elm;
+                }
+            }
+        });
+
+        if (clefRef) clef = clefRef.definition;
+        if (meterRef) meter = meterRef.definition;
+        if (keyRef) key = keyRef.definition;
 
         return new StaffContext(clef, key, meter, meterTime, barNo, timeInBar);
     }
