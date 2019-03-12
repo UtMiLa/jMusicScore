@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
+
         {
             "type": "node",
             "request": "launch",
@@ -24,6 +25,18 @@
             "program": "${workspaceRoot}\\node_modules\\jasmine\\bin\\jasmine.js", 
             "args": [ 
                 "${workspaceRoot}\\jMusic\\spec\\lily-import.spec.js" 
+            ], 
+            "env": { 
+                "NODE_PATH": "." 
+            } 
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jasmine Test StaffLogic",
+            "program": "${workspaceRoot}\\node_modules\\jasmine\\bin\\jasmine.js", 
+            "args": [ 
+                "${workspaceRoot}\\jMusic\\spec\\jm-stafflogic.spec.js" 
             ], 
             "env": { 
                 "NODE_PATH": "." 

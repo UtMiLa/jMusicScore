@@ -7,6 +7,7 @@ import  { JsonHelper } from '../jm-json';
 import { VariableRef } from '../jm-ghost-elements';
 import { ISequence } from '../model/jm-model-interfaces';
 import { ControlElementManager } from '../jm-stafflogic';
+import { LilyPondConverter } from '../jm-lilypond';
 
 var initScore: any = { "id": "2", "t": "Score", "def": { "metadata": {} }, "children": [{ "id": "3", "t": "Bar", "def": { "abs": { "num": 0, "den": 1 } } }, { "id": "4", "t": "Bar", "def": { "abs": { "num": 1, "den": 1 } } }, { "id": "5", "t": "Bar", "def": { "abs": { "num": 2, "den": 1 } } }, { "id": "6", "t": "Staff", "children": [{ "id": "7", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 1, "lin": 4, "tr": 0 } }, { "id": "8", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }, { "id": "9", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "10", "t": "Sequence", "def": { "stem": 1 }, "children": [{ "id": "11", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 0, "den": 1 }, "noteId": "n1_8" }, "children": [{ "id": "12", "t": "Notehead", "def": { "p": 2, "a": "" } }] }, { "id": "13", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 1, "den": 8 }, "noteId": "n1_8" }, "children": [{ "id": "14", "t": "Notehead", "def": { "p": 2, "a": "" } }] }, { "id": "15", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 1, "den": 4 }, "noteId": "n1_8" }, "children": [{ "id": "16", "t": "Notehead", "def": { "p": 4, "a": "" } }] }, { "id": "17", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 3, "den": 8 }, "noteId": "n1_8" }, "children": [{ "id": "18", "t": "Notehead", "def": { "p": 6, "a": "" } }] }, { "id": "19", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 1, "den": 2 }, "noteId": "n1_16" }, "children": [{ "id": "20", "t": "Notehead", "def": { "p": 6, "a": "" } }] }, { "id": "21", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 9, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "22", "t": "Notehead", "def": { "p": 5, "a": "" } }] }, { "id": "23", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 5, "den": 8 }, "noteId": "n1_16" }, "children": [{ "id": "24", "t": "Notehead", "def": { "p": 4, "a": "" } }] }, { "id": "25", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 11, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "26", "t": "Notehead", "def": { "p": 3, "a": "" } }] }, { "id": "27", "t": "Note", "def": { "time": { "num": 1, "den": 8 }, "abs": { "num": 3, "den": 4 }, "noteId": "n1_8", "dots": 1 }, "children": [{ "id": "28", "t": "Notehead", "def": { "p": 2, "a": "" } }] }, { "id": "29", "t": "Note", "def": { "time": { "num": 1, "den": 16 }, "abs": { "num": 15, "den": 16 }, "noteId": "n1_16" }, "children": [{ "id": "30", "t": "Notehead", "def": { "p": 2, "a": "" } }] }, { "id": "31", "t": "Note", "def": { "time": { "num": 1, "den": 4 }, "abs": { "num": 1, "den": 1 }, "noteId": "n1_4" }, "children": [{ "id": "32", "t": "Notehead", "def": { "p": 1, "a": "" } }] }] }, { "id": "33", "t": "Voice", "def": { "stem": 2 } }] }, { "id": "34", "t": "Staff", "children": [{ "id": "35", "t": "Clef", "def": { "abs": { "num": 0, "den": 1 }, "clef": 3, "lin": 2, "tr": 0 } }, { "id": "36", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }, { "id": "37", "t": "Key", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "acci": "x", "no": 2 } } }, { "id": "38", "t": "Sequence" }] }, { "id": "39", "t": "Meter", "def": { "abs": { "num": 0, "den": 1 }, "def": { "t": "Regular", "num": 4, "den": 4 } } }] };
 
@@ -14,6 +15,17 @@ describe("Staff logic", function () {
     var globalContext = new GlobalContext();
     var document: IScore;
     var controlManager: ControlElementManager;
+
+    
+    function loadFromLily(input: string, noStaves: number, noVoices: number){
+        let parser = new LilyPondConverter(globalContext);
+        let parsedObject = parser.read(input);
+          
+        expect(parsedObject.staffElements.length).toEqual(noStaves);
+        expect(parsedObject.staffElements[0].voiceElements.length).toEqual(noVoices);
+        return parsedObject;
+    }
+
     
     beforeEach(function () {
         VariableRef.register();
@@ -92,11 +104,6 @@ describe("Staff logic", function () {
             document.setMeter(meterDef3_8, absTimeHalfPlus, globalContext);
             controlManager.invalidateRepository();
             expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('3/8');
-            
-            /*var meters = staff.getMeterElements(globalContext);
-            for (var i = 0; i < meters.length; i++) staff.removeChild(meters[i].source);
-            expect(staff.getStaffContext(absTime, globalContext).meter.debug()).toEqual('7/16');*/
-
         });
         it("should return the correct meter when staff-owned meter changes are present", function () {            
             staff.setMeter(meterDef5_2, AbsoluteTime.startTime, globalContext);
@@ -107,8 +114,17 @@ describe("Staff logic", function () {
             controlManager.invalidateRepository();
             expect(controlManager.getStaffContext(staff, absTime).meter.debug()).toEqual('3/8');
         });
+        it("should return the correct meter when sequence-owned meter changes are present", function () {
+            const sequenceInput = '{ \\time 4/4 c2 d2 \\time 5/8 e4 f4 g8 \\time 4/4 a1 }';
+            let parsedObject = loadFromLily(sequenceInput, 1, 1);
+            let staff = parsedObject.staffElements[0];
+            document.addChild(staff);
+
+            controlManager.invalidateRepository();
+            expect(controlManager.getStaffContext(staff, new AbsoluteTime(1, 4)).meter.debug()).toEqual('4/4');
+            expect(controlManager.getStaffContext(staff, new AbsoluteTime(5, 4)).meter.debug()).toEqual('5/8');
+        });
         it("should return the correct meter on other staves when sequence-owned meter changes are present", function () {});
-        it("should return the correct meter when sequence-owned meter changes are present", function () {});
         it("should return the correct meter when score-owned and sequence-owned meter changes are present", function () {
             /*document.setMeter(meterDef4_4, AbsoluteTime.startTime, globalContext);
             controlManager.invalidateRepository();

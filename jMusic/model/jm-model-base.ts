@@ -742,8 +742,10 @@ export abstract class EventInfo implements IEventInfo {
     getTimeVal(): TimeSpan {
         throw new Error("Method not implemented.");
     }
-    abstract inviteEventVisitor(visitor: IEventVisitor): void;
-    visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void {}
+    abstract inviteEventVisitor(visitor: IEventVisitor): void;    
+    visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void {
+        visitorIterator.visitPre(this);
+    }
     abstract clone(addId: string): IEventInfo;
     voice: IVoice;
 }
