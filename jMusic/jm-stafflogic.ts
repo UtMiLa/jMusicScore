@@ -7,7 +7,7 @@ export interface IControlElement extends ITimedChangeEvent {
 }
 
 export class ControlElementRef {
-    constructor(public element: IControlElement, public relTime: AbsoluteTime, staff: IStaff) {
+    constructor(public element: IControlElement, public relTime: AbsoluteTime, staff: IStaff) {        
     }
     next: ControlElementRef;
     prev: ControlElementRef;
@@ -20,11 +20,11 @@ class ControlElementRepository extends ContextEventVisitor {
         this.elements = [];
     }
 
-    getElements(staff: IStaff, fromPosition: AbsoluteTime, toPosition: AbsoluteTime): IControlElement[] {
+    getElements(staff: IStaff, fromPosition: AbsoluteTime, toPosition: AbsoluteTime): ControlElementRef[] {
         const res = this.elements.filter((v) => {
-            return (v.element.absTime.ge(fromPosition) && toPosition.ge(v.element.absTime));
+            return (v.relTime.ge(fromPosition) && toPosition.ge(v.relTime));
         });
-        return res.map((v) => v.element);
+        return res;
     }
     visitLongDecorationInfo(deco: ILongDecorationEventInfo): void {
         
@@ -32,7 +32,9 @@ class ControlElementRepository extends ContextEventVisitor {
     
     private currentClef: ControlElementRef;
     visitClefInfo(clef: IClefEventInfo): void {
-        const ref = new ControlElementRef(clef.source, clef.source.absTime, this.staff);
+        if (!clef.relTime) clef.relTime = clef.source.absTime.fromStart(); // todo: væk
+
+        const ref = new ControlElementRef(clef.source, clef.relTime.fromStart(), this.staff);
         ref.prev = this.currentClef;
         if (this.currentClef) this.currentClef.next = ref;
         this.elements.push(ref);
@@ -40,14 +42,15 @@ class ControlElementRepository extends ContextEventVisitor {
 
     private currentMeter: ControlElementRef;
     visitMeterInfo(meter: IMeterEventInfo): void {
-        const ref = new ControlElementRef(meter.source, meter.source.absTime, this.staff);
+        if (!meter.relTime) meter.relTime = meter.source.absTime.fromStart(); // todo: væk
+        const ref = new ControlElementRef(meter.source, meter.relTime.fromStart(), this.staff);
         ref.prev = this.currentMeter;
         if (this.currentMeter) this.currentMeter.next = ref;
         this.elements.push(ref);
     }
     private currentKey: ControlElementRef;
     visitKeyInfo(key: IKeyEventInfo): void {
-        const ref = new ControlElementRef(key.source, key.source.absTime, this.staff);
+        const ref = new ControlElementRef(key.source, key.relTime.fromStart(), this.staff);
         ref.prev = this.currentKey;
         if (this.currentKey) this.currentKey.next = ref;
         this.elements.push(ref);
@@ -97,32 +100,32 @@ export class ControlElementManager{
      */
     getStaffContext(staff: IStaff, position: AbsoluteTime): StaffContext {
         var clef: ClefDefinition, key: IKeyDefinition, meter: IMeterDefinition, meterTime: AbsoluteTime, barNo: number, timeInBar: TimeSpan;
-        var clefRef: IClef, keyRef: IKey, meterRef: IMeter;
+        var clefRef: ControlElementRef, keyRef: ControlElementRef, meterRef: ControlElementRef;
 
         this.generateContext();
         const elms = this.repository.getElements(staff, AbsoluteTime.startTime, position);
 
         elms.forEach((elm) => {
-            if (elm.getElementName() === "Clef") {
-                if (!clefRef || elm.absTime.gt(clefRef.absTime)) {
-                    clefRef = <IClef>elm;
+            if (elm.element.getElementName() === "Clef") {
+                if (!clefRef || elm.relTime.gt(clefRef.relTime)) {
+                    clefRef = elm;
                 }
             }
-            if (elm.getElementName() === "Meter") {
-                if (!meterRef || elm.absTime.gt(meterRef.absTime)) {
-                    meterRef = <IMeter>elm;
+            if (elm.element.getElementName() === "Meter") {
+                if (!meterRef || elm.relTime.gt(meterRef.relTime)) {
+                    meterRef = elm;
                 }
             }
-            if (elm.getElementName() === "Key") {
-                if (!keyRef || elm.absTime.gt(keyRef.absTime)) {
-                    keyRef = <IKey>elm;
+            if (elm.element.getElementName() === "Key") {
+                if (!keyRef || elm.relTime.gt(keyRef.relTime)) {
+                    keyRef = elm;
                 }
             }
         });
 
-        if (clefRef) clef = clefRef.definition;
-        if (meterRef) meter = meterRef.definition;
-        if (keyRef) key = keyRef.definition;
+        if (clefRef) clef = (<IClef>clefRef.element).definition;
+        if (meterRef) meter = (<IMeter>meterRef.element).definition;
+        if (keyRef) key = (<IKey>keyRef.element).definition;
 
         return new StaffContext(clef, key, meter, meterTime, barNo, timeInBar);
     }
@@ -135,7 +138,7 @@ export class ControlElementManager{
      */
     getControlElements(staff: IStaff, fromPosition: AbsoluteTime, toPosition: AbsoluteTime): IMusicElement[] {
         const res = this.repository.getElements(staff, fromPosition, toPosition);
-        return res;
+        return res.map((e) => { e.element.absTime = e.relTime; return e.element; } );
     }
 
     invalidateRepository(){
