@@ -393,6 +393,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 this.withOwnMeters((child: IMeter) => {
                     let events = child.getEvents(globalContext);
                     for (let i = 0; i < events.length; i++) {
+                        events[i].relTime = child.absTime.fromStart();
                         //events[i].inviteEventVisitor(visitor);
                         let post = visitor.visitPre(events[i]); 
                         if (post) post(events[i]);    
@@ -665,7 +666,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 this.withOwnMeters((child: IMeter) => {
                     let events = child.getEvents(globalContext);
                     for (let i = 0; i < events.length; i++) {
-                        //events[i].inviteEventVisitor(visitor);
+                        events[i].relTime = child.absTime.fromStart();
                                                 //events[i].inviteEventVisitor(visitor);
                                                 let post = visitor.visitPre(events[i]); 
                                                 if (post) post(events[i]);    
@@ -676,7 +677,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 this.withOwnClefs((child: IClef) => {
                     let events = child.getEvents(globalContext);
                     for (let i = 0; i < events.length; i++) {
-                        //events[i].inviteEventVisitor(visitor);
+                        events[i].relTime = child.absTime.fromStart();
                                                 //events[i].inviteEventVisitor(visitor);
                                                 let post = visitor.visitPre(events[i]); 
                                                 if (post) post(events[i]);    

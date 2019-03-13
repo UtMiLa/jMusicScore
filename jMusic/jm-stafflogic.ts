@@ -32,8 +32,6 @@ class ControlElementRepository extends ContextEventVisitor {
     
     private currentClef: ControlElementRef;
     visitClefInfo(clef: IClefEventInfo): void {
-        if (!clef.relTime) clef.relTime = clef.source.absTime.fromStart(); // todo: væk
-
         const ref = new ControlElementRef(clef.source, clef.relTime.fromStart(), this.staff);
         ref.prev = this.currentClef;
         if (this.currentClef) this.currentClef.next = ref;
@@ -42,7 +40,6 @@ class ControlElementRepository extends ContextEventVisitor {
 
     private currentMeter: ControlElementRef;
     visitMeterInfo(meter: IMeterEventInfo): void {
-        if (!meter.relTime) meter.relTime = meter.source.absTime.fromStart(); // todo: væk
         const ref = new ControlElementRef(meter.source, meter.relTime.fromStart(), this.staff);
         ref.prev = this.currentMeter;
         if (this.currentMeter) this.currentMeter.next = ref;
