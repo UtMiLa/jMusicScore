@@ -194,13 +194,15 @@ export interface ISequence extends IEventContainer, IMusicContainer, IEventEnume
 
 export interface IClef extends ITimedChangeEvent {
     //parent: IStaff;
-    definition: ClefDefinition;            
+    definition: ClefDefinition;
+    getEvents(globalContext: IGlobalContext): IClefEventInfo[];
     pitchToStaffLine(pitch: Pitch): number;
     staffLineToPitch(line: number): Pitch;
 }
 export interface IKey extends ITimedChangeEvent {
     //parent: IStaff;
     definition: IKeyDefinition;
+    getEvents(globalContext: IGlobalContext): IKeyEventInfo[];
     getFixedAlteration(pitch: number): string;
     getTonic(): PitchClass;
 }
