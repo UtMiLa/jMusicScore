@@ -701,10 +701,10 @@ export module MusicSpacing {
             super.visitVoice(voice); 
         }
         visitClefInfo(clef: IClefEventInfo) {
-            //console.log("spacing clef", clef);
+            console.log("spacing clef", clef);
             const spacing = this.globalContext.getSpacingInfo<IClefSpacingInfo>(clef);
             spacing.offset.y = Metrics.pitchYFactor * (clef.source.definition.clefLine - 1) * 2;
-            spacing.clefId = this.clefRefId(clef.source.definition, !!clef.source.absTime.numerator);
+            spacing.clefId = this.clefRefId(clef.source.definition, !!clef.relTime.numerator);
         }
         visitMeterInfo(meter: IMeterEventInfo) {
             //console.log("spacing meter", meter);

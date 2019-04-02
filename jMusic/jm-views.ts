@@ -835,7 +835,7 @@ export class RedrawVisitor extends ContextEventVisitor {
         console.log("redraw key", key);
         const spacing = this.globalContext.getSpacingInfo<IKeySpacingInfo>(key);
         if (this.staff) {
-            var staffContext = /*key.parent*/this.staff.getStaffContext(key.source.absTime, this.globalContext);
+            var staffContext = /*key.parent*/this.staff.getStaffContext(key.relTime.fromStart(), this.globalContext);
             KeyDrawer.addKeyXy(null, this.graphEngine, key.source.definition, staffContext.clef, 0, 0);
         }
     }

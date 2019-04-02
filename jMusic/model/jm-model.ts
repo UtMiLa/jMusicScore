@@ -1153,9 +1153,10 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 super(parent);
                 if (!this.absTime) this.absTime = AbsoluteTime.startTime;
             }
-            getEvents(): IEventInfo[] {
+            getEvents(): IClefEventInfo[] {
                 let info: IClefEventInfo = new ClefEventInfo(this);
                 //info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitClefInfo(info)};
+                info.relTime = this.absTime.fromStart();
                 return [info];
             }
 
@@ -1218,9 +1219,10 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 super(parent);
                 if (!absTime) this.absTime = AbsoluteTime.startTime;
             }
-            getEvents(): IEventInfo[] {
+            getEvents(): IKeyEventInfo[] {
                 let info: IKeyEventInfo = new KeyEventInfo(this);
                 //info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitKeyInfo(info)};
+                info.relTime = this.absTime.fromStart();
                 return [info];
             }
 
@@ -1281,6 +1283,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             getEvents(): IMeterEventInfo[] {
                 let info: IMeterEventInfo = new MeterEventInfo(this);
                 //info.visitAllEvents = (visitor: IEventVisitor) => {visitor.visitMeterInfo(info)};
+                info.relTime = this.absTime.fromStart();
                 return [info];
             }
 
