@@ -137,6 +137,23 @@ export class TimeSpan extends Rational {
     }
 }
 
+export class Alteration {
+    constructor(private value: number, private force: boolean = false){}
+
+    static fromString(val: string): Alteration {
+        switch(val) {
+            case "": case " ": case "0": return new Alteration(0, false);
+            case "n": return new Alteration(0, true);
+            case "x": return new Alteration(1);
+            case "b": return new Alteration(-1);
+            case "xx": return new Alteration(2);
+            case "bb": return new Alteration(-2);
+        }
+        throw ("Illegal alteration: " + val);
+    }
+
+}
+
 /**
     * Sort order for timed events - elements at same time are sorted according to sort order. Multiple grace notes are sorted according to graceNo.
     */
