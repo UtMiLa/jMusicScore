@@ -2,9 +2,12 @@ import { IScore } from "../model/jm-model-interfaces";
 import { GlobalContext } from "../model/jm-model-base";
 import { ControlElementManager } from "../jm-stafflogic";
 import { LilyPondConverter } from "../jm-lilypond";
+import { ViewModeller } from "../viewmodel/jm-create-viewmodel";
 
 
 var globalContext = new GlobalContext();
+
+var viewModeller = new ViewModeller();
 /*var document: IScore;
 var controlManager: ControlElementManager;*/
 
@@ -18,12 +21,20 @@ function loadFromLily(input: string, noStaves: number, noVoices: number){
     return parsedObject;
 }
 
+describe("Measures", function () {
 
+    xit("should create a correct measure map", function() {
+        let sample = loadFromLily("{ \\time 4/4 g'4 a' b' f' c'' d'' e'' f'' }", 1, 1)
+    });
+});
 
 describe("Note", function () {
 
-    xit("should map a simple melody correctly to a treble staff", function() {
-        let sample = loadFromLily("{ \\time 4/4 g'4 a' b' f' c'' d'' e'' f'' }", 1, 1)
+    it("should map a simple melody correctly to a treble staff", function() {
+        let sample = loadFromLily("{ \\time 4/4 g'4 a' b' f' c'' d'' e'' f'' }", 1, 1);
+
+        const res = viewModeller.create(sample, globalContext);
+        expect(res.measures.length).toBe(2);
     });
     xit("should map notes correctly to g, c, f clefs");
     xit("should map a chord correctly");
