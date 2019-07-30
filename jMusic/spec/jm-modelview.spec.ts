@@ -34,7 +34,10 @@ describe("Note", function () {
         let sample = loadFromLily("{ \\time 4/4 g'4 a' b' f' c'' d'' e'' f'' }", 1, 1);
 
         const res = viewModeller.create(sample, globalContext);
-        expect(res.measures.length).toBe(2);
+        expect(res.events.length).toBe(9);
+        expect(res.events[0].absoluteTime.toString()).toBe('0/1');
+        expect(res.events[2].absoluteTime.toString()).toBe('1/4');
+        expect(res.events[8].absoluteTime.toString()).toBe('7/4');
     });
     xit("should map notes correctly to g, c, f clefs");
     xit("should map a chord correctly");
