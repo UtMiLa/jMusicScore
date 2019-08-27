@@ -151,6 +151,23 @@ export class Alteration {
         }
         throw ("Illegal alteration: " + val);
     }
+    toString(): string{
+        switch(this.value) {
+            case 0:
+                if(this.force) return "n";
+                return "";
+            case 1:
+                return "x";
+            case 2:
+                return "xx";
+            case -1:
+                return "b";
+            case -2:
+                return "bb";
+            default:
+                return "?";
+        }
+    }
 
 }
 

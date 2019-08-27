@@ -3,6 +3,8 @@ import { GlobalContext } from "../model/jm-model-base";
 import { ControlElementManager } from "../jm-stafflogic";
 import { LilyPondConverter } from "../jm-lilypond";
 import { ViewModeller } from "../viewmodel/jm-create-viewmodel";
+import { VEvent, VNote } from "../viewmodel/jm-viewmodel";
+import { Alteration } from "../jm-music-basics";
 
 
 var globalContext = new GlobalContext();
@@ -48,10 +50,38 @@ describe("Note", function () {
     xit("should ");
 });
 
-
+/*
+Viewmodel er en kontekstfri repræsentation af nodebilledet.
+Hvert symbol i nodebilledet er repræsenteret af et objekt.
+Fortolkningen af objektet er ikke afhængigt af konteksten, fx tidligere angivne nøgler/taktarter m.m.
+Deres nøjagtige placering er ikke beregnet, kun deres relative placering (absolut tid, nr. event i takten, og ikke mm eller pixels).
+Alle variable er erstattet af deres værdi.
+Alle faste fortegn, metre m.m. er dubleret i hvert system, de er knyttet til.
+Alle noder er placeret på linjenummer i stedet for absolut tone.
+Alle hjælpelinjer er beregnet.
+Nodehoveder på modsat side af halsen er beregnet (displacement).
+Alle løse fortegn er beregnet efter gældende regler.
+Alle tekster er delt ud på stavelser, og evt. bindestreger er angivet.
+ */
 describe("Accidentals", function () {
-    xit("should map accidentals correctly");
-    xit("should retain accidentals for the rest of the measure but not longer");
+    it("should map accidentals correctly", function() {
+        let sample = loadFromLily("{ \\time 4/4 g'4 as' b' fis' }", 1, 1);
+
+        const res = viewModeller.create(sample, globalContext);
+        expect(res.events.length).toBe(9);
+        expect((<VNote>res.events[2]).heads[0].accidental.type.toString()).toBe("b");
+        expect((<VNote>res.events[4]).heads[0].accidental.type.toString()).toBe("x");
+    });
+    it("should retain accidentals for the rest of the measure but not longer", function() {
+        let sample = loadFromLily("{ \\time 4/4 g'4 as' b' fis' fis'' fis'' e'' f'' }", 1, 1);
+
+        const res = viewModeller.create(sample, globalContext);
+        expect(res.events.length).toBe(9);
+        expect((<VNote>res.events[4]).heads[0].accidental.type.toString()).toBe("x");
+        expect((<VNote>res.events[5]).heads[0].accidental.type.toString()).toBe("x");
+        expect((<VNote>res.events[6]).heads[0].accidental.type.toString()).toBe("");
+        expect((<VNote>res.events[8]).heads[0].accidental.type.toString()).toBe("n");
+    });
     xit("should map correct accidentals in a sharp key");
     xit("should map correct accidentals in a flat key");
     xit("should map correct accidentals in an irregular key");

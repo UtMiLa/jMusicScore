@@ -1,6 +1,6 @@
 import { VScore, VMeasure, VNote, VMeter } from "./jm-viewmodel";
 import { IScore, IEventVisitorTarget, IEventVisitor, INoteHeadInfo, INoteInfo, INoteDecorationEventInfo, ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo, IBarEventInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IStaffExpressionEventInfo, ISequence, IGlobalContext, IVoice, IStaff } from "../model/jm-model-interfaces";
-import { IVisitorIterator, AbsoluteTime } from "../jm-music-basics";
+import { IVisitorIterator, AbsoluteTime, ClefDefinition, KeyDefinitionFactory, OffsetMeterDefinition, IMeterDefinition, IKeyDefinition, Alteration, Pitch } from "../jm-music-basics";
 import { ContextVisitor, GlobalContext } from "../model/jm-model-base";
 
 
@@ -18,9 +18,56 @@ export class ViewModeller {
     }
 }
 
+class AccidentalContext {
+    alteration: Alteration;
+    pitch: Pitch;
+}
+
+class RunningContext {
+    currentClef: ClefDefinition;
+    currentKey: IKeyDefinition;
+    currentMeter: IMeterDefinition;
+    currentAccidentals: AccidentalContext[];
+    currentOttava: number;
+}
+
+class ContextStore {
+    private contexts: RunningContext[] = [];
+
+    setMeter(meter: IMeterDefinition, staff: IStaff) {
+
+    }
+    setClef(clef: ClefDefinition, staff: IStaff) {
+        
+    }
+    setKey(key: IKeyDefinition, staff: IStaff) {
+        
+    }
+    setAccidental(alteration: Alteration, pitch: Pitch, staff: IStaff) {
+        
+    }
+    getMeter(staff: IStaff): IMeterDefinition {
+        return null;
+    }
+    getClef(staff: IStaff): ClefDefinition {
+        return null;
+    }
+    getKey(staff: IStaff): IKeyDefinition {
+        return null;
+    }
+    getAccidental(pitch: Pitch, staff: IStaff): Alteration {
+        return null;
+    }
+    clearAccidentals(staff: IStaff){
+        
+    }
+}
+
 
 class ModelViewVisitor implements IVisitorIterator<IEventVisitorTarget>, IEventVisitor {
     currentTime: AbsoluteTime;
+    currentContext = new ContextStore();
+
     visitNoteHeadInfo(head: INoteHeadInfo): void {
         //throw new Error("Method not implemented.");
     }
