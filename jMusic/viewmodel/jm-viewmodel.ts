@@ -1,5 +1,5 @@
 import { StemDirectionType, AbsoluteTime, TimeSpan, Alteration } from "../jm-music-basics";
-import { INote, INoteInfo, IMeterEventInfo } from "../model/jm-model-interfaces";
+import { INote, INoteInfo, IMeterEventInfo, INoteHeadInfo } from "../model/jm-model-interfaces";
 
 /*
 Viewmodel er en kontekstfri repræsentation af nodebilledet.
@@ -28,9 +28,9 @@ export class VEvent {
 
 export class VNote extends VEvent {
     direction: StemDirectionType;
-    heads: VNotehead[];
-    beams: VBeam[];
-    noteExpressions: VNoteExpression[];
+    heads: VNotehead[] = [];
+    beams: VBeam[] = [];
+    noteExpressions: VNoteExpression[] = [];
     ledgerOver: number;
     ledgerUnder: number;
 
@@ -44,6 +44,9 @@ export class VBeam {
 }
 
 export class VNotehead {
+    constructor(head: INoteHeadInfo){
+        
+    }
     line: number;
     displaced: boolean;
     accidental: VAccidental;

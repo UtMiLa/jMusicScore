@@ -1,4 +1,4 @@
-import { VScore, VMeasure, VNote, VMeter } from "./jm-viewmodel";
+import { VScore, VMeasure, VNote, VMeter, VNotehead, VAccidental } from "./jm-viewmodel";
 import { IScore, IEventVisitorTarget, IEventVisitor, INoteHeadInfo, INoteInfo, INoteDecorationEventInfo, ILongDecorationEventInfo, ITextSyllableEventInfo, IBeamEventInfo, IBarEventInfo, IClefEventInfo, IMeterEventInfo, IKeyEventInfo, IStaffExpressionEventInfo, ISequence, IGlobalContext, IVoice, IStaff } from "../model/jm-model-interfaces";
 import { IVisitorIterator, AbsoluteTime, ClefDefinition, KeyDefinitionFactory, OffsetMeterDefinition, IMeterDefinition, IKeyDefinition, Alteration, Pitch } from "../jm-music-basics";
 import { ContextVisitor, GlobalContext } from "../model/jm-model-base";
@@ -67,13 +67,18 @@ class ContextStore {
 class ModelViewVisitor implements IVisitorIterator<IEventVisitorTarget>, IEventVisitor {
     currentTime: AbsoluteTime;
     currentContext = new ContextStore();
+    currentNote: VNote;
 
     visitNoteHeadInfo(head: INoteHeadInfo): void {
-        //throw new Error("Method not implemented.");
+        var vHead = new VNotehead(head)
+        vHead.accidental = new VAccidental();
+        vHead.accidental.type = Alteration.fromString(head.pitch.alteration);
+        this.currentNote.heads.push(vHead)
     }
     visitNoteInfo(note: INoteInfo): void {        
-        this.res.events.push(new VNote(note, this.currentTime));
-        this.currentTime = this.currentTime.add(note.timeVal);
+        this.currentNote = new VNote(note, this.currentTime)
+        this.res.events.push(this.currentNote);
+        this.currentTime = this.currentTime.add(note.timeVal);        
     }
     visitNoteDecorationInfo(deco: INoteDecorationEventInfo): void {
         //throw new Error("Method not implemented.");
