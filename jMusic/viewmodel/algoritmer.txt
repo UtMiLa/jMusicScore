@@ -1,0 +1,6 @@
+Find alle stream-events for Voice inkl. transformerede
+    getEvents
+Find alle change-events for Voice inkl. dem hørende til Score og Staff og andre Voice i samme Staff
+Find alle Bar-events
+Ved tegning af change-events: tegn dem kun i én Voice pr. Staff
+Vedligehold en StaffContext for hver Voice

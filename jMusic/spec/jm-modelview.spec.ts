@@ -4,7 +4,7 @@ import { ControlElementManager } from "../jm-stafflogic";
 import { LilyPondConverter } from "../jm-lilypond";
 import { ViewModeller } from "../viewmodel/jm-create-viewmodel";
 import { VEvent, VNote } from "../viewmodel/jm-viewmodel";
-import { Alteration } from "../jm-music-basics";
+import { Alteration, ClefDefinition, ClefType, AbsoluteTime } from "../jm-music-basics";
 
 
 var globalContext = new GlobalContext();
@@ -25,7 +25,7 @@ function loadFromLily(input: string, noStaves: number, noVoices: number){
 
 describe("Measures", function () {
 
-    xit("should create a correct measure map", function() {
+    it("should create a correct measure map", function() {
         let sample = loadFromLily("{ \\time 4/4 g'4 a' b' f' c'' d'' e'' f'' }", 1, 1)
     });
 });
@@ -41,13 +41,59 @@ describe("Note", function () {
         expect(res.events[2].absoluteTime.toString()).toBe('1/4');
         expect(res.events[8].absoluteTime.toString()).toBe('7/4');
     });
-    xit("should map notes correctly to g, c, f clefs");
-    xit("should map a chord correctly");
+    it("should map notes correctly to g, c, f clefs", function() {
+        let sample = loadFromLily("{ \\time 4/4 g'4 a' b' f' c'' d'' e'' f'' }", 1, 1);
+
+        const res = viewModeller.create(sample, globalContext);
+        expect(res.events.length).toBe(9);
+        expect((<VNote>res.events[1]).heads[0].line).toBe(6);
+        expect((<VNote>res.events[2]).heads[0].line).toBe(5);
+        expect((<VNote>res.events[3]).heads[0].line).toBe(4);
+        expect((<VNote>res.events[4]).heads[0].line).toBe(7);
+        expect((<VNote>res.events[5]).heads[0].line).toBe(3);
+        expect((<VNote>res.events[6]).heads[0].line).toBe(2);
+        expect((<VNote>res.events[7]).heads[0].line).toBe(1);
+        expect((<VNote>res.events[8]).heads[0].line).toBe(0);
+    });
+    it("should map notes correctly to c, f clefs", function() {
+        let sample = loadFromLily("{ \\time 4/4 g'4 a' b' f' c' d' e' f' }", 1, 1); // todo: \\clef alto
+
+        sample.staffElements[0].setClef(ClefDefinition.clefCAlto, AbsoluteTime.startTime);
+
+        const res = viewModeller.create(sample, globalContext);
+        expect(res.events.length).toBe(9);
+        expect((<VNote>res.events[1]).heads[0].line).toBe(0);
+        expect((<VNote>res.events[2]).heads[0].line).toBe(-1);
+        expect((<VNote>res.events[3]).heads[0].line).toBe(-2);
+        expect((<VNote>res.events[4]).heads[0].line).toBe(1);
+        expect((<VNote>res.events[5]).heads[0].line).toBe(4);
+        expect((<VNote>res.events[6]).heads[0].line).toBe(3);
+        expect((<VNote>res.events[7]).heads[0].line).toBe(2);
+        expect((<VNote>res.events[8]).heads[0].line).toBe(1);
+    });
+    it("should map notes correctly to f clef", function() {
+        let sample = loadFromLily("{ \\time 4/4 g4 a b f c d e f }", 1, 1); // todo: \\clef bass
+
+        sample.staffElements[0].setClef(ClefDefinition.clefF, AbsoluteTime.startTime);
+
+        const res = viewModeller.create(sample, globalContext);
+        expect(res.events.length).toBe(9);
+        expect((<VNote>res.events[1]).heads[0].line).toBe(1);
+        expect((<VNote>res.events[2]).heads[0].line).toBe(0);
+        expect((<VNote>res.events[3]).heads[0].line).toBe(-1);
+        expect((<VNote>res.events[4]).heads[0].line).toBe(2);
+        expect((<VNote>res.events[5]).heads[0].line).toBe(5);
+        expect((<VNote>res.events[6]).heads[0].line).toBe(4);
+        expect((<VNote>res.events[7]).heads[0].line).toBe(3);
+        expect((<VNote>res.events[8]).heads[0].line).toBe(2);
+
+    });
+    /*xit("should map a chord correctly");
     xit("should calculate a correct number of ledger lines");
     xit("should ");
     xit("should ");
     xit("should ");
-    xit("should ");
+    xit("should ");*/
 });
 
 /*
@@ -68,12 +114,12 @@ describe("Accidentals", function () {
         let sample = loadFromLily("{ \\time 4/4 g'4 as' b' fis' }", 1, 1);
 
         const res = viewModeller.create(sample, globalContext);
-        expect(res.events.length).toBe(9);
+        expect(res.events.length).toBe(5);
         expect((<VNote>res.events[2]).heads[0].accidental.type.toString()).toBe("b");
         expect((<VNote>res.events[4]).heads[0].accidental.type.toString()).toBe("x");
     });
     it("should retain accidentals for the rest of the measure but not longer", function() {
-        let sample = loadFromLily("{ \\time 4/4 g'4 as' b' fis' fis'' fis'' e'' f'' }", 1, 1);
+        let sample = loadFromLily("{ \\time 4/4 g'4 as' b' fis'' fis'' fis'' e'' f'' }", 1, 1);
 
         const res = viewModeller.create(sample, globalContext);
         expect(res.events.length).toBe(9);
@@ -82,21 +128,21 @@ describe("Accidentals", function () {
         expect((<VNote>res.events[6]).heads[0].accidental.type.toString()).toBe("");
         expect((<VNote>res.events[8]).heads[0].accidental.type.toString()).toBe("n");
     });
-    xit("should map correct accidentals in a sharp key");
+    /*xit("should map correct accidentals in a sharp key");
     xit("should map correct accidentals in a flat key");
     xit("should map correct accidentals in an irregular key");
     xit("should displace accidentals correctly in chords");
     xit("should ");
-    xit("should ");
+    xit("should ");*/
 });
 
 
 
 describe("Beams", function () {
-    xit("should not make beams in large note values");
+    /*xit("should not make beams in large note values");
     xit("should make beams in a simple sequence of 8. notes");
     xit("should make beams in a simple sequence of 16. and 32. notes");
     xit("should make beams correctly in a mixed sequence of 8. and 16. notes");
     xit("should ");
-    xit("should ");
+    xit("should ");*/
 });

@@ -169,6 +169,20 @@ export class Alteration {
         }
     }
 
+    equals(a: Alteration): boolean {
+        if (!a) return false;
+        if (this.value === a.value) {
+            if (this.value === 0) return this.force === a.force;
+            return true;
+        }
+    }
+
+    static None = new Alteration(0, false);
+    static Natural = new Alteration(0, true);
+    static Sharp = new Alteration(1);
+    static DoubleSharp = new Alteration(2);
+    static Flat = new Alteration(-1);
+    static DoubleFlat = new Alteration(-2);
 }
 
 /**

@@ -110,7 +110,7 @@ Command
 Comment =
 	"%" c:([^\n]*) "\n" { return { "Comment": c.join('') }; }
 ClefDef "command_element_clef"
-	= "\\clef" _ s:String _ { return { clef: s } }
+	= "\\clef" _ s:String _ { return { t: "Clef", def: { clef: 3, line: 4, abs: {den: 1, num:0}, tr: 0 } } }
     
 KeyDef "command_event_key"
 	= "\\key" _ s:Note m:Mode _ { return { key: s, mode: m } }
