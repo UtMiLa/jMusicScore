@@ -1092,6 +1092,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
 
         }
 
+        /**
+         * Transpose element will transpose all notes in the underlying sequence
+         */
         export class TransposeElement extends MusicContainer implements ISequence {
             constructor(public parent: IVoice | ISequence, private sequence: ISequence, public interval: Interval){
                 super(parent);
@@ -1384,6 +1387,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
         }
 
+        /**
+         * Beam element - model object for one beam between fromNote and toNote
+         */
         export class BeamElement extends MusicElement implements IBeam {
             get source(): IBeam { return this; }
             get voice(): IVoice { return null; }
@@ -1403,6 +1409,13 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             clone(addId: string): IEventInfo {
                 throw new Error("Method not implemented.");
             }
+            /**
+             * Creates an instance of beam element.
+             * @param parent 
+             * @param fromNote 
+             * @param toNote 
+             * @param index when more than one beam connects notes, index counts the beams from the one farthest away from the heads
+             */
             constructor(public parent: INote, public fromNote: INoteInfo, public toNote: INoteInfo, public index: number) {
                 super(parent);
             }
@@ -1421,6 +1434,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
 
 
 /******************************************************** Helper classes **************************************************************/
+        /**
+         * Music Facade object with general methods for manipulation on a score
+         */
         export class Music { // facade object
             /*constructor() {
             }*/
@@ -1432,6 +1448,12 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 return this._music;
             }*/
 
+            /**
+             * Previous note
+             * @param globalContext 
+             * @param note 
+             * @returns note The note before the argument
+             */
             static prevNote(globalContext: IGlobalContext, note: INote): INote {
                 /*var voice = note.parent;
                 var noteElements = voice.getNoteElements();
@@ -1442,6 +1464,12 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 return null;*/
                 return note.getPrev(globalContext);
             }
+            /**
+             * Next note
+             * @param globalContext 
+             * @param note 
+             * @returns note The note after the argument
+             */
             static nextNote(globalContext: IGlobalContext, note: INote): INote { // (noteIndex >= note.parent.noteElements.length) ? null : note.parent.noteElements[noteIndex + 1];
                 /*var voice = note.parent;
                 var noteElements = voice.getNoteElements();
@@ -1453,6 +1481,14 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 return note.getNext(globalContext);
             }
 
+            /**
+             * Changes note duration
+             * @param globalContext 
+             * @param note 
+             * @param nominalDuration 
+             * @param actualDuration 
+             * @returns note duration 
+             */
             public static changeNoteDuration(globalContext: IGlobalContext, note: ISequenceNote, nominalDuration: TimeSpan, actualDuration: TimeSpan): ISequenceNote {
                 if (note.getTimeVal().eq(actualDuration) && note.timeVal.eq(nominalDuration)) return; // no change
 
@@ -1501,6 +1537,13 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 return note1;
             }
 
+            /**
+             * Splits note into several notes of the same pitch and total timespan
+             * @param globalContext 
+             * @param note The note to split
+             * @param notes Array of [[TimeSpan]]s to the new notes lengths
+             * @returns note 
+             */
             public static splitNote(globalContext: IGlobalContext, note: ISequenceNote, notes: TimeSpan[]): void {
                 if (notes.length <= 1) return;
                 var absTime = note.absTime;
@@ -1530,6 +1573,13 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
 
             }
 
+            /**
+             * Merges a note with next
+             * @param globalContext 
+             * @param note First note to merge
+             * @param [no] number of notes to merge with the first one
+             * @returns note with next 
+             */
             public static mergeNoteWithNext(globalContext: IGlobalContext, note: ISequenceNote, no: number = 1): ISequenceNote {
                 var nextNotes: INote[] = [];
                 var nextNote = Music.nextNote(globalContext, note);
@@ -1555,6 +1605,11 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 return note;
             }
 
+            /**
+             * Calculates note id from note length
+             * @param timeVal 
+             * @returns note id of the note symbol without tuplets or dots, e.g. n1_8 for an eights note
+             */
             public static calcNoteId(timeVal: TimeSpan): string {
                 timeVal.reduce();
 
@@ -1575,6 +1630,13 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 }
                 return null;
             }
+            /**
+             * Find note
+             * @param globalContext 
+             * @param sequence 
+             * @param absTime 
+             * @returns The note at the specified time in the sequence, or undefined if none
+             */
             static findNote(globalContext: IGlobalContext, sequence: ISequence, absTime: AbsoluteTime): INote {
                 var res: INote;
                 var noteElements = sequence.noteElements;
@@ -1626,6 +1688,12 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 return sequence.addNote(globalContext, noteType, absTime, noteId, timeVal, beforeNote, insert, dots, tuplet);     
             }*/
 
+            /**
+             * Gets lyrics from all notes in the voice
+             * @param globalContext 
+             * @param voice 
+             * @returns  
+             */
             static getText(globalContext: IGlobalContext, voice: IVoice) {
                 if (voice) {
                     var txt = "";
@@ -1639,14 +1707,32 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 }
             }
 
+            /**
+             * Compares events according to the placement in the timeline
+             * @param a 
+             * @param b 
+             * @returns events 
+             */
             public static compareEvents(a: IEventInfo, b: IEventInfo): number {
                 return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
             }
 
+            /**
+             * Compares events according to the placement in the timeline (deprecated)
+             * @param a 
+             * @param b 
+             * @returns events old 
+             */
             public static compareEventsOld(a: ITimedEvent, b: ITimedEvent): number {
                 return HorizPosition.compareEvents(a.getHorizPosition(), b.getHorizPosition());
             }
 
+            /**
+             * Compares events by voice and then after the placement in the timeline
+             * @param a 
+             * @param b 
+             * @returns  
+             */
             public static compareEventsByVoice(a: ITimedEvent, b: ITimedEvent) {
                 if (!(<any>a).getVoice || !(<any>b).getVoice) {
                     return Music.compareEventsOld(a, b);
@@ -1682,9 +1768,13 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
                 }
             }
 
-            static setBar(owner: IStaff, absTime: AbsoluteTime): IBar;
-            static setBar(owner: IScore, absTime: AbsoluteTime): IBar;
-            static setBar(owner: IMusicElement, absTime: AbsoluteTime): IBar {
+            /**
+             * Sets bar element on a fixed time
+             * @param owner 
+             * @param absTime 
+             * @returns bar 
+             */
+            static setBar(owner: IStaff | IScore, absTime: AbsoluteTime): IBar{
                 var score: IScore;
                 if (owner.getElementName() === "Staff") {
                     score = (<IStaff>owner).parent;
@@ -1719,6 +1809,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         };
 
 
+        /**
+         * Music element factory, generates [[MusicElement]]s from JSON Mementos
+         */
         export class MusicElementFactory {
             static register(key: string, creator: IMusicElementCreator) {
                 mementoCreators[key] = creator;
