@@ -1,0 +1,6 @@
+{
+    "mode": "file",
+    "out": "docs",
+    "target": "es5",
+    "module": "commonjs"
+}

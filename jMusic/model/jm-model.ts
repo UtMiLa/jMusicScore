@@ -1147,7 +1147,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             public getElementName() { return "Transpose"; }
         }
 
-        // ClefElement
+        /**
+         * Clef element
+         */
         export class ClefElement extends MusicElement implements IClef {
             constructor(public parent: IStaff, public definition: ClefDefinition, public absTime: AbsoluteTime = null) {
                 super(parent);
