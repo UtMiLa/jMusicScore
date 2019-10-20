@@ -37,6 +37,14 @@ import { NoteDecorationElement, NoteLongDecorationElement, TextSyllableElement, 
         score -> firstStaff, lastStaff, firstVoice, lastVoice, firstKey, firstMeter, firstClef, firstBar
         notelink: LinkedList<INote>
          */
+
+
+
+
+
+/**
+ * Bar event info - the information about a [[BarElement]] to provide to [[IEventVisitor]]
+ */
 class BarEventInfo extends EventInfo implements IBarEventInfo{
     source: BarElement;
         
@@ -56,6 +64,9 @@ class BarEventInfo extends EventInfo implements IBarEventInfo{
         visitor.visitBarInfo(this);
     }
 }
+/**
+ * Clef event info - the information about a [[ClefElement9] to provide to [[IEventVisitor]]
+ */
 class ClefEventInfo extends EventInfo implements IClefEventInfo{
     source: ClefElement;
         
@@ -77,6 +88,9 @@ class ClefEventInfo extends EventInfo implements IClefEventInfo{
         visitor.visitClefInfo(this);
     }
 }
+/**
+ * Meter event info - the information about a [[MeterElement]] to provide to [[IEventVisitor]]
+ */
 class MeterEventInfo extends EventInfo implements IMeterEventInfo{
     nextBar(barTime: AbsoluteTime): AbsoluteTime {
         return this.source.nextBar(barTime);
@@ -112,6 +126,9 @@ class MeterEventInfo extends EventInfo implements IMeterEventInfo{
         visitor.visitMeterInfo(this);
     }
 }
+/**
+ * Staff expression event info - the information about a [[StaffExpression]] to provide to [[IEventVisitor]]
+ */
 class StaffExpressionEventInfo extends EventInfo implements IStaffExpressionEventInfo{
     source: StaffExpression;
         
@@ -134,6 +151,9 @@ class StaffExpressionEventInfo extends EventInfo implements IStaffExpressionEven
         visitor.visitStaffExpressionInfo(this);
     }
 }
+/**
+ * Key event info - the information about a [[KeyElement]] to provide to [[IEventVisitor]]
+ */
 class KeyEventInfo extends EventInfo implements IKeyEventInfo{
     source: KeyElement;
         
@@ -159,6 +179,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
 }
 /**************************************************** MusicElement stuff ****************************************************/
 
+        /**
+         * Representation of a bar line in model
+         */
         class BarElement extends MusicElement implements IBar {
             getEvents(): IEventInfo[] {
                 let info: IBarEventInfo = new BarEventInfo(this);
@@ -199,7 +222,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             }
         }
 
-        //  *  OK  *
+        /**
+         * Representation of a score in model
+         */
         export class ScoreElement extends MusicContainer implements IScore {
             getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[] {
                 let meters: IMeterEventInfo[] = [];
@@ -403,6 +428,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         
         }
 
+        /**
+         * Representation of a staff line in model
+         */
         class StaffElement extends MusicContainer implements IStaff {
             constructor(public parent: IScore) {
                 super(parent);
@@ -690,6 +718,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         }
 
 
+        /**
+         * Representation of a timed staff expression in model
+         */
         class StaffExpression extends MusicElement implements IStaffExpression {
             constructor(public parent: IStaff, public text: string, public absTime: AbsoluteTime) {
                 super(parent);
@@ -737,7 +768,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         }
 
 
-        // VoiceElement
+        /**
+         * Representation of a voice in model
+         */
         class VoiceElement extends MusicContainer implements IVoice {
             constructor(public parent: IStaff) {
                 super(parent);
@@ -870,7 +903,11 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
 
         }
 
-        // SequenceElement
+        /**
+         * Representation of a sequence of timed events in model.
+         * 
+         * Sequences can be nested an referenced. A [[VoiceElement]] contains one or more sequences.
+         */
         class SequenceElement extends MusicContainer implements ISequence {
             constructor(public parent: IVoice | ISequence) {
                 super(parent);
@@ -1148,7 +1185,7 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         }
 
         /**
-         * Clef element
+         * Clef element - model object for a clef change on a specified place on a staff
          */
         export class ClefElement extends MusicElement implements IClef {
             constructor(public parent: IStaff, public definition: ClefDefinition, public absTime: AbsoluteTime = null) {
@@ -1215,7 +1252,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
         }
 
 
-        // KeyElement
+        /**
+         * Key element - model object for a key change on a specified place on a staff or score
+         */
         export class KeyElement extends MusicElement implements IKey {
             constructor(public parent: IStaff, public definition: IKeyDefinition, public absTime: AbsoluteTime = null) {
                 super(parent);
@@ -1277,7 +1316,9 @@ class KeyEventInfo extends EventInfo implements IKeyEventInfo{
             getHorizPosition(): HorizPosition { return new HorizPosition(this.absTime, this.getSortOrder()); }
         }
 
-        // MeterElement
+        /**
+         * Meter element - model object for a time change on a specified place on a staff or score
+         */
         export class MeterElement extends MusicElement implements IMeter {
             constructor(public parent: IMeterOwner, public definition: IMeterDefinition, public absTime: AbsoluteTime) {
                 super(parent);

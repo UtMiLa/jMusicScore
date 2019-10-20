@@ -1,5 +1,5 @@
 {
-    "mode": "file",
+    "mode": "Modules",
     "out": "docs",
     "target": "es5",
     "module": "commonjs"
