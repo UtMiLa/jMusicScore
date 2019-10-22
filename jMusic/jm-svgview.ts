@@ -17,7 +17,7 @@ import { DomCheckSensorsVisitor, ExpressionRenderer } from './jm-views';
 //IFeedbackClient  SpacingDesigner ExpressionRenderer JQuery MusicSpacing.absolutePos IStatusManager
 // Views.Dom...
 var $: any;
-
+/*
 /// Music 
 
 class SvgMetrics { // todo: yt
@@ -40,8 +40,10 @@ class SvgMetrics { // todo: yt
     static meterY1 = MusicSpacing.Metrics.meterY1;
 
 }
+*/
 
 
+const SvgMetrics = MusicSpacing.Metrics;
 /***************************************** Notes ****************************************************/
 
 

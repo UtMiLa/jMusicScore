@@ -30,9 +30,16 @@ import  { IGraphicsEngine , IScoreDesigner } from './jm-interfaces';
  * Udfordring: Staff skal kende forældres og søskendes globalt scopede ChangeEvents
  */
 
-/// Music spacing classes - independent of graphics methods
+
+/**
+ * Music spacing classes - spaces visual music elements in score independent of graphics methods
+ */
+
 export module MusicSpacing {
 
+    /**
+     * Base spacing info - common attributes of spacing info
+     */
     export class BaseSpacingInfo implements ISpacingInfo {
         offset = new Point(0, 0);
         width = Metrics.newPosStep * Metrics.newPosXStep;
@@ -43,6 +50,9 @@ export module MusicSpacing {
         preWidth = 0;
     }
 
+    /**
+     * Bar spacing info
+     */
     export class BarSpacingInfo extends BaseSpacingInfo implements IBarSpacingInfo {
         constructor(private parent: IBar) { super(); }
         barStyle: string;
@@ -50,6 +60,9 @@ export module MusicSpacing {
         extraXOffset: number = Metrics.barXOffset;
     }
 
+    /**
+     * Beam spacing info
+     */
     export class BeamSpacingInfo extends BaseSpacingInfo implements IBeamSpacingInfo {
         constructor(private parent: IBeam) { super(); }
         start = new Point(0, 0);
@@ -58,6 +71,9 @@ export module MusicSpacing {
         public beamDist: number;
     }
 
+    /**
+     * Inote context info
+     */
     export interface INoteContextInfo {
         postfix: string;
         timeVal: number;
@@ -75,9 +91,15 @@ export module MusicSpacing {
         rev?: boolean;
     }
 
+    /**
+     * Note head spacing info
+     */
     export class NoteHeadSpacingInfo extends BaseSpacingInfo implements INoteHeadSpacingInfo {
         constructor(private parent: INotehead) { super(); }
 
+        /**
+         * Special metrics for different noteheads
+         */
         static noteValues: { [index: string]: INoteContextInfo } = {
             hidden: {
                 postfix: "",
@@ -249,6 +271,9 @@ export module MusicSpacing {
     }
 
 
+    /**
+     * Score spacing info
+     */
     export class ScoreSpacingInfo extends BaseSpacingInfo implements IScoreSpacingInfo {
         constructor(private parent: IScore) {
             super();
@@ -258,6 +283,9 @@ export module MusicSpacing {
     }
 
 
+    /**
+     * Staff spacing info
+     */
     export class StaffSpacingInfo extends BaseSpacingInfo implements IStaffSpacingInfo {
         constructor(private parent: IStaff) {
             super();
@@ -275,6 +303,9 @@ export module MusicSpacing {
     }
 
 
+    /**
+     * Staff expression spacing info
+     */
     export class StaffExpressionSpacingInfo extends BaseSpacingInfo implements IStaffExpressionSpacingInfo {
         constructor(private parent: IStaffExpression) {
             super();
@@ -284,29 +315,47 @@ export module MusicSpacing {
         }
     }
 
+    /**
+     * Clef spacing info
+     */
     export class ClefSpacingInfo extends BaseSpacingInfo implements IClefSpacingInfo {
         constructor(private parent: IClefEventInfo) { super(); }
         clefId: string;
     }
 
 
+    /**
+     * Meter spacing info
+     */
     export class MeterSpacingInfo extends BaseSpacingInfo implements IMeterSpacingInfo {
         constructor(private parent: IMeterEventInfo) { super(); }
     }
 
 
+    /**
+     * Key spacing info
+     */
     export class KeySpacingInfo extends BaseSpacingInfo implements IKeySpacingInfo {
         constructor(private parent: IKeyEventInfo) { super(); }
     }
 
 
+    /**
+     * Voice spacing info
+     */
     export class VoiceSpacingInfo extends BaseSpacingInfo implements IVoiceSpacingInfo {
         constructor(private parent: IVoice) { super(); }
     }
 
+    /**
+     * Text spacing info
+     */
     export class TextSpacingInfo extends BaseSpacingInfo implements ITextSyllableSpacingInfo {
         constructor(private parent: ITextSyllableElement) { super(); }
     }
+    /**
+     * Note spacing info
+     */
     export class NoteSpacingInfo extends BaseSpacingInfo implements INoteSpacingInfo {
         constructor(private parent: INote) { super(); }
         rev = false;
@@ -332,10 +381,16 @@ export module MusicSpacing {
         public flagDisplacement = new Point(0, 0);
     }
 
+    /**
+     * Note decoration spacing info
+     */
     export class NoteDecorationSpacingInfo extends BaseSpacingInfo implements INoteDecorationSpacingInfo {
         constructor(private parent: INoteDecorationElement) { super(); }
         //endpoint: Point;
     }
+    /**
+     * Long decoration spacing info
+     */
     export class LongDecorationSpacingInfo extends BaseSpacingInfo implements ILongDecorationSpacingInfo {
         constructor(private parent: ILongDecorationElement) { super(); }
         //endpoint: Point;
@@ -347,6 +402,9 @@ export module MusicSpacing {
         render: (deco: ILongDecorationElement, ge: IGraphicsEngine) => void;
     }
 
+    /**
+     * Metrics measurements for default spacing system
+     */
     export class Metrics {
         // NoteOutput
         static newPosXStep = 9;
@@ -433,6 +491,9 @@ export module MusicSpacing {
         static tieY1 = 0.4;
     }
 
+    /**
+     * Minimal spacer which spaces music with the least possible algorithm complexity
+     */
     class MinimalSpacer extends ContextEventVisitor {
 
         /*public getSpacingInfo<T extends ISpacingInfo>(element: IMusicElement): T{
@@ -838,6 +899,9 @@ export module MusicSpacing {
 
     }
 
+    /**
+     * Spacing factory creates spacing info objects for all objects in the hierarchy
+     */
     class SpacingFactory extends ContextEventVisitor implements IVisitorIterator<IEventVisitorTarget>, IEventVisitor {
         visitPreEvent(element: IEventVisitorTarget): (element: IEventVisitorTarget) => void {
             element.inviteEventVisitor(this, this.globalContext);
@@ -957,6 +1021,9 @@ export module MusicSpacing {
         visitDefault(element: IMusicElement): void { }
     }
 
+    /**
+     * Designer plugin to make spacing objects and metrics from a score
+     */
     export class SpacingDesigner implements IScoreDesigner {
         constructor(private globalContext: IGlobalContext, private spacer: IEventVisitor = null) {
             if (!spacer) {
@@ -964,10 +1031,18 @@ export module MusicSpacing {
             }
         }
 
+        /**
+         * Checks that all elements have a spacing info object
+         * @param score 
+         */
         private checkSpacingInfo(score: IScore) {
             score.visitAllEvents(new SpacingFactory(this.globalContext), this.globalContext);
         }
 
+        /**
+         * Update spacing for all events
+         * @param score 
+         */
         private checkUpdateAll(score: IScore) {
             var spacer = this.spacer;
 
@@ -1035,6 +1110,10 @@ export module MusicSpacing {
             });
         }
 
+        /**
+         * Calculates horizontal sizes of all timed events (the widest for every position wins) ???
+         * @param score 
+         */
         private calculateSizes(score: IScore) {
             score.withStaves((staff: IStaff, index: number): void => {
                 /*staff.withTimedEvents((elm: ITimedEvent, index: number) => {
@@ -1067,6 +1146,10 @@ export module MusicSpacing {
             }, this.globalContext);
         }
 
+        /**
+         * Gets all events and makes ordered timeline and assigns a horizontal position to all spacing objects
+         * @param score 
+         */
         private makeTimeline(score: IScore) {
             var beginPos = 0;
             score.withStaves((staff: IStaff, index: number): void => {
@@ -1142,8 +1225,16 @@ export module MusicSpacing {
 
     }
 
+    /**
+     * Note spacer contains the logic for spacing notes
+     */
     export class NoteSpacer {
 
+        /**
+         * Determines whether note has flag
+         * @param note 
+         * @returns true if flag 
+         */
         static hasFlag(note: INoteInfo): boolean {
             if (note.rest) return false;
             var bs = note.getBeamspan();
@@ -1151,10 +1242,21 @@ export module MusicSpacing {
             var c = bs.length >= 1 && bs[0] === 1;
             return (!bs || bs.length === 0 || b || c);
         }
+
+        /**
+         * Determines whether note has stem
+         * @param note 
+         * @returns true if stem 
+         */
         static hasStem(note: INoteInfo): boolean {
             return !note.rest && note.timeVal.denominator >= 2;
         }
 
+        /**
+         * Gets flag count
+         * @param note 
+         * @returns flag count 
+         */
         static getFlagCount(note: INoteInfo): number {
             var denom = note.timeVal.denominator;
             var no = 0;
@@ -1171,15 +1273,35 @@ export module MusicSpacing {
             return this.getStaffContext(elm.parent, time);
         }*/
 
+        /**
+         * Calculate staff line from pitch
+         * @param pitch 
+         * @param noteCtx 
+         * @param globalContext 
+         * @returns  
+         */
         public static pitchToStaffLine(pitch: Pitch, noteCtx: INoteContext, globalContext: IGlobalContext) {
             var clef = noteCtx.getStaffContext(globalContext).clef;
             return clef.pitchToStaffLine(pitch);
         }
+        /**
+         * Calculate pitch from staff line
+         * @param line 
+         * @param noteCtx 
+         * @param globalContext 
+         * @returns  
+         */
         public static staffLineToPitch(line: number, noteCtx: INoteContext, globalContext: IGlobalContext) {
             var clef = noteCtx.getStaffContext(globalContext).clef;
             return clef.staffLineToPitch(line);
         }
 
+        /**
+         * Finds top and bottom pitches and determines stem direction
+         * @param globalContext 
+         * @param note 
+         * @param noteCtx 
+         */
         public static recalcPitches(globalContext: IGlobalContext, note: INoteInfo, noteCtx: INoteContext) {
             var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(note);
 
@@ -1217,6 +1339,13 @@ export module MusicSpacing {
         }
 
 
+        /**
+         * Recalcs number of ledger lines under staff for this note
+         * @param note 
+         * @param context 
+         * @param globalContext 
+         * @returns  
+         */
         public static recalcLedgerLinesUnder(note: INoteInfo, context: INoteContext, globalContext: IGlobalContext) {
             if (note.rest) return;
             var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(note);
@@ -1233,6 +1362,13 @@ export module MusicSpacing {
                 noteSpacing.ledgerLinesUnder.push(ledg);
             }
         }
+        /**
+         * Recalcs number of ledger lines over staff for this note
+         * @param note 
+         * @param context 
+         * @param globalContext 
+         * @returns  
+         */
         public static recalcLedgerLinesOver(note: INoteInfo, context: INoteContext, globalContext: IGlobalContext) {
             if (note.rest) return;
             var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(note);
@@ -1251,6 +1387,15 @@ export module MusicSpacing {
             }
         }
 
+        /**
+         * Calculates stem length from
+         * - notehead pitches
+         * - flag count
+         * - beams
+         * @param globalContext 
+         * @param note 
+         * @param noteSpacing 
+         */
         public static recalcStem(globalContext: IGlobalContext, note: INoteInfo, noteSpacing: INoteSpacingInfo) {
             var noteDef = NoteHeadSpacingInfo.noteValues[note.NoteId]; // todo: fjern
             //var hasFlag = NoteSpacer.hasFlag(note);
@@ -1299,6 +1444,13 @@ export module MusicSpacing {
             }
         }
 
+        /**
+         * Calculates notehead offsets to avoid collisions
+         * @param note 
+         * @param noteCtx 
+         * @param globalContext 
+         * @returns  
+         */
         public static recalcHeads(note: INoteInfo, noteCtx: INoteContext, globalContext: IGlobalContext) {
             var noteSpacing = globalContext.getSpacingInfo<NoteSpacingInfo>(note);
             var heads = note.heads;
@@ -1340,6 +1492,13 @@ export module MusicSpacing {
             }
         }
 
+        /**
+         * Sets notehead displacement and recalc if changed
+         * @param displace 
+         * @param headElm 
+         * @param noteCtx 
+         * @param globalContext 
+         */
         public static setDisplace(displace: boolean, headElm: INoteHeadInfo, noteCtx: INoteContext, globalContext: IGlobalContext) {
             var spacingInfo = globalContext.getSpacingInfo<NoteHeadSpacingInfo>(headElm);
             if (spacingInfo.displacement != displace) {
@@ -1347,6 +1506,13 @@ export module MusicSpacing {
                 this.recalc(headElm, noteCtx, globalContext);
             }
         }
+        /**
+         * Sets notehead reverse and recalc if changed
+         * @param headElm 
+         * @param rev 
+         * @param noteCtx 
+         * @param globalContext 
+         */
         public static setRev(headElm: INoteHeadInfo, rev: boolean, noteCtx: INoteContext, globalContext: IGlobalContext) {
             //var displayData = <SVGNoteheadDisplayData>headElm.getDisplayData(context);
             var spacingInfo = globalContext.getSpacingInfo<NoteHeadSpacingInfo>(headElm);
@@ -1355,6 +1521,12 @@ export module MusicSpacing {
                 this.recalc(headElm, noteCtx, globalContext);
             }
         }
+        /**
+         * Recalcs notehead spacing
+         * @param headElm 
+         * @param noteCtx 
+         * @param globalContext 
+         */
         public static recalc(headElm: INoteHeadInfo, noteCtx: INoteContext, globalContext: IGlobalContext) {
             //var displayData = <SVGNoteheadDisplayData>headElm.getDisplayData(context);
             //var parentDisplayData = <SVGNoteDisplayData>headElm.parent.getDisplayData(context);

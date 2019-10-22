@@ -1,6 +1,9 @@
 import { NoteDecorationKind } from "./jm-music-basics";
 
 
+/**
+ * Helper class for converting note decorations
+ */
 export class NoteDecorations {
     private static decorationKeyDefs: { [index: string]: NoteDecorationKind } = {
         'f': NoteDecorationKind.Fermata,
@@ -21,6 +24,11 @@ export class NoteDecorations {
         '§': NoteDecorationKind.Turn
     };
 
+    /**
+     * Gets font codepoint name for note decorations
+     * @param id Note decoration id
+     * @returns a duplet of two strings identifying an up and a down symbol in the ementaler font 
+     */
     private static getDef(id: NoteDecorationKind): { u: string; d: string; } {
         switch (id) {
             case NoteDecorationKind.AccX: return {
@@ -183,12 +191,23 @@ export class NoteDecorations {
         return null;
     }
 
+    /**
+     * Gets font codepoint name for note decorations
+     * @param id Note decoration id
+     * @param up true if symbol is over the staff
+     * @returns a string identifying an up and a down symbol in the ementaler font  
+     */
     public static getGlyph(id: NoteDecorationKind, up: boolean): string {
         var def = NoteDecorations.getDef(id);
         if (def) return up ? def.u : def.d;
         return null;
     }
 
+    /**
+     * Gets note decoration id from hotkey
+     * @param key 
+     * @returns note decoration id 
+     */
     public static getIdFromKey(key: string): NoteDecorationKind {
         return this.decorationKeyDefs[key];
     }

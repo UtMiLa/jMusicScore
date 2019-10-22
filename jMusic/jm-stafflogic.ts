@@ -3,9 +3,15 @@ import { AbsoluteTime, StaffContext, ClefDefinition, IMeterDefinition, TimeSpan,
 import { ContextEventVisitor } from "./model/jm-model-base";
 
 
+/**
+ * Control element (clefs, keys, meters, potentially tempo change etc)
+ */
 export interface IControlElement extends ITimedChangeEvent {
 }
 
+/**
+ * Control element reference - are linked together to optimise GetStaffContext
+ */
 export class ControlElementRef {
     constructor(public element: IControlElement, public relTime: AbsoluteTime, staff: IStaff) {        
     }
@@ -13,6 +19,11 @@ export class ControlElementRef {
     prev: ControlElementRef;
 }
 
+/**
+ * Control element repository
+ * 
+ * Visitor catching all control elements from underlying elements
+ */
 class ControlElementRepository extends ContextEventVisitor {
     elements: ControlElementRef[];
 
@@ -56,8 +67,11 @@ class ControlElementRepository extends ContextEventVisitor {
         
     }
 }
-/*
 
+/**
+ * Control element manager (under construction)
+ * 
+ * 
 Kontrolelementer er:
     Clef
     Meter
@@ -73,8 +87,7 @@ Case 1: Vi står på staff S og position P. Hvad er det aktive kontrolelement?
 Case 2: Vi skal space takt T. Giv os en sorteret liste over alle elementer, herunder kontrol-, der skal bidrage til spacingen.
 
 Case 3: Vi skal rendere takt T på staff S. Giv os en sorteret liste over alle elementer, herunder kontrol-, der skal renderes.
-*/
-
+ */
 export class ControlElementManager{
     constructor(private score: IScore, private globalContext: IGlobalContext){ 
  
