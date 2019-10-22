@@ -6,7 +6,6 @@ import { GlobalContext } from '../../../../jMusic/model/jm-model-base';
 import { IScore } from '../../../../jMusic/model/jm-model-interfaces';
 import { CanvasView } from '../../../../jMusic/jm-CanvasView';
 import { VariableRef } from '../../../../jMusic/jm-ghost-elements';
-
 @Component({
   selector: 'app-jmusic-score-view',
   templateUrl: './jmusic-score-view.component.html',
@@ -221,6 +220,7 @@ mus = {
     const memento = score.getMemento(true);
     this.theScore = score;
     this.theScoreMemento = JSON.stringify(memento);
+
 
     this._memento = memento;
 

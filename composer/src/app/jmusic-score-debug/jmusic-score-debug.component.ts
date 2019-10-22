@@ -6,6 +6,8 @@ import { GlobalContext } from '../../../../jMusic/model/jm-model-base';
 import { IScore, IGlobalContext } from '../../../../jMusic/model/jm-model-interfaces';
 import { CanvasView } from '../../../../jMusic/jm-CanvasView';
 import { VariableRef } from '../../../../jMusic/jm-ghost-elements';
+import { ViewModeller } from '../../../../jMusic/viewmodel/jm-create-viewmodel';
+import { VScore } from '../../../../jMusic/viewmodel/jm-viewmodel';
 
 @Component({
   selector: 'app-jmusic-score-debug',
@@ -23,9 +25,15 @@ export class JmusicScoreDebugComponent implements OnInit {
   _memento: IMemento;
 
 
+  viewModel: VScore;
+
 
 
   ngOnInit() {
+  }
+
+  showData(data){
+    return JSON.stringify(data);
   }
 
   @Input() set memento(value: IScore) {
@@ -45,6 +53,9 @@ export class JmusicScoreDebugComponent implements OnInit {
       const memento = score.getMemento(true);
       this.theScore = score;
       this.theScoreMemento = JSON.stringify(memento);
+
+      const viewModeller = new ViewModeller();
+      this.viewModel = viewModeller.create(score, score.globalContext);
 
       this._memento = memento;
 

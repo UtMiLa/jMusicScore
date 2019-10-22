@@ -3,3 +3,11 @@
     <app-jmusic-staff-debug [staff]="staff" [globalContext]="globalContext"></app-jmusic-staff-debug>
 </li>
 </ul>
+
+
+
+<ul>
+  <li *ngFor="let event of viewModel.events">
+      {{showData(event)}}
+  </li>
+</ul>

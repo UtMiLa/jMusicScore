@@ -11,7 +11,7 @@ export class ViewModeller {
 
     }
     
-    create(score: IScore, globalContext: GlobalContext): VScore {
+    create(score: IScore, globalContext: IGlobalContext): VScore {
         let visitor = new ModelViewVisitor(globalContext);
         score.visitAllEvents(visitor, globalContext);
         return visitor.result();
@@ -175,7 +175,7 @@ class ModelViewVisitor implements IVisitorIterator<IEventVisitorTarget>, IEventV
 
     private res = new VScore();
 
-    constructor(private globalContext: GlobalContext){
+    constructor(private globalContext: IGlobalContext){
         this.res.measures = [];
         this.res.events = [];
         this.currentTime = AbsoluteTime.startTime;
