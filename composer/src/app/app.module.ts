@@ -32,6 +32,11 @@ import { AngularSplitModule } from 'angular-split';
 import { PianoCtlComponent } from './piano-ctl/piano-ctl.component';
 import { MidiCtlComponent } from './midi-ctl/midi-ctl.component';
 import { PageCompileComponent } from './page-compile/page-compile.component';
+import { JmusicStaffDebugComponent } from './jmusic-staff-debug/jmusic-staff-debug.component';
+import { JmusicVoiceDebugComponent } from './jmusic-voice-debug/jmusic-voice-debug.component';
+import { JmusicSequenceDebugComponent } from './jmusic-sequence-debug/jmusic-sequence-debug.component';
+import { JmusicNoteDebugComponent } from './jmusic-note-debug/jmusic-note-debug.component';
+import { JmusicEventDebugComponent } from './jmusic-event-debug/jmusic-event-debug.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +59,12 @@ import { PageCompileComponent } from './page-compile/page-compile.component';
     PageSectionsComponent,
     PianoCtlComponent,
     MidiCtlComponent,
-    PageCompileComponent
+    PageCompileComponent,
+    JmusicStaffDebugComponent,
+    JmusicVoiceDebugComponent,
+    JmusicSequenceDebugComponent,
+    JmusicNoteDebugComponent,
+    JmusicEventDebugComponent
   ],
   imports: [
     BrowserModule,

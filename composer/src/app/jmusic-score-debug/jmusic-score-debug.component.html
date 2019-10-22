@@ -1,14 +1,5 @@
 <ul>
   <li *ngFor="let staff of theScore.staffElements">
-    <ul><li *ngFor="let voice of staff.voiceElements">
-      <ul>
-        <li *ngFor="let event of voice.getEvents(globalContext)">{{event.source.debug()}}
-
-            {{theFunction(event)}}
-
-        </li>
-      </ul>
-    </li>
-  </ul>
+    <app-jmusic-staff-debug [staff]="staff" [globalContext]="globalContext"></app-jmusic-staff-debug>
 </li>
 </ul>

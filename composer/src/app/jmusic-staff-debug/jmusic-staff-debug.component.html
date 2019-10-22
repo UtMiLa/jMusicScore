@@ -1,0 +1,6 @@
+<h3>Staff {{staff.id}}</h3>
+<ul><li *ngFor="let voice of staff.voiceElements">
+  <app-jmusic-voice-debug [voice]="voice" [globalContext]="globalContext"></app-jmusic-voice-debug>
+ 
+</li>
+</ul>

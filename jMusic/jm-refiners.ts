@@ -12,9 +12,17 @@ import { ContextEventVisitor, NoteEventVisitor, NoteContext } from './model/jm-m
     //import {UI} from "../jApps/Japps.ui";
     import {Application} from "../JApps/application";*/
 
+    /**
+     * Validators are plugins that are executed on changes and that can modify the model to comply with the rules
+     */
     export module Validators {
         export interface IScoreValidator extends IScoreRefiner {}
 
+        /**
+         * Update bars validator
+         * 
+         * Makes sure all bar line objects are correct and adds missing bars
+         */
         export class UpdateBarsValidator implements IScoreValidator {
             constructor(private globalContext: IGlobalContext) {}
 
@@ -66,7 +74,16 @@ import { ContextEventVisitor, NoteEventVisitor, NoteContext } from './model/jm-m
             }
         }
 
+        /**
+         * Create timeline validator
+         * 
+         * Makes sure all notes have the correct absTime
+         */
         export class CreateTimelineValidator implements IScoreValidator {
+            /**
+             * Creates an instance of create timeline validator.
+             * @param globalContext 
+             */
             constructor(private globalContext: IGlobalContext) {}
 
             public refine(score: IScore) {
@@ -102,6 +119,14 @@ import { ContextEventVisitor, NoteEventVisitor, NoteContext } from './model/jm-m
             }
         }
 
+        /**
+         * Update accidentals validator
+         * 
+         * Makes sure all accidentals are according to the music rules.
+         * - deviations from the currend key signature
+         * - don't repeat accidentals from earlier in the bar
+         * - always show forced accidentals
+         */
         export class UpdateAccidentalsValidator implements IScoreValidator {
             constructor(private globalContext: IGlobalContext) {}
 
@@ -317,6 +342,11 @@ import { ContextEventVisitor, NoteEventVisitor, NoteContext } from './model/jm-m
             }
         }
 */
+/**
+ * Beaming visitor
+ * 
+ * Calculates all beams according to the common rules for beaming related to the time signature
+ */
 class BeamingVisitor extends ContextEventVisitor{
 
     noOfGraceNotes = 0;
@@ -481,6 +511,11 @@ class ApplyBeamingVisitor extends ContextEventVisitor{
     }
 }
 */
+/**
+ * Beam validator
+ * 
+ * Calculates all beams according to the common rules for beaming related to the time signature
+ */
 export class BeamValidator implements IScoreValidator {
     constructor(private globalContext: IGlobalContext) {}
 
@@ -763,6 +798,12 @@ export class BeamValidator implements IScoreValidator {
 }
 
 
+        /**
+         * Tie validator
+         * 
+         * Notes crossing a bar line are split and connected with a tie.
+         * Tied notes are joined, if it is possible.
+         */
         export class TieValidator implements IScoreValidator {
             constructor(private globalContext: IGlobalContext) {}
             public refine(score: IScore) {

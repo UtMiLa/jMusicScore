@@ -23,19 +23,6 @@ export class JmusicScoreDebugComponent implements OnInit {
   _memento: IMemento;
 
 
-  theFunction(event) { 
-    if (!this.globalContext) return "[NO globalContext]";
-    if (!event.id) return "[NO id]";
-    let obj = this.globalContext.getSpacingInfo(event);
-    if (!obj) return "[NONE]";
-    //obj = event;
-    return JSON.stringify(obj, function(k,v){ 
-      if (k === 'source') { return null; } 
-      if (k === 'parent') { return null; } 
-      return v;
-    });
-   }
-  
 
 
   ngOnInit() {
