@@ -158,8 +158,8 @@
 
             public document: TDocumentType;
             private plugins: IPlugIn<TDocumentType, TStatusManager>[] = [];
-            private readers: IReaderPlugIn<TDocumentType, TStatusManager>[] = [];
-            private writers: IWriterPlugIn<TDocumentType, TStatusManager>[] = [];
+            /*private readers: IReaderPlugIn<TDocumentType, TStatusManager>[] = [];
+            private writers: IWriterPlugIn<TDocumentType, TStatusManager>[] = [];*/
             private fileManagers: IFileManager<TDocumentType, TStatusManager>[] = [];
             private validators: IValidator<TDocumentType, TStatusManager>[] = [];
             private designers: IDesigner<TDocumentType, TStatusManager>[] = [];
@@ -177,7 +177,7 @@
                 plugin.init(this);
             }
 
-            public addReader(reader: IReaderPlugIn<TDocumentType, TStatusManager>) {
+            /*public addReader(reader: IReaderPlugIn<TDocumentType, TStatusManager>) {
                 this.readers.push(reader);
                 reader.init(this);
             }
@@ -185,7 +185,7 @@
             public addWriter(writer: IWriterPlugIn<TDocumentType, TStatusManager>) {
                 this.writers.push(writer);
                 writer.init(this);
-            }
+            }*/
 
             public addFileManager(fileManager: IFileManager<TDocumentType, TStatusManager>) {
                 this.fileManagers.push(fileManager);
@@ -202,7 +202,7 @@
                 designer.validate(this);
             }
 
-            public getFileOpenTypes(): string[] {
+            /*public getFileOpenTypes(): string[] {
                 var res: string[] = [];
                 for (var i = 0; i < this.readers.length; i++) {
                     res.concat(this.readers[i].getFormats());
@@ -216,7 +216,7 @@
                     res = res.concat(this.writers[i].getFormats());
                 }
                 return res;
-            }
+            }*/
 
             public getFileManagerIds(): string[] {
                 var res: string[] = [];
@@ -234,7 +234,7 @@
                 }
             }
 
-            public setExtension(name: string, type: string) {
+            /*public setExtension(name: string, type: string) {
                 for (var i = 0; i < this.writers.length; i++) {
                     if (this.writers[i].supports(type)) {
                         var writer = this.writers[i];
@@ -325,7 +325,7 @@
                     }
                 }
                 throw "Input format not supported: " + type;
-            }
+            }*/
 
             public getPlugin(id: string): IPlugIn<TDocumentType, TStatusManager> {
                 for (var i = 0; i < this.plugins.length; i++) {
