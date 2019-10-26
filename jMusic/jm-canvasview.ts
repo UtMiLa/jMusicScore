@@ -6,10 +6,18 @@ import { fontCodePoints } from "./fonts/font-codepoints";
 import { IGraphicsEngine, ISensorGraphicsEngine, PrefixVisitor, RedrawVisitor, PrefixEventVisitor } from "./jm-views";
 import { Validators } from './jm-refiners';
 
-    export module CanvasView {
+    export namespace CanvasView {
 
+        /**
+         * Hash array
+         */
         interface hash {[key: string]: any };
 
+        /**
+         * Dom helper
+         * 
+         * Helper class that interfaces to DOM. 
+         */
         class DomHelper { // bruger kun jQuery til at sætte/hente css, sætte attr og  $(this.root).height(300); og i calcCoordinates
             static setAttribute(elm: HTMLElement, attr: hash) {
                 for (var key in attr) {
@@ -154,6 +162,9 @@ import { Validators } from './jm-refiners';
             }
         }
         
+                /**
+                 * Graphics engine that paints on HTML Canvas element
+                 */
                 export class CanvasGraphicsEngine implements IGraphicsEngine {
                     constructor(private canvas: HTMLCanvasElement) {
                         this.context = canvas.getContext('2d');
@@ -357,6 +368,9 @@ import { Validators } from './jm-refiners';
         
         
         
+                /**
+                 * Graphics engine that paints using img and other HTML elements
+                 */
                 class HtmlGraphicsEngine implements IGraphicsEngine, ISensorGraphicsEngine {
                     constructor(private root: HTMLElement, public idPrefix: string) {
                         this.currentGroup = root;
@@ -488,6 +502,9 @@ import { Validators } from './jm-refiners';
                 }
         
         
+                /**
+                 * Canvas helper - unused
+                 */
                 class CanvasHelper /*implements SvgView.IHintAreaCreator*/ {
                     constructor(private svgDocument: Document, root: HTMLElement) {
                         this.root = root;
@@ -539,6 +556,9 @@ import { Validators } from './jm-refiners';
                 }
         
         
+                /**
+                 * Svgeditor metrics - unused
+                 */
                 class SVGEditorMetrics {
                     static xPrevFirst = -35;
                     static xNextLast = 45;
@@ -590,6 +610,11 @@ import { Validators } from './jm-refiners';
 
 
 
+                /**
+                 * Quick canvas helper
+                 * 
+                 * ???
+                 */
                 class QuickCanvasHelper {
                     constructor(private svgDocument: Document, canvas: HTMLCanvasElement) {
                         //this.root = root;
@@ -642,6 +667,9 @@ import { Validators } from './jm-refiners';
         
 
         
+                /**
+                 * Simple painter object to paint music on html canvas element
+                 */
                 export class CanvasQuickPainter {
                     constructor(private globalContext: IGlobalContext) {}
                     public paintOnCanvas(score: IScore, canvas: HTMLCanvasElement){
