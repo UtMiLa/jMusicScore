@@ -14,6 +14,9 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
 
     import { MusicElement, MusicContainer, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, NoteContext } from './jm-model-base'
 
+    /**
+     * Note event info
+     */
     class NoteEventInfo extends EventInfo implements INoteInfo {
         get dotNo(): number { return this.source.dotNo; }
         get NoteId(): string { return this.source.NoteId; }
@@ -104,6 +107,9 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
     }
 
 
+    /**
+     * Note head info
+     */
     class NoteHeadInfo extends EventInfo implements INoteHeadInfo {
         get tie(): boolean { return this.source.tie; }
         getAccidental() {
@@ -133,6 +139,9 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         }
     }
 
+    /**
+     * Note decoration event info
+     */
     class NoteDecorationEventInfo extends EventInfo implements INoteDecorationEventInfo {
         source: NoteDecorationElement;
         
@@ -152,6 +161,9 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         
     }
 
+    /**
+     * Long decoration event info
+     */
     class LongDecorationEventInfo extends EventInfo implements ILongDecorationEventInfo {
         source: NoteLongDecorationElement;
         
@@ -171,6 +183,9 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         
     }
 
+    /**
+     * Text syllable event info
+     */
     class TextSyllableEventInfo extends EventInfo implements ITextSyllableEventInfo {
         source: TextSyllableElement;
         
@@ -525,7 +540,9 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         }
 
 
-        // NoteheadElement
+        /**
+         * Notehead element
+         */
         export class NoteheadElement extends MusicElement implements INotehead {
             constructor(public parent: INote/*, noteId: string*/, public pitch: Pitch) {
                 super(parent);
@@ -601,7 +618,9 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         }
 
 
-        /** Note decoration, e.g. staccato dot, fermata */
+        /**
+         * Note decoration element, e.g. staccato dot, fermata
+         */
         export class NoteDecorationElement extends MusicElement implements INoteDecorationElement {
             constructor(public parent: INote, private notedecorationId: NoteDecorationKind) {
                 super(parent);
@@ -650,7 +669,9 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         }
 
 
-        /** Long note decoration implementation, e.g. hairpin, trill extension and slur */
+        /** 
+         * Long note decoration implementation, e.g. hairpin, trill extension and slur
+         *  */
         export class NoteLongDecorationElement extends MusicElement implements ILongDecorationElement {
             constructor(public parent: INote, private duration: TimeSpan, public type: LongDecorationType) {
                 super(parent);
@@ -702,7 +723,9 @@ import { IVisitor, IEventInfo, IVoice, ISequence, INote,
         }
 
 
-        /** Text syllable from lyrics, shown under or over a note */
+        /** 
+         * Text syllable from lyrics, shown under or over a note 
+         */
         export class TextSyllableElement extends MusicElement implements ITextSyllableElement {
             constructor(public parent: INote, private text: string) {
                 super(parent);

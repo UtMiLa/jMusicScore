@@ -19,7 +19,7 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
     IMeterEventInfo,
     IKeyEventInfo, IGlobalContext, 
     IStaffExpressionEventInfo,
-    INoteFinder,
+//    INoteFinder,
     IEventVisitorTarget} from './jm-model-interfaces';
 
 import { MusicElement, GlobalContext, MusicContainer, BarVisitor, TimedEventVisitor, StructuralNoteVisitor, NoteHeadVisitor, NoteDecorationVisitor, LongDecorationVisitor, TextSyllableVisitor, EventInfo, StructuralStaffVisitor, StructuralVoiceVisitor, KeyEventVisitor, ClefEventVisitor } from './jm-model-base';

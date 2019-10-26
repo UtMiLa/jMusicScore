@@ -25,11 +25,19 @@ import { ISpacingInfo, IMusicElement, IVisitor, IBarSpacingInfo, IBar, IEventInf
 
 
 
+/**
+ * Id sequence - singleton to generate unique ids
+ */
 export class IdSequence {
     static id: number = 1;
     static next(): string { return '' + IdSequence.id++; }
 }
 
+/**
+ * Base music element.
+ * 
+ * The score composition is made up of music elements of various kinds. The structure can be visited by visitors.
+ */
 export class MusicElement implements IMusicElement {
     constructor(public parent: IMusicElement) {
         //this.parent = parent;
@@ -90,6 +98,9 @@ export class MusicElement implements IMusicElement {
     }
 }
 
+/**
+ * Music container that can contain other music elements
+ */
 export class MusicContainer extends MusicElement implements IEventVisitorTarget, IEventContainer {
     getEventsOld(globalContext: IGlobalContext): ITimedEvent[] {
         throw new Error("Method not implemented.");
@@ -269,6 +280,12 @@ export class MusicContainer extends MusicElement implements IEventVisitorTarget,
     }
 }
 
+/**
+ * Global context
+ * 
+ * Object that contains the variables and caches spacing info objects.
+ * Should be replaced by a project object.
+ */
 export class GlobalContext implements IGlobalContext {
     private _variables: { [key: string]: ISequence } = {};
     private _spacingInfos: { [key: string]: ISpacingInfo } = {};
@@ -293,11 +310,22 @@ export class GlobalContext implements IGlobalContext {
 
 
 /******************************************** Spacing stuff ************************************************************/
+/**
+ * 2D Point
+ * 
+ * Used for graphical definitions
+ */
 export class Point implements IPoint {
     constructor(public x: number, public y: number) { }
 }
 
 
+/**
+ * Note context
+ * 
+ * deprecated?
+ * This is a helper object that knows of a note and the staff context of the note
+ */
 export class NoteContext implements INoteContext {
     constructor(public noteInfo: INoteInfo, public note: INote, public voice: IVoice) {
         if (!voice) {
@@ -357,6 +385,11 @@ export class NoteContext implements INoteContext {
 
 
 
+/**
+ * Null visitor visits elements without doing anything.
+ * 
+ * Base class for visitors that only implement few mehods.
+ */
 class NullVisitor implements IVisitor, IVisitorIterator<IMusicElement> {
     visitPre(element: IMusicElement): (element: IMusicElement) => void {
         element.inviteVisitor(this);
@@ -382,6 +415,11 @@ class NullVisitor implements IVisitor, IVisitorIterator<IMusicElement> {
     visitVariable(name: string): void {}
 }
 
+/**
+ * Context visitor
+ * 
+ * Keeps track of staff and score context while traversing the score composition.
+ */
 export class ContextVisitor extends NullVisitor {
     score: IScore;
     staff: IStaff;
@@ -434,6 +472,11 @@ export class ContextVisitor extends NullVisitor {
     }
 }
 
+/**
+ * Null event visitor visits events without doing anything.
+ * 
+ * Base class for visitors that only implement few mehods.
+ */
 export class NullEventVisitor implements IEventVisitor, IVisitorIterator<IEventVisitorTarget> {
     constructor(protected globalContext: IGlobalContext){}
 
@@ -475,6 +518,11 @@ export class NullEventVisitor implements IEventVisitor, IVisitorIterator<IEventV
     }
 }
 
+/**
+ * Context event visitor
+ * 
+ * Keeps track of staff and score context while traversing the events in the score composition.
+ */
 export class ContextEventVisitor extends NullEventVisitor {
     score: IScore;
     staff: IStaff;
@@ -532,6 +580,11 @@ export class ContextEventVisitor extends NullEventVisitor {
 
 }
 
+/**
+ * Structural note visitor
+ * 
+ * Calls the `callback` function for all notes in the structure (physical model)
+ */
 export class StructuralNoteVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (note:INoteSource, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
         super(globalContext);
@@ -543,6 +596,11 @@ export class StructuralNoteVisitor extends ContextVisitor {
 }   
 
 
+/**
+ * Note event visitor
+ * 
+ * Calls the `callback` function for all note events in the structure (logical model, variables and transformations are applied)
+ */
 export class NoteEventVisitor extends ContextEventVisitor {
     constructor(globalContext: IGlobalContext, private callback: (note:INoteInfo, context: INoteContext, index: number, spacing: INoteSpacingInfo) => void) {
         super(globalContext);
@@ -554,6 +612,11 @@ export class NoteEventVisitor extends ContextEventVisitor {
 }   
 
 
+/**
+ * Structural staff visitor
+ * 
+ * Calls the `callback` function for all staves in the structure (physical model)
+ */
 export class StructuralStaffVisitor extends NullVisitor {
     constructor(private callback: (node:IStaff, index: number) => void) {
         super();
@@ -574,6 +637,11 @@ export class StructuralStaffVisitor extends NullVisitor {
     }
 } */  
 
+/**
+ * Bar visitor
+ * 
+ * Calls the `callback` function for all bars in the structure (physical model)
+ */
 export class BarVisitor extends NullVisitor {
     constructor(private callback: (bar:IBar, index: number) => void) {
         super()
@@ -584,6 +652,11 @@ export class BarVisitor extends NullVisitor {
     }
 }   
 
+/**
+ * Structural voice visitor
+ * 
+ * Calls the `callback` function for all voices in the structure (physical model)
+ */
 export class StructuralVoiceVisitor extends NullVisitor {
     constructor(private callback: (voice:IVoice, index: number) => void) {
         super();
@@ -604,6 +677,11 @@ export class VoiceVisitor extends NullEventVisitor {
     }
 }   */
 
+/**
+ * Note head visitor
+ * 
+ * Calls the `callback` function for all note heads in the structure (physical model)
+ */
 export class NoteHeadVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (node:INotehead, index: number, spacing: INoteHeadSpacingInfo) => void) {
         super(globalContext)
@@ -615,6 +693,11 @@ export class NoteHeadVisitor extends ContextVisitor {
 }   
 
 
+/**
+ * Meter visitor
+ * 
+ * Calls the `callback` function for all time changes in the structure (physical model)
+ */
 export class MeterVisitor extends NullVisitor {
     constructor(private callback: (node:IMeter, index: number) => void) {
         super();
@@ -625,6 +708,11 @@ export class MeterVisitor extends NullVisitor {
     }
 }   
 
+/**
+ * Meter event visitor
+ * 
+ * Calls the `callback` function for all time change events in the structure (logical model)
+ */
 export class MeterEventVisitor extends NullEventVisitor {
     constructor(private callback: (node:IMeterEventInfo, index: number) => void, globalContext: IGlobalContext) {
         super(globalContext);
@@ -636,6 +724,11 @@ export class MeterEventVisitor extends NullEventVisitor {
 }   
 
 
+/**
+ * Key visitor
+ * 
+ * Calls the `callback` function for all key changes in the structure (physical model)
+ */
 export class KeyVisitor extends NullVisitor {
     constructor(private callback: (node:IKey, index: number) => void) {
         super();
@@ -646,6 +739,11 @@ export class KeyVisitor extends NullVisitor {
     }
 }  
 
+/**
+ * Key event visitor
+ * 
+ * Calls the `callback` function for all key change events in the structure (logical model)
+ */
 export class KeyEventVisitor extends NullEventVisitor {
     constructor(private callback: (node:IKeyEventInfo, index: number) => void, globalContext: IGlobalContext) {
         super(globalContext);
@@ -658,6 +756,11 @@ export class KeyEventVisitor extends NullEventVisitor {
     }
 }   
 
+/**
+ * Clef visitor
+ * 
+ * Calls the `callback` function for all clef changes in the structure (physical model)
+ */
 export class ClefVisitor extends NullVisitor {
     constructor(private callback: (node:IClef, index: number) => void) {
         super();
@@ -668,6 +771,11 @@ export class ClefVisitor extends NullVisitor {
     }
 }   
 
+/**
+ * Clef event visitor
+ * 
+ * Calls the `callback` function for all clef change events in the structure (logical model)
+ */
 export class ClefEventVisitor extends NullEventVisitor {
     constructor(private callback: (node:IClefEventInfo, index: number) => void, globalContext: IGlobalContext) {
         super(globalContext);
@@ -678,6 +786,11 @@ export class ClefEventVisitor extends NullEventVisitor {
     }
 }   
 
+/**
+ * Timed event visitor
+ * 
+ * Calls the `callback` function for all timed events in the structure (physical model)
+ */
 export class TimedEventVisitor extends NullVisitor {
     constructor(private callback: (node: ITimedEvent, index: number) => void) {
         super()
@@ -697,6 +810,11 @@ export class TimedEventVisitor extends NullVisitor {
     }
 }   
 
+/**
+ * Note decoration visitor
+ * 
+ * Calls the `callback` function for all note decoration in the structure (physical model)
+ */
 export class NoteDecorationVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (node:INoteDecorationElement, index: number, spacing: INoteDecorationSpacingInfo) => void) {
         super(globalContext)
@@ -707,6 +825,11 @@ export class NoteDecorationVisitor extends ContextVisitor {
     }
 }   
 
+/**
+ * Long decoration visitor
+ * 
+ * Calls the `callback` function for all long decorations in the structure (physical model)
+ */
 export class LongDecorationVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (node:ILongDecorationElement, index: number, spacing: ILongDecorationSpacingInfo) => void) {
         super(globalContext)
@@ -717,6 +840,11 @@ export class LongDecorationVisitor extends ContextVisitor {
     }
 }   
 
+/**
+ * Text syllable visitor
+ * 
+ * Calls the `callback` function for all lyric syllables in the structure (physical model)
+ */
 export class TextSyllableVisitor extends ContextVisitor {
     constructor(globalContext: IGlobalContext, private callback: (node:ITextSyllableElement, index: number, spacing: ITextSyllableSpacingInfo) => void) {
         super(globalContext)
@@ -727,6 +855,11 @@ export class TextSyllableVisitor extends ContextVisitor {
     }
 }   
 
+/**
+ * Event info
+ * 
+ * Base class for event info objects - used by logical event visitors
+ */
 export abstract class EventInfo implements IEventInfo {
     getHorizPosition(): HorizPosition {
         if (!this.relTime) return new HorizPosition(AbsoluteTime.startTime, 0);

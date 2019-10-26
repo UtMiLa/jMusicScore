@@ -3,6 +3,9 @@ import {IKeyDefCreator, IKeyDefinition, IMemento, IMeterDefCreator, IMeterDefini
     MeterDefinitionFactory, NoteDecorationKind, NoteType, OffsetMeterDefinition, Pitch, PitchClass, 
     Rational, RegularKeyDefinition, RegularMeterDefinition, StaffContext, StemDirectionType, TimeSpan, TupletDef, Interval} from '../jm-music-basics';
 
+/**
+ * Music element - abstract element in the score composition structure
+ */
 export interface IMusicElement {
     //changed(): void;
     //moved(): void;/**/
@@ -22,12 +25,18 @@ export interface IMusicElement {
     //getAncestor<T extends IMusicElement>(elementName: string): T;
 }
 
+/**
+ * Music container - music element with child elements
+ */
 export interface IMusicContainer extends IMusicElement, IEventVisitorTarget  {
     addChild(theChild: IMusicElement, before?: IMusicElement, removeOrig?: boolean): void;
     removeChild(theChild: IMusicElement): void;
     getEvents(globalContext: IGlobalContext): IEventInfo[];
 }
 
+/**
+ * Global context - storing variables and cached [[ISpacingInfo]] objects
+ */
 export interface IGlobalContext{ 
     getVariable(name: string): ISequence;
     addVariable(name: string, value: ISequence):void;
@@ -36,33 +45,35 @@ export interface IGlobalContext{
 }
 
 
+/**
+ * Timed music elements like notes, bars, score expressions, key changes
+ */
 export interface ITimedEvent extends IMusicElement, IEventEnumerator {
     absTime: AbsoluteTime;
     getElementName(): string;
     debug(): string;
-    getSortOrder: () => number;
-    /* Ordering of objects when absTime is identical:
-    0	Accolade
-    10	StartBar
-    20	Ambitus
-    30	StartClef
-    40	StartKey
-    50	StartMeter
-    60	ChangeClef
-    70	Bar
-    80	ChangeKey
-    90	ChangeMeter
-    95  GraceNotes ?
-    99  StaffExpression
-    100	Note
+    /**  Ordering of objects when absTime is identical:
+   - 0	Accolade
+   - 10	StartBar
+   - 20	Ambitus
+   - 30	StartClef
+   - 40	StartKey
+   - 50	StartMeter
+   - 60	ChangeClef
+   - 70	Bar
+   - 80	ChangeKey
+   - 90	ChangeMeter
+   - 95  GraceNotes ?
+   - 99  StaffExpression
+   - 100	Note
     */
-    //spacingInfo: ISpacingInfo;
+    getSortOrder: () => number;
     getHorizPosition(): HorizPosition;
     getEvents(globalContext: IGlobalContext): IEventInfo[];
 }
 
 /**
- * Events that change some parameter - lasting until next change event
+ * Events that change some parameter - lasting until next change event of the same kind
  * e.g. clef, meter, tempo marks, dynamic marks
  */
 export interface ITimedChangeEvent extends ITimedEvent { 
@@ -71,12 +82,15 @@ export interface ITimedChangeEvent extends ITimedEvent {
 
 /**
  * Events that begin at the time and lasts a fixed time
- * e.g. notes, sequences, bar lines
+ * e.g. notes, rests, sequences, bar lines
  */
 export interface ITimedObjectEvent extends ITimedEvent {
 
 }
 
+/**
+ * Event container - stream of [[ITimedEvent]] events
+ */
 export interface IEventContainer {
     getEventsOld(globalContext: IGlobalContext): ITimedEvent[];
     //getEvents(globalContext: GlobalContext): IEventInfo[];
@@ -89,20 +103,30 @@ export interface IEventContainer {
     withAllKeys(f: (key: IKeyEventInfo, index: number) => void, globalContext: IGlobalContext): void;
 }
 
+/**
+ * Abstract bar object
+ */
 export interface IBar extends ITimedObjectEvent {
     //parent: IScore;
     absTime: AbsoluteTime;
     //spacingInfo: IBarSpacingInfo;
+    // todo: kind (double bar etc)
 }
 
 
 
+/**
+ * Interface to elements that can own a time change, like score and staff
+ */
 export interface IMeterOwner extends IMusicContainer {
     setMeter(meter: IMeterDefinition, absTime: AbsoluteTime, globalContext: IGlobalContext): void;
     //withMeters(f: (meter: IMeterEventInfo, index: number) => void, globalContext: IGlobalContext): void;
     //getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[];
 }
 
+/**
+ * Abstract score object
+ */
 export interface IScore extends IEventContainer, IMeterOwner {
     getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[];
     bars: IBar[];
@@ -128,6 +152,9 @@ export interface IScore extends IEventContainer, IMeterOwner {
 }
 
 
+/**
+ * Abstract staff object
+ */
 export interface IStaff extends IEventContainer, IMeterOwner {
     getMeterElements(globalContext: IGlobalContext): IMeterEventInfo[];
     parent: IScore;
@@ -155,12 +182,21 @@ export interface IStaff extends IEventContainer, IMeterOwner {
 }
 
 
+/**
+ * Abstract staff expression object (tempo marks etc)
+ */
 export interface IStaffExpression extends ITimedChangeEvent {
     //parent: IStaff;
     text: string;
 }
+/**
+ * Spacing info for staff expressions
+ */
 export interface IStaffExpressionSpacingInfo extends ISpacingInfo { }
 
+/**
+ * Abstract voice element
+ */
 export interface IVoice extends IEventContainer, IMusicContainer {
     getNoteElements(globalContext: IGlobalContext): INote[];
     parent: IStaff;
@@ -177,6 +213,9 @@ export interface IVoice extends IEventContainer, IMusicContainer {
 }
 
 
+/**
+ * Abstract sequence of events. Can contain music events, variables, other sequences
+ */
 export interface ISequence extends IEventContainer, IMusicContainer, IEventEnumerator, ITimedObjectEvent {
     noteElements: INote[];
     //parent: IVoice | ISequence;
@@ -192,6 +231,9 @@ export interface ISequence extends IEventContainer, IMusicContainer, IEventEnume
 }
 
 
+/**
+ * Abstract clef change element
+ */
 export interface IClef extends ITimedChangeEvent {
     //parent: IStaff;
     definition: ClefDefinition;
@@ -199,6 +241,9 @@ export interface IClef extends ITimedChangeEvent {
     pitchToStaffLine(pitch: Pitch): number;
     staffLineToPitch(line: number): Pitch;
 }
+/**
+ * Abstract key change element
+ */
 export interface IKey extends ITimedChangeEvent {
     //parent: IStaff;
     definition: IKeyDefinition;
@@ -207,6 +252,9 @@ export interface IKey extends ITimedChangeEvent {
     getTonic(): PitchClass;
 }
 
+/**
+ * Abstract time change element
+ */
 export interface IMeter extends ITimedChangeEvent {
     parent: IMusicElement;
     definition: IMeterDefinition;
@@ -216,6 +264,9 @@ export interface IMeter extends ITimedChangeEvent {
     nextBoundary(abstime: AbsoluteTime): AbsoluteTime;
     nextBar(abstime: AbsoluteTime): AbsoluteTime;
 }
+/**
+ * Beam information element
+ */
 export interface IBeam extends IMusicElement, IBeamEventInfo {
     parent: INote;
     fromNote: INoteInfo;
@@ -227,6 +278,9 @@ export interface IBeam extends IMusicElement, IBeamEventInfo {
     remove(): void;
 }
 
+/**
+ * abstract note element
+ */
 export interface INote extends IMusicContainer, ITimedObjectEvent { // todo: fjern ITimedEvent, IMusicContainer => IMusicElement
     NoteId: string;
     timeVal: TimeSpan;
@@ -272,6 +326,9 @@ export interface INote extends IMusicContainer, ITimedObjectEvent { // todo: fje
 
 
 
+/**
+ * note source - ???
+ */
 export interface INoteSource  extends INote, ITimedObjectEvent {
 }
 
@@ -282,6 +339,11 @@ export interface INoteSource  extends INote, ITimedObjectEvent {
 }*/
 
 
+/**
+ * Event info base interface.
+ * 
+ * The methods getEvents return events of this type. Variables, transformation have been applied to the data.
+ */
 export interface IEventInfo extends IEventVisitorTarget {
     getHorizPosition(): HorizPosition;
     id: string;
@@ -294,6 +356,9 @@ export interface IEventInfo extends IEventVisitorTarget {
     clone(addId: string): IEventInfo;
     voice: IVoice;
 }
+/**
+ * notehead event info
+ */
 export interface INoteHeadInfo extends IEventInfo {
     tie: any;
     getAccidental(): string;
@@ -306,32 +371,61 @@ export interface INoteHeadInfo extends IEventInfo {
     visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>): void;
     clone(addId: string): INoteHeadInfo;
 }
+/**
+ * key event info
+ */
 export interface IKeyEventInfo extends IEventInfo { source: IKey; }
+/**
+ * clef event info
+ */
 export interface IClefEventInfo extends IEventInfo {source: IClef; }
+/**
+ * meter event info
+ */
 export interface IMeterEventInfo extends IEventInfo {
     nextBar(barTime: AbsoluteTime): AbsoluteTime;
     getMeasureTime(): TimeSpan;
     definition: IMeterDefinition;
     absTime: AbsoluteTime; source: IMeter;}
+/**
+ * bar event info
+ */
 export interface IBarEventInfo extends IEventInfo { source: IBar;}
+/**
+ * beam event info
+ */
 export interface IBeamEventInfo extends IEventInfo {
     toNote: INoteInfo;
     index: number; source: IBeam; }
+/**
+ * note decoration event info
+ */
 export interface INoteDecorationEventInfo extends IEventInfo {
     source: INoteDecorationElement; 
     clone(addId: string): INoteDecorationEventInfo;
 }
+/**
+ * long decoration event info
+ */
 export interface ILongDecorationEventInfo extends IEventInfo { 
     source: ILongDecorationElement; 
     clone(addId: string): ILongDecorationEventInfo;
 }
+/**
+ * staff expression event info
+ */
 export interface IStaffExpressionEventInfo extends IEventInfo { source: IStaffExpression; }
+/**
+ * Lyric syllable event info
+ */
 export interface ITextSyllableEventInfo extends IEventInfo { 
     source: ITextSyllableElement; 
     clone(addId: string): ITextSyllableEventInfo;
 }
 
-/**INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
+/** Note Event info
+ * 
+ * INoteInfo: nodens indhold, som kan være transformeret. Hver instans af en node, der gentages af en transformation eller variabel, har ét INoteInfo-objekt. 
  *      Id er konkateneret af variables og NoteElement's Id. NoteSpacingInfo og AbsTime er knyttet til denne. 
  *      Holder en reference til NoteElement (nødvendigt?)
  *      Linker til foregående og næste node og Voice.
@@ -353,10 +447,16 @@ export interface INoteInfo extends IEventInfo {
     syllables: ITextSyllableEventInfo[];
 }
 
+/**
+ * Interface for objects who can enumerate [[IEventInfo]] events
+ */
 export interface IEventEnumerator {
     getEvents(globalContext: IGlobalContext): IEventInfo[];
     //visitEvents(globalContext: IGlobalContext, f: (visitor: IEventVisitor) => void): void;
 }
+/**
+ * Inote context - deprecated?
+ */
 export interface INoteContext extends /*INote,*/  ITimedObjectEvent {
     //spacingInfo: INoteSpacingInfo;
     getStaffContext(globalContext: IGlobalContext): StaffContext;
@@ -369,15 +469,24 @@ export interface INoteContext extends /*INote,*/  ITimedObjectEvent {
 }
 
 
+/**
+ * note in a voice - deprecated ???
+ */
 export interface IVoiceNote extends INote {
     parent: IVoice;
     getVoice(): IVoice;
     getStaff(): IStaff;
 }
 
+/**
+ * Note in a sequence - deprecated ???
+ */
 export interface ISequenceNote extends INote {
     parent: ISequence;
 }
+/**
+ * Abstract notehead element
+ */
 export interface INotehead extends IMusicElement {
     parent: INote;
     pitch: Pitch;
@@ -391,6 +500,9 @@ export interface INotehead extends IMusicElement {
     getInfo(): INoteHeadInfo;
 }
 
+/**
+ * Abstract note decoration element
+ */
 export interface INoteDecorationElement extends IMusicElement {
     parent: INote;
     placement: string;
@@ -398,6 +510,9 @@ export interface INoteDecorationElement extends IMusicElement {
     getInfo(): INoteDecorationEventInfo;
 }
 
+/**
+ * Objects that can find next note (used by long decorations) - deprecated???
+ */
 export interface INoteFinder{
     nextNote(note: INote): INote;
 }
@@ -411,6 +526,9 @@ export interface ILongDecorationElement extends IMusicElement {
     type: LongDecorationType;
     getInfo(): ILongDecorationEventInfo;
 }
+/**
+ * Abstract syllable element - lyrics assigned to note
+ */
 export interface ITextSyllableElement extends IMusicElement {
     placement: string;
     Text: string;
@@ -418,6 +536,11 @@ export interface ITextSyllableElement extends IMusicElement {
     getInfo(): ITextSyllableEventInfo;
 }
 
+/**
+ * Abstract visitor to the model object structure
+ * 
+ * The actual notes, variable refs etc are visited, not the transformed values.
+ */
 export interface IVisitor {
     visitNoteHead(head: INotehead): void;
     visitNote(note: INoteSource): void;
@@ -439,6 +562,11 @@ export interface IVisitor {
     visitVariable(name: string): void;
 }
 
+/**
+ * Abstract visitor to the model logical structure
+ * 
+ * Transformations and variable evaluations are applied
+ */
 export interface IEventVisitor {
     visitNoteHeadInfo(head: INoteHeadInfo): void;
     visitNoteInfo(note: INoteInfo): void;
@@ -459,6 +587,9 @@ export interface IEventVisitor {
     visitScore(score: IScore): void;
 }
 
+/**
+ * Target for event visitors
+ */
 export interface IEventVisitorTarget { // både IEvent og IMusicContainer skal understøtte denne - og Sequence skal sende videre til events
     visitAllEvents(visitorIterator: IVisitorIterator<IEventVisitorTarget>, globalContext: IGlobalContext): void;
     inviteEventVisitor(visitor: IEventVisitor, globalContext: IGlobalContext): void;
@@ -466,11 +597,19 @@ export interface IEventVisitorTarget { // både IEvent og IMusicContainer skal u
     id: string;
 }
 
+/************************** Geometry and metrics **********************************/
+
+/**
+ * Geometric point
+ */
 export interface IPoint {
     x: number;
     y: number;
 }
 
+/**
+ * Abstract spacing info
+ */
 export interface ISpacingInfo {
     /// Center x,y - like center of notehead or clef
     offset: IPoint;
@@ -483,6 +622,9 @@ export interface ISpacingInfo {
     //InviteVisitor(spacer: Model.IVisitor): void;
 }
 
+/**
+ * note head spacing info
+ */
 export interface INoteHeadSpacingInfo extends ISpacingInfo {
     accidentalX: number;
     dots: IPoint;
@@ -497,15 +639,24 @@ export interface INoteHeadSpacingInfo extends ISpacingInfo {
     graceScale: number;
     accidentalStep: number;
 }
+/**
+ * beam spacing info
+ */
 export interface IBeamSpacingInfo extends ISpacingInfo {
     start: IPoint;
     end: IPoint;
     beamDist: number;
     beamCount: number;
 }
+/**
+ * Ledger line spacing info
+ */
 export class LedgerLineSpacingInfo {
     constructor(public xStart: number, public xEnd: number, public y: number) { }
 }
+/**
+ * note spacing info
+ */
 export interface INoteSpacingInfo extends ISpacingInfo {
     dots: IPoint;
     rev: boolean;
@@ -526,9 +677,15 @@ export interface INoteSpacingInfo extends ISpacingInfo {
     flagDisplacement: IPoint;
 }
 
+/**
+ * note decoration spacing info
+ */
 export interface INoteDecorationSpacingInfo extends ISpacingInfo {
     //endpoint: Model.Point;
 }
+/**
+ * long decoration spacing info
+ */
 export interface ILongDecorationSpacingInfo extends ISpacingInfo {
     //endpoint: Model.Point;
     noteY: number;
@@ -539,23 +696,52 @@ export interface ILongDecorationSpacingInfo extends ISpacingInfo {
     //Render?: (deco: ILongDecorationElement, ge: Views.IGraphicsEngine) => void;
     //CalcSpacing?: (deco: ILongDecorationElement) => void;
 }
+/**
+ * voice spacing info
+ */
 export interface IVoiceSpacingInfo extends ISpacingInfo { }
+/**
+ * clef spacing info
+ */
 export interface IClefSpacingInfo extends ISpacingInfo {
     clefId: string;
 }
+/**
+ * meter spacing info
+ */
 export interface IMeterSpacingInfo extends ISpacingInfo { }
+/**
+ * key spacing info
+ */
 export interface IKeySpacingInfo extends ISpacingInfo { }
+/**
+ * staff spacing info
+ */
 export interface IStaffSpacingInfo extends ISpacingInfo {
     staffLength: number;
     staffSpace: number;
 }
+/**
+ * bar spacing info
+ */
 export interface IBarSpacingInfo extends ISpacingInfo {
     barStyle: string;
     end: IPoint;
     extraXOffset: number;
 }
+/**
+ * score spacing info
+ */
 export interface IScoreSpacingInfo extends ISpacingInfo { }
+/**
+ * text syllable spacing info
+ */
 export interface ITextSyllableSpacingInfo extends ISpacingInfo { }
 
+/**
+ * music element creator
+ * 
+ * Factory that can create music elements from mementos
+ */
 export interface IMusicElementCreator { createFromMemento: (parent: any, memento: any, globalContext: IGlobalContext) => IMusicElement }
 
