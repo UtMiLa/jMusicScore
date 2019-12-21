@@ -1,0 +1,36 @@
+project
+    score
+    variable-def*
+
+score
+    score-metadata
+    section*
+section
+staff
+voice
+    voice-metadata
+    sequence
+sequence
+    event*
+snippet
+    sequence*
+event = timed-event | point-event
+timed-event = note | rest | skip | sequence | sequence-function | variable-realiser
+point-event = bar | meter-shift | clef-shift | key-shift | staff-expression
+sequence-function = transpose-sequence-function | time-change-sequence-function
+variable-realiser
+
+
+note
+    notehead*
+    real-time
+    visual-time
+    dots
+    tuplet-definition
+    note-decoration*
+    note-syllable*
+    note-long-decoration*
+    beam-definition
+notehead
+    pitch
+    accidental-definition
