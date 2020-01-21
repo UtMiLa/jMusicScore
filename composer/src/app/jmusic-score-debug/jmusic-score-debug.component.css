@@ -1,1 +1,2 @@
-ul {max-width: 400px;}
+ul {max-width: 400px;display: none;}
+div {border: 1px solid black;}

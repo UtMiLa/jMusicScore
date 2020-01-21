@@ -1,5 +1,13 @@
+<div>
+  <div *ngFor="let staff of theScore?.staffElements">
+    <app-jmusic-staff-debug [staff]="staff" [globalContext]="globalContext"></app-jmusic-staff-debug>
+</div>
+</div>
+
+<app-jmusic-selected-debug></app-jmusic-selected-debug>
+
 <ul>
-  <li *ngFor="let staff of theScore.staffElements">
+  <li *ngFor="let staff of theScore?.staffElements">
     <app-jmusic-staff-debug [staff]="staff" [globalContext]="globalContext"></app-jmusic-staff-debug>
 </li>
 </ul>
@@ -7,7 +15,7 @@
 
 
 <ul>
-  <li *ngFor="let event of viewModel.events">
+  <li *ngFor="let event of viewModel?.events">
       {{showData(event)}}
   </li>
 </ul>

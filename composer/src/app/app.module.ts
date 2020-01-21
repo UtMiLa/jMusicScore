@@ -37,6 +37,8 @@ import { JmusicVoiceDebugComponent } from './jmusic-voice-debug/jmusic-voice-deb
 import { JmusicSequenceDebugComponent } from './jmusic-sequence-debug/jmusic-sequence-debug.component';
 import { JmusicNoteDebugComponent } from './jmusic-note-debug/jmusic-note-debug.component';
 import { JmusicEventDebugComponent } from './jmusic-event-debug/jmusic-event-debug.component';
+import { ElementBlocksModule } from './element-blocks/element-blocks.module';
+import { JmusicSelectedDebugComponent } from './jmusic-selected-debug/jmusic-selected-debug.component';
 
 @NgModule({
   declarations: [
@@ -64,12 +66,14 @@ import { JmusicEventDebugComponent } from './jmusic-event-debug/jmusic-event-deb
     JmusicVoiceDebugComponent,
     JmusicSequenceDebugComponent,
     JmusicNoteDebugComponent,
-    JmusicEventDebugComponent
+    JmusicEventDebugComponent,
+    JmusicSelectedDebugComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    ElementBlocksModule,
     PanelModule,
     GalleriaModule,
     FormsModule,

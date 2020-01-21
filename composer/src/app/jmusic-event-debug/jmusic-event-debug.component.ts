@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IEventInfo, IGlobalContext } from '../../../../jMusic/model/jm-model-interfaces';
+import { JmusicSelectionService, ISelectionInterface } from '../jmusic-selection.service';
 
 @Component({
   selector: 'app-jmusic-event-debug',
@@ -8,7 +9,7 @@ import { IEventInfo, IGlobalContext } from '../../../../jMusic/model/jm-model-in
 })
 export class JmusicEventDebugComponent implements OnInit {
 
-  constructor() { }
+  constructor(private selectionService: JmusicSelectionService) { }
 
   @Input()
   event: IEventInfo;
@@ -16,9 +17,7 @@ export class JmusicEventDebugComponent implements OnInit {
   @Input()
   globalContext: IGlobalContext;
 
-  // theScore: IScore;
-  // theScoreMemento: string;
-  // _memento: IMemento;
+  selected: boolean = false;
 
   theFunction(event) {
     if (!this.globalContext) { return '[NO globalContext]'; }
@@ -33,8 +32,20 @@ export class JmusicEventDebugComponent implements OnInit {
     });
    }
 
-
   ngOnInit() {
+    this.selectionService.selectionChange.subscribe((selection: ISelectionInterface) => {
+      if (!selection) {
+        this.selected = false;
+      } else {
+        this.selected = selection.element === this.event;
+        (<any>this.event).selected = this.selected;
+        // if (this.selected) {console.log("selectionchange: ", selection, this.selected);}
+      }
+    });
+  }
+
+  selectThis() {
+    this.selectionService.selection = { element: this.event, text:  this.event.source.debug() + ' - ' + this.theFunction(this.event) };
   }
 
 }

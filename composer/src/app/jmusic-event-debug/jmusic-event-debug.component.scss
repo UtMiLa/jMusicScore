@@ -1,2 +1,5 @@
 .more {display: none;}
 .event:hover .more {display: block;}
+span {display: inline; border: palegreen solid 1px;
+    &.selected { background-color: palegreen; }
+}

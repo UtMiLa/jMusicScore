@@ -6,6 +6,7 @@ import { PageVariablesComponent } from './page-variables/page-variables.componen
 import { PageSectionsComponent } from './page-sections/page-sections.component';
 import { PageScoreComponent } from './page-score/page-score.component';
 import { PageCompileComponent } from './page-compile/page-compile.component';
+import { ElementBlocksModule } from './element-blocks/element-blocks.module';
 
 const routes: Routes = [
     {path: 'files' , component: PageFilesComponent},
@@ -18,7 +19,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes),
+    ElementBlocksModule
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

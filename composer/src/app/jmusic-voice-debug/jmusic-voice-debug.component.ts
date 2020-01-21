@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { IVoice, IGlobalContext } from '../../../../jMusic/model/jm-model-interfaces';
+import { IVoice, IGlobalContext, IEventInfo } from '../../../../jMusic/model/jm-model-interfaces';
 
 @Component({
   selector: 'app-jmusic-voice-debug',
@@ -10,8 +10,18 @@ export class JmusicVoiceDebugComponent implements OnInit {
 
   constructor() { }
 
+  _voice: IVoice;
+
+  events: IEventInfo[];
+
   @Input()
-  voice: IVoice;
+  set voice(value: IVoice) { 
+    if (this._voice !== value) {
+      this._voice = value;
+      this.events = this.voice ? this.voice.getEvents(this.globalContext) : [];
+    }
+  }
+  get voice(): IVoice { return this._voice; }
 
   @Input()
   globalContext: IGlobalContext;

@@ -34,3 +34,45 @@ note
 notehead
     pitch
     accidental-definition
+
+
+
+yaml:
+
+score:
+    sections:
+        - staves: 
+            - voices:
+                - sequences:
+                    absTime: AbsoluteTime.startTime,
+                    events: 
+                      - noteGlyph: TimeSpan.quarterNote,
+                        timeVal: TimeSpan.quarterNote,
+                        noteheads:
+                            - pitch: new Pitch(1, "")
+                      - noteGlyph: TimeSpan.quarterNote,
+                        timeVal: TimeSpan.quarterNote,
+                        noteheads:
+                            - pitch: new Pitch(2, "")
+                
+                stemDirection: StemDirectionType.StemFree
+        title: 
+    author: John
+    composer: John
+    subTitle: 
+    metadata: {}
+    "title": The project
+variables: 
+    note1:
+        noteGlyph: TimeSpan.quarterNote,
+        timeVal: TimeSpan.quarterNote,
+        noteheads:
+            - pitch: new Pitch(1, "")    
+title: 
+subTitle: 
+author: 
+composer: 
+metadata: 
+
+
+sequences kan også indlæses som lilypond

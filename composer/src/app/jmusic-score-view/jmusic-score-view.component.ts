@@ -209,7 +209,7 @@ mus = {
         // console.log(MusicElementFactory.mementoCreators);
 
     let score = value;
-    if (!score || !score.staffElements.length) {
+    if (!score || !score.staffElements || !score.staffElements.length) {
         score = <ScoreElement>MusicElementFactory.recreateElement(null, <any>this.mus, new GlobalContext());
     }
     this.painter = new CanvasView.CanvasQuickPainter(score.globalContext);

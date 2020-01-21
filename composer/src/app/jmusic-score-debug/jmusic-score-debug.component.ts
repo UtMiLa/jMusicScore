@@ -41,7 +41,7 @@ export class JmusicScoreDebugComponent implements OnInit {
       // console.log(MusicElementFactory.mementoCreators);
 
       let score = value;
-      if (!score || !score.staffElements.length) {
+      if (!score || !score.staffElements || !score.staffElements.length  || !score.globalContext) {
           score = <ScoreElement>MusicElementFactory.recreateElement(null, <any>{}, new GlobalContext());
       }
       this.globalContext = score.globalContext;

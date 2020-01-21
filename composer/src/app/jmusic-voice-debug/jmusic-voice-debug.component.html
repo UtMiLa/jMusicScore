@@ -1,8 +1,7 @@
-<ul>
-    <li *ngFor="let event of voice.getEvents(globalContext)">
 
-      <app-jmusic-event-debug [event]="event" [globalContext]="globalContext"></app-jmusic-event-debug>
-        
+    <div>
 
-    </li>
-  </ul>
+      <app-jmusic-event-debug  *ngFor="let event of events" [event]="event" [globalContext]="globalContext"></app-jmusic-event-debug>
+    
+    </div>
+  

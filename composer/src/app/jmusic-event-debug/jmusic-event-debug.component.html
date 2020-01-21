@@ -1,3 +1,2 @@
-<div class="event">{{event.source.debug()}}
-<div class="more">{{theFunction(event)}}</div>
-</div>
+<span [ngClass]="selected ? 'event selected' : 'event'" (click)="selectThis()">{{event?.source?.debug()}}</span>
+

@@ -1,4 +1,5 @@
 <div class="struct-music">
+  <app-base-block [element]="parsedObject"></app-base-block>
   <!--<app-structured-music [parsedObject]="parsedObject[0].mus" *ngIf="parsedObject &amp;&amp; parsedObject[0]"></app-structured-music>-->
   <app-jmusic-score-view [memento]="parsedObject"></app-jmusic-score-view>
   <app-jmusic-score-debug [memento]="parsedObject"></app-jmusic-score-debug>
