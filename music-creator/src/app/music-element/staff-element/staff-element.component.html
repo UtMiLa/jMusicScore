@@ -1,1 +1,4 @@
-<p>staff-element works!</p>
+<p>staff</p>
+<div *ngFor="let voice of staff.voices">
+    <app-voice-element [voice]="voice"></app-voice-element>
+</div>

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { IVoice } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
 
 @Component({
   selector: 'app-voice-element',
@@ -8,6 +9,9 @@ import { Component, OnInit } from '@angular/core';
 export class VoiceElementComponent implements OnInit {
 
   constructor() { }
+
+  @Input()
+  voice: IVoice;
 
   ngOnInit() {
   }

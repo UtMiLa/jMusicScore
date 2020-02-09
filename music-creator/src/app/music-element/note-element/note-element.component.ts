@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { INote } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
 
 @Component({
   selector: 'app-note-element',
@@ -8,6 +9,9 @@ import { Component, OnInit } from '@angular/core';
 export class NoteElementComponent implements OnInit {
 
   constructor() { }
+
+  @Input()
+  note: INote;
 
   ngOnInit() {
   }

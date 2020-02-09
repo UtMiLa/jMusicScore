@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { ISequence } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
 
 @Component({
   selector: 'app-sequence-element',
@@ -8,6 +9,9 @@ import { Component, OnInit } from '@angular/core';
 export class SequenceElementComponent implements OnInit {
 
   constructor() { }
+
+  @Input()
+  sequence: ISequence;
 
   ngOnInit() {
   }

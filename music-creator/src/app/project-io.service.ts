@@ -92,9 +92,9 @@ export class ProjectIoService {
       "title": "The project"*/
   },
   variables: {},
-  /*title: "",
-  subTitle: "",
-  author: "",
+  title: "Mit projekt",
+  subTitle: "med musik",
+  /*author: "",
   composer: "",
   metadata: {}*/
 };

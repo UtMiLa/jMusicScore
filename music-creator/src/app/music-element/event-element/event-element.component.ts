@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { ITimedEvent } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
 
 @Component({
   selector: 'app-event-element',
@@ -8,6 +9,9 @@ import { Component, OnInit } from '@angular/core';
 export class EventElementComponent implements OnInit {
 
   constructor() { }
+
+  @Input()
+  event: ITimedEvent;
 
   ngOnInit() {
   }

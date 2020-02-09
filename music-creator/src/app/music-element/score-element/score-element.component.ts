@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { IScore } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
 
 @Component({
   selector: 'app-score-element',
@@ -8,6 +9,9 @@ import { Component, OnInit } from '@angular/core';
 export class ScoreElementComponent implements OnInit {
 
   constructor() { }
+
+  @Input()
+  score: IScore;
 
   ngOnInit() {
   }

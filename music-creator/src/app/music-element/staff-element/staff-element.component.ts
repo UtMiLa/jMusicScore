@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { IStaff } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
 
 @Component({
   selector: 'app-staff-element',
@@ -8,6 +9,9 @@ import { Component, OnInit } from '@angular/core';
 export class StaffElementComponent implements OnInit {
 
   constructor() { }
+
+  @Input()
+  staff: IStaff;
 
   ngOnInit() {
   }
