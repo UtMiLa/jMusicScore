@@ -1,0 +1,8 @@
+.event{
+    border: black 1px solid;
+    padding: 3px;
+    background-color: sienna;
+    &.selected {
+        background-color: tomato;
+    }
+}

@@ -8,12 +8,14 @@ import { SequenceElementComponent } from './sequence-element/sequence-element.co
 import { NoteElementComponent } from './note-element/note-element.component';
 import { VariableElementComponent } from './variable-element/variable-element.component';
 import { EventElementComponent } from './event-element/event-element.component';
+import { SelectionInfoComponent } from './selection-info/selection-info.component';
+import { SelectableElementComponent } from './selectable-element/selectable-element.component';
 
 
 
 @NgModule({
   declarations: [ProjectElementComponent, ScoreElementComponent, StaffElementComponent, VoiceElementComponent, SequenceElementComponent,
-     NoteElementComponent, VariableElementComponent, EventElementComponent],
+     NoteElementComponent, VariableElementComponent, EventElementComponent, SelectionInfoComponent, SelectableElementComponent],
   imports: [
     CommonModule
   ],

@@ -1,4 +1,4 @@
 <p>staff</p>
-<div *ngFor="let voice of staff.voices">
-    <app-voice-element [voice]="voice"></app-voice-element>
+<div *ngFor="let voice of element.voices" (click)="selectThis($event)">
+    <app-voice-element [element]="voice"></app-voice-element>
 </div>

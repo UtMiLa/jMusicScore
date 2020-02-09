@@ -1,7 +1,7 @@
-<div *ngFor="let section of score.sections">
+<div *ngFor="let section of element.sections">
     Section
     <div *ngFor="let staff of section.staves">
         Staff
-        <app-staff-element [staff]="staff"></app-staff-element>
+        <app-staff-element [element]="staff"></app-staff-element>
     </div>
 </div>

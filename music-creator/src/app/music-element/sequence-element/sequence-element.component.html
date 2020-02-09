@@ -1,1 +1,1 @@
-<app-event-element *ngFor="let event of sequence.events" [event]="event"></app-event-element>
+<app-event-element *ngFor="let event of element.events" [element]="event"  (click)="selectThis($event)"></app-event-element>

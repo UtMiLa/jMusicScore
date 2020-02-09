@@ -1,1 +1,1 @@
-{{note}}
+<span [ngClass]="selected ? 'event selected' : 'event'" (click)="selectThis($event)">{{element.noteheads.length}} {{selected}}</span>

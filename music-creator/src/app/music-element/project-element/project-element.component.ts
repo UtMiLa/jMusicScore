@@ -11,7 +11,7 @@ export class ProjectElementComponent implements OnInit {
   constructor() { }
 
   @Input()
-  project: IProject;
+  element: IProject;
 
   ngOnInit() {
   }
