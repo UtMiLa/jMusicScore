@@ -10,11 +10,12 @@ export class SelectionInfoComponent implements OnInit {
 
   constructor(private selectionService: SelectionService) { }
 
-  
+  element: any;
   text = "";
 
   ngOnInit() {
     this.selectionService.selectionChange.subscribe((selection: ISelectionInterface) => {
+      this.element = selection.element;
       this.text = selection.text;
       //console.log(this.text);
     });

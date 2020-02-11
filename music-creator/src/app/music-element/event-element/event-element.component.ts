@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ITimedEvent } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
 import { SelectableElementComponent } from '../selectable-element/selectable-element.component';
-import { ISelectionInterface, SelectionService } from '../selection.service';
+import { ISelectionInterface, SelectionService, ElementKind } from '../selection.service';
 
 @Component({
   selector: 'app-event-element',
@@ -17,6 +17,10 @@ export class EventElementComponent extends SelectableElementComponent implements
 
   @Input()
   element: ITimedEvent & ISelectionInterface;
+
+  getKind(): ElementKind {
+    return ElementKind.Note;
+  }
 
   ngOnInit() {
     super.ngOnInit();

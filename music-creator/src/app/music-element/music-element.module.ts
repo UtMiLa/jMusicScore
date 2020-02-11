@@ -9,15 +9,15 @@ import { NoteElementComponent } from './note-element/note-element.component';
 import { VariableElementComponent } from './variable-element/variable-element.component';
 import { EventElementComponent } from './event-element/event-element.component';
 import { SelectionInfoComponent } from './selection-info/selection-info.component';
-import { SelectableElementComponent } from './selectable-element/selectable-element.component';
-
+import { PropertySheetModule } from '../property-sheet/property-sheet.module';
 
 
 @NgModule({
   declarations: [ProjectElementComponent, ScoreElementComponent, StaffElementComponent, VoiceElementComponent, SequenceElementComponent,
-     NoteElementComponent, VariableElementComponent, EventElementComponent, SelectionInfoComponent, SelectableElementComponent],
+     NoteElementComponent, VariableElementComponent, EventElementComponent, SelectionInfoComponent],
   imports: [
-    CommonModule
+    CommonModule,
+    PropertySheetModule
   ],
   exports: [
     ProjectElementComponent

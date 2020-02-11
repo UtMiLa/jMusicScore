@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { INote } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
-import { SelectionService, ISelectionInterface } from '../selection.service';
+import { SelectionService, ISelectionInterface, ElementKind } from '../selection.service';
 import { SelectableElementComponent } from '../selectable-element/selectable-element.component';
 
 @Component({
@@ -18,7 +18,9 @@ export class NoteElementComponent extends SelectableElementComponent implements 
   @Input()
   element: INote & ISelectionInterface;
 
-  //selected: boolean = false;
+  getKind(): ElementKind {
+    return ElementKind.Note;
+  }
 
   ngOnInit() {
     super.ngOnInit();

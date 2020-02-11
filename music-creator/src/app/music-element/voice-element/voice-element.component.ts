@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IVoice } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
-import { ISelectionInterface, SelectionService } from '../selection.service';
+import { ISelectionInterface, SelectionService, ElementKind } from '../selection.service';
 import { SelectableElementComponent } from '../selectable-element/selectable-element.component';
 
 @Component({
@@ -16,6 +16,10 @@ export class VoiceElementComponent extends SelectableElementComponent implements
 
   @Input()
   element: IVoice & ISelectionInterface;
+
+  getKind(): ElementKind {
+    return ElementKind.Note;
+  }
 
   ngOnInit() {
     super.ngOnInit();

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IProject } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
+import { ElementKind } from '../selection.service';
 
 @Component({
   selector: 'app-project-element',
@@ -12,6 +13,11 @@ export class ProjectElementComponent implements OnInit {
 
   @Input()
   element: IProject;
+
+  getKind(): ElementKind {
+    return ElementKind.Note;
+  }
+
 
   ngOnInit() {
   }

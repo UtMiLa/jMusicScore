@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IScore } from '../../../../../jMusic/simple-model/jm-simple-model-interfaces';
-import { ISelectionInterface, SelectionService } from '../selection.service';
+import { ISelectionInterface, SelectionService, ElementKind } from '../selection.service';
 import { SelectableElementComponent } from '../selectable-element/selectable-element.component';
 
 @Component({
@@ -17,6 +17,11 @@ export class ScoreElementComponent extends SelectableElementComponent implements
 
   @Input()
   element: IScore & ISelectionInterface;
+
+  getKind(): ElementKind {
+    return ElementKind.Note;
+  }
+
 
   ngOnInit() {
     super.ngOnInit();
