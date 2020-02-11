@@ -1,1 +1,13 @@
-<p>pitch: {{value.pitch}} {{value.alteration}}</p>
+<form [formGroup]="pitchParts" (ngSubmit)="onSubmit()">
+<p>pitch:{{value.pitch}} </p>
+
+<input formControlName="noteName" (change)="pitchChanged()">
+<input formControlName="octave" (change)="pitchChanged()">
+
+{{accidental}}
+<button type="button" (click)="countUp(1)">+</button>
+<button type="button" (click)="countUp(-1)">-</button>
+
+<br/>
+<button type="submit" [disabled]="!pitchParts.valid">Submit</button>
+</form>

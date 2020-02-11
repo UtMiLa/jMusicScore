@@ -772,6 +772,17 @@ export class Pitch {
     static noteNames = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
     static alterations: { [index: string]: string } = { 'bb': 'eses', 'b': 'es', 'n': '', 'x': 'is', 'xx': 'isis', '': '', '0': '' };
     static octaves = [',,,,,', ',,,,', ',,,', ',,', ',', '', "'", "''", "'''", "''''", "'''''", "''''''"];
+    static pitchToNoteNameOctave(pitch: number): {noteName: string; octave: number} {
+        var noteName = Pitch.noteNames[(pitch + 98) % 7];
+        var octave = Math.floor(pitch / 7);
+        return {noteName, octave};
+    }
+    static noteNameOctaveToPitch(noteName: string, octave: number): number {
+        var pitch = Pitch.noteNames.indexOf(noteName);
+        if (pitch=== -1) throw "Illegal note name";
+        pitch += octave * 7;
+        return pitch;
+    }
     public debug(): string {
         var noteName = Pitch.noteNames[(this.pitch + 98) % 7];
         var octave = Math.floor(this.pitch / 7);
