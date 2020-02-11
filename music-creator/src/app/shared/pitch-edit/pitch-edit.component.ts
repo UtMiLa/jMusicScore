@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Pitch } from '../../../../../jMusic/jm-music-basics';
 
 @Component({
   selector: 'app-pitch-edit',
@@ -8,6 +9,9 @@ import { Component, OnInit } from '@angular/core';
 export class PitchEditComponent implements OnInit {
 
   constructor() { }
+
+  @Input()
+  value: Pitch;
 
   ngOnInit() {
   }

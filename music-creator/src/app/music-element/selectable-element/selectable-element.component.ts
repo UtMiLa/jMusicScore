@@ -18,13 +18,13 @@ export abstract class SelectableElementComponent implements OnInit {
 
   ngOnInit() {
     this.selectionService.selectionChange.subscribe((selection: ISelectionInterface) => {
-      console.log("selectionchange: ", selection, this.selected);
+      //console.log("selectionchange: ", selection, this.selected);
       if (!selection) {
         this.selected = false;
       } else {
         this.selected = selection.element === this.element;
         (this.element as any).selected = this.selected;
-        if (this.selected) {console.log("selectionchange: ", selection, this.selected);}
+        //if (this.selected) {console.log("selectionchange: ", selection, this.selected);}
       }
     });
   }

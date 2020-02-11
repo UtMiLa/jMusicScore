@@ -1,3 +1,5 @@
 Glyph: <app-rational-edit [value]="element.noteGlyph"></app-rational-edit>
 <br/>
 timeVal: <app-rational-edit [value]="element.timeVal"></app-rational-edit>
+
+<app-pitch-edit *ngFor="let head of element.noteheads" [value]="head.pitch"></app-pitch-edit>
