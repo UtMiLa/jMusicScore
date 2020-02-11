@@ -8,6 +8,7 @@ import { SequenceComponent } from './sequence/sequence.component';
 import { MeterComponent } from './meter/meter.component';
 import { ClefComponent } from './clef/clef.component';
 import { KeyComponent } from './key/key.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 
@@ -17,7 +18,7 @@ import { KeyComponent } from './key/key.component';
   exports: [NoteComponent, VoiceComponent, StaffComponent, SectionComponent, SequenceComponent,
     MeterComponent, ClefComponent, KeyComponent],
   imports: [
-    CommonModule
+    CommonModule, SharedModule
   ]
 })
 export class PropertySheetModule { }
