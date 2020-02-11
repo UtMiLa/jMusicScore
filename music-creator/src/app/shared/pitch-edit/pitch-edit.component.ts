@@ -60,11 +60,16 @@ export class PitchEditComponent implements OnInit {
     this.value = new Pitch(this.value.pitch, Pitch.intToStr(Pitch.strToInt(this.value.alteration) + val));
   }
 
+  enharmonic() {
+    this.value = this.value.getEnharmonicPitch();
+  }
+
   pitchChanged(){
     /*const n = this.pitchParts.value;
     const p = Pitch.noteNameOctaveToPitch(n.noteName, n.octave);
 
     this.value = new Pitch(p, Pitch.intToStr(n.alteration - 2));*/
+    this.onSubmit();
   }
 
   ngOnInit() {
