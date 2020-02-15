@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Pitch } from '../../../../../jMusic/jm-music-basics';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { typeWithParameters } from '@angular/compiler/src/render3/util';
+import { MidiInService } from 'src/app/midi-in.service';
+import { MusicIoService } from 'src/app/music-io.service';
 
 
 @Component({
@@ -13,7 +14,7 @@ export class PitchEditComponent implements OnInit {
 
   accidentals = ['𝄫', '♭', '♮', '♯', '𝄪'];
 
-  constructor(fb: FormBuilder) {
+  constructor(fb: FormBuilder, private musicIn: MusicIoService) {
     this.pitchParts =  fb.group({
       //pitch: [0],
       noteName: ['c', Validators.pattern('[a-g]')],
@@ -74,6 +75,11 @@ export class PitchEditComponent implements OnInit {
 
   ngOnInit() {
 
+    // console.log(this.musicIn.getInputs());
+    this.musicIn.chordReleased.subscribe((msg) => {
+      console.log(msg.map(p => Pitch.createFromMidi(p).debug()));
+      this.value = Pitch.createFromMidi(msg[0]);
+    });
 
   }
 
