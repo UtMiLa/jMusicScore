@@ -1,14 +1,37 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { IProject, INote } from '../../../jMusic/simple-model/jm-simple-model-interfaces';
 import { AbsoluteTime, TimeSpan, Pitch } from '../../../jMusic/jm-music-basics';
+import { FileIoService } from './file-io.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectIoService {
-  loadProject(): Observable<IProject> {
 
+  constructor(private ioService: FileIoService) { 
+
+  }
+
+  loadProject(name: string): Observable<IProject> {
+    if (!name) return this.loadTestProject();
+    return this.ioService.load(name).pipe(
+     /* map((data) => {
+        return JSON.parse(data);
+      })*/
+    );
+  }
+
+  saveProject(data: IProject) {
+    return this.ioService.save('project.mmodel', JSON.stringify(data));
+  }
+
+  listProjects() {
+    return this.ioService.list('json');
+  }
+
+  loadTestProject(): Observable<IProject> {
 
 
 
@@ -17,7 +40,7 @@ export class ProjectIoService {
       noteGlyph: TimeSpan.quarterNote,
       timeVal: TimeSpan.quarterNote,
       noteheads: [{
-          pitch: new Pitch(1, ''),
+          pitch: new Pitch(16, ''),
           /*tie: false,
           tieForced: false,
           forceAccidental: false,
@@ -40,7 +63,7 @@ export class ProjectIoService {
       noteGlyph: TimeSpan.quarterNote,
       timeVal: TimeSpan.quarterNote,
       noteheads: [{
-          pitch: new Pitch(1, ''),
+          pitch: new Pitch(17, ''),
           /*tie: false,
           tieForced: false,
           forceAccidental: false,
@@ -103,5 +126,4 @@ export class ProjectIoService {
 
   }
 
-  constructor() { }
 }

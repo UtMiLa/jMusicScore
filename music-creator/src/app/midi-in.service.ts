@@ -21,15 +21,15 @@ export class MidiInService {
   outputs: any;
 
   constructor() {
-    if (navigator.requestMIDIAccess) {
-      console.log('This browser supports WebMIDI!');
-
       this.midiEventEmitter = new EventEmitter<IMidiEvent>();
       this.midiSysEventEmitter = new EventEmitter<IMidiEvent>();
       this.midiMessageEventEmitter = new EventEmitter<IMidiEvent>();
       this.midiCtlEventEmitter = new EventEmitter<IMidiEvent>();
 
-
+      if (navigator.requestMIDIAccess) {
+        console.log('This browser supports WebMIDI!');
+  
+  
       navigator.requestMIDIAccess()
       .then(
         (midiAccess) => {

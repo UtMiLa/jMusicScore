@@ -13,8 +13,22 @@ export class ProjectComponent implements OnInit {
 
   project: IProject;
 
+  files: string[];
+
   ngOnInit() {
-    this.ioService.loadProject().subscribe(data => this.project = data);
+    this.ioService.listProjects().subscribe((list) => this.files = list);
+    this.load('project1.mmodel');
+  }
+
+  save() {
+    this.ioService.saveProject(this.project).subscribe((data) => {console.log(data);});
+  }
+
+  load(name: string) {
+    this.ioService.loadProject(name).subscribe(data => {
+      this.project = data;
+      console.log(data);
+    });
   }
 
 }

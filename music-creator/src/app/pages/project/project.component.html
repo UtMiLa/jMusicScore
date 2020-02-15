@@ -1,2 +1,8 @@
 <h3>Project page</h3>
-<app-project-element [element]="project"></app-project-element>
+<app-project-element *ngIf="project" [element]="project"></app-project-element>
+
+<button type="button" (click)="save()">Save</button>
+<button type="button" (click)="load()">Load demo</button>
+<button type="button" (click)="load('project.mmodel')">Load project</button>
+
+<ul *ngFor="let file of files">{{file}}</ul>
