@@ -13,7 +13,7 @@ export class MusicIoService {
   status = new ScoreStatusManager(new GlobalContext());
   currentChord: number[] = [];
 
-  constructor(private midiService: MidiInService/*, private cd: ChangeDetectorRef*/) {
+  constructor(private midiService: MidiInService) {
     console.log('MusicIoService');
 
     this.musicChanged = new EventEmitter<IMidiEvent>();
@@ -37,7 +37,7 @@ export class MusicIoService {
         this.chordReleased.next(this.currentChord);
         this.currentChord = [];
       }
-      // this.cd.detectChanges();
+     // this.cd.detectChanges();
     });
 
     this.midiService.midiCtlEventEmitter.subscribe((event: IMidiEvent) => {

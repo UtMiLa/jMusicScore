@@ -3,8 +3,10 @@ import { Injectable, EventEmitter } from '@angular/core';
 
 export interface IMidiEvent {
    channel: number;
-   note: number;
-   velocity: number;
+   note?: number;
+   controller?: number;
+   velocity?: number;
+   value?: number;
    source?: string;
    _type?: string ;
 }
@@ -63,8 +65,8 @@ export class MidiInService {
                 // controller
                 this.midiCtlEventEmitter.next({
                   channel,
-                  note,
-                  velocity,
+                  controller: note,
+                  value: velocity,
                   /*source?: string;*/
                   _type: 'cc'
                 });

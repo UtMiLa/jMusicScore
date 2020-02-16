@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MusicIoService } from 'src/app/music-io.service';
 import { ScoreStatusManager } from '../../../../../jMusic/jm-application';
 import { Pitch } from '../../../../../jMusic/jm-music-basics';
@@ -10,7 +10,7 @@ import { Pitch } from '../../../../../jMusic/jm-music-basics';
 })
 export class PianoKbdComponent implements OnInit {
 
-  constructor(private musicIoService: MusicIoService) { }
+  constructor(private musicIoService: MusicIoService, private cd: ChangeDetectorRef) { }
 
 
   items = [];
@@ -44,16 +44,18 @@ export class PianoKbdComponent implements OnInit {
 
   tap() {
     this.currentLength++;
+    console.log("tapping", this.currentLength);
   }
 
   ngOnInit() {
     this.musicIoService.chordReleased.subscribe((event) => {
-      console.log(event);
+      // console.log(event);
       this.chords.push({
         chord: event.sort().map(n => Pitch.createFromMidi(n)),
         length: this.currentLength
       });
       this.currentLength = 0;
+      this.cd.detectChanges();
     });
 
 
@@ -61,15 +63,17 @@ export class PianoKbdComponent implements OnInit {
       if (event.velocity > 0 && this.currentLength && this.musicIoService.status.notesPressed.length === 1) {
         this.chords.push({ chord: [], length: this.currentLength });
         this.currentLength = 0;
+        this.cd.detectChanges();
       }
     });
 
     this.musicIoService.controlChanged.subscribe((event) => {
-      console.log(event);
+      // console.log('controlChanged', event);
       if (event.controller === 64) {
         // left pedal
         if (event.value === 0) {
           this.tap();
+          this.cd.detectChanges();
         }
       } else if (event.controller === 67) {
         // right pedal
