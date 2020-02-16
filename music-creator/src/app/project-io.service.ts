@@ -15,16 +15,12 @@ export class ProjectIoService {
   }
 
   loadProject(name: string): Observable<IProject> {
-    if (!name) return this.loadTestProject();
-    return this.ioService.load(name).pipe(
-     /* map((data) => {
-        return JSON.parse(data);
-      })*/
-    );
+    if (!name) { return this.loadTestProject(); }
+    return this.ioService.load(name) as Observable<any>;
   }
 
-  saveProject(data: IProject) {
-    return this.ioService.save('project.mmodel', JSON.stringify(data));
+  saveProject(data: IProject, name: string) {
+    return this.ioService.save(name, JSON.stringify(data));
   }
 
   listProjects() {

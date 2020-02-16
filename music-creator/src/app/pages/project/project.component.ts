@@ -16,12 +16,12 @@ export class ProjectComponent implements OnInit {
   files: string[];
 
   ngOnInit() {
-    this.ioService.listProjects().subscribe((list) => this.files = list);
+    this.ioService.listProjects().subscribe((list) => this.files = <any>list);
     this.load('project1.mmodel');
   }
 
-  save() {
-    this.ioService.saveProject(this.project).subscribe((data) => {console.log(data);});
+  save(name: string) {
+    this.ioService.saveProject(this.project, name).subscribe((data) => {console.log(data);});
   }
 
   load(name: string) {

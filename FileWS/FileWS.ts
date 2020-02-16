@@ -184,7 +184,7 @@ function cleanUp(fileName: string){
   });
 }
 
-function saveFile(req: IncomingMessage, res: ServerResponse, filename: string, withLy: boolean){
+function saveFile(req: IncomingMessage, res: ServerResponse, filename: string, withLy: boolean, cleanup = false){
   var body = '';
   /*if (!req.url) req.url = "/temp";
   const filename = req.url.replace('/', '');*/
@@ -211,7 +211,7 @@ function saveFile(req: IncomingMessage, res: ServerResponse, filename: string, w
       console.log("Skriver til " + "./files/" + jsonFile);
       //console.log(bodyText);
       //console.log(body);
-      cleanUp(name);
+      if (cleanup) {cleanUp(name);}
 
       writeFile("./files/" + jsonFile,  bodyText, (err) => {
 
