@@ -43,11 +43,6 @@ export class SequenceComponent implements OnInit {
       };
 
       this.element.events.push(newNote);
-
-      /*this.chords.push({
-        chord: event.sort().map(n => Pitch.createFromMidi(n)),
-        length: this.currentLength
-      });*/
       this.currentLength = 0;
       this.cd.detectChanges();
     });
@@ -61,9 +56,9 @@ export class SequenceComponent implements OnInit {
           dots: this.currentLength === 2 ? 1 : 0,
           rest: true
         };
-  
+
         this.element.events.push(newNote);
-        // this.chords.push({ chord: [], length: this.currentLength });
+
         this.currentLength = 0;
         this.cd.detectChanges();
       }
