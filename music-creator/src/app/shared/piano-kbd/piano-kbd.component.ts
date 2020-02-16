@@ -44,7 +44,7 @@ export class PianoKbdComponent implements OnInit {
 
   tap() {
     this.currentLength++;
-    console.log("tapping", this.currentLength);
+    // console.log("tapping", this.currentLength);
   }
 
   ngOnInit() {

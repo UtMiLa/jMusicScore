@@ -1,4 +1,5 @@
-<app-note  *ngIf="element?.noteGlyph" [element]="element" >x</app-note>
+<app-note  *ngIf="element?.noteGlyph" [element]="element" ></app-note>
+<app-sequence  *ngIf="element?.events" [element]="element" ></app-sequence>
 
 <p>
     {{text}}
