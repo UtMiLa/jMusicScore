@@ -28,9 +28,9 @@ export class MidiInService {
 
       if (navigator.requestMIDIAccess) {
         console.log('This browser supports WebMIDI!');
-  
-  
-      navigator.requestMIDIAccess()
+
+
+        navigator.requestMIDIAccess()
       .then(
         (midiAccess) => {
           console.log(midiAccess);
@@ -59,19 +59,22 @@ export class MidiInService {
                   /*source?: string;*/
                   _type: 'noteon'
                 });
+              } else if (command === 0xb0) {
+                // controller
+                this.midiCtlEventEmitter.next({
+                  channel,
+                  note,
+                  velocity,
+                  /*source?: string;*/
+                  _type: 'cc'
+                });
+              } else if (command === 0xf0) {
+                // console.log(msg, command, note, velocity); timer
+              } else {
+                console.log(command, channel, note);
               }
             };
             /*const input = new easymidi.Input(element);
-            input.on('noteon',  (msg: IMidiEvent) => {
-              msg.source = element;
-              this.midiEventEmitter.next(msg);
-              // console.log(msg);
-            })
-            .on('cc',  (msg: IMidiEvent) => {
-              msg.source = element;
-              this.midiCtlEventEmitter.next(msg);
-              // console.log(msg);
-            })
             .on('sysex',  (msg: IMidiEvent) => {
               msg.source = element;
               this.midiSysEventEmitter.next(msg);
@@ -85,7 +88,7 @@ export class MidiInService {
           });
 
           this.getOutputs().forEach(element => {
-            //console.log(element);
+            // console.log(element);
             /*const output = new easymidi.Output(element);
             this.outputs.push({id: element, dev: output});*/
           });

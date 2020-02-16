@@ -1,0 +1,52 @@
+.up, .down {
+    position: absolute;
+    top: 0px;
+    border: solid black 1px;
+}
+
+$pianoBarHeight: 83px;
+$toolboxHeight: 10px;
+$whiteKeyWidth: 30px;
+$whiteKeyShadow: 4px;
+$blackKeyWidth: 20px;
+$blackKeyLength: 50px;
+$blackKeyShadow: 3px;
+.bw1, .bw3, .bw5, .bw0, .bw2, .bw4, .bw6, .bw-white { 
+    height: $pianoBarHeight - 1;
+    background-color: ivory;
+    width: $whiteKeyWidth;
+    z-index: 20;
+    &:hover, &.hover {
+        background-color: #ddd;
+    }
+    &.down {
+        border-right: solid #888 $whiteKeyShadow;
+        width: $whiteKeyWidth - $whiteKeyShadow;
+        background-color: #bbb;
+    }
+}
+.bw8, .bw10, .bw7, .bw9, .bw11, .bw-black { 
+    height: $blackKeyLength;
+    background-color: black;
+    width: $blackKeyWidth;
+    z-index: 30;
+    &:hover, &.hover {
+        background-color: #222;
+    }
+
+    &.down {
+        background-color: #567;
+        width: $blackKeyWidth - $blackKeyShadow;
+        border-right: solid black $blackKeyShadow;
+    }
+}  
+/*#tast53 { background-image: url(../images/symbol1/e_clefs.F_change.png); background-position: -7px 32px; background-repeat:no-repeat; }
+#tast60 { background-image: url(../images/symbol1/e_clefs.C_change.png); background-position: -7px 32px; background-repeat:no-repeat; }
+#tast67 { background-image: url(../images/symbol1/e_clefs.G_change.png); background-position: -7px 32px; background-repeat:no-repeat; }*/
+.piano {
+    position: relative; 
+    left: 0px;
+    top: 0px;
+    height: $pianoBarHeight;
+}
+
