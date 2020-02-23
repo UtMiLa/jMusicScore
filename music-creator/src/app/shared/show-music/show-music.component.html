@@ -1,0 +1,8 @@
+<p>show-music works!</p>
+<div *ngIf="music">{{music | json}}   
+</div>
+
+<div *ngIf="converted">{{converted.getMemento(true) |json}}  
+
+    <app-jmusic-score-view [memento]="converted"></app-jmusic-score-view>
+</div>

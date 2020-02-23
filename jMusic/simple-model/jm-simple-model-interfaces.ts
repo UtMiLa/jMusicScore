@@ -58,7 +58,7 @@ export enum BarKind {single, dotted, double, endBar, repeatStart, repeatEnd, rep
  */
 export interface IBar extends ITimedObjectEvent {
     absTime: AbsoluteTime;
-    kind: BarKind;
+    barKind: BarKind;
 }
 
 
@@ -156,21 +156,21 @@ export interface ISnippet {
  * Abstract clef change element
  */
 export interface IClef extends ITimedChangeEvent {
-    definition: ClefDefinition;
+    clefDef: ClefDefinition;
 }
 
 /**
  * Abstract key change element
  */
 export interface IKey extends ITimedChangeEvent {
-    definition: IKeyDefinition;
+    keyDef: IKeyDefinition;
 }
 
 /**
  * Abstract time change element
  */
 export interface IMeter extends ITimedChangeEvent {
-    definition: IMeterDefinition;
+    meterDef: IMeterDefinition;
 }
 
 /**
