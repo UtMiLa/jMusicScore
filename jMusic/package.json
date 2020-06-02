@@ -1,0 +1,11 @@
+{
+  "name": "jmusic",
+  "version": "1.0.0",
+  "description": "Score editing in Javascript",
+  "main": "jap-application.js",
+  "scripts": {
+    "test": "tsc --project .\\spec\\tsconfig.json && node ../node_modules/jasmine/bin/jasmine.js ./spec/*.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
