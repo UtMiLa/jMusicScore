@@ -1,0 +1,15 @@
+{
+  "name": "small-model",
+  "version": "1.0.0",
+  "description": "Music score model",
+  "main": "index.js",
+  "scripts": {
+    "test": "tsc --project .\\spec\\tsconfig.json && node ../node_modules/jasmine/bin/jasmine.js ./spec/*.js"
+  },
+  "author": "John Ekberg",
+  "license": "ISC",
+  "devDependencies": {
+    "jasmine": "^3.5.0",
+    "typescript": "^3.9.3"
+  }
+}
