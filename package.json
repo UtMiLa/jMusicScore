@@ -11,9 +11,10 @@
     "@types/jasmine": "^2.8.12",
     "@types/node": "^10.12.24",
     "@types/pegjs": "^0.10.1",
-    "browser-sync": "~2.18.13",
+    "browser-sync": "^2.26.14",
     "buffer-replace": "^1.0.0",
     "chai": "~4.1.1",
+    "devextreme": "^20.2.3",
     "gulp": "^3.9.1",
     "gulp-browserify": "~0.5.1",
     "gulp-concat": "~2.6.1",
@@ -32,7 +33,7 @@
     "@types/express": "^4.16.1",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "gulp-pegjs": "^0.1.0",
+    "gulp-pegjs": "^0.2.0",
     "pegjs-require": "^2.0.0"
   }
 }
